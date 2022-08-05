@@ -7,16 +7,16 @@ import traceback
 from os_builder.scripts.common import import_or_install, print_info
 from os_builder.scripts.ob_globals import TaskParams, CntrParams, AlarmParams, ISR_Params, TNMI, FreeOSEK_Params, OSEK_Params, STSZ
 
-import os_builder.scripts.sg_counter
-import os_builder.scripts.sg_tasks
-import os_builder.scripts.sg_alarms
-import os_builder.scripts.sg_appmodes
-import os_builder.scripts.sg_events
-import os_builder.scripts.sg_messages
-import os_builder.scripts.sg_resources
-import os_builder.scripts.sg_fifo
-import os_builder.scripts.sg_os_param
-import os_builder.scripts.sg_isrs
+import os_builder.scripts.sg_counter as sg_counter
+import os_builder.scripts.sg_tasks as sg_tasks
+import os_builder.scripts.sg_alarms as sg_alarms
+import os_builder.scripts.sg_appmodes as sg_appmodes
+import os_builder.scripts.sg_events as sg_events
+import os_builder.scripts.sg_messages as sg_messages
+import os_builder.scripts.sg_resources as sg_resources
+import os_builder.scripts.sg_fifo as sg_fifo
+import os_builder.scripts.sg_os_param as sg_os_param
+import os_builder.scripts.sg_isrs as sg_isrs
 
 import colorama
 from colorama import init, Fore, Back, Style

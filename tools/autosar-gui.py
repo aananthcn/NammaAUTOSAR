@@ -253,7 +253,8 @@ def save_project():
 
 
 def generate_code():
-    if 0 == sg.generate_code():
+    srcpath = ToolsPath+"\os_builder\src"
+    if 0 == sg.generate_code(srcpath):
         messagebox.showinfo(ToolName, "Code Generated Successfully!")
     else:
         messagebox.showinfo(ToolName, "Code Generation Failed!")
@@ -383,9 +384,9 @@ def get_recent_files():
         raw_list = []
 
     for item in raw_list:
-        if item not in file_list:
+        if item.strip() not in file_list:
             if len(item) > 4: # 4 for a dot and at least 3 letters.
-                file_list.append(item)
+                file_list.append(item.strip())
 
     with open(RecentFiles, 'w') as rfile:
         for line in file_list:

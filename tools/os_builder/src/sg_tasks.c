@@ -20,7 +20,7 @@ const OsTaskType _OsTaskList[] = {
 		.n_appmodes = TASK_A_APPMODE_MAX,
 		.evtmsks = NULL,
 		.n_evtmsks = TASK_A_EVENT_MAX,
-		.msglist = (MessageType**) &Task_A_Messages,
+		.msglist = NULL,
 		.n_msglist = TASK_A_MESSAGE_MAX,
 		.stack_size = 512
 	},
@@ -35,7 +35,7 @@ const OsTaskType _OsTaskList[] = {
 		.n_appmodes = TASK_B_APPMODE_MAX,
 		.evtmsks = (const EventMaskType**) &Task_B_EventMasks,
 		.n_evtmsks = TASK_B_EVENT_MAX,
-		.msglist = (MessageType**) &Task_B_Messages,
+		.msglist = NULL,
 		.n_msglist = TASK_B_MESSAGE_MAX,
 		.stack_size = 512
 	},
