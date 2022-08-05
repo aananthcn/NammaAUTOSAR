@@ -9,6 +9,7 @@ sys.path.insert(0, os.getcwd()+"/tools/arxml")
 import os_builder.scripts.System_Generator as sg
 import os_builder.scripts.oil as oil
 import arxml.main as arxml
+import gui.autosar.mod_view as av
 
 
 import tkinter as tk
@@ -30,9 +31,6 @@ import gui.os.isr_tab as gui_ir_tab
 # Globals
 ###############################################################################
 # GUI stuffs
-ToolName = "AUTOSAR Builder"
-AppTitle = "FreeOSEK's "+ ToolName
-MainWindow = None
 MenuBar = None
 FileMenu = None
 OsTab = AmTab = CtrTab = MsgTab = ResTab = TskTab = AlmTab = IsrTab = None
@@ -43,20 +41,30 @@ ArXml_FileName = None
 RecentFiles = os.getcwd()+"/.filelist"
 ToolsPath = os.getcwd()+"/tools"
 
+
 # UI Stuffs - View
 class View:
     root = None
     xsize = None
     ysize = None
+    window = None
 
     def __init__(self):
         self.root = tk.Tk()
         self.xsize = self.root.winfo_screenwidth()
         self.ysize = self.root.winfo_screenheight()
 
+    def destroy_view(self):
+        for widget in self.window.winfo_children():
+	        widget.destroy()
+        self.window.destroy()
+
+
+
 # UI Stuffs - FreeAUTOSAR Configurator Tool
 class FreeAutosarConfTool:
     view = View()
+    title = "AUTOSAR Builder"
 
 
 Gui = None
@@ -72,60 +80,57 @@ def about():
 
 
 def show_os_tab_switch(event):
-    global MainWindow
     global OsTab, AmTab, CtrTab, MsgTab, ResTab, TskTab, AlmTab, IsrTab 
 
     current_tab = None #this variable can be used for debugging!
-    if MainWindow.tab(MainWindow.select(), "text").strip() == "OS Configs":
+    if Gui.view.window.tab(Gui.view.window.select(), "text").strip() == "OS Configs":
         TskTab.backup_data()
         OsTab.backup_data()  # take the lastest stack size updates from Task tab.
         OsTab.update()
         current_tab = OsTab
-    if MainWindow.tab(MainWindow.select(), "text").strip() == "AppModes":
+    if Gui.view.window.tab(Gui.view.window.select(), "text").strip() == "AppModes":
         current_tab = AmTab
-    if MainWindow.tab(MainWindow.select(), "text").strip() == "Counters":
+    if Gui.view.window.tab(Gui.view.window.select(), "text").strip() == "Counters":
         current_tab = CtrTab
-    if MainWindow.tab(MainWindow.select(), "text").strip() == "Messages":
+    if Gui.view.window.tab(Gui.view.window.select(), "text").strip() == "Messages":
         current_tab = MsgTab
-    if MainWindow.tab(MainWindow.select(), "text").strip() == "Resources":
+    if Gui.view.window.tab(Gui.view.window.select(), "text").strip() == "Resources":
         current_tab = ResTab
-    if MainWindow.tab(MainWindow.select(), "text").strip() == "Tasks":
+    if Gui.view.window.tab(Gui.view.window.select(), "text").strip() == "Tasks":
         current_tab = TskTab
-    if MainWindow.tab(MainWindow.select(), "text").strip() == "Alarms":
+    if Gui.view.window.tab(Gui.view.window.select(), "text").strip() == "Alarms":
         AlmTab.update()
         current_tab = AlmTab
-    if MainWindow.tab(MainWindow.select(), "text").strip() == "ISRs":
+    if Gui.view.window.tab(Gui.view.window.select(), "text").strip() == "ISRs":
         current_tab = IsrTab
 
 
     
 def show_os_config(view):
-    global MainWindow, OsTab, AmTab, CtrTab, MsgTab, ResTab, TskTab, AlmTab, IsrTab
+    global OsTab, AmTab, CtrTab, MsgTab, ResTab, TskTab, AlmTab, IsrTab
 
-    if MainWindow != None:
-        for widget in MainWindow.winfo_children():
-            widget.destroy()
-        MainWindow.destroy()
-    MainWindow = ttk.Notebook(view)
+    if Gui.view.window != None:
+        Gui.view.destroy_view()
+    Gui.view.window = ttk.Notebook(view)
     
-    os_tab = ttk.Frame(MainWindow)
-    am_tab = ttk.Frame(MainWindow)
-    cr_tab = ttk.Frame(MainWindow)
-    ms_tab = ttk.Frame(MainWindow)
-    rs_tab = ttk.Frame(MainWindow)
-    tk_tab = ttk.Frame(MainWindow)
-    al_tab = ttk.Frame(MainWindow)
-    ir_tab = ttk.Frame(MainWindow)
+    os_tab = ttk.Frame(Gui.view.window)
+    am_tab = ttk.Frame(Gui.view.window)
+    cr_tab = ttk.Frame(Gui.view.window)
+    ms_tab = ttk.Frame(Gui.view.window)
+    rs_tab = ttk.Frame(Gui.view.window)
+    tk_tab = ttk.Frame(Gui.view.window)
+    al_tab = ttk.Frame(Gui.view.window)
+    ir_tab = ttk.Frame(Gui.view.window)
     
-    MainWindow.add(os_tab, text ='OS Configs')
-    MainWindow.add(am_tab, text =' AppModes ')
-    MainWindow.add(cr_tab, text =' Counters ')
-    MainWindow.add(ms_tab, text =' Messages ')
-    MainWindow.add(rs_tab, text =' Resources ')
-    MainWindow.add(tk_tab, text ='   Tasks   ')
-    MainWindow.add(al_tab, text ='  Alarms  ')
-    MainWindow.add(ir_tab, text ='   ISRs   ')
-    MainWindow.pack(expand = 1, fill ="both")
+    Gui.view.window.add(os_tab, text ='OS Configs')
+    Gui.view.window.add(am_tab, text =' AppModes ')
+    Gui.view.window.add(cr_tab, text =' Counters ')
+    Gui.view.window.add(ms_tab, text =' Messages ')
+    Gui.view.window.add(rs_tab, text =' Resources ')
+    Gui.view.window.add(tk_tab, text ='   Tasks   ')
+    Gui.view.window.add(al_tab, text ='  Alarms  ')
+    Gui.view.window.add(ir_tab, text ='   ISRs   ')
+    Gui.view.window.pack(expand = 1, fill ="both")
 
     # destroy old GUI objects
     del OsTab
@@ -162,7 +167,7 @@ def show_os_config(view):
     IsrTab = gui_ir_tab.IsrTab(sg.ISRs, ResTab, MsgTab)
     IsrTab.draw(ir_tab)
 
-    MainWindow.bind("<<NotebookTabChanged>>", show_os_tab_switch)
+    Gui.view.window.bind("<<NotebookTabChanged>>", show_os_tab_switch)
     
 
 
@@ -177,7 +182,7 @@ def new_file():
 
 
 def open_oil_file(fpath):
-    global Gui, OIL_FileName, AppTitle
+    global Gui, OIL_FileName
 
     init_dir = os.getcwd()
     if os.path.exists(os.getcwd()+"/output/oil-files"):
@@ -194,7 +199,7 @@ def open_oil_file(fpath):
         OIL_FileName = fpath
 
     if Gui.view.root != None:
-        Gui.view.root.title(AppTitle + " [" + str(OIL_FileName).split("/")[-1] +"]")
+        Gui.view.root.title(Gui.title + " [" + str(OIL_FileName).split("/")[-1] +"]")
 
     # Make System Generator to parse, so that we can use the content in GUI.
     sg.sg_reset()
@@ -248,7 +253,7 @@ def save_project():
 
     # Export and File name clean up
     arxml.export_arxml(ArXml_FileName)
-    Gui.view.root.title(AppTitle + " [" + ArXml_FileName.split("/")[-1] +"]")
+    Gui.view.root.title(Gui.title + " [" + ArXml_FileName.split("/")[-1] +"]")
 
 
 
@@ -268,14 +273,14 @@ def save_as_arxml():
         messagebox.showinfo(ToolName, "File to save is not done correctly, saving aborted!")
         return
 
-    Gui.view.root.title(AppTitle + " [" + str(saved_filename.name).split("/")[-1] +"]")
+    Gui.view.root.title(Gui.title + " [" + str(saved_filename.name).split("/")[-1] +"]")
     backup_gui_before_save()
     arxml.export_arxml(saved_filename.name)
 
 
 
 def open_arxml_file(fpath):
-    global Gui, ArXml_FileName, AppTitle
+    global Gui, ArXml_FileName
 
     init_dir = os.getcwd()
     if os.path.exists(os.getcwd()+"/output/arxml"):
@@ -292,7 +297,7 @@ def open_arxml_file(fpath):
         ArXml_FileName = fpath.strip()
 
     if Gui.view.root != None:
-        Gui.view.root.title(AppTitle + " [" + str(ArXml_FileName).split("/")[-1] +"]")
+        Gui.view.root.title(Gui.title + " [" + str(ArXml_FileName).split("/")[-1] +"]")
 
     # Import/Parse ARXML file, so that we can use the content in GUI.
     sg.sg_reset()
@@ -331,6 +336,7 @@ def add_menus(rv, flst):
 
     view = tk.Menu(MenuBar, tearoff=0)
     view.add_command(label="OS Config", command=lambda: show_os_config(rv))
+    view.add_command(label="AUTOSAR Module View", command=lambda: av.show_autosar_modules_view(Gui))
     MenuBar.add_cascade(label="View", menu=view)
 
     gen = tk.Menu(MenuBar, tearoff=0)
@@ -398,12 +404,12 @@ def get_recent_files():
 
 
 def main(fpath, ftype):
-    global Gui, AppTitle
+    global Gui
     
     # Create the main window
     ## Gui.view.root = tk.Tk()
     Gui = FreeAutosarConfTool()
-    Gui.view.root.title(AppTitle + " [uninitialized]")
+    Gui.view.root.title(Gui.title + " [uninitialized]")
     flst = get_recent_files()
     add_menus(Gui.view.root, flst)
     Gui.view.root.state("zoomed")
