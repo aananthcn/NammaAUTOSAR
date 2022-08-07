@@ -1,0 +1,3 @@
+[submodule "submodules/OS"]
+	path = submodules/OS
+	url = git@github.com:aananthcn/FreeOSEK.git
