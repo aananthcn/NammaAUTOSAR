@@ -17,7 +17,8 @@ def show_application_block():
 def show_rte_block():
     print("show_rte_block() is under construction!")
 
-def show_system_services_block():
+def show_system_services_block(ev):
+    ev.widget.configure(relief="sunken")
     print("show_system_services_block() is under construction!")
 
 def show_microcontroller_block():
@@ -30,7 +31,7 @@ def draw_application_block(gui, yoffset, height):
     bfont = tkfont.Font(family='Helvetica', size=16)
     
     #view.geometry(str(gui.view.xsize)+'x'+str(gui.view.ysize))
-    button = tk.Button(view, text="Applications", command=show_application_block, bg='#A0A0A0', fg='white')
+    button = tk.Button(view, text="Applications", command=show_application_block, bg='#4D4D4D', fg='white')
     button['font'] = bfont
     yval = gui.view.ysize-height-BottomMargin-yoffset - MiscYmargin 
     button.place(x=LeftMargin, y=yval, width=gui.view.xsize-LeftMargin-RightMargin, height=height)
@@ -42,7 +43,7 @@ def draw_rte_block(gui, yoffset, height):
     bfont = tkfont.Font(family='Helvetica', size=16)
     
     #view.geometry(str(gui.view.xsize)+'x'+str(gui.view.ysize))
-    button = tk.Button(view, text="Run Time Environment (RTE)", command=draw_rte_block, bg='#A0A000', fg='white')
+    button = tk.Button(view, text="Run Time Environment (RTE)", command=draw_rte_block, bg='#FF5008', fg='white')
     button['font'] = bfont
     yval = gui.view.ysize-height-BottomMargin-yoffset - MiscYmargin 
     button.place(x=LeftMargin, y=yval, width=gui.view.xsize-LeftMargin-RightMargin, height=height)
@@ -53,11 +54,16 @@ def draw_system_services_block(gui, yoffset, height):
     view = gui.view.root
     bfont = tkfont.Font(family='Helvetica', size=16)
     
-    #view.geometry(str(gui.view.xsize)+'x'+str(gui.view.ysize))
-    button = tk.Button(view, text="System Services", command=show_system_services_block, bg="#5060FF", fg='white')
-    button['font'] = bfont
     yval = gui.view.ysize-height-BottomMargin-yoffset - MiscYmargin 
-    button.place(x=LeftMargin, y=yval, width=gui.view.xsize/8, height=height)
+    label = "AUTOSAR OS"
+    width=gui.view.xsize/32
+    border = 2
+    canvas = tk.Canvas(view, height=height, width=width, background="SystemButtonFace", borderwidth=border,
+                       relief="raised", bg="#9999FF")
+    canvas.create_text((width/2, height/2), angle="90", anchor="center", text=label, fill="SystemButtonText", font=bfont)
+    canvas.bind("<ButtonPress-1>", show_system_services_block)
+    canvas.bind("<ButtonRelease-1>", lambda ev: ev.widget.configure(relief="raised"))
+    canvas.place(x=LeftMargin-border, y=yval, width=width, height=height)
 
 
 
@@ -66,7 +72,7 @@ def draw_microcontroller_block(gui, yoffset, height):
     bfont = tkfont.Font(family='Helvetica', size=16)
     
     #view.geometry(str(gui.view.xsize)+'x'+str(gui.view.ysize))
-    button = tk.Button(view, text="Microcontroller", command=show_microcontroller_block, bg='#403030', fg='white')
+    button = tk.Button(view, text="Microcontroller", command=show_microcontroller_block, bg='#000000', fg='white')
     button['font'] = bfont
     yval = gui.view.ysize-height-BottomMargin-yoffset - MiscYmargin 
     button.place(x=LeftMargin, y=yval, width=gui.view.xsize-LeftMargin-RightMargin, height=height)
