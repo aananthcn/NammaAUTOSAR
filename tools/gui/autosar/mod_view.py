@@ -20,8 +20,8 @@ def show_rte_block():
 def show_system_services_block():
     print("show_system_services_block() is under construction!")
 
-def show_hardware_block():
-    print("show_hardware_block() is under construction!")
+def show_microcontroller_block():
+    print("show_microcontroller_block() is under construction!")
 
 
 
@@ -61,12 +61,12 @@ def draw_system_services_block(gui, yoffset, height):
 
 
 
-def draw_hardware_block(gui, yoffset, height):
+def draw_microcontroller_block(gui, yoffset, height):
     view = gui.view.root
     bfont = tkfont.Font(family='Helvetica', size=16)
     
     #view.geometry(str(gui.view.xsize)+'x'+str(gui.view.ysize))
-    button = tk.Button(view, text="Hardware Block", command=show_hardware_block, bg='#403030', fg='white')
+    button = tk.Button(view, text="Microcontroller", command=show_microcontroller_block, bg='#403030', fg='white')
     button['font'] = bfont
     yval = gui.view.ysize-height-BottomMargin-yoffset - MiscYmargin 
     button.place(x=LeftMargin, y=yval, width=gui.view.xsize-LeftMargin-RightMargin, height=height)
@@ -82,7 +82,7 @@ def show_autosar_modules_view(gui):
     # Hardware block 
     yoffset = BottomMargin
     hw_height = 40
-    draw_hardware_block(gui, yoffset, 40)
+    draw_microcontroller_block(gui, yoffset, 40)
     
     # System Services block
     yoffset += hw_height

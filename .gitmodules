@@ -1,3 +1,9 @@
-[submodule "submodules/OS"]
-	path = submodules/OS
+[submodule "submodules/MCAL/Mcu"]
+	path = submodules/MCAL/Mcu
+	url = git@github.com:aananthcn/FreeMcu.git
+[submodule "submodules/SL/Os"]
+	path = submodules/SL/Os
 	url = git@github.com:aananthcn/FreeOSEK.git
+[submodule "submodules/SL/EcuM"]
+	path = submodules/SL/EcuM
+	url = git@github.com:aananthcn/FreeEcuM.git
