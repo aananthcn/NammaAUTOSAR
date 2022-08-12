@@ -37,9 +37,9 @@ def show_application_block():
 def show_rte_block():
     print("show_rte_block() is under construction!")
 
-def show_system_services_block(ev):
+def show_sl_os_config(ev, gui):
     ev.widget.configure(relief="sunken")
-    print("show_system_services_block() is under construction!")
+    gui.show_os_config()
 
 def show_microcontroller_block():
     print("show_microcontroller_block() is under construction!")
@@ -70,7 +70,7 @@ def draw_rte_block(gui, yoffset, height):
 
 
 
-def draw_system_services_block(gui, yoffset, height):
+def draw_sl_os_block(gui, yoffset, height):
     view = gui.view.root
     bfont = tkfont.Font(family='Helvetica', size=16)
     
@@ -81,7 +81,7 @@ def draw_system_services_block(gui, yoffset, height):
     canvas = tk.Canvas(view, height=height, width=width, background="SystemButtonFace", borderwidth=border,
                        relief="raised", bg="#9999FF")
     canvas.create_text((width/2, height/2), angle="90", anchor="center", text=label, fill="SystemButtonText", font=bfont)
-    canvas.bind("<ButtonPress-1>", show_system_services_block)
+    canvas.bind("<ButtonPress-1>", lambda ev: show_sl_os_config(ev, gui))
     canvas.bind("<ButtonRelease-1>", lambda ev: ev.widget.configure(relief="raised"))
     canvas.place(x=LeftMargin-border, y=yval, width=width, height=height)
 
@@ -102,7 +102,7 @@ def draw_microcontroller_block(gui, yoffset, height):
 def show_autosar_modules_view(gui):
     print("X = ", gui.view.xsize)
     print("Y = ", gui.view.ysize)
-    gui.view.destroy_view()
+    gui.view.destroy_window()
     gui.view.window = ttk.Frame(gui.view.root) #dummy
    
     # Hardware block 
@@ -113,7 +113,7 @@ def show_autosar_modules_view(gui):
     # System Services block
     yoffset += hw_height
     bsw_height = 3 * gui.view.ysize / 5
-    draw_system_services_block(gui, yoffset, bsw_height)
+    draw_sl_os_block(gui, yoffset, bsw_height)
     
     # RTE block
     yoffset += bsw_height

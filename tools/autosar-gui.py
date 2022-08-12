@@ -63,30 +63,6 @@ ToolsPath = os.getcwd()+"/tools"
 
 
 # UI Stuffs - View
-class View:
-    root = None
-    xsize = None
-    ysize = None
-    window = None
-
-    def __init__(self):
-        self.root = tk.Tk()
-        self.xsize = self.root.winfo_screenwidth()
-        self.ysize = self.root.winfo_screenheight()
-
-    def destroy_view(self):
-        for widget in self.window.winfo_children():
-	        widget.destroy()
-        self.window.destroy()
-
-
-
-# UI Stuffs - FreeAUTOSAR Configurator Tool
-class FreeAutosarConfTool:
-    view = View()
-    title = "AUTOSAR Builder"
-
-
 Gui = None
 
 
@@ -126,31 +102,32 @@ def show_os_tab_switch(event):
 
 
     
-def show_os_config(view):
+def show_os_config():
     global OsTab, AmTab, CtrTab, MsgTab, ResTab, TskTab, AlmTab, IsrTab
 
-    if Gui.view.window != None:
-        Gui.view.destroy_view()
-    Gui.view.window = ttk.Notebook(view)
+    # Gui.view.destroy_childwindow()
+    view = tk.Toplevel()
+    view.state('zoomed')
+    Gui.view.child_window = ttk.Notebook(view)
     
-    os_tab = ttk.Frame(Gui.view.window)
-    am_tab = ttk.Frame(Gui.view.window)
-    cr_tab = ttk.Frame(Gui.view.window)
-    ms_tab = ttk.Frame(Gui.view.window)
-    rs_tab = ttk.Frame(Gui.view.window)
-    tk_tab = ttk.Frame(Gui.view.window)
-    al_tab = ttk.Frame(Gui.view.window)
-    ir_tab = ttk.Frame(Gui.view.window)
+    os_tab = ttk.Frame(Gui.view.child_window)
+    am_tab = ttk.Frame(Gui.view.child_window)
+    cr_tab = ttk.Frame(Gui.view.child_window)
+    ms_tab = ttk.Frame(Gui.view.child_window)
+    rs_tab = ttk.Frame(Gui.view.child_window)
+    tk_tab = ttk.Frame(Gui.view.child_window)
+    al_tab = ttk.Frame(Gui.view.child_window)
+    ir_tab = ttk.Frame(Gui.view.child_window)
     
-    Gui.view.window.add(os_tab, text ='OS Configs')
-    Gui.view.window.add(am_tab, text =' AppModes ')
-    Gui.view.window.add(cr_tab, text =' Counters ')
-    Gui.view.window.add(ms_tab, text =' Messages ')
-    Gui.view.window.add(rs_tab, text =' Resources ')
-    Gui.view.window.add(tk_tab, text ='   Tasks   ')
-    Gui.view.window.add(al_tab, text ='  Alarms  ')
-    Gui.view.window.add(ir_tab, text ='   ISRs   ')
-    Gui.view.window.pack(expand = 1, fill ="both")
+    Gui.view.child_window.add(os_tab, text ='OS Configs')
+    Gui.view.child_window.add(am_tab, text =' AppModes ')
+    Gui.view.child_window.add(cr_tab, text =' Counters ')
+    Gui.view.child_window.add(ms_tab, text =' Messages ')
+    Gui.view.child_window.add(rs_tab, text =' Resources ')
+    Gui.view.child_window.add(tk_tab, text ='   Tasks   ')
+    Gui.view.child_window.add(al_tab, text ='  Alarms  ')
+    Gui.view.child_window.add(ir_tab, text ='   ISRs   ')
+    Gui.view.child_window.pack(expand = 1, fill ="both")
 
     # destroy old GUI objects
     del OsTab
@@ -196,7 +173,7 @@ def new_file():
     global OsTab, AmTab, CtrTab, MsgTab, ResTab, TskTab, AlmTab, IsrTab
 
     sg.sg_reset()
-    show_os_config(Gui.view.root)
+    av.show_autosar_modules_view(Gui)
     FileMenu.entryconfig("Save", state="normal")
 
 
@@ -224,7 +201,7 @@ def open_oil_file(fpath):
     # Make System Generator to parse, so that we can use the content in GUI.
     sg.sg_reset()
     sg.parse(OIL_FileName)
-    show_os_config(Gui.view.root)
+    av.show_autosar_modules_view(Gui)
     FileMenu.entryconfig("Save", state="normal")
 
 
@@ -323,7 +300,7 @@ def open_arxml_file(fpath):
     sg.sg_reset()
     imp_status = arxml.import_arxml(ArXml_FileName)
     update_recent_files(ArXml_FileName)
-    show_os_config(Gui.view.root)
+    av.show_autosar_modules_view(Gui)
     if imp_status != 0:
         messagebox.showinfo(ToolName, "Input file contains errors, hence opening as new file!")
         new_file()
@@ -355,7 +332,7 @@ def add_menus(rv, flst):
     MenuBar.add_cascade(label="File", menu=FileMenu)
 
     view = tk.Menu(MenuBar, tearoff=0)
-    view.add_command(label="OS Config", command=lambda: show_os_config(rv))
+    view.add_command(label="OS Config", command=show_os_config)
     view.add_command(label="AUTOSAR Module View", command=lambda: av.show_autosar_modules_view(Gui))
     MenuBar.add_cascade(label="View", menu=view)
 
@@ -420,6 +397,48 @@ def get_recent_files():
     rfile.close()
 
     return file_list
+
+
+#
+#   CLASSES
+#
+class View:
+    root = None
+    xsize = None
+    ysize = None
+    window = None
+    child_window = None
+    
+    def __init__(self):
+        self.root = tk.Tk()
+        self.xsize = self.root.winfo_screenwidth()
+        self.ysize = self.root.winfo_screenheight()
+
+    def destroy_window(self):
+        if self.window == None:
+            return
+        for widget in self.window.winfo_children():
+	        widget.destroy()
+        self.window.destroy()
+
+    def destroy_childwindow(self):
+        if self.child_window == None:
+            return
+        for widget in self.child_window.winfo_children():
+	        widget.destroy()
+        self.child_window.destroy()
+
+
+# UI Stuffs - FreeAUTOSAR Configurator Tool
+class FreeAutosarConfTool:
+    view = View()
+    title = "AUTOSAR Builder"
+
+    # Methods
+    def show_os_config(self):
+        show_os_config()
+
+
 
 
 
