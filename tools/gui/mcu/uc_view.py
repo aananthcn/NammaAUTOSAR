@@ -22,6 +22,7 @@
 import tkinter as tk
 from tkinter import ttk
 
+import gui.autosar.asr_view as asr_view
 
 FreeAUTOSAR_Boards = {
     "GENERIC" :
@@ -35,16 +36,24 @@ FreeAUTOSAR_Boards = {
 UcView = None
 SoCsOfSelectedMaker = []
 SoCMakerStr = None
+SoC_ComboBox = None
 SoCStr = None
 
 
 ###############################################################################
 # Local Functions
-def SoCMaker_Selected(event):
-    global SoCsOfSelectedMaker, SoCMakerStr, FreeAUTOSAR_Boards, SoCStr
+def uc_maker_selected(event):
+    global SoCsOfSelectedMaker, SoCMakerStr, FreeAUTOSAR_Boards, SoCStr, SoC_ComboBox
 
     SoCsOfSelectedMaker = FreeAUTOSAR_Boards[SoCMakerStr.get()]
-    SoCStr.set(SoCsOfSelectedMaker)
+    SoC_ComboBox['values'] = SoCsOfSelectedMaker
+    
+    
+def uc_selected(event, gui):
+    gui.micro = SoCStr.get()
+    gui.micro_block.destroy()
+    # since micro-controller is selected, let us update the arch. view
+    asr_view.redraw_microcontroller_block(gui)
 
 
 def on_uc_view_close():
@@ -62,7 +71,7 @@ def generate_makefile():
 ###############################################################################
 # Main Entry Point
 def show_microcontroller_block(gui):
-    global SoCsOfSelectedMaker, SoCMakerStr, FreeAUTOSAR_Boards, SoCStr, UcView
+    global SoCsOfSelectedMaker, SoCMakerStr, FreeAUTOSAR_Boards, SoCStr, UcView, SoC_ComboBox
 
     # If previous view is active return
     if UcView != None:
@@ -82,7 +91,8 @@ def show_microcontroller_block(gui):
     label.grid(row=row, column=1, sticky="w")
 
     # Combobox - SoC Manufacturer
-    SoCMakerStr = tk.StringVar()
+    if SoCMakerStr == None:
+        SoCMakerStr = tk.StringVar()
     cmbsel = ttk.Combobox(UcView, width=col2_width, textvariable=SoCMakerStr, state="readonly")
     chipmakers = []
     for item in FreeAUTOSAR_Boards:
@@ -90,7 +100,7 @@ def show_microcontroller_block(gui):
     cmbsel['values'] = chipmakers
     cmbsel.current()
     cmbsel.grid(row=row, column=2)
-    cmbsel.bind("<<ComboboxSelected>>", SoCMaker_Selected)
+    cmbsel.bind("<<ComboboxSelected>>", uc_maker_selected)
 
     # Label - SoC
     row = 2
@@ -98,11 +108,13 @@ def show_microcontroller_block(gui):
     label.grid(row=row, column=1, sticky="w")
 
     # Combobox - SoC
-    SoCStr = tk.StringVar()
-    cmbsel = ttk.Combobox(UcView, width=col2_width, textvariable=SoCStr, state="readonly")
-    cmbsel['values'] = SoCsOfSelectedMaker
-    cmbsel.current()
-    cmbsel.grid(row=row, column=2)
+    if SoCStr == None:
+        SoCStr = tk.StringVar()
+    SoC_ComboBox = ttk.Combobox(UcView, width=col2_width, textvariable=SoCStr, state="readonly")
+    SoC_ComboBox['values'] = SoCsOfSelectedMaker
+    SoC_ComboBox.current()
+    SoC_ComboBox.grid(row=row, column=2)
+    SoC_ComboBox.bind("<<ComboboxSelected>>", lambda ev: uc_selected(ev, gui))
 
     # Generate Makefile Button
     row = 4

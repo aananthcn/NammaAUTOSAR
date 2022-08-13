@@ -29,7 +29,6 @@ sys.path.insert(0, os.getcwd()+"/tools/arxml")
 import os_builder.scripts.System_Generator as sg
 import os_builder.scripts.oil as oil
 import arxml.main as arxml
-import gui.autosar.mod_view as av
 
 
 import tkinter as tk
@@ -39,6 +38,7 @@ from tkinter import filedialog
 
 import gui.os.os_config as os_config
 import gui.mcu.uc_view as uc_view
+import gui.autosar.asr_view as av
 
 
 ###############################################################################
@@ -325,6 +325,8 @@ class MainView:
 class FreeAutosarConfTool:
     main_view = MainView()
     title = "AUTOSAR Builder"
+    micro = None
+    micro_block = None
 
     # Methods
     def show_os_config(self):

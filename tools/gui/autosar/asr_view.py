@@ -33,6 +33,10 @@ TopMargin = 10
 BottomMargin = 10
 MiscYmargin = 75 # I don't know the reason for this number, but this is the measured value.
 
+# Microcontroller Block
+UcBlk_yoffset = None
+UcBlk_height = None
+
 
 
 def show_application_block(gui):
@@ -55,6 +59,7 @@ def draw_hbutton(name, cb, gui, yoffset, height, bgc, fgc):
     button['font'] = bfont
     yval = gui.main_view.ysize-height-BottomMargin-yoffset - MiscYmargin 
     button.place(x=LeftMargin, y=yval, width=gui.main_view.xsize-LeftMargin-RightMargin, height=height)
+    return button
 
 
 # Vertical Button Handler functions
@@ -76,6 +81,7 @@ def draw_vbutton(name, cb, gui, yoffset, height, bgc, fgc):
     canvas.bind("<ButtonPress-1>", lambda ev: vbutton_cb_facade(ev, cb, gui))
     canvas.bind("<ButtonRelease-1>", lambda ev: ev.widget.configure(relief="raised"))
     canvas.place(x=LeftMargin-border, y=yval, width=width, height=height)
+    return canvas
 
 
 
@@ -101,27 +107,35 @@ def draw_sl_os_block(gui, yoffset, height):
 
 
 def draw_microcontroller_block(gui, yoffset, height):
-    name = "Microcontroller"
+    if gui.micro == None:
+        name = "Microcontroller"
+    else:
+        name = "Microcontroller ["+gui.micro+"]"
     cb = uc_view.show_microcontroller_block
-    draw_hbutton(name, cb, gui, yoffset, height, '#000000', 'white')
+    gui.micro_block = draw_hbutton(name, cb, gui, yoffset, height, '#000000', 'white')
+    
+def redraw_microcontroller_block(gui):
+    global UcBlk_yoffset, UcBlk_height
+    draw_microcontroller_block(gui, UcBlk_yoffset, UcBlk_height)
 
 
 
 ###############################################################################
 # Main Entry Point
 def show_autosar_modules_view(gui):
+    global UcBlk_yoffset, UcBlk_height
     print("X = ", gui.main_view.xsize)
     print("Y = ", gui.main_view.ysize)
     gui.main_view.destroy_childwindow()
     gui.main_view.window = ttk.Frame(gui.main_view.tk) #dummy
    
-    # Hardware block 
-    yoffset = BottomMargin
-    hw_height = 40
-    draw_microcontroller_block(gui, yoffset, 40)
+    # Microcontroller block 
+    UcBlk_yoffset = BottomMargin
+    UcBlk_height = 40
+    draw_microcontroller_block(gui, UcBlk_yoffset, UcBlk_height)
     
     # System Services block
-    yoffset += hw_height
+    yoffset = UcBlk_yoffset + UcBlk_height
     bsw_height = 3 * gui.main_view.ysize / 5
     draw_sl_os_block(gui, yoffset, bsw_height)
     
