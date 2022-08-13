@@ -37,7 +37,8 @@ from tkinter import messagebox
 from tkinter import ttk
 from tkinter import filedialog
 
-from gui.os.os_config import *
+import gui.os.os_config as os_config
+import gui.mcu.uc_view as uc_view
 
 
 ###############################################################################
@@ -94,8 +95,8 @@ def open_oil_file(fpath):
     else:
         OIL_FileName = fpath
 
-    if Gui.view.root != None:
-        Gui.view.root.title(Gui.title + " [" + str(OIL_FileName).split("/")[-1] +"]")
+    if Gui.main_view.tk != None:
+        Gui.main_view.tk.title(Gui.title + " [" + str(OIL_FileName).split("/")[-1] +"]")
 
     # Make System Generator to parse, so that we can use the content in GUI.
     sg.sg_reset()
@@ -149,7 +150,7 @@ def save_project():
 
     # Export and File name clean up
     arxml.export_arxml(ArXml_FileName)
-    Gui.view.root.title(Gui.title + " [" + ArXml_FileName.split("/")[-1] +"]")
+    Gui.main_view.tk.title(Gui.title + " [" + ArXml_FileName.split("/")[-1] +"]")
 
 
 
@@ -169,7 +170,7 @@ def save_as_arxml():
         messagebox.showinfo(ToolName, "File to save is not done correctly, saving aborted!")
         return
 
-    Gui.view.root.title(Gui.title + " [" + str(saved_filename.name).split("/")[-1] +"]")
+    Gui.main_view.tk.title(Gui.title + " [" + str(saved_filename.name).split("/")[-1] +"]")
     backup_gui_before_save()
     arxml.export_arxml(saved_filename.name)
 
@@ -192,8 +193,8 @@ def open_arxml_file(fpath):
     else:
         ArXml_FileName = fpath.strip()
 
-    if Gui.view.root != None:
-        Gui.view.root.title(Gui.title + " [" + str(ArXml_FileName).split("/")[-1] +"]")
+    if Gui.main_view.tk != None:
+        Gui.main_view.tk.title(Gui.title + " [" + str(ArXml_FileName).split("/")[-1] +"]")
 
     # Import/Parse ARXML file, so that we can use the content in GUI.
     sg.sg_reset()
@@ -231,7 +232,7 @@ def add_menus(rv, flst):
     MenuBar.add_cascade(label="File", menu=FileMenu)
 
     view = tk.Menu(MenuBar, tearoff=0)
-    view.add_command(label="OS Config", command=lambda: show_os_config(Gui))
+    view.add_command(label="OS Config", command=lambda: os_config.show_os_config(Gui))
     view.add_command(label="AUTOSAR Module View", command=lambda: av.show_autosar_modules_view(Gui))
     MenuBar.add_cascade(label="View", menu=view)
 
@@ -300,24 +301,24 @@ def get_recent_files():
 #
 #   CLASSES
 #
-class View:
-    root = None
+class MainView:
+    tk = None
     xsize = None
     ysize = None
-    window = None
+    # window = None
     child_window = None
     
     def __init__(self):
-        self.root = tk.Tk()
-        self.xsize = self.root.winfo_screenwidth()
-        self.ysize = self.root.winfo_screenheight()
+        self.tk = tk.Tk()
+        self.xsize = self.tk.winfo_screenwidth()
+        self.ysize = self.tk.winfo_screenheight()
 
-    def destroy_window(self):
-        if self.window == None:
-            return
-        for widget in self.window.winfo_children():
-	        widget.destroy()
-        self.window.destroy()
+    # def destroy_window(self):
+    #     if self.window == None:
+    #         return
+    #     for widget in self.window.winfo_children():
+	#         widget.destroy()
+    #     self.window.destroy()
 
     def destroy_childwindow(self):
         if self.child_window == None:
@@ -329,12 +330,15 @@ class View:
 
 # UI Stuffs - FreeAUTOSAR Configurator Tool
 class FreeAutosarConfTool:
-    view = View()
+    main_view = MainView()
     title = "AUTOSAR Builder"
 
     # Methods
     def show_os_config(self):
-        show_os_config(self)
+        os_config.show_os_config(self)
+
+    def show_uc_view(self):
+        uc_view.show_microcontroller_block(self)
 
 
 
@@ -345,16 +349,16 @@ def main(fpath, ftype):
     
     # Create the main window
     Gui = FreeAutosarConfTool()
-    Gui.view.root.title(Gui.title + " [uninitialized]")
+    Gui.main_view.tk.title(Gui.title + " [uninitialized]")
     flst = get_recent_files()
-    add_menus(Gui.view.root, flst)
-    Gui.view.root.state("zoomed")
+    add_menus(Gui.main_view.tk, flst)
+    Gui.main_view.tk.state("zoomed")
 
     # setup init view
     init_view_setup(fpath, ftype)
 
     # Run forever!
-    Gui.view.root.mainloop()
+    Gui.main_view.tk.mainloop()
 
 
 #

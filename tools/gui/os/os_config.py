@@ -41,25 +41,25 @@ def show_os_tab_switch(event):
     global OsTab, AmTab, CtrTab, MsgTab, ResTab, TskTab, AlmTab, IsrTab 
 
     current_tab = None #this variable can be used for debugging!
-    if gui.view.window.tab(gui.view.window.select(), "text").strip() == "OS Configs":
+    if gui.main_view.window.tab(gui.main_view.window.select(), "text").strip() == "OS Configs":
         TskTab.backup_data()
         OsTab.backup_data()  # take the lastest stack size updates from Task tab.
         OsTab.update()
         current_tab = OsTab
-    if gui.view.window.tab(gui.view.window.select(), "text").strip() == "AppModes":
+    if gui.main_view.window.tab(gui.main_view.window.select(), "text").strip() == "AppModes":
         current_tab = AmTab
-    if gui.view.window.tab(gui.view.window.select(), "text").strip() == "Counters":
+    if gui.main_view.window.tab(gui.main_view.window.select(), "text").strip() == "Counters":
         current_tab = CtrTab
-    if gui.view.window.tab(gui.view.window.select(), "text").strip() == "Messages":
+    if gui.main_view.window.tab(gui.main_view.window.select(), "text").strip() == "Messages":
         current_tab = MsgTab
-    if gui.view.window.tab(gui.view.window.select(), "text").strip() == "Resources":
+    if gui.main_view.window.tab(gui.main_view.window.select(), "text").strip() == "Resources":
         current_tab = ResTab
-    if gui.view.window.tab(gui.view.window.select(), "text").strip() == "Tasks":
+    if gui.main_view.window.tab(gui.main_view.window.select(), "text").strip() == "Tasks":
         current_tab = TskTab
-    if gui.view.window.tab(gui.view.window.select(), "text").strip() == "Alarms":
+    if gui.main_view.window.tab(gui.main_view.window.select(), "text").strip() == "Alarms":
         AlmTab.update()
         current_tab = AlmTab
-    if gui.view.window.tab(gui.view.window.select(), "text").strip() == "ISRs":
+    if gui.main_view.window.tab(gui.main_view.window.select(), "text").strip() == "ISRs":
         current_tab = IsrTab
 
 
@@ -67,29 +67,31 @@ def show_os_tab_switch(event):
 def show_os_config(gui):
     global OsTab, AmTab, CtrTab, MsgTab, ResTab, TskTab, AlmTab, IsrTab
 
-    # gui.view.destroy_childwindow()
+    # Create a child window (tabbed view)
     view = tk.Toplevel()
     view.state('zoomed')
-    gui.view.child_window = ttk.Notebook(view)
+    gui.main_view.child_window = ttk.Notebook(view)
     
-    os_tab = ttk.Frame(gui.view.child_window)
-    am_tab = ttk.Frame(gui.view.child_window)
-    cr_tab = ttk.Frame(gui.view.child_window)
-    ms_tab = ttk.Frame(gui.view.child_window)
-    rs_tab = ttk.Frame(gui.view.child_window)
-    tk_tab = ttk.Frame(gui.view.child_window)
-    al_tab = ttk.Frame(gui.view.child_window)
-    ir_tab = ttk.Frame(gui.view.child_window)
+    # Create tabs to configure OS
+    os_tab = ttk.Frame(gui.main_view.child_window)
+    am_tab = ttk.Frame(gui.main_view.child_window)
+    cr_tab = ttk.Frame(gui.main_view.child_window)
+    ms_tab = ttk.Frame(gui.main_view.child_window)
+    rs_tab = ttk.Frame(gui.main_view.child_window)
+    tk_tab = ttk.Frame(gui.main_view.child_window)
+    al_tab = ttk.Frame(gui.main_view.child_window)
+    ir_tab = ttk.Frame(gui.main_view.child_window)
     
-    gui.view.child_window.add(os_tab, text ='OS Configs')
-    gui.view.child_window.add(am_tab, text =' AppModes ')
-    gui.view.child_window.add(cr_tab, text =' Counters ')
-    gui.view.child_window.add(ms_tab, text =' Messages ')
-    gui.view.child_window.add(rs_tab, text =' Resources ')
-    gui.view.child_window.add(tk_tab, text ='   Tasks   ')
-    gui.view.child_window.add(al_tab, text ='  Alarms  ')
-    gui.view.child_window.add(ir_tab, text ='   ISRs   ')
-    gui.view.child_window.pack(expand = 1, fill ="both")
+    # Add tabs to configure OS
+    gui.main_view.child_window.add(os_tab, text ='OS Configs')
+    gui.main_view.child_window.add(am_tab, text =' AppModes ')
+    gui.main_view.child_window.add(cr_tab, text =' Counters ')
+    gui.main_view.child_window.add(ms_tab, text =' Messages ')
+    gui.main_view.child_window.add(rs_tab, text =' Resources ')
+    gui.main_view.child_window.add(tk_tab, text ='   Tasks   ')
+    gui.main_view.child_window.add(al_tab, text ='  Alarms  ')
+    gui.main_view.child_window.add(ir_tab, text ='   ISRs   ')
+    gui.main_view.child_window.pack(expand = 1, fill ="both")
 
     # destroy old GUI objects
     del OsTab
@@ -126,6 +128,6 @@ def show_os_config(gui):
     IsrTab = gui_ir_tab.IsrTab(sg.ISRs, ResTab, MsgTab)
     IsrTab.draw(ir_tab)
 
-    gui.view.window.bind("<<NotebookTabChanged>>", show_os_tab_switch)
+    gui.main_view.window.bind("<<NotebookTabChanged>>", show_os_tab_switch)
     
 

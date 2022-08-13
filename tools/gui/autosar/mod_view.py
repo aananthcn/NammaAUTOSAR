@@ -24,6 +24,9 @@ from tkinter import *
 import tkinter.ttk as ttk
 
 
+import gui.mcu.uc_view as uc_view
+
+
 LeftMargin = 50
 RightMargin = 50
 TopMargin = 10
@@ -41,20 +44,17 @@ def show_rte_block(gui):
 def show_sl_os_config(gui):
     gui.show_os_config()
 
-def show_microcontroller_block(gui):
-    print("show_microcontroller_block() is under construction!")
-
 
 
 ###############################################################################
 # Block view primitives
 def draw_hbutton(name, cb, gui, yoffset, height, bgc, fgc):
-    view = gui.view.root
+    view = gui.main_view.tk
     bfont = tkfont.Font(family='Helvetica', size=16)
     button = tk.Button(view, text=name, command=lambda:cb(gui), bg=bgc, fg=fgc)
     button['font'] = bfont
-    yval = gui.view.ysize-height-BottomMargin-yoffset - MiscYmargin 
-    button.place(x=LeftMargin, y=yval, width=gui.view.xsize-LeftMargin-RightMargin, height=height)
+    yval = gui.main_view.ysize-height-BottomMargin-yoffset - MiscYmargin 
+    button.place(x=LeftMargin, y=yval, width=gui.main_view.xsize-LeftMargin-RightMargin, height=height)
 
 
 # Vertical Button Handler functions
@@ -63,11 +63,11 @@ def vbutton_cb_facade(ev, cb, gui):
     cb(gui)
 
 def draw_vbutton(name, cb, gui, yoffset, height, bgc, fgc):
-    view = gui.view.root
+    view = gui.main_view.tk
     bfont = tkfont.Font(family='Helvetica', size=16)
     
-    yval   = gui.view.ysize-height-BottomMargin-yoffset - MiscYmargin
-    width  = gui.view.xsize/32
+    yval   = gui.main_view.ysize-height-BottomMargin-yoffset - MiscYmargin
+    width  = gui.main_view.xsize/32
     border = 2
     canvas = tk.Canvas(view, height=height, width=width, background="SystemButtonFace", borderwidth=border,
                        relief="raised", bg=bgc)
@@ -102,7 +102,7 @@ def draw_sl_os_block(gui, yoffset, height):
 
 def draw_microcontroller_block(gui, yoffset, height):
     name = "Microcontroller"
-    cb = show_microcontroller_block
+    cb = uc_view.show_microcontroller_block
     draw_hbutton(name, cb, gui, yoffset, height, '#000000', 'white')
 
 
@@ -110,10 +110,10 @@ def draw_microcontroller_block(gui, yoffset, height):
 ###############################################################################
 # Main Entry Point
 def show_autosar_modules_view(gui):
-    print("X = ", gui.view.xsize)
-    print("Y = ", gui.view.ysize)
-    gui.view.destroy_window()
-    gui.view.window = ttk.Frame(gui.view.root) #dummy
+    print("X = ", gui.main_view.xsize)
+    print("Y = ", gui.main_view.ysize)
+    gui.main_view.destroy_childwindow()
+    gui.main_view.window = ttk.Frame(gui.main_view.tk) #dummy
    
     # Hardware block 
     yoffset = BottomMargin
@@ -122,7 +122,7 @@ def show_autosar_modules_view(gui):
     
     # System Services block
     yoffset += hw_height
-    bsw_height = 3 * gui.view.ysize / 5
+    bsw_height = 3 * gui.main_view.ysize / 5
     draw_sl_os_block(gui, yoffset, bsw_height)
     
     # RTE block
