@@ -37,14 +37,7 @@ from tkinter import messagebox
 from tkinter import ttk
 from tkinter import filedialog
 
-import gui.os.os_tab as gui_os_tab
-import gui.os.am_tab as gui_am_tab
-import gui.os.cnt_tab as gui_cr_tab
-import gui.os.msg_tab as gui_ms_tab
-import gui.os.res_tab as gui_rs_tab
-import gui.os.tsk_tab as gui_tk_tab
-import gui.os.alm_tab as gui_al_tab
-import gui.os.isr_tab as gui_ir_tab
+from gui.os.os_config import *
 
 
 ###############################################################################
@@ -53,7 +46,6 @@ import gui.os.isr_tab as gui_ir_tab
 # GUI stuffs
 MenuBar = None
 FileMenu = None
-OsTab = AmTab = CtrTab = MsgTab = ResTab = TskTab = AlmTab = IsrTab = None
 
 # I/O stuffs
 OIL_FileName = None
@@ -73,99 +65,6 @@ Gui = None
 def about():
     messagebox.showinfo(ToolName, "This tool is developed to replace the OSEK-Builder.xlsx and to set path for AUTOSAR development")
 
-
-
-def show_os_tab_switch(event):
-    global OsTab, AmTab, CtrTab, MsgTab, ResTab, TskTab, AlmTab, IsrTab 
-
-    current_tab = None #this variable can be used for debugging!
-    if Gui.view.window.tab(Gui.view.window.select(), "text").strip() == "OS Configs":
-        TskTab.backup_data()
-        OsTab.backup_data()  # take the lastest stack size updates from Task tab.
-        OsTab.update()
-        current_tab = OsTab
-    if Gui.view.window.tab(Gui.view.window.select(), "text").strip() == "AppModes":
-        current_tab = AmTab
-    if Gui.view.window.tab(Gui.view.window.select(), "text").strip() == "Counters":
-        current_tab = CtrTab
-    if Gui.view.window.tab(Gui.view.window.select(), "text").strip() == "Messages":
-        current_tab = MsgTab
-    if Gui.view.window.tab(Gui.view.window.select(), "text").strip() == "Resources":
-        current_tab = ResTab
-    if Gui.view.window.tab(Gui.view.window.select(), "text").strip() == "Tasks":
-        current_tab = TskTab
-    if Gui.view.window.tab(Gui.view.window.select(), "text").strip() == "Alarms":
-        AlmTab.update()
-        current_tab = AlmTab
-    if Gui.view.window.tab(Gui.view.window.select(), "text").strip() == "ISRs":
-        current_tab = IsrTab
-
-
-    
-def show_os_config():
-    global OsTab, AmTab, CtrTab, MsgTab, ResTab, TskTab, AlmTab, IsrTab
-
-    # Gui.view.destroy_childwindow()
-    view = tk.Toplevel()
-    view.state('zoomed')
-    Gui.view.child_window = ttk.Notebook(view)
-    
-    os_tab = ttk.Frame(Gui.view.child_window)
-    am_tab = ttk.Frame(Gui.view.child_window)
-    cr_tab = ttk.Frame(Gui.view.child_window)
-    ms_tab = ttk.Frame(Gui.view.child_window)
-    rs_tab = ttk.Frame(Gui.view.child_window)
-    tk_tab = ttk.Frame(Gui.view.child_window)
-    al_tab = ttk.Frame(Gui.view.child_window)
-    ir_tab = ttk.Frame(Gui.view.child_window)
-    
-    Gui.view.child_window.add(os_tab, text ='OS Configs')
-    Gui.view.child_window.add(am_tab, text =' AppModes ')
-    Gui.view.child_window.add(cr_tab, text =' Counters ')
-    Gui.view.child_window.add(ms_tab, text =' Messages ')
-    Gui.view.child_window.add(rs_tab, text =' Resources ')
-    Gui.view.child_window.add(tk_tab, text ='   Tasks   ')
-    Gui.view.child_window.add(al_tab, text ='  Alarms  ')
-    Gui.view.child_window.add(ir_tab, text ='   ISRs   ')
-    Gui.view.child_window.pack(expand = 1, fill ="both")
-
-    # destroy old GUI objects
-    del OsTab
-    del AmTab
-    del CtrTab
-    del MsgTab
-    del ResTab
-    del TskTab
-    del AlmTab
-    del IsrTab
-
-    # create new GUI objects
-    OsTab = gui_os_tab.OsTab(sg.OS_Cfgs, sg.Tasks)
-    OsTab.draw(os_tab)
-
-    AmTab = gui_am_tab.AmTab(sg.AppModes)
-    AmTab.draw(am_tab)
-    
-    CtrTab = gui_cr_tab.CounterTab(sg.Counters)
-    CtrTab.draw(cr_tab)
-
-    MsgTab = gui_ms_tab.MessageTab(sg.Tasks)
-    MsgTab.draw(ms_tab)
-
-    ResTab = gui_rs_tab.ResourceTab(sg.Tasks)
-    ResTab.draw(rs_tab)
-
-    TskTab = gui_tk_tab.TaskTab(sg.Tasks, AmTab, ResTab, MsgTab)
-    TskTab.draw(tk_tab)
-    
-    AlmTab = gui_al_tab.AlarmTab(sg.Alarms, TskTab, AmTab, CtrTab)
-    AlmTab.draw(al_tab)
-
-    IsrTab = gui_ir_tab.IsrTab(sg.ISRs, ResTab, MsgTab)
-    IsrTab.draw(ir_tab)
-
-    Gui.view.window.bind("<<NotebookTabChanged>>", show_os_tab_switch)
-    
 
 
 def new_file():
@@ -332,7 +231,7 @@ def add_menus(rv, flst):
     MenuBar.add_cascade(label="File", menu=FileMenu)
 
     view = tk.Menu(MenuBar, tearoff=0)
-    view.add_command(label="OS Config", command=show_os_config)
+    view.add_command(label="OS Config", command=lambda: show_os_config(Gui))
     view.add_command(label="AUTOSAR Module View", command=lambda: av.show_autosar_modules_view(Gui))
     MenuBar.add_cascade(label="View", menu=view)
 
@@ -361,7 +260,6 @@ def init_view_setup(fpath, ftype):
         open_arxml_file(fpath)
     else:
         print("Unsupported filetype argument provided!")
-
 
 
 
@@ -436,7 +334,7 @@ class FreeAutosarConfTool:
 
     # Methods
     def show_os_config(self):
-        show_os_config()
+        show_os_config(self)
 
 
 
@@ -446,7 +344,6 @@ def main(fpath, ftype):
     global Gui
     
     # Create the main window
-    ## Gui.view.root = tk.Tk()
     Gui = FreeAutosarConfTool()
     Gui.view.root.title(Gui.title + " [uninitialized]")
     flst = get_recent_files()

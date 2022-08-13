@@ -58,7 +58,7 @@ def draw_hbutton(name, cb, gui, yoffset, height, bgc, fgc):
 
 
 # Vertical Button Handler functions
-def vbutton_press_handler(ev, cb, gui):
+def vbutton_cb_facade(ev, cb, gui):
     ev.widget.configure(relief="sunken")
     cb(gui)
 
@@ -72,9 +72,8 @@ def draw_vbutton(name, cb, gui, yoffset, height, bgc, fgc):
     canvas = tk.Canvas(view, height=height, width=width, background="SystemButtonFace", borderwidth=border,
                        relief="raised", bg=bgc)
 
-    # canvas.create_text((width/2, height/2), angle="90", anchor="center", text=name, fill="SystemButtonText", font=bfont)
     canvas.create_text((width/2, height/2), angle="90", anchor="center", text=name, fill=fgc, font=bfont)
-    canvas.bind("<ButtonPress-1>", lambda ev: vbutton_press_handler(ev, cb, gui))
+    canvas.bind("<ButtonPress-1>", lambda ev: vbutton_cb_facade(ev, cb, gui))
     canvas.bind("<ButtonRelease-1>", lambda ev: ev.widget.configure(relief="raised"))
     canvas.place(x=LeftMargin-border, y=yval, width=width, height=height)
 
@@ -89,12 +88,10 @@ def draw_application_block(gui, yoffset, height):
     draw_hbutton(name, cb, gui, yoffset, height, '#4D4D4D', 'white')
 
 
-
 def draw_rte_block(gui, yoffset, height):
     name = "Run Time Environment (RTE)"
     cb = show_rte_block
     draw_hbutton(name, cb, gui, yoffset, height, '#FF5008', 'white')
-
 
 
 def draw_sl_os_block(gui, yoffset, height):
