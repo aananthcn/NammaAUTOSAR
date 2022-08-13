@@ -305,7 +305,6 @@ class MainView:
     tk = None
     xsize = None
     ysize = None
-    # window = None
     child_window = None
     
     def __init__(self):
@@ -313,19 +312,13 @@ class MainView:
         self.xsize = self.tk.winfo_screenwidth()
         self.ysize = self.tk.winfo_screenheight()
 
-    # def destroy_window(self):
-    #     if self.window == None:
-    #         return
-    #     for widget in self.window.winfo_children():
-	#         widget.destroy()
-    #     self.window.destroy()
-
     def destroy_childwindow(self):
         if self.child_window == None:
             return
         for widget in self.child_window.winfo_children():
 	        widget.destroy()
         self.child_window.destroy()
+
 
 
 # UI Stuffs - FreeAUTOSAR Configurator Tool
