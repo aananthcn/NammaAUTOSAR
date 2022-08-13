@@ -31,74 +31,87 @@ BottomMargin = 10
 MiscYmargin = 75 # I don't know the reason for this number, but this is the measured value.
 
 
-def show_application_block():
+
+def show_application_block(gui):
     print("show_application_block() is under construction!")
 
-def show_rte_block():
+def show_rte_block(gui):
     print("show_rte_block() is under construction!")
 
-def show_sl_os_config(ev, gui):
-    ev.widget.configure(relief="sunken")
+def show_sl_os_config(gui):
     gui.show_os_config()
 
-def show_microcontroller_block():
+def show_microcontroller_block(gui):
     print("show_microcontroller_block() is under construction!")
 
 
 
-def draw_application_block(gui, yoffset, height):
+###############################################################################
+# Block view primitives
+def draw_hbutton(name, cb, gui, yoffset, height, bgc, fgc):
     view = gui.view.root
     bfont = tkfont.Font(family='Helvetica', size=16)
-    
-    #view.geometry(str(gui.view.xsize)+'x'+str(gui.view.ysize))
-    button = tk.Button(view, text="Applications", command=show_application_block, bg='#4D4D4D', fg='white')
+    button = tk.Button(view, text=name, command=lambda:cb(gui), bg=bgc, fg=fgc)
     button['font'] = bfont
     yval = gui.view.ysize-height-BottomMargin-yoffset - MiscYmargin 
     button.place(x=LeftMargin, y=yval, width=gui.view.xsize-LeftMargin-RightMargin, height=height)
 
 
+# Vertical Button Handler functions
+def vbutton_press_handler(ev, cb, gui):
+    ev.widget.configure(relief="sunken")
+    cb(gui)
 
-def draw_rte_block(gui, yoffset, height):
+def draw_vbutton(name, cb, gui, yoffset, height, bgc, fgc):
     view = gui.view.root
     bfont = tkfont.Font(family='Helvetica', size=16)
     
-    #view.geometry(str(gui.view.xsize)+'x'+str(gui.view.ysize))
-    button = tk.Button(view, text="Run Time Environment (RTE)", command=draw_rte_block, bg='#FF5008', fg='white')
-    button['font'] = bfont
-    yval = gui.view.ysize-height-BottomMargin-yoffset - MiscYmargin 
-    button.place(x=LeftMargin, y=yval, width=gui.view.xsize-LeftMargin-RightMargin, height=height)
-
-
-
-def draw_sl_os_block(gui, yoffset, height):
-    view = gui.view.root
-    bfont = tkfont.Font(family='Helvetica', size=16)
-    
-    yval = gui.view.ysize-height-BottomMargin-yoffset - MiscYmargin 
-    label = "AUTOSAR OS"
-    width=gui.view.xsize/32
+    yval   = gui.view.ysize-height-BottomMargin-yoffset - MiscYmargin
+    width  = gui.view.xsize/32
     border = 2
     canvas = tk.Canvas(view, height=height, width=width, background="SystemButtonFace", borderwidth=border,
-                       relief="raised", bg="#9999FF")
-    canvas.create_text((width/2, height/2), angle="90", anchor="center", text=label, fill="SystemButtonText", font=bfont)
-    canvas.bind("<ButtonPress-1>", lambda ev: show_sl_os_config(ev, gui))
+                       relief="raised", bg=bgc)
+
+    # canvas.create_text((width/2, height/2), angle="90", anchor="center", text=name, fill="SystemButtonText", font=bfont)
+    canvas.create_text((width/2, height/2), angle="90", anchor="center", text=name, fill=fgc, font=bfont)
+    canvas.bind("<ButtonPress-1>", lambda ev: vbutton_press_handler(ev, cb, gui))
     canvas.bind("<ButtonRelease-1>", lambda ev: ev.widget.configure(relief="raised"))
     canvas.place(x=LeftMargin-border, y=yval, width=width, height=height)
 
 
 
+
+###############################################################################
+# AUTOSAR BLOCKS
+def draw_application_block(gui, yoffset, height):
+    name = "Applications"
+    cb = show_application_block
+    draw_hbutton(name, cb, gui, yoffset, height, '#4D4D4D', 'white')
+
+
+
+def draw_rte_block(gui, yoffset, height):
+    name = "Run Time Environment (RTE)"
+    cb = show_rte_block
+    draw_hbutton(name, cb, gui, yoffset, height, '#FF5008', 'white')
+
+
+
+def draw_sl_os_block(gui, yoffset, height):
+    name = "AUTOSAR OS"
+    cb = show_sl_os_config
+    draw_vbutton(name, cb, gui, yoffset, height, '#9999FF', 'black')
+
+
 def draw_microcontroller_block(gui, yoffset, height):
-    view = gui.view.root
-    bfont = tkfont.Font(family='Helvetica', size=16)
-    
-    #view.geometry(str(gui.view.xsize)+'x'+str(gui.view.ysize))
-    button = tk.Button(view, text="Microcontroller", command=show_microcontroller_block, bg='#000000', fg='white')
-    button['font'] = bfont
-    yval = gui.view.ysize-height-BottomMargin-yoffset - MiscYmargin 
-    button.place(x=LeftMargin, y=yval, width=gui.view.xsize-LeftMargin-RightMargin, height=height)
+    name = "Microcontroller"
+    cb = show_microcontroller_block
+    draw_hbutton(name, cb, gui, yoffset, height, '#000000', 'white')
 
 
 
+###############################################################################
+# Main Entry Point
 def show_autosar_modules_view(gui):
     print("X = ", gui.view.xsize)
     print("Y = ", gui.view.ysize)
