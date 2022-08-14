@@ -323,10 +323,14 @@ class MainView:
 
 # UI Stuffs - FreeAUTOSAR Configurator Tool
 class FreeAutosarConfTool:
-    main_view = MainView()
-    title = "AUTOSAR Builder"
+    # Target System Attributes
     micro = None
-    micro_block = None
+    micro_arch = None
+    
+    # Graphical Attributes
+    title = "AUTOSAR Builder"
+    main_view = MainView()  # the GUI root frame
+    micro_block = None      # the Microcontroller block widget 
 
     # Methods
     def show_os_config(self):

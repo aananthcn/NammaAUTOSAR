@@ -23,6 +23,7 @@ import tkinter as tk
 from tkinter import ttk
 
 import gui.autosar.asr_view as asr_view
+import gui.autosar.gen_make as gen_make
 
 FreeAUTOSAR_Boards = {
     "GENERIC" :
@@ -31,6 +32,12 @@ FreeAUTOSAR_Boards = {
         ["rp2040"],
     "ST" :
         ["stm32f407vet6"]
+}
+
+MicroController_Arch = {
+    "rp2040"            : "cortex-m0",
+    "stm32f407vet6"     : "cortex-m4",
+    "qemu-versatilepb"  : "arm"
 }
 
 UcView = None
@@ -51,8 +58,10 @@ def uc_maker_selected(event):
     
 def uc_selected(event, gui):
     gui.micro = SoCStr.get()
-    gui.micro_block.destroy()
+    gui.micro_arch = MicroController_Arch[gui.micro]
+
     # since micro-controller is selected, let us update the arch. view
+    gui.micro_block.destroy()
     asr_view.redraw_microcontroller_block(gui)
 
 
@@ -61,10 +70,6 @@ def on_uc_view_close():
 
     UcView.destroy()
     UcView = None
-
-
-def generate_makefile():
-    print("Generate Makefile is underconstruction")
 
 
 
@@ -119,5 +124,5 @@ def show_microcontroller_block(gui):
     # Generate Makefile Button
     row = 4
     genm = tk.Button(UcView, width=int(2*col2_width/3), text="Generate Makefile",
-                     command=generate_makefile, bg="#206020", fg='white')
+                     command=lambda:gen_make.create_makefile(gui), bg="#206020", fg='white')
     genm.grid(row=row, column=2)
