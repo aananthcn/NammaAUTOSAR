@@ -1,12 +1,12 @@
 [submodule "submodules/MCAL/Mcu"]
 	path = submodules/MCAL/Mcu
-	url = git@github.com:aananthcn/FreeMcu.git
+	url = git@github.com:aananthcn/NammaMcu.git
 	branch = main
 [submodule "submodules/SL/Os"]
 	path = submodules/SL/Os
-	url = git@github.com:aananthcn/FreeOSEK.git
+	url = git@github.com:aananthcn/NammaOSEK.git
 	branch = main
 [submodule "submodules/SL/EcuM"]
 	path = submodules/SL/EcuM
-	url = git@github.com:aananthcn/FreeEcuM.git
+	url = git@github.com:aananthcn/NammaEcuM.git
 	branch = main
