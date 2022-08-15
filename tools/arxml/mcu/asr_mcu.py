@@ -23,8 +23,17 @@ import arxml.core.lib as lib
 
 
 
+# Update ARXML with Micro Controller Info only.
 def update_arxml(ar_file, uc_info):
-    ar_pkg = lib.find_ar_package("Ecuc", ar_file)
+    # Following line is added to avoid ns0 prefix added
+    ET.register_namespace('', "http://www.topografix.com/GPX/1/1")
+    ET.register_namespace('', "http://www.topografix.com/GPX/1/0")
+    
+    # Read ARXML File
+    tree = ET.parse(ar_file)
+    root = tree.getroot()
+    
+    ar_pkg = lib.find_ar_package("Ecuc", root)
     if ar_pkg == None:
         print("Error: couldn't find Ecuc, hence can't update MicroC info to ARXML!")
         return
@@ -41,13 +50,26 @@ def update_arxml(ar_file, uc_info):
     # Now find if Mcu module-conf is already there in insertion-point
     modconf = lib.find_modconf("Mcu", ar_isp)
     if modconf == None:
-        print("Mcu not found in "+ ar_file)
+        container = lib.insert_modconf(ar_isp, "Mcu")
+        print("Mcu node not found!")
     else:
+        for item in list(modconf):
+            if lib.get_tag(item) == "CONTAINERS":
+                container = item
+                break
         print("Mcu found in "+ ar_file)
-    print("update_arxml() is under construction!")
+    if container == None:
+        print("Error: couldn't find CONTAINER in ECUC-MODULE-CONFIGURATION-VALUES!")
+        return
+
+    ET.indent(tree, space="\t", level=0)
+    tree.write(ar_file, encoding="utf-8", xml_declaration=True)
+    lib.finalize_arxml_doc(ar_file)
+    print("Info: Micro Controller Configs are saved to " + ar_file)    
 
 
 
+# This function is highly incomplete.....
 def parse_arxml(filepath):
    tree = ET.parse(filepath)
    root = tree.getroot()

@@ -3,7 +3,7 @@ import os
 from os_builder.scripts.ob_globals import TaskParams, CntrParams, AlarmParams, ISR_Params, OSEK_Params, FreeOSEK_Params
 from os_builder.scripts.ob_globals import STSZ
 
-import scripts.System_Generator as sg
+import os_builder.scripts.System_Generator as sg
 
 
 

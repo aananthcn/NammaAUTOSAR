@@ -63,13 +63,12 @@ Gui = None
 # Functions
 ###############################################################################
 def about():
-    messagebox.showinfo(ToolName, "This tool is developed to replace the OSEK-Builder.xlsx and to set path for AUTOSAR development")
+    messagebox.showinfo(Gui.title, "This tool is developed to replace the OSEK-Builder.xlsx and to set path for AUTOSAR development")
 
 
 
 def new_file():
     global Gui
-    global OsTab, AmTab, CtrTab, MsgTab, ResTab, TskTab, AlmTab, IsrTab
 
     sg.sg_reset()
     av.show_autosar_modules_view(Gui)
@@ -81,8 +80,8 @@ def open_oil_file(fpath):
     global Gui, OIL_FileName
 
     init_dir = os.getcwd()
-    if os.path.exists(os.getcwd()+"/output/oil-files"):
-        init_dir = os.getcwd()+"/output/oil-files"
+    if os.path.exists(os.getcwd()+"/cfg/oil-files"):
+        init_dir = os.getcwd()+"/cfg/oil-files"
 
     if fpath == None:
         filename = filedialog.askopenfilename(initialdir=init_dir)
@@ -104,34 +103,18 @@ def open_oil_file(fpath):
     FileMenu.entryconfig("Save", state="normal")
 
 
-def backup_gui_before_save():
-    # Do the stack memory calculation before save
-    OsTab.update()
-
-    # Backup GUI strings to System Generator global data
-    OsTab.backup_data()
-    AmTab.backup_data()
-    CtrTab.backup_data()
-    MsgTab.backup_data()
-    ResTab.backup_data()
-    TskTab.backup_data()
-    AlmTab.backup_data()
-    IsrTab.backup_data()
-
-
 
 def save_project():
-    global OsTab, AmTab, CtrTab, MsgTab, ResTab, TskTab, AlmTab, IsrTab
     global OIL_FileName, Gui
 
-    backup_gui_before_save()
+    os_config.backup_os_gui_before_save()
 
     # Export if the input file OIL file.
     if OIL_FileName != None:
         file_exts = [('ARXML Files', '*.arxml')]
         saved_filename = filedialog.asksaveasfile(initialdir=os.getcwd()+"/output/arxml", filetypes = file_exts, defaultextension = file_exts)
         if saved_filename == None:
-            messagebox.showinfo(ToolName, "File to save is not done correctly, saving aborted!")
+            messagebox.showinfo(Gui.title, "File to save is not done correctly, saving aborted!")
             return
         Gui.arxml_file = saved_filename.name
         print("Info: Exporting "+OIL_FileName+" to "+Gui.arxml_file+" ...")
@@ -143,7 +126,7 @@ def save_project():
     
     # Warn if both file variables are not set
     else:
-        messagebox.showinfo(ToolName, "Invalid input (project) file. Can't save project!")
+        messagebox.showinfo(Gui.title, "Invalid input (project) file. Can't save project!")
         return
 
 
@@ -156,9 +139,9 @@ def save_project():
 def generate_code():
     srcpath = ToolsPath+"\os_builder\src"
     if 0 == sg.generate_code(srcpath):
-        messagebox.showinfo(ToolName, "Code Generated Successfully!")
+        messagebox.showinfo(Gui.title, "Code Generated Successfully!")
     else:
-        messagebox.showinfo(ToolName, "Code Generation Failed!")
+        messagebox.showinfo(Gui.title, "Code Generation Failed!")
 
 
 
@@ -166,11 +149,12 @@ def save_as_arxml():
     file_exts = [('ARXML Files', '*.arxml')]
     saved_filename = filedialog.asksaveasfile(initialdir=os.getcwd()+"/output/arxml", filetypes = file_exts, defaultextension = file_exts)
     if saved_filename == None:
-        messagebox.showinfo(ToolName, "File to save is not done correctly, saving aborted!")
+        messagebox.showinfo(Gui.title, "File to save is not done correctly, saving aborted!")
         return
 
+    Gui.arxml_file = saved_filename.name
     Gui.main_view.tk.title(Gui.title + " [" + str(saved_filename.name).split("/")[-1] +"]")
-    backup_gui_before_save()
+    os_config.backup_os_gui_before_save()
     arxml.export_arxml(saved_filename.name)
 
 
@@ -179,8 +163,8 @@ def open_arxml_file(fpath):
     global Gui
 
     init_dir = os.getcwd()
-    if os.path.exists(os.getcwd()+"/output/arxml"):
-        init_dir = os.getcwd()+"/output/arxml"
+    if os.path.exists(os.getcwd()+"/cfg/arxml"):
+        init_dir = os.getcwd()+"/cfg/arxml"
 
     if fpath == None:
         filename = filedialog.askopenfilename(initialdir=init_dir)
@@ -201,7 +185,7 @@ def open_arxml_file(fpath):
     update_recent_files(Gui.arxml_file)
     av.show_autosar_modules_view(Gui)
     if imp_status != 0:
-        messagebox.showinfo(ToolName, "Input file contains errors, hence opening as new file!")
+        messagebox.showinfo(Gui.title, "Input file contains errors, hence opening as new file!")
         new_file()
     else:
         FileMenu.entryconfig("Save", state="normal")

@@ -26,7 +26,7 @@ import xml.etree.ElementTree as ET
 # Let us use the System Generator functions to parse ARXML and Generate code
 sys.path.insert(0, os.getcwd()+"/tools/arxml")
 
-import arxml.os.export as imp
+import arxml.os.export_os as exp_os
 import arxml.os.asr_os as asr_os
 import arxml.core.lib as lib
 
@@ -46,7 +46,7 @@ def export_arxml(filepath):
    root.set("xsi:schemaLocation", "http://autosar.org/schema/r4.0 autosar.xsd")
    tree = ET.ElementTree(root)
    arpkgs = ET.SubElement(root, "AR-PACKAGES")
-   imp.build_ecuc_os_package(arpkgs, "Ecuc")
+   exp_os.build_ecuc_os_package(arpkgs, "Ecuc")
 
    ET.indent(tree, space="\t", level=0)
    tree.write(filepath, encoding="utf-8", xml_declaration=True)

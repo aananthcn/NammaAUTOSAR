@@ -35,6 +35,7 @@ import gui.os.isr_tab as gui_ir_tab
 
 
 OsTab = AmTab = CtrTab = MsgTab = ResTab = TskTab = AlmTab = IsrTab = None
+OsConfigViewActive = False
 
 
 def show_os_tab_switch(event):
@@ -63,13 +64,47 @@ def show_os_tab_switch(event):
         current_tab = IsrTab
 
 
+
+def backup_os_gui_before_save():
+    global OsTab, AmTab, CtrTab, MsgTab, ResTab, TskTab, AlmTab, IsrTab
+    global OsConfigViewActive
+
+    # Do not backup if the view is not active
+    if not OsConfigViewActive:
+        return
+
+    # Do the stack memory calculation before save
+    OsTab.update()
+
+    # Backup GUI strings to System Generator global data
+    OsTab.backup_data()
+    AmTab.backup_data()
+    CtrTab.backup_data()
+    MsgTab.backup_data()
+    ResTab.backup_data()
+    TskTab.backup_data()
+    AlmTab.backup_data()
+    IsrTab.backup_data()
+
+
+
+def os_config_close_event(view):
+    global OsConfigViewActive
+
+    OsConfigViewActive = False
+    view.destroy()
+
+
     
 def show_os_config(gui):
     global OsTab, AmTab, CtrTab, MsgTab, ResTab, TskTab, AlmTab, IsrTab
+    global OsConfigViewActive
 
     # Create a child window (tabbed view)
     view = tk.Toplevel()
     view.state('zoomed')
+    OsConfigViewActive = True
+    view.protocol("WM_DELETE_WINDOW", lambda: os_config_close_event(view))
     gui.main_view.child_window = ttk.Notebook(view)
     
     # Create tabs to configure OS
