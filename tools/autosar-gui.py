@@ -50,7 +50,6 @@ FileMenu = None
 
 # I/O stuffs
 OIL_FileName = None
-ArXml_FileName = None
 RecentFiles = os.getcwd()+"/.filelist"
 ToolsPath = os.getcwd()+"/tools"
 
@@ -123,7 +122,7 @@ def backup_gui_before_save():
 
 def save_project():
     global OsTab, AmTab, CtrTab, MsgTab, ResTab, TskTab, AlmTab, IsrTab
-    global OIL_FileName, ArXml_FileName
+    global OIL_FileName, Gui
 
     backup_gui_before_save()
 
@@ -134,13 +133,13 @@ def save_project():
         if saved_filename == None:
             messagebox.showinfo(ToolName, "File to save is not done correctly, saving aborted!")
             return
-        ArXml_FileName = saved_filename.name
-        print("Info: Exporting "+OIL_FileName+" to "+ArXml_FileName+" ...")
+        Gui.arxml_file = saved_filename.name
+        print("Info: Exporting "+OIL_FileName+" to "+Gui.arxml_file+" ...")
         OIL_FileName = None
 
     # Save if the input file is ARXML
-    elif ArXml_FileName != None:
-        print("Info: Saving configs to "+ArXml_FileName+" ...")
+    elif Gui.arxml_file != None:
+        print("Info: Saving configs to "+Gui.arxml_file+" ...")
     
     # Warn if both file variables are not set
     else:
@@ -149,8 +148,8 @@ def save_project():
 
 
     # Export and File name clean up
-    arxml.export_arxml(ArXml_FileName)
-    Gui.main_view.tk.title(Gui.title + " [" + ArXml_FileName.split("/")[-1] +"]")
+    arxml.export_arxml(Gui.arxml_file)
+    Gui.main_view.tk.title(Gui.title + " [" + Gui.arxml_file.split("/")[-1] +"]")
 
 
 
@@ -177,7 +176,7 @@ def save_as_arxml():
 
 
 def open_arxml_file(fpath):
-    global Gui, ArXml_FileName
+    global Gui
 
     init_dir = os.getcwd()
     if os.path.exists(os.getcwd()+"/output/arxml"):
@@ -186,20 +185,20 @@ def open_arxml_file(fpath):
     if fpath == None:
         filename = filedialog.askopenfilename(initialdir=init_dir)
         if type(filename) is not tuple and len(filename) > 5:
-            ArXml_FileName = filename
+            Gui.arxml_file = filename
         else:
             print("Info: no or many ARXML file is chosen, hence open_arxml_file() returning without processing!")
             return
     else:
-        ArXml_FileName = fpath.strip()
+        Gui.arxml_file = fpath.strip()
 
     if Gui.main_view.tk != None:
-        Gui.main_view.tk.title(Gui.title + " [" + str(ArXml_FileName).split("/")[-1] +"]")
+        Gui.main_view.tk.title(Gui.title + " [" + str(Gui.arxml_file).split("/")[-1] +"]")
 
     # Import/Parse ARXML file, so that we can use the content in GUI.
     sg.sg_reset()
-    imp_status = arxml.import_arxml(ArXml_FileName)
-    update_recent_files(ArXml_FileName)
+    imp_status = arxml.import_arxml(Gui.arxml_file)
+    update_recent_files(Gui.arxml_file)
     av.show_autosar_modules_view(Gui)
     if imp_status != 0:
         messagebox.showinfo(ToolName, "Input file contains errors, hence opening as new file!")
@@ -324,8 +323,10 @@ class MainView:
 # UI Stuffs - FreeAUTOSAR Configurator Tool
 class FreeAutosarConfTool:
     # Target System Attributes
-    micro = None
-    micro_arch = None
+    uc_info = uc_view.Uc_Info()
+    
+    # General Attributes
+    arxml_file = None
     
     # Graphical Attributes
     title = "AUTOSAR Builder"

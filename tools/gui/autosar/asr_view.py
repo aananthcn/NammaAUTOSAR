@@ -107,10 +107,10 @@ def draw_sl_os_block(gui, yoffset, height):
 
 
 def draw_microcontroller_block(gui, yoffset, height):
-    if gui.micro == None:
+    if gui.uc_info.micro == None:
         name = "Microcontroller"
     else:
-        name = "Microcontroller ["+gui.micro+"]"
+        name = "Microcontroller ["+gui.uc_info.micro+"]"
     cb = uc_view.show_microcontroller_block
     gui.micro_block = draw_hbutton(name, cb, gui, yoffset, height, '#000000', 'white')
     
