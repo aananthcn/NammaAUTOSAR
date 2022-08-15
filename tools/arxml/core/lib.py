@@ -98,7 +98,6 @@ def insert_param(root, refname, type, subtype, value):
 #####################################
 # Import Functions
 #####################################
-
 def tag_uri_and_name(elem):
     if elem.tag[0] == "{":
         uri, ignore, tag = elem.tag[1:].partition("}")
@@ -160,3 +159,40 @@ def get_dref_list(ctnr):
          item = { "tag":tag, "val":val }
          plist.append(item)
    return plist
+
+
+#####################################
+# Search Functions
+#####################################
+def find_ar_package(shortname, ar_file):
+   tree = ET.parse(ar_file)
+   root = tree.getroot()
+   ar_pkg = None
+
+   if get_tag(root) == "AUTOSAR":
+      for item in list(root):
+         if get_tag(item) == "AR-PACKAGES":
+            for pkg in list(item):
+               if get_tag(pkg) == "AR-PACKAGE":
+                  for elem in list(pkg):
+                     if get_tag(elem) == "SHORT-NAME":
+                        if elem.text == shortname:
+                           ar_pkg = pkg
+                           break
+   return ar_pkg
+
+
+def find_modconf(shortname, root):
+   modconf = None
+   
+   if get_tag(root) == "ELEMENTS":
+      for elem in list(root):
+         if get_tag(root) == "ECUC-MODULE-CONFIGURATION-VALUES":
+            for item in list(elem):
+               if get_tag(item) == "SHORT-NAME":
+                  if item.text == shortname:
+                     modconf = item
+                     break
+                  
+   return modconf
+               

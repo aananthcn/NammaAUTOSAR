@@ -93,6 +93,6 @@ def create_source(gui):
     generate_platform_header(gui)
     
     # Update ARXML file
-    asr_mcu.update_arxml(None, None)
+    asr_mcu.update_arxml(gui.arxml_file, gui.uc_info)
     
     makefile.close()

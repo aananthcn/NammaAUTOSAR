@@ -23,7 +23,27 @@ import arxml.core.lib as lib
 
 
 
-def update_arxml(ar_file, mcu_cfg):
+def update_arxml(ar_file, uc_info):
+    ar_pkg = lib.find_ar_package("Ecuc", ar_file)
+    if ar_pkg == None:
+        print("Error: couldn't find Ecuc, hence can't update MicroC info to ARXML!")
+        return
+    
+    # Now find insertion point
+    for item in list(ar_pkg):
+        if lib.get_tag(item) == "ELEMENTS":
+            ar_isp = item # insertion point
+            break 
+    if ar_isp == None:
+        print("Error: couldn't find ELEMENTS in AR-PACKAGE, hence can't update MicroC info to ARXML!")
+        return
+        
+    # Now find if Mcu module-conf is already there in insertion-point
+    modconf = lib.find_modconf("Mcu", ar_isp)
+    if modconf == None:
+        print("Mcu not found in "+ ar_file)
+    else:
+        print("Mcu found in "+ ar_file)
     print("update_arxml() is under construction!")
 
 

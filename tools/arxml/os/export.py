@@ -304,6 +304,9 @@ def export_isrs_to_container(root):
 
 
 
+# This function is called from core.main.py with AR-PACKAGES as root and name as Ecuc
+# arg1: AR-PACKAGES element
+# arg2: "Ecuc"
 def build_ecuc_os_package(root, name):
    global EcuName
 
