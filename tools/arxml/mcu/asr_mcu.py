@@ -26,8 +26,8 @@ import arxml.core.lib as lib
 # Update ARXML with Micro Controller Info only.
 def update_arxml(ar_file, uc_info):
     # Following line is added to avoid ns0 prefix added
-    ET.register_namespace('', "http://www.topografix.com/GPX/1/1")
-    ET.register_namespace('', "http://www.topografix.com/GPX/1/0")
+    ET.register_namespace('', "http://autosar.org/schema/r4.0")
+    ET.register_namespace('xsi', "http://www.w3.org/2001/XMLSchema-instance")
     
     # Read ARXML File
     tree = ET.parse(ar_file)
@@ -39,6 +39,7 @@ def update_arxml(ar_file, uc_info):
         return
     
     # Now find insertion point
+    ar_isp = None
     for item in list(ar_pkg):
         if lib.get_tag(item) == "ELEMENTS":
             ar_isp = item # insertion point
@@ -57,11 +58,14 @@ def update_arxml(ar_file, uc_info):
             if lib.get_tag(item) == "CONTAINERS":
                 container = item
                 break
-        print("Mcu found in "+ ar_file)
     if container == None:
         print("Error: couldn't find CONTAINER in ECUC-MODULE-CONFIGURATION-VALUES!")
         return
 
+    # Add Uc_Info contents to CONTAINER
+    # TODO: TBD
+
+    # Save ARXML contents to file
     ET.indent(tree, space="\t", level=0)
     tree.write(ar_file, encoding="utf-8", xml_declaration=True)
     lib.finalize_arxml_doc(ar_file)

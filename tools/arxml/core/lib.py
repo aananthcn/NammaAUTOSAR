@@ -203,11 +203,11 @@ def find_modconf(shortname, root):
    
    if get_tag(root) == "ELEMENTS":
       for elem in list(root):
-         if get_tag(root) == "ECUC-MODULE-CONFIGURATION-VALUES":
+         if get_tag(elem) == "ECUC-MODULE-CONFIGURATION-VALUES":
             for item in list(elem):
                if get_tag(item) == "SHORT-NAME":
                   if item.text == shortname:
-                     modconf = item
+                     modconf = elem
                      break
                   
    return modconf
