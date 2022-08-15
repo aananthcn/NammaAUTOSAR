@@ -23,7 +23,7 @@ import tkinter as tk
 from tkinter import ttk
 
 import gui.autosar.asr_view as asr_view
-import gui.autosar.gen_make as gen_make
+import gui.mcu.uc_cgen as uc_cgen
 
 FreeAUTOSAR_Boards = {
     "GENERIC" :
@@ -123,6 +123,6 @@ def show_microcontroller_block(gui):
 
     # Generate Makefile Button
     row = 4
-    genm = tk.Button(UcView, width=int(2*col2_width/3), text="Generate Makefile",
-                     command=lambda:gen_make.create_makefile(gui), bg="#206020", fg='white')
+    genm = tk.Button(UcView, width=int(2*col2_width/3), text="Generate Source",
+                     command=lambda:uc_cgen.create_source(gui), bg="#206020", fg='white')
     genm.grid(row=row, column=2)
