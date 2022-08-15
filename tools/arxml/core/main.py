@@ -1,3 +1,23 @@
+#
+# Created on Mon Aug 15 2022 1:49:28 PM
+#
+# The MIT License (MIT)
+# Copyright (c) 2022 Aananth C N
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy of this software
+# and associated documentation files (the "Software"), to deal in the Software without restriction,
+# including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
+# and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so,
+# subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all copies or substantial
+# portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED
+# TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+# THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+# TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+#
 import os
 import sys
 import xml.etree.ElementTree as ET
@@ -7,8 +27,8 @@ import xml.etree.ElementTree as ET
 sys.path.insert(0, os.getcwd()+"/tools/arxml")
 
 import arxml.os.export as imp
-import arxml.os.ecuc as ecuc
-import arxml.lib as lib
+import arxml.os.asr_os as asr_os
+import arxml.core.lib as lib
 
 ###############################################################################
 # Main entry to ARXML gen / parse routines
@@ -47,7 +67,7 @@ def import_arxml(filepath):
       if not lines or "xml" not in lines[0]:
          print("Error: file \""+ filepath + "\" is not a valid ARXML file!")
          return -1
-   ecuc.parse_arxml(filepath)
+   asr_os.parse_arxml(filepath)
    return 0
 
 

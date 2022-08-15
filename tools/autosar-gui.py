@@ -28,7 +28,7 @@ sys.path.insert(0, os.getcwd()+"/tools/arxml")
 
 import os_builder.scripts.System_Generator as sg
 import os_builder.scripts.oil as oil
-import arxml.main as arxml
+import arxml.core.main as arxml
 
 
 import tkinter as tk

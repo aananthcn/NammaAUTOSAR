@@ -20,6 +20,8 @@
 #
 import os
 
+import arxml.mcu.asr_mcu as asr_mcu
+
 
 def find_file(name, path):
     for root, dirs, files in os.walk(path):
@@ -89,4 +91,8 @@ def create_source(gui):
 
     # Generate micro & arch specifc header files
     generate_platform_header(gui)
+    
+    # Update ARXML file
+    asr_mcu.update_arxml(None, None)
+    
     makefile.close()
