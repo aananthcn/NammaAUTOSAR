@@ -32,10 +32,11 @@ def update_arxml(ar_file, uc_info):
     # Read ARXML File
     tree = ET.parse(ar_file)
     root = tree.getroot()
-    
-    ar_pkg = lib.find_ar_package("Ecuc", root)
+ 
+    McuDefs_InsPt = "EcucDefs"
+    ar_pkg = lib.find_ar_package(McuDefs_InsPt, root)
     if ar_pkg == None:
-        print("Error: couldn't find Ecuc, hence can't update MicroC info to ARXML!")
+        print("Error: couldn't find "+McuDefs_InsPt+" hence can't update MicroC info to ARXML!")
         return
     
     # Now find insertion point
@@ -49,17 +50,18 @@ def update_arxml(ar_file, uc_info):
         return
         
     # Now find if Mcu module-conf is already there in insertion-point
-    modconf = lib.find_modconf("Mcu", ar_isp)
-    if modconf == None:
-        container = lib.insert_modconf(ar_isp, "Mcu")
+    modname = "Mcu"
+    moddef = lib.find_module_def(modname, ar_isp)
+    if moddef == None:
+        container = lib.insert_module_def(ar_isp, modname)
         print("Mcu node not found!")
     else:
-        for item in list(modconf):
+        for item in list(moddef):
             if lib.get_tag(item) == "CONTAINERS":
                 container = item
                 break
     if container == None:
-        print("Error: couldn't find CONTAINER in ECUC-MODULE-CONFIGURATION-VALUES!")
+        print("Error: couldn't find CONTAINER in ECUC-MODULE-DEF for "+modname)
         return
 
     # Add Uc_Info contents to CONTAINER

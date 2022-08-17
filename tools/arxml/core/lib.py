@@ -47,7 +47,7 @@ def insert_module_ref(root, mod_name):
    ecu_def_cltn = None
    mrefs = None
    for item in list(root):
-      if lib.get_tag(item) == "ECUC-DEFINITION-COLLECTION":
+      if get_tag(item) == "ECUC-DEFINITION-COLLECTION":
          ecu_def_cltn = item
          break
 
@@ -62,7 +62,7 @@ def insert_module_ref(root, mod_name):
    # for new file, mrefs will be initialized in above line. Else search it
    if mrefs == None:
       for item in list(ecu_def_cltn):
-         if lib.get_tag(item) == "MODULE-REFS":
+         if get_tag(item) == "MODULE-REFS":
             mrefs = item
             break   
 
@@ -73,19 +73,58 @@ def insert_module_ref(root, mod_name):
 
 
 
-def insert_modconf(element_node, short_name):
+def insert_admin_data(root, version):
+   adm_data = ET.SubElement(root, "ADMIN-DATA")
+   doc_revs = ET.SubElement(adm_data, "DOC-REVISIONS")
+   doc_rev = ET.SubElement(doc_revs, "DOC-REVISION")
+   rev_label = ET.SubElement(doc_rev, "REVISION-LABEL")
+   rev_label.text = version
+   issued_by = ET.SubElement(doc_rev, "ISSUED-BY")
+   issued_by.text = "AUTOSAR"
+
+
+
+# NOTE: This API will be removed when OS ARXML is migrated from 4.2.0 to R20-11
+def insert_modconf(element_node, module_name):
    mod_conf = ET.SubElement(element_node, "ECUC-MODULE-CONFIGURATION-VALUES")
    shortname = ET.SubElement(mod_conf, "SHORT-NAME")
-   shortname.text = short_name
+   shortname.text = module_name
    def_ref = ET.SubElement(mod_conf, "DEFINITION-REF", DEST="ECUC-MODULE-DEF")
-   def_ref.text = "/AUTOSAR/EcucDefs/"+short_name
+   def_ref.text = "/AUTOSAR/EcucDefs/"+module_name
    ecu_def_edition = ET.SubElement(mod_conf, "ECUC-DEF-EDITION")
    ecu_def_edition.text = "4.2.0"
    impl_cfg_var = ET.SubElement(mod_conf, "IMPLEMENTATION-CONFIG-VARIANT")
    impl_cfg_var.text = "VARIANT-PRE-COMPILE"
 
-   # Create CONTAINER element and export module (Os, Mcu, ...) objects.
+   # Create CONTAINER element and export Os object alone.
    containers = ET.SubElement(mod_conf, "CONTAINERS")
+
+   return containers
+
+
+
+def insert_module_def(root, module_name):
+   # First add a module reference
+   insert_module_ref(root, module_name)
+
+   # Then add module definitions node
+   mod_def = ET.SubElement(root, "ECUC-MODULE-DEF")
+   mod_def.set("UUID", "ECUC:"+module_name)
+   shortname = ET.SubElement(mod_def, "SHORT-NAME")
+   shortname.text = module_name
+   insert_admin_data(mod_def, "4.6.0")
+   item = ET.SubElement(mod_def, "LOWER-MULTIPLICITY")
+   item.text = "0"
+   item = ET.SubElement(mod_def, "UPPER-MULTIPLICITY")
+   item.text = "1"
+   item = ET.SubElement(mod_def, "POST-BUILD-VARIANT-SUPPORT")
+   item.text = "false"
+   cfg_vars = ET.SubElement(mod_def, "SUPPORTED-CONFIG-VARIANTS")
+   cfg_var = ET.SubElement(cfg_vars, "SUPPORTED-CONFIG-VARIANT")
+   cfg_var.text = "VARIANT-PRE-COMPILE"
+
+   # Create CONTAINER element and export module (Os, Mcu, ...) objects.
+   containers = ET.SubElement(mod_def, "CONTAINERS")
 
    return containers
 
@@ -228,12 +267,12 @@ def find_ar_package(shortname, root):
    return ar_pkg
 
 
-def find_modconf(shortname, root):
+def find_module_def(shortname, root):
    modconf = None
    
    if get_tag(root) == "ELEMENTS":
       for elem in list(root):
-         if get_tag(elem) == "ECUC-MODULE-CONFIGURATION-VALUES":
+         if get_tag(elem) == "ECUC-MODULE-DEF":
             for item in list(elem):
                if get_tag(item) == "SHORT-NAME":
                   if item.text == shortname:
