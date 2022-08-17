@@ -20,7 +20,7 @@
 #
 import os
 
-import arxml.mcu.asr_mcu as asr_mcu
+import arxml.mcu.arxml_mcu as arxml_mcu
 
 
 def find_file(name, path):
@@ -93,6 +93,6 @@ def create_source(gui):
     generate_platform_header(gui)
     
     # Update ARXML file
-    asr_mcu.update_arxml(gui.arxml_file, gui.uc_info)
+    arxml_mcu.update_arxml(gui.arxml_file, gui.uc_info)
     
     makefile.close()

@@ -43,6 +43,36 @@ def finalize_arxml_doc(file):
 
 
 
+def insert_module_ref(root, mod_name):
+   ecu_def_cltn = None
+   mrefs = None
+   for item in list(root):
+      if lib.get_tag(item) == "ECUC-DEFINITION-COLLECTION":
+         ecu_def_cltn = item
+         break
+
+   # Insert Ecuc Def. Collection node if it doesn't exist.
+   if ecu_def_cltn == None:
+      ecu_def_cltn = ET.SubElement(root, "ECUC-DEFINITION-COLLECTION")
+      ecu_def_cltn.set("UUID", "ECUC:ECUC-DEFINITION-COLLECTION")
+      shortname = ET.SubElement(ecu_def_cltn, "SHORT-NAME")
+      shortname.text = "AUTOSARParameterDefinition"
+      mrefs = ET.SubElement(ecu_def_cltn, "MODULE-REFS")
+
+   # for new file, mrefs will be initialized in above line. Else search it
+   if mrefs == None:
+      for item in list(ecu_def_cltn):
+         if lib.get_tag(item) == "MODULE-REFS":
+            mrefs = item
+            break   
+
+   # Insert mod_name to MODULE-REFS node
+   mref =  ET.SubElement(mrefs, "MODULE-REF")
+   mref.set("DEST", "ECUC-MODULE-DEF")
+   mref.text = "/AUTOSAR/EcucDefs/"+mod_name
+
+
+
 def insert_modconf(element_node, short_name):
    mod_conf = ET.SubElement(element_node, "ECUC-MODULE-CONFIGURATION-VALUES")
    shortname = ET.SubElement(mod_conf, "SHORT-NAME")

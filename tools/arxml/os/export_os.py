@@ -310,14 +310,17 @@ def export_isrs_to_container(root):
 def build_ecuc_os_package(root, name):
    global EcuName
 
-   arpkg = ET.SubElement(root, "AR-PACKAGE")
-   shortname = ET.SubElement(arpkg, "SHORT-NAME")
-   shortname.text = name
+   # ci = len(list(root))
+   # root.insert(ci, ET.Comment("AR-Package: AUTOSAR"))
+   # arpkg = ET.SubElement(root, "AR-PACKAGE")
+   # arpkg.set("UUID", "ECUC:ECUCDEFS")
+   # shortname = ET.SubElement(arpkg, "SHORT-NAME")
+   # shortname.text = name
    EcuName = name
-   elements = ET.SubElement(arpkg, "ELEMENTS")
+   # elements = ET.SubElement(arpkg, "ELEMENTS")
 
    # Create the Os Module Configuration Element
-   containers = lib.insert_modconf(elements, "Os")
+   containers = lib.insert_modconf(root, "Os")
 
    # Add OS configurations to the module configuration container
    export_appmodes_to_container(containers)

@@ -27,12 +27,11 @@ import xml.etree.ElementTree as ET
 sys.path.insert(0, os.getcwd()+"/tools/arxml")
 
 import arxml.os.export_os as exp_os
-import arxml.os.asr_os as asr_os
+import arxml.os.arxml_os as arxml_os
 import arxml.core.lib as lib
 
 ###############################################################################
 # Main entry to ARXML gen / parse routines
-
 
 
 def export_arxml(filepath):
@@ -42,11 +41,30 @@ def export_arxml(filepath):
    
    root = ET.Element("AUTOSAR")
    root.set("xmlns", "http://autosar.org/schema/r4.0")
+   root.set("xmlns:xml", "http://www.w3.org/XML/1998/namespace")
    root.set("xmlns:xsi", "http://www.w3.org/2001/XMLSchema-instance")
-   root.set("xsi:schemaLocation", "http://autosar.org/schema/r4.0 autosar.xsd")
+   root.set("xsi:schemaLocation", "http://autosar.org/schema/r4.0 AUTOSAR_00049.xsd")
    tree = ET.ElementTree(root)
    arpkgs = ET.SubElement(root, "AR-PACKAGES")
-   exp_os.build_ecuc_os_package(arpkgs, "Ecuc")
+   
+   # Insert EcuDefs AR-PACKAGE
+   main_arpkg_name = "EcucDefs"
+   ci = len(list(root))
+   arpkgs.insert(ci, ET.Comment("AR-Package: AUTOSAR"))
+   arpkg = ET.SubElement(arpkgs, "AR-PACKAGE")
+   arpkg.set("UUID", "ECUC:ECUCDEFS")
+   shortname = ET.SubElement(arpkg, "SHORT-NAME")
+   shortname.text = main_arpkg_name
+   arpkg_elements = ET.SubElement(arpkg, "ELEMENTS")
+
+   # Insert Module Reference to ECUC-DEFINITION-COLLECTION
+   lib.insert_module_ref(arpkg_elements, "Os")
+   
+   # Insert OS package to ELEMENTS of EcuDefs's AR-PACKAGE -- this is a violation!
+   # NOTE: *** For OS definitions alone we will follow older version (4.2.0) of arxml
+   # This is done to keep the compatibility of import and export functions developed 
+   # for OS. This will be changed slowly in future - Aananth (17 Aug 2022 8:18 PM)
+   exp_os.build_ecuc_os_package(arpkg_elements, main_arpkg_name)
 
    ET.indent(tree, space="\t", level=0)
    tree.write(filepath, encoding="utf-8", xml_declaration=True)
@@ -67,7 +85,7 @@ def import_arxml(filepath):
       if not lines or "xml" not in lines[0]:
          print("Error: file \""+ filepath + "\" is not a valid ARXML file!")
          return -1
-   asr_os.parse_arxml(filepath)
+   arxml_os.parse_arxml(filepath)
    return 0
 
 
