@@ -46,6 +46,8 @@ def finalize_arxml_doc(file):
 def insert_module_ref(root, mod_name):
    ecu_def_cltn = None
    mrefs = None
+
+   # Module references are inside Ecuc def. collection, hence locate that first
    for item in list(root):
       if get_tag(item) == "ECUC-DEFINITION-COLLECTION":
          ecu_def_cltn = item
@@ -65,6 +67,12 @@ def insert_module_ref(root, mod_name):
          if get_tag(item) == "MODULE-REFS":
             mrefs = item
             break   
+
+   # Check if the module ref is already present in definition collection
+   mref = find_module_ref(mod_name, ecu_def_cltn)
+   if mref != None:
+      print("Module reference for "+mod_name+" is already present in ECUC-DEFINITION-COLLECTION!")
+      return
 
    # Insert mod_name to MODULE-REFS node
    mref =  ET.SubElement(mrefs, "MODULE-REF")
@@ -267,6 +275,8 @@ def find_ar_package(shortname, root):
    return ar_pkg
 
 
+
+# arg2: root is ELEMENTS block inside AR-PACKAGE named EcucDefs (in ver R20-11)
 def find_module_def(shortname, root):
    modconf = None
    
@@ -280,4 +290,19 @@ def find_module_def(shortname, root):
                      break
                   
    return modconf
-               
+
+
+
+# arg2: root is ECUC-DEFINITION-COLLECTION block (in ver R20-11)
+def find_module_ref(shortname, root):
+   modref = None
+
+   if get_tag(root) == "ECUC-DEFINITION-COLLECTION":
+      for item in list(root):
+         if get_tag(item) == "MODULE-REFS":
+            for ref in list(item):
+               if shortname in ref.text:
+                  modref = ref
+                  break
+
+   return modref

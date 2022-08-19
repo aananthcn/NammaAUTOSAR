@@ -39,7 +39,7 @@ def update_arxml(ar_file, uc_info):
         print("Error: couldn't find "+McuDefs_InsPt+" hence can't update MicroC info to ARXML!")
         return
     
-    # Now find insertion point
+    # Now find insertion point. Our insert point is ELEMENTS block inside AR-PACKAGE named EcucDefs (in ver R20-11)
     ar_isp = None
     for item in list(ar_pkg):
         if lib.get_tag(item) == "ELEMENTS":
