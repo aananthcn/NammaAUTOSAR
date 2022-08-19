@@ -93,7 +93,7 @@ def insert_admin_data(root, version):
 
 
 # NOTE: This API will be removed when OS ARXML is migrated from 4.2.0 to R20-11
-def insert_modconf(element_node, module_name):
+def deprecated_insert_modconf(element_node, module_name):
    mod_conf = ET.SubElement(element_node, "ECUC-MODULE-CONFIGURATION-VALUES")
    shortname = ET.SubElement(mod_conf, "SHORT-NAME")
    shortname.text = module_name
@@ -138,7 +138,7 @@ def insert_module_def(root, module_name):
 
 
 
-def insert_container(root, name, type, dref):
+def deprecated_insert_container(root, name, type, dref):
    ctnr = ET.SubElement(root, "ECUC-CONTAINER-VALUE")
    shortname = ET.SubElement(ctnr, "SHORT-NAME")
    shortname.text = name
@@ -153,7 +153,7 @@ def insert_container(root, name, type, dref):
 
 
 
-def insert_reference(root, dref, vref):
+def deprecated_insert_reference(root, dref, vref):
    rctnr = ET.SubElement(root, "ECUC-REFERENCE-VALUE")
    def_ref = ET.SubElement(rctnr, "DEFINITION-REF", DEST="ECUC-REFERENCE-DEF")
    def_ref.text = dref
@@ -163,7 +163,7 @@ def insert_reference(root, dref, vref):
 
 
 
-def insert_param(root, refname, type, subtype, value):
+def deprecated_insert_param(root, refname, type, subtype, value):
    if type == "text":
       param_blk = ET.SubElement(root, "ECUC-TEXTUAL-PARAM-VALUE")
    elif type == "numerical":
