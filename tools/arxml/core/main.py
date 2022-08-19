@@ -38,7 +38,7 @@ import arxml.core.lib_defs as lib_defs
 # Main entry to ARXML gen / parse routines
 
 
-def export_arxml(filepath, gui):
+def export_arxml(filepath):
    path = "/".join(filepath.split("/")[0:-1])
    if not os.path.exists(path):
       os.makedirs(path)
@@ -47,24 +47,23 @@ def export_arxml(filepath, gui):
    root.set("xmlns", "http://autosar.org/schema/r4.0")
    root.set("xmlns:xml", "http://www.w3.org/XML/1998/namespace")
    root.set("xmlns:xsi", "http://www.w3.org/2001/XMLSchema-instance")
-   root.set("xsi:schemaLocation", "http://autosar.org/schema/r4.0 AUTOSAR_00049.xsd")
+   root.set("xsi:schemaLocation", "http://autosar.org/schema/r4.0 AUTOSAR_4-0-3_STRICT.xsd")
    tree = ET.ElementTree(root)
    arpkgs = ET.SubElement(root, "AR-PACKAGES")
    
+   # generate proper name for AR-PACKAGE
+   arxml_pkgn = lib.setget_ecuc_arpkg_name(filepath)
+   
    # Insert Ecuc_<name> AR-PACKAGE
-   gui.arxml_pkgn = "Ecuc_"+filepath.split("/")[-1].split(".")[0]
    ci = len(list(root))
    arpkgs.insert(ci, ET.Comment("AR-Package: AUTOSAR"))
    arpkg = ET.SubElement(arpkgs, "AR-PACKAGE")
    shortname = ET.SubElement(arpkg, "SHORT-NAME")
-   shortname.text = gui.arxml_pkgn
+   shortname.text = arxml_pkgn
    arpkg_elements = ET.SubElement(arpkg, "ELEMENTS")
 
-   # Insert Module Reference to ECUC-DEFINITION-COLLECTION
-   lib_defs.insert_module_ref(arpkg_elements, "Os")
-   
    # for OS. This will be changed slowly in future - Aananth (17 Aug 2022 8:18 PM)
-   exp_os.build_ecuc_os_package(arpkg_elements, gui.arxml_pkgn)
+   exp_os.build_ecuc_os_package(arpkg_elements)
 
    ET.indent(tree, space="\t", level=0)
    tree.write(filepath, encoding="utf-8", xml_declaration=True)

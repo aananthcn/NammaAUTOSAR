@@ -25,31 +25,36 @@ import xml.etree.ElementTree as ET
 from arxml.core.lib import *
 
 
-def insert_conf_module(element_node, module_name):
-   mod_conf = ET.SubElement(element_node, "ECUC-MODULE-CONFIGURATION-VALUES")
-   shortname = ET.SubElement(mod_conf, "SHORT-NAME")
-   shortname.text = module_name
-   def_ref = ET.SubElement(mod_conf, "DEFINITION-REF", DEST="ECUC-MODULE-DEF")
-   def_ref.text = "/AUTOSAR/EcucDefs/"+module_name
-   ecu_def_edition = ET.SubElement(mod_conf, "ECUC-DEF-EDITION")
-   ecu_def_edition.text = "4.2.0"
-   impl_cfg_var = ET.SubElement(mod_conf, "IMPLEMENTATION-CONFIG-VARIANT")
-   impl_cfg_var.text = "VARIANT-PRE-COMPILE"
+def insert_ecuc_module_conf(element_node, module_name):
+    # Comment block
+    ci = len(list(element_node))
+    element_node.insert(ci, ET.Comment("Module Configuration: "+module_name))
+    
+    # ECUC Module Configuration
+    mod_conf = ET.SubElement(element_node, "ECUC-MODULE-CONFIGURATION-VALUES")
+    shortname = ET.SubElement(mod_conf, "SHORT-NAME")
+    shortname.text = module_name
+    def_ref = ET.SubElement(mod_conf, "DEFINITION-REF", DEST="ECUC-MODULE-DEF")
+    def_ref.text = "/AUTOSAR/EcucDefs/"+module_name
+    ecu_def_edition = ET.SubElement(mod_conf, "ECUC-DEF-EDITION")
+    ecu_def_edition.text = "4.2.0"
+    impl_cfg_var = ET.SubElement(mod_conf, "IMPLEMENTATION-CONFIG-VARIANT")
+    impl_cfg_var.text = "VARIANT-PRE-COMPILE"
 
-   # Create CONTAINER element and export Os object alone.
-   containers = ET.SubElement(mod_conf, "CONTAINERS")
+    # Create CONTAINER folder for adding parameters later.
+    containers = ET.SubElement(mod_conf, "CONTAINERS")
 
-   return containers
+    return containers
 
 
 
-def insert_conf_container(root, name, type, dref):
+def insert_conf_container(root, name, ctnr_type, dref):
    ctnr = ET.SubElement(root, "ECUC-CONTAINER-VALUE")
    shortname = ET.SubElement(ctnr, "SHORT-NAME")
    shortname.text = name
-   if type == "conf":
+   if ctnr_type == "conf":
       def_ref = ET.SubElement(ctnr, "DEFINITION-REF", DEST="ECUC-PARAM-CONF-CONTAINER-DEF")
-   elif type == "choice":
+   elif ctnr_type == "choice":
       def_ref = ET.SubElement(ctnr, "DEFINITION-REF", DEST="ECUC-CHOICE-CONTAINER-DEF")
    else:
       def_ref = ET.SubElement(ctnr, "DEFINITION-REF", DEST="ERROR-INVALID_TYPE")
@@ -68,10 +73,10 @@ def insert_conf_reference(root, dref, vref):
 
 
 
-def insert_conf_param(root, refname, type, subtype, value):
-   if type == "text":
+def insert_conf_param(root, refname, paramtype, subtype, value):
+   if paramtype == "text":
       param_blk = ET.SubElement(root, "ECUC-TEXTUAL-PARAM-VALUE")
-   elif type == "numerical":
+   elif paramtype == "numerical":
       param_blk = ET.SubElement(root, "ECUC-NUMERICAL-PARAM-VALUE")
    else:
       param_blk = ET.SubElement(root, "ECUC-ERROR_UNDEFINED-PARAM-VALUE")
@@ -92,3 +97,22 @@ def insert_conf_param(root, refname, type, subtype, value):
    def_ref = ET.SubElement(param_blk, "VALUE")
    def_ref.text = value
 
+
+
+#####################################
+# Search Functions
+#####################################
+# arg2: root is ELEMENTS block inside AR-PACKAGE named Ecuc_<arpkg>
+def find_module_conf_values(shortname, root):
+   modconf = None
+   
+   if get_tag(root) == "ELEMENTS":
+      for elem in list(root):
+         if get_tag(elem) == "ECUC-MODULE-CONFIGURATION-VALUES":
+            for item in list(elem):
+               if get_tag(item) == "SHORT-NAME":
+                  if item.text == shortname:
+                     modconf = elem
+                     break
+                  
+   return modconf

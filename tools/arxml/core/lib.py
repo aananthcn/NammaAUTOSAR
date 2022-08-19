@@ -24,8 +24,19 @@ import xml.etree.ElementTree as ET
 
 from datetime import datetime
 
+
+Ecuc_ArPkg = None
+
 ###############################################################################
 # Common ARXML specific routines are placed here.
+def setget_ecuc_arpkg_name(filepath):
+   global Ecuc_ArPkg
+   Ecuc_ArPkg = "Ecuc_"+filepath.split("/")[-1].split(".")[0]
+   return Ecuc_ArPkg
+   
+def get_ecuc_arpkg_name():
+   global Ecuc_ArPkg
+   return Ecuc_ArPkg
 
 
 #####################################
@@ -123,7 +134,7 @@ def find_ar_package(shortname, root):
                if get_tag(pkg) == "AR-PACKAGE":
                   for elem in list(pkg):
                      if get_tag(elem) == "SHORT-NAME":
-                        if elem.text == shortname:
+                        if shortname in elem.text:
                            ar_pkg = pkg
                            break
    return ar_pkg

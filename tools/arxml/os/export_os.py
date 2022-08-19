@@ -27,13 +27,11 @@ import arxml.core.lib_conf as lib_conf
 import arxml.core.lib_defs as lib_defs
 
 
+
+
+
 ###############################################################################
-# Export ECUC
-
-# Globals
-EcuName = None
-
-
+# Functions
 def export_appmodes_to_container(root):
    ci = len(list(root))
    for appmode in sg.AppModes:
@@ -71,19 +69,19 @@ def insert_osos_to_subcontainer(root):
    refname = "/AUTOSAR/EcucDefs/Os/OsOS/OsHookStack/OsHookStackSize"
    lib_conf.insert_conf_param(params, refname, "numerical", "int", sg.OS_Cfgs["OS_STACK_SIZE"])
 
-   # FreeOsekParams
-   freeosek_ctnr = lib_conf.insert_conf_container(osos_subctnr, "FreeOsekParams", "conf", "/AUTOSAR/EcucDefs/Os/OsOS/FreeOsekParams")
+   # NammaOsekParams
+   freeosek_ctnr = lib_conf.insert_conf_container(osos_subctnr, "NammaOsekParams", "conf", "/AUTOSAR/EcucDefs/Os/OsOS/VendorSpecific")
    # Parameters
    params = ET.SubElement(freeosek_ctnr, "PARAMETER-VALUES")
-   refname = "/AUTOSAR/EcucDefs/Os/OsOS/FreeOsekParams/OsName"
+   refname = "/AUTOSAR/EcucDefs/Os/OsOS/VendorSpecific/OsName"
    lib_conf.insert_conf_param(params, refname, "text", "enum", sg.OS_Cfgs["OS"])
-   refname = "/AUTOSAR/EcucDefs/Os/OsOS/FreeOsekParams/CpuName"
+   refname = "/AUTOSAR/EcucDefs/Os/OsOS/VendorSpecific/CpuName"
    lib_conf.insert_conf_param(params, refname, "text", "enum", sg.OS_Cfgs["CPU"])
-   refname = "/AUTOSAR/EcucDefs/Os/OsOS/FreeOsekParams/IrqStackSize"
+   refname = "/AUTOSAR/EcucDefs/Os/OsOS/VendorSpecific/IrqStackSize"
    lib_conf.insert_conf_param(params, refname, "numerical", "int", sg.OS_Cfgs["IRQ_STACK_SIZE"])
-   refname = "/AUTOSAR/EcucDefs/Os/OsOS/FreeOsekParams/ContextSaveSize"
+   refname = "/AUTOSAR/EcucDefs/Os/OsOS/VendorSpecific/ContextSaveSize"
    lib_conf.insert_conf_param(params, refname, "numerical", "int", sg.OS_Cfgs["OS_CTX_SAVE_SZ"])
-   refname = "/AUTOSAR/EcucDefs/Os/OsOS/FreeOsekParams/AppTasksSize"
+   refname = "/AUTOSAR/EcucDefs/Os/OsOS/VendorSpecific/AppTasksSize"
    lib_conf.insert_conf_param(params, refname, "numerical", "int", sg.OS_Cfgs["TASK_STACK_SIZE"])
 
 
@@ -135,14 +133,14 @@ def export_counters_to_container(root):
 
 
 def insert_task_reference(root, task, os_obj, dref):
+   ecuname = lib.get_ecuc_arpkg_name()
    if os_obj in task:
       for obj in task[os_obj]:
-         lib_conf.insert_conf_reference(root, dref, "/"+str(EcuName)+"/Os/"+str(obj))
+         lib_conf.insert_conf_reference(root, dref, "/EcucDefs/Os/"+str(obj))
 
 
 
 def export_resources_to_container(root):
-   global EcuName
    resources = []
 
    for task in sg.Tasks:
@@ -166,8 +164,6 @@ def export_resources_to_container(root):
 
 
 def export_tasks_to_container(root):
-   global EcuName
-
    ci = len(list(root))
    for task in sg.Tasks:
       root.insert(ci, ET.Comment("OsTask"))
@@ -201,13 +197,11 @@ def export_tasks_to_container(root):
          l2_refs = ET.SubElement(l2_ctnr, "REFERENCE-VALUES")
          dref = "/AUTOSAR/EcucDefs/Os/OsTask/OsTaskAutostart/OsTaskAppModeRef"
          for am in task["AUTOSTART_APPMODE"]:
-            lib_conf.insert_conf_reference(l2_refs, dref, "/"+str(EcuName)+"/Os/"+str(am))
+            lib_conf.insert_conf_reference(l2_refs, dref, "/EcucDefs/Os/"+str(am))
 
 
 
 def export_alarms_to_container(root):
-   global EcuName
-
    ci = len(list(root)) # ci stands for comment index
    for alm in sg.Alarms:
       root.insert(ci, ET.Comment("OsAlarm"))
@@ -217,7 +211,7 @@ def export_alarms_to_container(root):
       references = ET.SubElement(ctnr, "REFERENCE-VALUES")
       # Counters references
       dref = "/AUTOSAR/EcucDefs/Os/OsAlarm/OsAlarmCounterRef"
-      lib_conf.insert_conf_reference(references, dref, "/"+str(EcuName)+"/Os/"+alm["COUNTER"])
+      lib_conf.insert_conf_reference(references, dref, "/EcucDefs/Os/"+alm["COUNTER"])
       
       # Sub-Containers
       sub_ctnr = ET.SubElement(ctnr, "SUB-CONTAINERS")
@@ -232,7 +226,7 @@ def export_alarms_to_container(root):
          references = ET.SubElement(l4_ctnr, "REFERENCE-VALUES")
          # Task references
          dref = "/AUTOSAR/EcucDefs/Os/OsAlarm/OsAlarmAction/OsAlarmActivateTask/OsAlarmActivateTaskRef"
-         lib_conf.insert_conf_reference(references, dref, "/"+str(EcuName)+"/Os/"+alm["arg1"])
+         lib_conf.insert_conf_reference(references, dref, "/EcucDefs/Os/"+alm["arg1"])
       elif alm["Action-Type"] == "SETEVENT" or alm["Action-Type"] == "OsAlarmSetEvent":
          dref = "/AUTOSAR/EcucDefs/Os/OsAlarm/OsAlarmAction/OsAlarmSetEvent"
          l4_ctnr = lib_conf.insert_conf_container(l3_ctnr, "OsAlarmSetEvent", "conf", dref)
@@ -240,9 +234,9 @@ def export_alarms_to_container(root):
          references = ET.SubElement(l4_ctnr, "REFERENCE-VALUES")
          # Task & Event references
          dref = "/AUTOSAR/EcucDefs/Os/OsAlarm/OsAlarmAction/OsAlarmSetEvent/OsAlarmSetEventTaskRef"
-         lib_conf.insert_conf_reference(references, dref, "/"+str(EcuName)+"/Os/"+alm["arg1"])
+         lib_conf.insert_conf_reference(references, dref, "/EcucDefs/Os/"+alm["arg1"])
          dref = "/AUTOSAR/EcucDefs/Os/OsAlarm/OsAlarmAction/OsAlarmSetEvent/OsAlarmSetEventRef"
-         lib_conf.insert_conf_reference(references, dref, "/"+str(EcuName)+"/Os/"+alm["arg2"])
+         lib_conf.insert_conf_reference(references, dref, "/EcucDefs/Os/"+alm["arg2"])
       elif alm["Action-Type"] == "ALARMCALLBACK" or alm["Action-Type"] == "OsAlarmCallback":
          dref = "/AUTOSAR/EcucDefs/Os/OsAlarm/OsAlarmAction/OsAlarmCallback"
          l4_ctnr = lib_conf.insert_conf_container(l3_ctnr, "OsAlarmCallback", "conf", dref)
@@ -268,7 +262,7 @@ def export_alarms_to_container(root):
          references = ET.SubElement(l2_ctnr, "REFERENCE-VALUES")
          dref = "/AUTOSAR/EcucDefs/Os/OsAlarm/OsAlarmAutostart/OsAlarmAppModeRef"
          for am in alm["APPMODE[]"]:
-            lib_conf.insert_conf_reference(references, dref, "/"+str(EcuName)+"/Os/"+am)
+            lib_conf.insert_conf_reference(references, dref, "/EcucDefs/Os/"+am)
 
 
 
@@ -308,14 +302,9 @@ def export_isrs_to_container(root):
 
 # This function is called from core.main.py with AR-PACKAGES as root and name as Ecuc
 # arg1: AR-PACKAGES element
-# arg2: "Ecuc"
-def build_ecuc_os_package(root, name):
-   global EcuName
-
-   EcuName = name
-
+def build_ecuc_os_package(root):
    # Create the Os Module Configuration Element
-   containers = lib_conf.insert_conf_module(root, "Os")
+   containers = lib_conf.insert_ecuc_module_conf(root, "Os")
 
    # Add OS configurations to the module configuration container
    export_appmodes_to_container(containers)

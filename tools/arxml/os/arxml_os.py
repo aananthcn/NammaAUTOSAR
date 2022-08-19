@@ -81,7 +81,7 @@ def parse_OsHookStack(ctnr):
 
 
 
-def parse_FreeOsekParams(ctnr):
+def parse_NammaOsekParams(ctnr):
    plist = lib.get_param_list(ctnr)
    for lst in plist:
       if lst["tag"] == "OsName":
@@ -111,8 +111,8 @@ def parse_oscfg(ctnr):
                parse_OsHooks(ctnr)
             if dref == "/AUTOSAR/EcucDefs/Os/OsOS/OsHookStack":
                parse_OsHookStack(ctnr)
-            if dref == "/AUTOSAR/EcucDefs/Os/OsOS/FreeOsekParams":
-               parse_FreeOsekParams(ctnr)
+            if dref == "/AUTOSAR/EcucDefs/Os/OsOS/VendorSpecific":
+               parse_NammaOsekParams(ctnr)
 
 
 

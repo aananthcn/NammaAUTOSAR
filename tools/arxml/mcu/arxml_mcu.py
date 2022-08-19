@@ -26,11 +26,10 @@ import arxml.core.lib_defs as lib_defs
 
 
 # This function updates NammaAUTOSAR Mcu parameters into its container
-def update_uc_info_container(root, uc_info):
+def update_uc_info_to_container(root, uc_info):
     ctnrname = "McuNammaAutosarInfo"
-    ctnr_def = lib_defs.find_param_container_def(ctnrname, root)
-    if ctnr_def == None:
-        lib_defs.insert_param_container_def(root, ctnrname)
+    dref = "/AUTOSAR/EcucDefs/Mcu/VendorSpecifc"
+    lib_conf.insert_conf_container(root, ctnrname, "conf", dref)
         
     # Update uc_info to the container
     uc_info_dict = {}
@@ -50,10 +49,10 @@ def update_arxml(ar_file, uc_info):
     tree = ET.parse(ar_file)
     root = tree.getroot()
  
-    McuDefs_InsPt = "EcucDefs"
-    ar_pkg = lib.find_ar_package(McuDefs_InsPt, root)
+    mcu_conf_inspt = lib.get_ecuc_arpkg_name()
+    ar_pkg = lib.find_ar_package(mcu_conf_inspt, root)
     if ar_pkg == None:
-        print("Error: couldn't find "+McuDefs_InsPt+" hence can't update MicroC info to ARXML!")
+        print("Error: couldn't find "+mcu_conf_inspt+" hence can't update MicroC info to ARXML!")
         return
     
     # Now find insertion point. Our insert point is ELEMENTS block inside AR-PACKAGE named EcucDefs (in ver R20-11)
@@ -68,21 +67,20 @@ def update_arxml(ar_file, uc_info):
         
     # Now find if Mcu module-conf is already there in insertion-point
     modname = "Mcu"
-    moddef = lib_defs.find_module_def(modname, ar_isp)
-    if moddef == None:
-        container = lib_defs.insert_module_def(ar_isp, modname)
-        print("Mcu node not found!")
-    else:
-        for item in list(moddef):
-            if lib.get_tag(item) == "CONTAINERS":
-                container = item
-                break
-    if container == None:
-        print("Error: couldn't find CONTAINER in ECUC-MODULE-DEF for "+modname)
-        return
+    modconf = lib_conf.find_module_conf_values(modname, ar_isp)
+    if modconf == None:
+        lib_conf.insert_ecuc_module_conf(ar_isp, modname)
+   
+    # locate container
+    containers = None
+    for item in list(modconf):
+        if lib.get_tag(item) == "CONTAINERS":
+            containers = item
+    if containers == None:
+        print("Error: couldn't find CONTAINERS in Mcu Mod. Conf., hence can't update MicroC info to ARXML!")
 
     # Add Uc_Info contents to CONTAINER
-    update_uc_info_container(container, uc_info)
+    update_uc_info_to_container(containers, uc_info)
 
     # Save ARXML contents to file
     ET.indent(tree, space="\t", level=0)

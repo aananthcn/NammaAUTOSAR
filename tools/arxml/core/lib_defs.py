@@ -126,7 +126,7 @@ def insert_param_container_def(root, name):
 #####################################
 # Search Functions
 #####################################
-# arg2: root is ELEMENTS block inside AR-PACKAGE named EcucDefs (in ver R20-11)
+# arg2: root is ELEMENTS block inside AR-PACKAGE named Ecuc_<arpkg> (in ver R20-11)
 def find_module_def(shortname, root):
    modconf = None
    

@@ -28,7 +28,7 @@ def main(fpath, ftype):
     # Create the main window
     Gui = FreeAutosarConfTool()
 
-    # setup init view
+    # setup initial view (AUTOSAR view is the default, now)
     Gui.init_view_setup(fpath, ftype)
 
     # Run forever!

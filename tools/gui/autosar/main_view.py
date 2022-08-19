@@ -40,6 +40,7 @@ import gui.os.os_config as os_config
 import gui.mcu.uc_view as uc_view
 import gui.autosar.asr_view as av
 
+import arxml.core.lib as lib
 
 #
 #   CLASSES
@@ -71,7 +72,6 @@ class FreeAutosarConfTool:
     
     # General Attributes
     arxml_file = None
-    arxml_pkgn = None
     
     # Graphical Attributes
     title = "AUTOSAR Builder"
@@ -104,6 +104,10 @@ class FreeAutosarConfTool:
 
     def show_uc_view(self):
         uc_view.show_microcontroller_block(self)
+        
+    def set_arxml_filepath(self, filepath):
+        self.arxml_file = filepath
+        lib.setget_ecuc_arpkg_name(filepath)
     
 
 
@@ -182,7 +186,7 @@ def save_project():
         if saved_filename == None:
             messagebox.showinfo(Gui.title, "File to save is not done correctly, saving aborted!")
             return
-        Gui.arxml_file = saved_filename.name
+        Gui.set_arxml_filepath(saved_filename.name)
         print("Info: Exporting "+OIL_FileName+" to "+Gui.arxml_file+" ...")
         OIL_FileName = None
 
@@ -218,10 +222,10 @@ def save_as_arxml():
         messagebox.showinfo(Gui.title, "File to save is not done correctly, saving aborted!")
         return
 
-    Gui.arxml_file = saved_filename.name
+    Gui.set_arxml_filepath(saved_filename.name)
     Gui.main_view.tk.title(Gui.title + " [" + str(saved_filename.name).split("/")[-1] +"]")
     os_config.backup_os_gui_before_save()
-    arxml.export_arxml(saved_filename.name, Gui)
+    arxml.export_arxml(saved_filename.name)
 
 
 
@@ -235,12 +239,12 @@ def open_arxml_file(fpath):
     if fpath == None:
         filename = filedialog.askopenfilename(initialdir=init_dir)
         if type(filename) is not tuple and len(filename) > 5:
-            Gui.arxml_file = filename
+            Gui.set_arxml_filepath(filename)
         else:
             print("Info: no or many ARXML file is chosen, hence open_arxml_file() returning without processing!")
             return
     else:
-        Gui.arxml_file = fpath.strip()
+        Gui.set_arxml_filepath(fpath.strip())
 
     if Gui.main_view.tk != None:
         Gui.main_view.tk.title(Gui.title + " [" + str(Gui.arxml_file).split("/")[-1] +"]")
