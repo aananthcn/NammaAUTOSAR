@@ -26,6 +26,8 @@ import tkinter.ttk as ttk
 
 import gui.mcu.uc_view as uc_view
 
+import arxml.mcu.arxml_mcu as arxml_mcu
+
 
 LeftMargin = 50
 RightMargin = 50
@@ -107,6 +109,7 @@ def draw_sl_os_block(gui, yoffset, height):
 
 
 def draw_microcontroller_block(gui, yoffset, height):
+    arxml_mcu.parse_arxml(gui.arxml_file, gui.uc_info)
     if gui.uc_info.micro == None:
         name = "Microcontroller"
     else:

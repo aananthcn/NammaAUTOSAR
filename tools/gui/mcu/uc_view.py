@@ -49,9 +49,15 @@ MicroController_Arch = {
 }
 
 UcView = None
-SoCMakerStr = None
+
+# widget & data
 SoC_ComboBox = None
+SoCMaker_ComboBox = None
+SoCMaker_ComboList = []
+
+# widget strings
 SoCStr = None
+SoCMakerStr = None
 
 
 ###############################################################################
@@ -62,6 +68,7 @@ def uc_maker_selected(event, gui):
     micro_maker = FreeAUTOSAR_Boards[SoCMakerStr.get()]
     SoC_ComboBox['values'] = micro_maker
     gui.uc_info.micro_maker = SoCMakerStr.get()
+    SoCStr.set("")
     
     
 def uc_selected(event, gui):
@@ -106,14 +113,14 @@ def show_microcontroller_block(gui):
     # Combobox - SoC Manufacturer
     if SoCMakerStr == None:
         SoCMakerStr = tk.StringVar()
-    cmbsel = ttk.Combobox(UcView, width=col2_width, textvariable=SoCMakerStr, state="readonly")
-    chipmakers = []
+    SoCMakerStr.set(gui.uc_info.micro_maker)
+    SoCMaker_ComboBox = ttk.Combobox(UcView, width=col2_width, textvariable=SoCMakerStr, state="readonly")
     for item in FreeAUTOSAR_Boards:
-        chipmakers.append(item)
-    cmbsel['values'] = chipmakers
-    cmbsel.current()
-    cmbsel.grid(row=row, column=2)
-    cmbsel.bind("<<ComboboxSelected>>", lambda ev: uc_maker_selected(ev, gui))
+        SoCMaker_ComboList.append(item)
+    SoCMaker_ComboBox['values'] = SoCMaker_ComboList
+    SoCMaker_ComboBox.current()
+    SoCMaker_ComboBox.grid(row=row, column=2)
+    SoCMaker_ComboBox.bind("<<ComboboxSelected>>", lambda ev: uc_maker_selected(ev, gui))
 
     # Label - SoC
     row = 2
@@ -123,14 +130,15 @@ def show_microcontroller_block(gui):
     # Combobox - SoC
     if SoCStr == None:
         SoCStr = tk.StringVar()
+    SoCStr.set(gui.uc_info.micro)
     SoC_ComboBox = ttk.Combobox(UcView, width=col2_width, textvariable=SoCStr, state="readonly")
-    SoC_ComboBox['values'] = gui.uc_info.micro_maker
+    SoC_ComboBox['values'] = FreeAUTOSAR_Boards[gui.uc_info.micro_maker]
     SoC_ComboBox.current()
     SoC_ComboBox.grid(row=row, column=2)
     SoC_ComboBox.bind("<<ComboboxSelected>>", lambda ev: uc_selected(ev, gui))
 
     # Generate Makefile Button
     row = 4
-    genm = tk.Button(UcView, width=int(2*col2_width/3), text="Generate Source",
+    genm = tk.Button(UcView, width=int(3*col2_width/5), text="Save Configs",
                      command=lambda:uc_cgen.create_source(gui), bg="#206020", fg='white')
     genm.grid(row=row, column=2)

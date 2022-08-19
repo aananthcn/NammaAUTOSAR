@@ -60,21 +60,10 @@ def update_arxml(ar_file, uc_info):
     # Read ARXML File
     tree = ET.parse(ar_file)
     root = tree.getroot()
- 
-    mcu_conf_inspt = lib.get_ecuc_arpkg_name()
-    ar_pkg = lib.find_ar_package(mcu_conf_inspt, root)
-    if ar_pkg == None:
-        print("Error: couldn't find "+mcu_conf_inspt+" hence can't update MicroC info to ARXML!")
-        return
-    
-    # Now find insertion point. Our insert point is ELEMENTS block inside AR-PACKAGE named EcucDefs (in ver R20-11)
-    ar_isp = None
-    for item in list(ar_pkg):
-        if lib.get_tag(item) == "ELEMENTS":
-            ar_isp = item # insertion point
-            break 
+
+    # locate ELEMENTS block
+    ar_isp = lib_conf.find_ecuc_elements_block(root)
     if ar_isp == None:
-        print("Error: couldn't find ELEMENTS in AR-PACKAGE, hence can't update MicroC info to ARXML!")
         return
         
     # Now find if Mcu module-conf is already there in insertion-point
@@ -84,12 +73,9 @@ def update_arxml(ar_file, uc_info):
         modconf = lib_conf.insert_ecuc_module_conf(ar_isp, modname)
    
     # locate container
-    containers = None
-    for item in list(modconf):
-        if lib.get_tag(item) == "CONTAINERS":
-            containers = item
+    containers = lib_conf.find_containers_in_modconf(modconf)
     if containers == None:
-        print("Error: couldn't find CONTAINERS in Mcu Mod. Conf., hence can't update MicroC info to ARXML!")
+        return
 
     # Add Uc_Info contents to CONTAINER
     update_uc_info_to_container(containers, uc_info)
@@ -103,5 +89,36 @@ def update_arxml(ar_file, uc_info):
 
 
 # This function is highly incomplete.....
-def parse_arxml(filepath):
-    print("Mcu parse is under construction!")
+def parse_arxml(ar_file, uc_info):
+    # Read ARXML File
+    tree = ET.parse(ar_file)
+    root = tree.getroot()
+
+    # locate ELEMENTS block
+    elems = lib_conf.find_ecuc_elements_block(root)
+    if elems == None:
+        return
+
+    # locate Mcu module configuration under ELEMENTS
+    modconf = lib_conf.find_module_conf_values("Mcu", elems)
+
+    # locate container
+    containers = lib_conf.find_containers_in_modconf(modconf)
+    if containers == None:
+        return
+
+    # locate VendorSpecific configs
+    ctnrname = "McuNammaAutosarInfo"
+    ctnrval = lib_conf.find_ecuc_container_value(ctnrname, containers)
+    params = None
+    if None != ctnrval:
+        params = lib.get_param_list(ctnrval)
+
+    if None != params:
+        for param in params:
+            if param["tag"] == "Micro":
+                uc_info.micro = param["val"]
+            if param["tag"] == "MicroArch":
+                uc_info.micro_arch = param["val"]
+            if param["tag"] == "MicroMaker":
+                uc_info.micro_maker = param["val"]

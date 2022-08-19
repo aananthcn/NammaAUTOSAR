@@ -102,6 +102,26 @@ def insert_conf_param(root, refname, paramtype, subtype, value):
 #####################################
 # Search Functions
 #####################################
+def find_ecuc_elements_block(root):
+    ecuc_arpkg_name = get_ecuc_arpkg_name()
+    ar_pkg = find_ar_package(ecuc_arpkg_name, root)
+    if ar_pkg == None:
+        print("Error: find_ecuc_elements_block() couldn't find "+ecuc_arpkg_name+"!")
+        return
+    
+    # Now find insertion point. Our insert point is ELEMENTS block inside AR-PACKAGE named EcucDefs (in ver R20-11)
+    ar_elems = None
+    for item in list(ar_pkg):
+        if get_tag(item) == "ELEMENTS":
+            ar_elems = item # insertion point
+            break 
+    if ar_elems == None:
+        print("Error: couldn't find ELEMENTS in AR-PACKAGE, hence can't update MicroC info to ARXML!")
+
+    return ar_elems
+    
+
+
 # arg2: root is ELEMENTS block inside AR-PACKAGE named Ecuc_<arpkg>
 def find_module_conf_values(shortname, root):
    modconf = None
@@ -116,6 +136,18 @@ def find_module_conf_values(shortname, root):
                      break
                   
    return modconf
+
+
+def find_containers_in_modconf(root):
+    containers = None
+    for item in list(root):
+        if get_tag(item) == "CONTAINERS":
+            containers = item
+    if containers == None:
+        print("Error: couldn't find CONTAINERS in Mcu Mod. Conf., hence can't update MicroC info to ARXML!")
+        
+    return containers
+
 
 
 # arg2: root is CONTAINERS block inside ECUC-MODULE-CONFIGURATION-VALUES
