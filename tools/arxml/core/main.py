@@ -33,11 +33,12 @@ import arxml.core.lib_conf as lib_conf
 import arxml.core.lib_defs as lib_defs
 
 
+
 ###############################################################################
 # Main entry to ARXML gen / parse routines
 
 
-def export_arxml(filepath):
+def export_arxml(filepath, gui):
    path = "/".join(filepath.split("/")[0:-1])
    if not os.path.exists(path):
       os.makedirs(path)
@@ -50,24 +51,20 @@ def export_arxml(filepath):
    tree = ET.ElementTree(root)
    arpkgs = ET.SubElement(root, "AR-PACKAGES")
    
-   # Insert EcuDefs AR-PACKAGE
-   main_arpkg_name = "EcucDefs"
+   # Insert Ecuc_<name> AR-PACKAGE
+   gui.arxml_pkgn = "Ecuc_"+filepath.split("/")[-1].split(".")[0]
    ci = len(list(root))
    arpkgs.insert(ci, ET.Comment("AR-Package: AUTOSAR"))
    arpkg = ET.SubElement(arpkgs, "AR-PACKAGE")
-   arpkg.set("UUID", "ECUC:ECUCDEFS")
    shortname = ET.SubElement(arpkg, "SHORT-NAME")
-   shortname.text = main_arpkg_name
+   shortname.text = gui.arxml_pkgn
    arpkg_elements = ET.SubElement(arpkg, "ELEMENTS")
 
    # Insert Module Reference to ECUC-DEFINITION-COLLECTION
-   lib_def.insert_module_ref(arpkg_elements, "Os")
+   lib_defs.insert_module_ref(arpkg_elements, "Os")
    
-   # Insert OS package to ELEMENTS of EcuDefs's AR-PACKAGE -- this is a violation!
-   # NOTE: *** For OS definitions alone we will follow older version (4.2.0) of arxml
-   # This is done to keep the compatibility of import and export functions developed 
    # for OS. This will be changed slowly in future - Aananth (17 Aug 2022 8:18 PM)
-   exp_os.build_ecuc_os_package(arpkg_elements, main_arpkg_name)
+   exp_os.build_ecuc_os_package(arpkg_elements, gui.arxml_pkgn)
 
    ET.indent(tree, space="\t", level=0)
    tree.write(filepath, encoding="utf-8", xml_declaration=True)
