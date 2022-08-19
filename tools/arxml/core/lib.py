@@ -29,7 +29,7 @@ from datetime import datetime
 
 
 #####################################
-# Export Functions
+# General Functions
 #####################################
 
 def finalize_arxml_doc(file):
@@ -43,156 +43,6 @@ def finalize_arxml_doc(file):
 
 
 
-def insert_module_ref(root, mod_name):
-   ecu_def_cltn = None
-   mrefs = None
-
-   # Module references are inside Ecuc def. collection, hence locate that first
-   for item in list(root):
-      if get_tag(item) == "ECUC-DEFINITION-COLLECTION":
-         ecu_def_cltn = item
-         break
-
-   # Insert Ecuc Def. Collection node if it doesn't exist.
-   if ecu_def_cltn == None:
-      ecu_def_cltn = ET.SubElement(root, "ECUC-DEFINITION-COLLECTION")
-      ecu_def_cltn.set("UUID", "ECUC:ECUC-DEFINITION-COLLECTION")
-      shortname = ET.SubElement(ecu_def_cltn, "SHORT-NAME")
-      shortname.text = "AUTOSARParameterDefinition"
-      mrefs = ET.SubElement(ecu_def_cltn, "MODULE-REFS")
-
-   # for new file, mrefs will be initialized in above line. Else search it
-   if mrefs == None:
-      for item in list(ecu_def_cltn):
-         if get_tag(item) == "MODULE-REFS":
-            mrefs = item
-            break   
-
-   # Check if the module ref is already present in definition collection
-   mref = find_module_ref(mod_name, ecu_def_cltn)
-   if mref != None:
-      print("Module reference for "+mod_name+" is already present in ECUC-DEFINITION-COLLECTION!")
-      return
-
-   # Insert mod_name to MODULE-REFS node
-   mref =  ET.SubElement(mrefs, "MODULE-REF")
-   mref.set("DEST", "ECUC-MODULE-DEF")
-   mref.text = "/AUTOSAR/EcucDefs/"+mod_name
-
-
-
-def insert_admin_data(root, version):
-   adm_data = ET.SubElement(root, "ADMIN-DATA")
-   doc_revs = ET.SubElement(adm_data, "DOC-REVISIONS")
-   doc_rev = ET.SubElement(doc_revs, "DOC-REVISION")
-   rev_label = ET.SubElement(doc_rev, "REVISION-LABEL")
-   rev_label.text = version
-   issued_by = ET.SubElement(doc_rev, "ISSUED-BY")
-   issued_by.text = "AUTOSAR"
-
-
-
-# NOTE: This API will be removed when OS ARXML is migrated from 4.2.0 to R20-11
-def deprecated_insert_modconf(element_node, module_name):
-   mod_conf = ET.SubElement(element_node, "ECUC-MODULE-CONFIGURATION-VALUES")
-   shortname = ET.SubElement(mod_conf, "SHORT-NAME")
-   shortname.text = module_name
-   def_ref = ET.SubElement(mod_conf, "DEFINITION-REF", DEST="ECUC-MODULE-DEF")
-   def_ref.text = "/AUTOSAR/EcucDefs/"+module_name
-   ecu_def_edition = ET.SubElement(mod_conf, "ECUC-DEF-EDITION")
-   ecu_def_edition.text = "4.2.0"
-   impl_cfg_var = ET.SubElement(mod_conf, "IMPLEMENTATION-CONFIG-VARIANT")
-   impl_cfg_var.text = "VARIANT-PRE-COMPILE"
-
-   # Create CONTAINER element and export Os object alone.
-   containers = ET.SubElement(mod_conf, "CONTAINERS")
-
-   return containers
-
-
-
-def insert_module_def(root, module_name):
-   # First add a module reference
-   insert_module_ref(root, module_name)
-
-   # Then add module definitions node
-   mod_def = ET.SubElement(root, "ECUC-MODULE-DEF")
-   mod_def.set("UUID", "ECUC:"+module_name)
-   shortname = ET.SubElement(mod_def, "SHORT-NAME")
-   shortname.text = module_name
-   insert_admin_data(mod_def, "4.6.0")
-   item = ET.SubElement(mod_def, "LOWER-MULTIPLICITY")
-   item.text = "0"
-   item = ET.SubElement(mod_def, "UPPER-MULTIPLICITY")
-   item.text = "1"
-   item = ET.SubElement(mod_def, "POST-BUILD-VARIANT-SUPPORT")
-   item.text = "false"
-   cfg_vars = ET.SubElement(mod_def, "SUPPORTED-CONFIG-VARIANTS")
-   cfg_var = ET.SubElement(cfg_vars, "SUPPORTED-CONFIG-VARIANT")
-   cfg_var.text = "VARIANT-PRE-COMPILE"
-
-   # Create CONTAINER element and export module (Os, Mcu, ...) objects.
-   containers = ET.SubElement(mod_def, "CONTAINERS")
-
-   return containers
-
-
-
-def deprecated_insert_container(root, name, type, dref):
-   ctnr = ET.SubElement(root, "ECUC-CONTAINER-VALUE")
-   shortname = ET.SubElement(ctnr, "SHORT-NAME")
-   shortname.text = name
-   if type == "conf":
-      def_ref = ET.SubElement(ctnr, "DEFINITION-REF", DEST="ECUC-PARAM-CONF-CONTAINER-DEF")
-   elif type == "choice":
-      def_ref = ET.SubElement(ctnr, "DEFINITION-REF", DEST="ECUC-CHOICE-CONTAINER-DEF")
-   else:
-      def_ref = ET.SubElement(ctnr, "DEFINITION-REF", DEST="ERROR-INVALID_TYPE")
-   def_ref.text = dref
-   return ctnr
-
-
-
-def deprecated_insert_reference(root, dref, vref):
-   rctnr = ET.SubElement(root, "ECUC-REFERENCE-VALUE")
-   def_ref = ET.SubElement(rctnr, "DEFINITION-REF", DEST="ECUC-REFERENCE-DEF")
-   def_ref.text = dref
-   val_ref = ET.SubElement(rctnr, "VALUE-REF", DEST="ECUC-CONTAINER-VALUE")
-   val_ref.text = vref
-   return rctnr
-
-
-
-def deprecated_insert_param(root, refname, type, subtype, value):
-   if type == "text":
-      param_blk = ET.SubElement(root, "ECUC-TEXTUAL-PARAM-VALUE")
-   elif type == "numerical":
-      param_blk = ET.SubElement(root, "ECUC-NUMERICAL-PARAM-VALUE")
-   else:
-      param_blk = ET.SubElement(root, "ECUC-ERROR_UNDEFINED-PARAM-VALUE")
-
-
-   if subtype == "bool":
-      def_ref = ET.SubElement(param_blk, "DEFINITION-REF", DEST="ECUC-BOOLEAN-PARAM-DEF")
-   elif subtype == "int":
-      def_ref = ET.SubElement(param_blk, "DEFINITION-REF", DEST="ECUC-INTEGER-PARAM-DEF")
-   elif subtype == "func":
-      def_ref = ET.SubElement(param_blk, "DEFINITION-REF", DEST="ECUC-FUNCTION-NAME-DEF")
-   elif subtype == "enum":
-      def_ref = ET.SubElement(param_blk, "DEFINITION-REF", DEST="ECUC-ENUMERATION-PARAM-DEF")
-   else:
-      def_ref = ET.SubElement(param_blk, "DEFINITION-REF", DEST="ECUC-ERROR_UNDEFINED-PARAM-DEF")
-   def_ref.text = refname
-
-   def_ref = ET.SubElement(param_blk, "VALUE")
-   def_ref.text = value
-
-
-
-
-#####################################
-# Import Functions
-#####################################
 def tag_uri_and_name(elem):
     if elem.tag[0] == "{":
         uri, ignore, tag = elem.tag[1:].partition("}")
@@ -202,6 +52,10 @@ def tag_uri_and_name(elem):
     return uri, tag
 
 
+
+#####################################
+# Get Functions
+#####################################
 def get_tag(elem):
    uri, tag = tag_uri_and_name(elem)
    return tag
@@ -275,34 +129,3 @@ def find_ar_package(shortname, root):
    return ar_pkg
 
 
-
-# arg2: root is ELEMENTS block inside AR-PACKAGE named EcucDefs (in ver R20-11)
-def find_module_def(shortname, root):
-   modconf = None
-   
-   if get_tag(root) == "ELEMENTS":
-      for elem in list(root):
-         if get_tag(elem) == "ECUC-MODULE-DEF":
-            for item in list(elem):
-               if get_tag(item) == "SHORT-NAME":
-                  if item.text == shortname:
-                     modconf = elem
-                     break
-                  
-   return modconf
-
-
-
-# arg2: root is ECUC-DEFINITION-COLLECTION block (in ver R20-11)
-def find_module_ref(shortname, root):
-   modref = None
-
-   if get_tag(root) == "ECUC-DEFINITION-COLLECTION":
-      for item in list(root):
-         if get_tag(item) == "MODULE-REFS":
-            for ref in list(item):
-               if shortname in ref.text:
-                  modref = ref
-                  break
-
-   return modref

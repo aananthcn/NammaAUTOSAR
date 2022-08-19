@@ -29,6 +29,9 @@ sys.path.insert(0, os.getcwd()+"/tools/arxml")
 import arxml.os.export_os as exp_os
 import arxml.os.arxml_os as arxml_os
 import arxml.core.lib as lib
+import arxml.core.lib_conf as lib_conf
+import arxml.core.lib_defs as lib_defs
+
 
 ###############################################################################
 # Main entry to ARXML gen / parse routines
@@ -58,7 +61,7 @@ def export_arxml(filepath):
    arpkg_elements = ET.SubElement(arpkg, "ELEMENTS")
 
    # Insert Module Reference to ECUC-DEFINITION-COLLECTION
-   lib.insert_module_ref(arpkg_elements, "Os")
+   lib_def.insert_module_ref(arpkg_elements, "Os")
    
    # Insert OS package to ELEMENTS of EcuDefs's AR-PACKAGE -- this is a violation!
    # NOTE: *** For OS definitions alone we will follow older version (4.2.0) of arxml

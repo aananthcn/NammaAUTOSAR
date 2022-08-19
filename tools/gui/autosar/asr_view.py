@@ -124,8 +124,8 @@ def redraw_microcontroller_block(gui):
 # Main Entry Point
 def show_autosar_modules_view(gui):
     global UcBlk_yoffset, UcBlk_height
-    print("X = ", gui.main_view.xsize)
-    print("Y = ", gui.main_view.ysize)
+    print("Info: X = ", gui.main_view.xsize)
+    print("Info: Y = ", gui.main_view.ysize)
     gui.main_view.destroy_childwindow()
     gui.main_view.window = ttk.Frame(gui.main_view.tk) #dummy
    

@@ -24,6 +24,8 @@ import xml.etree.ElementTree as ET
 
 import os_builder.scripts.System_Generator as sg
 import arxml.core.lib as lib
+import arxml.core.lib_conf as lib_conf
+import arxml.core.lib_defs as lib_defs
 
 
 ###############################################################################

@@ -20,7 +20,24 @@
 #
 import xml.etree.ElementTree as ET
 import arxml.core.lib as lib
+import arxml.core.lib_conf as lib_conf
+import arxml.core.lib_defs as lib_defs
 
+
+
+# This function updates NammaAUTOSAR Mcu parameters into its container
+def update_uc_info_container(root, uc_info):
+    ctnrname = "McuNammaAutosarInfo"
+    ctnr_def = lib_defs.find_param_container_def(ctnrname, root)
+    if ctnr_def == None:
+        lib_defs.insert_param_container_def(root, ctnrname)
+        
+    # Update uc_info to the container
+    uc_info_dict = {}
+    uc_info_dict["McuMicro"] = uc_info.micro
+    uc_info_dict["McuMicroArch"] = uc_info.micro_arch
+    uc_info_dict["McuMicroMaker"] = uc_info.micro_maker
+    
 
 
 # Update ARXML with Micro Controller Info only.
@@ -51,9 +68,9 @@ def update_arxml(ar_file, uc_info):
         
     # Now find if Mcu module-conf is already there in insertion-point
     modname = "Mcu"
-    moddef = lib.find_module_def(modname, ar_isp)
+    moddef = lib_defs.find_module_def(modname, ar_isp)
     if moddef == None:
-        container = lib.insert_module_def(ar_isp, modname)
+        container = lib_defs.insert_module_def(ar_isp, modname)
         print("Mcu node not found!")
     else:
         for item in list(moddef):
@@ -65,7 +82,7 @@ def update_arxml(ar_file, uc_info):
         return
 
     # Add Uc_Info contents to CONTAINER
-    # TODO: TBD
+    update_uc_info_container(container, uc_info)
 
     # Save ARXML contents to file
     ET.indent(tree, space="\t", level=0)
