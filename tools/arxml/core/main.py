@@ -44,10 +44,7 @@ def export_arxml(filepath):
       os.makedirs(path)
    
    root = ET.Element("AUTOSAR")
-   root.set("xmlns", "http://autosar.org/schema/r4.0")
-   root.set("xmlns:xml", "http://www.w3.org/XML/1998/namespace")
-   root.set("xmlns:xsi", "http://www.w3.org/2001/XMLSchema-instance")
-   root.set("xsi:schemaLocation", "http://autosar.org/schema/r4.0 AUTOSAR_4-0-3_STRICT.xsd")
+   lib.set_arxml_namespace(root)
    tree = ET.ElementTree(root)
    arpkgs = ET.SubElement(root, "AR-PACKAGES")
    

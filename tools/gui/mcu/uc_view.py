@@ -59,8 +59,9 @@ SoCStr = None
 def uc_maker_selected(event, gui):
     global SoCMakerStr, FreeAUTOSAR_Boards, SoCStr, SoC_ComboBox
 
-    gui.uc_info.micro_maker = FreeAUTOSAR_Boards[SoCMakerStr.get()]
-    SoC_ComboBox['values'] = gui.uc_info.micro_maker
+    micro_maker = FreeAUTOSAR_Boards[SoCMakerStr.get()]
+    SoC_ComboBox['values'] = micro_maker
+    gui.uc_info.micro_maker = SoCMakerStr.get()
     
     
 def uc_selected(event, gui):

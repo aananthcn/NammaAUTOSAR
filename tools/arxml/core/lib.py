@@ -42,6 +42,12 @@ def get_ecuc_arpkg_name():
 #####################################
 # General Functions
 #####################################
+def set_arxml_namespace(root):
+   root.set("xmlns", "http://autosar.org/schema/r4.0")
+   root.set("xmlns:xml", "http://www.w3.org/XML/1998/namespace")
+   root.set("xmlns:xsi", "http://www.w3.org/2001/XMLSchema-instance")
+   root.set("xsi:schemaLocation", "http://autosar.org/schema/r4.0 AUTOSAR_4-0-3_STRICT.xsd")
+
 
 def finalize_arxml_doc(file):
    with open(file, "r") as f:

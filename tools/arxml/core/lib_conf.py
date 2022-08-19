@@ -44,7 +44,7 @@ def insert_ecuc_module_conf(element_node, module_name):
     # Create CONTAINER folder for adding parameters later.
     containers = ET.SubElement(mod_conf, "CONTAINERS")
 
-    return containers
+    return mod_conf
 
 
 
@@ -116,3 +116,19 @@ def find_module_conf_values(shortname, root):
                      break
                   
    return modconf
+
+
+# arg2: root is CONTAINERS block inside ECUC-MODULE-CONFIGURATION-VALUES
+def find_ecuc_container_value(shortname, root):
+   ctnrval = None
+   
+   if get_tag(root) == "CONTAINERS":
+      for elem in list(root):
+         if get_tag(elem) == "ECUC-CONTAINER-VALUE":
+            for item in list(elem):
+               if get_tag(item) == "SHORT-NAME":
+                  if item.text == shortname:
+                     ctnrval = elem
+                     break
+                  
+   return ctnrval

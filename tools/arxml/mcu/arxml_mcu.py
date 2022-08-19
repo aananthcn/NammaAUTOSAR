@@ -28,14 +28,26 @@ import arxml.core.lib_defs as lib_defs
 # This function updates NammaAUTOSAR Mcu parameters into its container
 def update_uc_info_to_container(root, uc_info):
     ctnrname = "McuNammaAutosarInfo"
-    dref = "/AUTOSAR/EcucDefs/Mcu/VendorSpecifc"
-    lib_conf.insert_conf_container(root, ctnrname, "conf", dref)
+    ctnrval = lib_conf.find_ecuc_container_value(ctnrname, root)
+    
+    # Delete node to rewrite new values
+    if None != ctnrval:
+        root.remove(ctnrval)
+    
+    # Create a new container    
+    dref = "/AUTOSAR/EcucDefs/Mcu/VendorSpecific"
+    ctnrval = lib_conf.insert_conf_container(root, ctnrname, "conf", dref)
         
-    # Update uc_info to the container
-    uc_info_dict = {}
-    uc_info_dict["McuMicro"] = uc_info.micro
-    uc_info_dict["McuMicroArch"] = uc_info.micro_arch
-    uc_info_dict["McuMicroMaker"] = uc_info.micro_maker
+        
+    # Parameters
+    params = ET.SubElement(ctnrval, "PARAMETER-VALUES")
+    refname = "/AUTOSAR/EcucDefs/Mcu/VendorSpecific/Micro"
+    lib_conf.insert_conf_param(params, refname, "numerical", "enum", uc_info.micro)
+    refname = "/AUTOSAR/EcucDefs/Mcu/VendorSpecific/MicroArch"
+    lib_conf.insert_conf_param(params, refname, "numerical", "enum", uc_info.micro_arch)
+    refname = "/AUTOSAR/EcucDefs/Mcu/VendorSpecific/MicroMaker"
+    lib_conf.insert_conf_param(params, refname, "numerical", "enum", uc_info.micro_maker)
+    
     
 
 
@@ -69,7 +81,7 @@ def update_arxml(ar_file, uc_info):
     modname = "Mcu"
     modconf = lib_conf.find_module_conf_values(modname, ar_isp)
     if modconf == None:
-        lib_conf.insert_ecuc_module_conf(ar_isp, modname)
+        modconf = lib_conf.insert_ecuc_module_conf(ar_isp, modname)
    
     # locate container
     containers = None
@@ -92,10 +104,4 @@ def update_arxml(ar_file, uc_info):
 
 # This function is highly incomplete.....
 def parse_arxml(filepath):
-   tree = ET.parse(filepath)
-   root = tree.getroot()
-   modconf, cntainr = get_ecuc_tree(root)
-   print("Mcu parse_arxml() is under construction!")
-   for cv in cntainr:
-      dref = lib.get_dref_from_container(cv)
-      print(dref)
+    print("Mcu parse is under construction!")
