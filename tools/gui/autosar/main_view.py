@@ -78,6 +78,7 @@ class FreeAutosarConfTool:
     main_view = None        # the GUI root frame
     micro_block = None      # the Microcontroller block widget
     recentfiles = None
+    asr_blocks = {}
 
     # Methods
     def __init__(self):

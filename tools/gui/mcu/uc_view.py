@@ -22,8 +22,9 @@
 import tkinter as tk
 from tkinter import ttk
 
-import gui.autosar.asr_view as asr_view
+#import gui.autosar.asr_view as asr_view
 import gui.mcu.uc_cgen as uc_cgen
+import arxml.mcu.arxml_mcu as arxml_mcu
 
 
 class Uc_Info:
@@ -76,8 +77,9 @@ def uc_selected(event, gui):
     gui.uc_info.micro_arch = MicroController_Arch[gui.uc_info.micro]
 
     # since micro-controller is selected, let us update the arch. view
-    gui.micro_block.destroy()
-    asr_view.redraw_microcontroller_block(gui)
+    new_label = uc_block_get_updated_label(gui)
+    if new_label != None:
+        gui.asr_blocks["uC"].update_label(gui, new_label)
 
 
 def on_uc_view_close():
@@ -87,10 +89,27 @@ def on_uc_view_close():
     UcView = None
 
 
+def uc_block_get_updated_label(gui):
+    new_name = None
+    if gui.uc_info.micro != None:
+        cur_name = gui.asr_blocks["uC"].label
+        upd_name = cur_name.split("[")[0].strip() + " [" + gui.uc_info.micro + "]"
+        if cur_name != upd_name:
+            new_name = upd_name
+    return new_name
+
 
 ###############################################################################
-# Main Entry Point
-def show_microcontroller_block(gui):
+# Main Entry Points
+def uc_block_constructor(gui, uc_blk):
+    arxml_mcu.parse_arxml(gui.arxml_file, gui.uc_info)
+    new_label = uc_block_get_updated_label(gui)
+    if new_label != None:
+        uc_blk.label = new_label
+
+
+
+def uc_block_click_handler(gui):
     global SoCMakerStr, FreeAUTOSAR_Boards, SoCStr, UcView, SoC_ComboBox
 
     # If previous view is active return

@@ -25,8 +25,10 @@ import tkinter.ttk as ttk
 
 
 import gui.mcu.uc_view as uc_view
-
+#from gui.autosar.main_view import Gui
 import arxml.mcu.arxml_mcu as arxml_mcu
+
+import gui.autosar.asr_block as asr_block
 
 
 LeftMargin = 50
@@ -108,34 +110,54 @@ def draw_sl_os_block(gui, yoffset, height):
     draw_vbutton(name, cb, gui, yoffset, height, '#9999FF', 'black')
 
 
-def draw_microcontroller_block(gui, yoffset, height):
-    arxml_mcu.parse_arxml(gui.arxml_file, gui.uc_info)
-    if gui.uc_info.micro == None:
-        name = "Microcontroller"
-    else:
-        name = "Microcontroller ["+gui.uc_info.micro+"]"
-    cb = uc_view.show_microcontroller_block
-    gui.micro_block = draw_hbutton(name, cb, gui, yoffset, height, '#000000', 'white')
+# def draw_microcontroller_block(gui, yoffset, height):
+#     arxml_mcu.parse_arxml(gui.arxml_file, gui.uc_info)
+#     if gui.uc_info.micro == None:
+#         name = "Microcontroller"
+#     else:
+#         name = "Microcontroller ["+gui.uc_info.micro+"]"
+#     cb = uc_view.show_microcontroller_block
+#     gui.micro_block = draw_hbutton(name, cb, gui, yoffset, height, '#000000', 'white')
     
-def redraw_microcontroller_block(gui):
-    global UcBlk_yoffset, UcBlk_height
-    draw_microcontroller_block(gui, UcBlk_yoffset, UcBlk_height)
+# def redraw_microcontroller_block(gui):
+#     global UcBlk_yoffset, UcBlk_height
+#     draw_microcontroller_block(gui, UcBlk_yoffset, UcBlk_height)
 
 
 
 ###############################################################################
 # Main Entry Point
+AsrBlocksConfigList = [
+    {
+        # Name and orientation
+        "name": "uC", "text": "MicroController Block", "ori": "H",
+        # Position (pixels), size (% of screen size) & colors
+        "x": 0, "y": 0, "w": 100.0, "h": 4.7, "bgc": '#000000', "fgc": 'white',
+        # click callback & constructor
+        "cb": uc_view.uc_block_click_handler, "cons": uc_view.uc_block_constructor
+    }
+]
+
+
 def show_autosar_modules_view(gui):
     global UcBlk_yoffset, UcBlk_height
     print("Info: X = ", gui.main_view.xsize)
     print("Info: Y = ", gui.main_view.ysize)
     gui.main_view.destroy_childwindow()
     gui.main_view.window = ttk.Frame(gui.main_view.tk) #dummy
+    
+    for blk in AsrBlocksConfigList:
+        key = blk["name"]
+        obj = asr_block.AsrBlock(gui, blk["text"], blk["ori"], blk["x"], blk["y"], blk["w"], blk["h"], blk["fgc"], blk["bgc"], blk["cb"])
+        gui.asr_blocks[key] = obj
+        if blk["cons"] != None:
+            blk["cons"](gui, obj)
+        obj.draw(gui)
    
-    # Microcontroller block 
+    # Microcontroller block
     UcBlk_yoffset = BottomMargin
     UcBlk_height = 40
-    draw_microcontroller_block(gui, UcBlk_yoffset, UcBlk_height)
+    # draw_microcontroller_block(gui, UcBlk_yoffset, UcBlk_height)
     
     # System Services block
     yoffset = UcBlk_yoffset + UcBlk_height
