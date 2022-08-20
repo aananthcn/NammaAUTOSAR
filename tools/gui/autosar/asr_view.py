@@ -30,88 +30,10 @@ import gui.mcu.uc_view as uc_view
 import gui.os.os_view as os_view
 
 
-LeftMargin = 50
-RightMargin = 50
-TopMargin = 10
-BottomMargin = 10
-MiscYmargin = 75 # I don't know the reason for this number, but this is the measured value.
-
-# Microcontroller Block
-UcBlk_yoffset = None
-UcBlk_height = None
 
 
-
-def show_application_block(gui):
-    print("show_application_block() is under construction!")
-
-def show_rte_block(gui):
-    print("show_rte_block() is under construction!")
-
-# def show_sl_os_config(gui):
-#     gui.show_os_config()
-
-
-
-###############################################################################
-# Block view primitives
-def draw_hbutton(name, cb, gui, yoffset, height, bgc, fgc):
-    view = gui.main_view.tk
-    bfont = tkfont.Font(family='Helvetica', size=16)
-    button = tk.Button(view, text=name, command=lambda:cb(gui), bg=bgc, fg=fgc)
-    button['font'] = bfont
-    yval = gui.main_view.ysize-height-BottomMargin-yoffset - MiscYmargin 
-    button.place(x=LeftMargin, y=yval, width=gui.main_view.xsize-LeftMargin-RightMargin, height=height)
-    return button
-
-
-# Vertical Button Handler functions
-def vbutton_cb_facade(ev, cb, gui):
-    ev.widget.configure(relief="sunken")
-    cb(gui)
-
-def draw_vbutton(name, cb, gui, yoffset, height, bgc, fgc):
-    view = gui.main_view.tk
-    bfont = tkfont.Font(family='Helvetica', size=16)
-    
-    yval   = gui.main_view.ysize-height-BottomMargin-yoffset - MiscYmargin
-    width  = gui.main_view.xsize/32
-    border = 2
-    canvas = tk.Canvas(view, height=height, width=width, background="SystemButtonFace", borderwidth=border,
-                       relief="raised", bg=bgc)
-
-    canvas.create_text((width/2, height/2), angle="90", anchor="center", text=name, fill=fgc, font=bfont)
-    canvas.bind("<ButtonPress-1>", lambda ev: vbutton_cb_facade(ev, cb, gui))
-    canvas.bind("<ButtonRelease-1>", lambda ev: ev.widget.configure(relief="raised"))
-    canvas.place(x=LeftMargin-border, y=yval, width=width, height=height)
-    return canvas
-
-
-
-
-###############################################################################
-# AUTOSAR BLOCKS
-def draw_application_block(gui, yoffset, height):
-    name = "Applications"
-    cb = show_application_block
-    draw_hbutton(name, cb, gui, yoffset, height, '#4D4D4D', 'white')
-
-
-def draw_rte_block(gui, yoffset, height):
-    name = "Run Time Environment (RTE)"
-    cb = show_rte_block
-    draw_hbutton(name, cb, gui, yoffset, height, '#FF5008', 'white')
-
-
-# def draw_sl_os_block(gui, yoffset, height):
-#     name = "AUTOSAR OS"
-#     cb = show_sl_os_config
-#     draw_vbutton(name, cb, gui, yoffset, height, '#9999FF', 'black')
-
-
-
-###############################################################################
-# Main Entry Point
+# ###############################################################################
+# # AUTOSAR BLOCKS configuration
 AsrBlocksConfigList = [
     {
         # Name and orientation
@@ -125,13 +47,48 @@ AsrBlocksConfigList = [
         # Name and orientation
         "name": "Os", "text": "AUTOSAR OS", "ori": "V",
         # Position (offset % of screen size), size (% of screen size) & colors
-        "x": 0.0, "y": 4.05, "w": 2.5, "h": 68.8, "bgc": '#9999FF', "fgc": 'black',
+        "x": 0.0, "y": 4.06, "w": 2.5, "h": 68.8, "bgc": '#9999FF', "fgc": 'black',
         # click callback & constructor
         "cb": os_view.os_block_click_handler, "cons": None
+    },
+    {
+        # Name and orientation
+        "name": "Os", "text": "EcuM", "ori": "V",
+        # Position (offset % of screen size), size (% of screen size) & colors
+        "x": 2.5, "y": 4.06, "w": 2.5, "h": 45, "bgc": '#9999FF', "fgc": 'black',
+        # click callback & constructor
+        "cb": None, "cons": None
+    },
+    {
+        # Name and orientation
+        "name": "Os", "text": "Mcu", "ori": "V",
+        # Position (offset % of screen size), size (% of screen size) & colors
+        "x": 5.0, "y": 4.06, "w": 2.5, "h": 25, "bgc": '#FF7C80', "fgc": 'black',
+        # click callback & constructor
+        "cb": None, "cons": None
+    },
+    {
+        # Name and orientation
+        "name": "Rte", "text": "Run Time Environment (RTE)", "ori": "H",
+        # Position (offset % of screen size), size (% of screen size) & colors
+        "x": 0.0, "y": 64.1, "w": 100.0, "h": 4.7, "bgc": '#FF5008', "fgc": 'white',
+        # click callback & constructor
+        "cb": None, "cons": None
+    },
+    {
+        # Name and orientation
+        "name": "App", "text": "Applications", "ori": "H",
+        # Position (offset % of screen size), size (% of screen size) & colors
+        "x": 0.0, "y": 68.4, "w": 100.0, "h": 8, "bgc": '#4D4D4D', "fgc": 'white',
+        # click callback & constructor
+        "cb": None, "cons": None
     }
 ]
 
 
+
+###############################################################################
+# Main Entry Point
 def show_autosar_modules_view(gui):
     global UcBlk_yoffset, UcBlk_height
     print("Info: X = ", gui.main_view.xsize)
@@ -147,21 +104,3 @@ def show_autosar_modules_view(gui):
             blk["cons"](gui, obj)
         obj.draw(gui)
    
-    # Microcontroller block
-    UcBlk_yoffset = BottomMargin
-    UcBlk_height = 40
-    
-    # System Services block
-    yoffset = UcBlk_yoffset + UcBlk_height
-    bsw_height = 3 * gui.main_view.ysize / 5
-    # draw_sl_os_block(gui, yoffset, bsw_height)
-    
-    # RTE block
-    yoffset += bsw_height
-    rte_height = 40
-    draw_rte_block(gui, yoffset, rte_height)
-    
-    # Applications block
-    yoffset += rte_height
-    app_height = 80
-    draw_application_block(gui, yoffset, app_height)

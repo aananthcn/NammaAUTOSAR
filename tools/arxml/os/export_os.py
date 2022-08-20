@@ -304,7 +304,8 @@ def export_isrs_to_container(root):
 # arg1: AR-PACKAGES element
 def build_ecuc_os_package(root):
    # Create the Os Module Configuration Element
-   containers = lib_conf.insert_ecuc_module_conf(root, "Os")
+   modconf = lib_conf.insert_ecuc_module_conf(root, "Os")
+   containers = lib_conf.find_containers_in_modconf(modconf)
 
    # Add OS configurations to the module configuration container
    export_appmodes_to_container(containers)
