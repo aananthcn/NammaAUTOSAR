@@ -166,3 +166,6 @@ def show_os_config(gui):
     gui.main_view.window.bind("<<NotebookTabChanged>>", show_os_tab_switch)
     
 
+
+def os_block_click_handler(gui):
+    show_os_config(gui)

@@ -36,7 +36,7 @@ from tkinter import messagebox
 from tkinter import ttk
 from tkinter import filedialog
 
-import gui.os.os_config as os_config
+import gui.os.os_view as os_view
 import gui.mcu.uc_view as uc_view
 import gui.autosar.asr_view as av
 
@@ -101,7 +101,7 @@ class FreeAutosarConfTool:
             print("Unsupported filetype argument provided!")
 
     def show_os_config(self):
-        os_config.show_os_config(self)
+        os_view.show_os_config(self)
 
     def show_uc_view(self):
         uc_view.show_microcontroller_block(self)
@@ -178,7 +178,7 @@ def open_oil_file(fpath):
 def save_project():
     global OIL_FileName, Gui
 
-    os_config.backup_os_gui_before_save()
+    os_view.backup_os_gui_before_save()
 
     # Export if the input file OIL file.
     if OIL_FileName != None:
@@ -225,7 +225,7 @@ def save_as_arxml():
 
     Gui.set_arxml_filepath(saved_filename.name)
     Gui.main_view.tk.title(Gui.title + " [" + str(saved_filename.name).split("/")[-1] +"]")
-    os_config.backup_os_gui_before_save()
+    os_view.backup_os_gui_before_save()
     arxml.export_arxml(saved_filename.name)
 
 
@@ -286,7 +286,7 @@ def add_menus(rv, flst):
     MenuBar.add_cascade(label="File", menu=FileMenu)
 
     view = tk.Menu(MenuBar, tearoff=0)
-    view.add_command(label="OS Config", command=lambda: os_config.show_os_config(Gui))
+    view.add_command(label="OS Config", command=lambda: os_view.show_os_config(Gui))
     view.add_command(label="AUTOSAR Module View", command=lambda: av.show_autosar_modules_view(Gui))
     MenuBar.add_cascade(label="View", menu=view)
 

@@ -126,6 +126,10 @@ def find_ecuc_elements_block(root):
 def find_module_conf_values(shortname, root):
    modconf = None
    
+   if shortname == None:
+      print("Error: Invalid argument to find_module_conf_values()")
+      return
+   
    if get_tag(root) == "ELEMENTS":
       for elem in list(root):
          if get_tag(elem) == "ECUC-MODULE-CONFIGURATION-VALUES":
@@ -140,6 +144,10 @@ def find_module_conf_values(shortname, root):
 
 def find_containers_in_modconf(root):
     containers = None
+    if root == None:
+       print("Error: Invalid argument to find_containers_in_modconf()")
+       return
+    
     for item in list(root):
         if get_tag(item) == "CONTAINERS":
             containers = item
@@ -153,6 +161,10 @@ def find_containers_in_modconf(root):
 # arg2: root is CONTAINERS block inside ECUC-MODULE-CONFIGURATION-VALUES
 def find_ecuc_container_value(shortname, root):
    ctnrval = None
+   
+   if shortname == None:
+      print("Error: Invalid argument to find_ecuc_container_value()")
+      return
    
    if get_tag(root) == "CONTAINERS":
       for elem in list(root):

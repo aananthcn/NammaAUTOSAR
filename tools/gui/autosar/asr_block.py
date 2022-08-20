@@ -62,11 +62,11 @@ class AsrBlock:
         self.txtfont = tkfont.Font(family='Helvetica', size=16)
 
     def draw(self, gui):
-        view = gui.main_view.tk
-        width = (gui.main_view.xsize-self.margin.left-self.margin.right) * self.width / 100
-        height = (gui.main_view.ysize-self.margin.top-self.margin.bottom) * self.height / 100
-        xval = self.xpos+self.margin.left
-        yval = gui.main_view.ysize-self.margin.bottom-self.ypos-height
+        view   = gui.main_view.tk
+        width  = (gui.main_view.xsize-self.margin.left-self.margin.right)*self.width/100 
+        height = (gui.main_view.ysize-self.margin.bottom-self.margin.top)*self.height/100
+        xval = self.margin.left + gui.main_view.xsize*self.xpos/100  # x begins at left, hence add
+        yval = gui.main_view.ysize-self.margin.bottom-height - gui.main_view.ysize*self.ypos/100   # y begins at top, hence subtract
         
         if self.widget != None:
             self.widget.destroy()

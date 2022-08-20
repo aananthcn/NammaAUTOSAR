@@ -151,7 +151,10 @@ def uc_block_click_handler(gui):
         SoCStr = tk.StringVar()
     SoCStr.set(gui.uc_info.micro)
     SoC_ComboBox = ttk.Combobox(UcView, width=col2_width, textvariable=SoCStr, state="readonly")
-    SoC_ComboBox['values'] = FreeAUTOSAR_Boards[gui.uc_info.micro_maker]
+    if gui.uc_info.micro_maker != None:
+        SoC_ComboBox['values'] = FreeAUTOSAR_Boards[gui.uc_info.micro_maker]
+    else:
+        SoC_ComboBox['values'] = []
     SoC_ComboBox.current()
     SoC_ComboBox.grid(row=row, column=2)
     SoC_ComboBox.bind("<<ComboboxSelected>>", lambda ev: uc_selected(ev, gui))

@@ -23,12 +23,11 @@ import tkinter.font as tkfont
 from tkinter import *
 import tkinter.ttk as ttk
 
+import arxml.mcu.arxml_mcu as arxml_mcu
+import gui.autosar.asr_block as asr_block
 
 import gui.mcu.uc_view as uc_view
-#from gui.autosar.main_view import Gui
-import arxml.mcu.arxml_mcu as arxml_mcu
-
-import gui.autosar.asr_block as asr_block
+import gui.os.os_view as os_view
 
 
 LeftMargin = 50
@@ -49,8 +48,8 @@ def show_application_block(gui):
 def show_rte_block(gui):
     print("show_rte_block() is under construction!")
 
-def show_sl_os_config(gui):
-    gui.show_os_config()
+# def show_sl_os_config(gui):
+#     gui.show_os_config()
 
 
 
@@ -104,24 +103,10 @@ def draw_rte_block(gui, yoffset, height):
     draw_hbutton(name, cb, gui, yoffset, height, '#FF5008', 'white')
 
 
-def draw_sl_os_block(gui, yoffset, height):
-    name = "AUTOSAR OS"
-    cb = show_sl_os_config
-    draw_vbutton(name, cb, gui, yoffset, height, '#9999FF', 'black')
-
-
-# def draw_microcontroller_block(gui, yoffset, height):
-#     arxml_mcu.parse_arxml(gui.arxml_file, gui.uc_info)
-#     if gui.uc_info.micro == None:
-#         name = "Microcontroller"
-#     else:
-#         name = "Microcontroller ["+gui.uc_info.micro+"]"
-#     cb = uc_view.show_microcontroller_block
-#     gui.micro_block = draw_hbutton(name, cb, gui, yoffset, height, '#000000', 'white')
-    
-# def redraw_microcontroller_block(gui):
-#     global UcBlk_yoffset, UcBlk_height
-#     draw_microcontroller_block(gui, UcBlk_yoffset, UcBlk_height)
+# def draw_sl_os_block(gui, yoffset, height):
+#     name = "AUTOSAR OS"
+#     cb = show_sl_os_config
+#     draw_vbutton(name, cb, gui, yoffset, height, '#9999FF', 'black')
 
 
 
@@ -131,10 +116,18 @@ AsrBlocksConfigList = [
     {
         # Name and orientation
         "name": "uC", "text": "MicroController Block", "ori": "H",
-        # Position (pixels), size (% of screen size) & colors
-        "x": 0, "y": 0, "w": 100.0, "h": 4.7, "bgc": '#000000', "fgc": 'white',
+        # Position (offset % of screen size), size (% of screen size) & colors
+        "x": 0.0, "y": 0.0, "w": 100.0, "h": 4.7, "bgc": '#000000', "fgc": 'white',
         # click callback & constructor
         "cb": uc_view.uc_block_click_handler, "cons": uc_view.uc_block_constructor
+    },
+    {
+        # Name and orientation
+        "name": "Os", "text": "AUTOSAR OS", "ori": "V",
+        # Position (offset % of screen size), size (% of screen size) & colors
+        "x": 0.0, "y": 4.05, "w": 2.5, "h": 68.8, "bgc": '#9999FF', "fgc": 'black',
+        # click callback & constructor
+        "cb": os_view.os_block_click_handler, "cons": None
     }
 ]
 
@@ -157,12 +150,11 @@ def show_autosar_modules_view(gui):
     # Microcontroller block
     UcBlk_yoffset = BottomMargin
     UcBlk_height = 40
-    # draw_microcontroller_block(gui, UcBlk_yoffset, UcBlk_height)
     
     # System Services block
     yoffset = UcBlk_yoffset + UcBlk_height
     bsw_height = 3 * gui.main_view.ysize / 5
-    draw_sl_os_block(gui, yoffset, bsw_height)
+    # draw_sl_os_block(gui, yoffset, bsw_height)
     
     # RTE block
     yoffset += bsw_height
