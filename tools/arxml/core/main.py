@@ -32,13 +32,15 @@ import arxml.core.lib as lib
 import arxml.core.lib_conf as lib_conf
 import arxml.core.lib_defs as lib_defs
 
+import arxml.mcu.arxml_mcu as arxml_mcu
+
 
 
 ###############################################################################
 # Main entry to ARXML gen / parse routines
 
 
-def export_arxml(filepath):
+def export_arxml(filepath, gui):
    path = "/".join(filepath.split("/")[0:-1])
    if not os.path.exists(path):
       os.makedirs(path)
@@ -65,7 +67,9 @@ def export_arxml(filepath):
    ET.indent(tree, space="\t", level=0)
    tree.write(filepath, encoding="utf-8", xml_declaration=True)
    lib.finalize_arxml_doc(filepath)
-   print("Info: Configs are saved to " + filepath)
+   #print("Info: Configs are saved to " + filepath)
+   
+   arxml_mcu.update_arxml(filepath, gui.uc_info)
 
 
 

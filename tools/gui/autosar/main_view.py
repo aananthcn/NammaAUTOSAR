@@ -217,6 +217,8 @@ def generate_code():
 
 
 def save_as_arxml():
+    global Gui
+    
     file_exts = [('ARXML Files', '*.arxml')]
     saved_filename = filedialog.asksaveasfile(initialdir=os.getcwd()+"/output/arxml", filetypes = file_exts, defaultextension = file_exts)
     if saved_filename == None:
@@ -226,7 +228,7 @@ def save_as_arxml():
     Gui.set_arxml_filepath(saved_filename.name)
     Gui.main_view.tk.title(Gui.title + " [" + str(saved_filename.name).split("/")[-1] +"]")
     os_view.backup_os_gui_before_save()
-    arxml.export_arxml(saved_filename.name)
+    arxml.export_arxml(saved_filename.name, Gui)
 
 
 

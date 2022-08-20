@@ -97,10 +97,15 @@ def show_autosar_modules_view(gui):
     gui.main_view.window = ttk.Frame(gui.main_view.tk) #dummy
     
     for blk in AsrBlocksConfigList:
+        # create block view objects from AsrBlocksConfigList
         key = blk["name"]
         obj = asr_block.AsrBlock(gui, blk["text"], blk["ori"], blk["x"], blk["y"], blk["w"], blk["h"], blk["fgc"], blk["bgc"], blk["cb"])
         gui.asr_blocks[key] = obj
+
+        # call the block view constructor
         if blk["cons"] != None:
             blk["cons"](gui, obj)
+
+        # draw the block
         obj.draw(gui)
    
