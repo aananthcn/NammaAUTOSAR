@@ -1,6 +1,9 @@
 .vscode
 .filelist
 
+# folders to ignore
+submodules/AL/*
+
 # Python
 __pycache__/
 *.py[cod]

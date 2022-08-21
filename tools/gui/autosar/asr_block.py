@@ -78,21 +78,20 @@ class AsrBlock:
         if self.widget != None:
             self.widget.destroy()
 
-        if self.orientation == "H":
-            self.widget = tk.Button(view, text=self.label, command=lambda:self.callback(gui), bg=self.bg_color, fg=self.fg_color)
-            self.widget['font'] = self.txtfont
-            self.widget.place(x=xval, y=yval, width=width, height=height)
-            return self.widget
-        elif self.orientation == "V":
-            border = 2
-            self.widget = tk.Canvas(view, height=height, width=width, background="SystemButtonFace", borderwidth=border,
-                            relief="raised", bg=self.bg_color)
+        border = 2
+        self.widget = tk.Canvas(view, height=height, width=width, background="SystemButtonFace", borderwidth=border,
+                        relief="raised", bg=self.bg_color)
 
-            self.widget.create_text((width/2, height/2), angle="90", anchor="center", text=self.label, fill=self.fg_color, font=self.txtfont)
-            self.widget.bind("<ButtonPress-1>", lambda ev: self.asr_block_cb_facade(ev, self.callback, gui))
-            self.widget.bind("<ButtonRelease-1>", lambda ev: ev.widget.configure(relief="raised"))
-            self.widget.place(x=xval-border, y=yval, width=width, height=height)
-            return self.widget
+        angle = "0"
+        if self.orientation == "V":
+            angle = "90"
+            
+        self.widget.create_text((width/2, height/2), angle=angle, anchor="center",
+                                text=self.label, fill=self.fg_color, font=self.txtfont)
+        self.widget.bind("<ButtonPress-1>", lambda ev: self.asr_block_cb_facade(ev, self.callback, gui))
+        self.widget.bind("<ButtonRelease-1>", lambda ev: ev.widget.configure(relief="raised"))
+        self.widget.place(x=xval-border, y=yval, width=width, height=height)
+        return self.widget
 
     def asr_block_cb_facade(self, ev, cb, gui):
         ev.widget.configure(relief="sunken")

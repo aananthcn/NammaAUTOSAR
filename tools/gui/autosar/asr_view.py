@@ -79,7 +79,7 @@ AsrBlocksConfigList = [
         # Name and orientation
         "name": "App", "text": "Applications", "ori": "H",
         # Position (offset % of screen size), size (% of screen size) & colors
-        "x": 0.0, "y": 68.4, "w": 100.0, "h": 8, "bgc": '#4D4D4D', "fgc": 'white',
+        "x": 0.0, "y": 68.4, "w": 100.0, "h": 10, "bgc": '#4D4D4D', "fgc": 'white',
         # click callback & constructor
         "cb": None, "cons": None
     }
