@@ -2,7 +2,7 @@
 .filelist
 
 # folders to ignore
-submodules/AL/*
+submodules/AL/*/
 
 # Python
 __pycache__/

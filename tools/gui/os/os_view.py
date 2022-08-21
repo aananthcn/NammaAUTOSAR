@@ -101,8 +101,10 @@ def show_os_config(gui):
     global OsConfigViewActive
 
     # Create a child window (tabbed view)
+    width = gui.main_view.xsize * 90 / 100
+    height = gui.main_view.ysize * 90 / 100
     view = tk.Toplevel()
-    view.state('zoomed')
+    view.geometry("%dx%d+%d+%d" % (width, height, 10, 15))
     OsConfigViewActive = True
     view.protocol("WM_DELETE_WINDOW", lambda: os_config_close_event(view))
     gui.main_view.child_window = ttk.Notebook(view)

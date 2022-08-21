@@ -28,6 +28,7 @@ import gui.autosar.asr_block as asr_block
 
 import gui.mcu.uc_view as uc_view
 import gui.os.os_view as os_view
+import gui.app.app_view as app_view
 
 
 
@@ -81,7 +82,7 @@ AsrBlocksConfigList = [
         # Position (offset % of screen size), size (% of screen size) & colors
         "x": 0.0, "y": 68.4, "w": 100.0, "h": 10, "bgc": '#4D4D4D', "fgc": 'white',
         # click callback & constructor
-        "cb": None, "cons": None
+        "cb": app_view.app_block_click_handler, "cons": None
     }
 ]
 
