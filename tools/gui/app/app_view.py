@@ -21,6 +21,10 @@
 import tkinter as tk
 from tkinter import ttk
 
+import gui.app.app_gen as app_gen
+
+import subprocess
+
 import json
 import os
 
@@ -45,11 +49,23 @@ Canvas_Frame = None
 Child_Frame = None
 Canvas = None
 
-AppJsonFile = os.getcwd()+"/submodules/AL/applications.json"
+AppLayerPath = os.getcwd()+"/submodules/AL/"
+AppsJsonFile = AppLayerPath+"/applications.json"
 
 
 def update_or_clone_app(app_id):
-    print("clone git repo ("+str(app_id)+") is under construction!")
+    app_name = AppInfo_List[app_id].git.split("/")[-1].split(".")[0]
+    app_path = AppLayerPath+"/"+app_name
+    if os.path.exists(app_path):
+        # git pull
+        subprocess.call(["git", "pull"], cwd=app_path)
+    else:
+        # git clone app
+        subprocess.call(["git", "clone", AppInfo_List[app_id].git], cwd=AppLayerPath)
+
+    # generate code to build
+    app_gen.create_source(app_name)
+ 
     
 def select_arxml_file(app_id):
     print("clone git repo ("+str(app_id)+") is under construction!")
@@ -75,15 +91,15 @@ def backup_data():
         appinfo["arxml"] = AppInfo_List[i].arxml
         data.append(appinfo)
     
-    with open(AppJsonFile, "w") as jfile:
+    with open(AppsJsonFile, "w") as jfile:
         json.dump(data, jfile)
 
 
 def restore_data_from_disk():
-    global N_Apps, AppJsonFile, AppInfo_List
+    global N_Apps, AppsJsonFile, AppInfo_List
     
     data = None
-    with open(AppJsonFile) as jfile:
+    with open(AppsJsonFile) as jfile:
         data = json.load(jfile)
         
     N_Apps = len(data)

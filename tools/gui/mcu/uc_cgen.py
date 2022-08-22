@@ -21,24 +21,14 @@
 import os
 
 import arxml.mcu.arxml_mcu as arxml_mcu
+import utils.search as search
 
-
-def find_file(name, path):
-    for root, dirs, files in os.walk(path):
-        if name in files:
-            return os.path.join(root, name)
-
-
-
-def find_dir(name, path):
-    for root, dirs, files in os.walk(path):
-        if name in dirs:
-            return os.path.join(root, name)
+import gui.app.app_gen as app_gen
 
 
 def generate_platform_header(gui):
     cwd = os.getcwd()
-    board_path = find_dir("board", cwd+"/submodules/MCAL/Mcu")
+    board_path = search.find_dir("board", cwd+"/submodules/MCAL/Mcu")
     platform_h = open(board_path+"/platform.h", "w")
     platform_h.write("#ifndef NAMMA_AUTOSAR_PLATFORM_H\n")
     platform_h.write("#define NAMMA_AUTOSAR_PLATFORM_H\n\n")
@@ -59,34 +49,48 @@ def create_source(gui):
     makefile.write("CWD := "+cwd+"\n")
     makefile.write("ROOT_PATH := "+cwd+"\n")
 
-    mcu_board_path = find_dir("board", cwd+"/submodules/MCAL/Mcu")
+    mcu_board_path = search.find_dir("board", cwd+"/submodules/MCAL/Mcu")
     mcu_micro_path = mcu_board_path+"/"+gui.uc_info.micro
     makefile.write("MCU_BOARD_PATH := "+mcu_board_path+"\n")
     makefile.write("MCU_MICRO_PATH := "+mcu_micro_path+"\n")
 
-    mcu_path = find_dir("Mcu", cwd+"/submodules")
+    mcu_path = search.find_dir("Mcu", cwd+"/submodules")
     makefile.write("MCU_PATH := "+mcu_path+"\n")
+    
+    mcu_path = search.find_dir("EcuM", cwd+"/submodules")
+    makefile.write("ECUM_PATH := "+mcu_path+"\n")
 
-    os_path = find_dir("Os", cwd+"/submodules")
+    os_path = search.find_dir("Os", cwd+"/submodules")
     makefile.write("OS_PATH := "+os_path+"\n")
 
-    os_builder_path = find_dir("os_builder", cwd)
+    os_builder_path = search.find_dir("os_builder", cwd)
     makefile.write("OS_BUILDER_PATH := "+os_builder_path+"\n")
 
     makefile.write("\n")
 
     # Include mk files
     makefile.write("# Inclusions\n")
-    micro_mk = find_file(gui.uc_info.micro+".mk", cwd)
+    micro_mk = search.find_file(gui.uc_info.micro+".mk", cwd)
     makefile.write("include "+micro_mk+"\n")
-    microarch_mk = find_file(gui.uc_info.micro_arch+".mk", cwd)
+    microarch_mk = search.find_file(gui.uc_info.micro_arch+".mk", cwd)
     makefile.write("include "+microarch_mk+"\n")
     makefile.write("\n")
+    
+    # Temporary work around. This function needs a redesign
+    app_path = search.find_dir("NammaTestApp", cwd+"/submodules")
+    makefile.write("NAMMATESTAPP_PATH := "+app_path+"\n")
+    mk_file = search.find_file_ext("mk", app_path)
+    makefile.write("include "+mk_file+"\n")
 
-    os_objs_mk = find_file("os-objs.mk", cwd)
+    EcuM_mk = search.find_file("EcuM.mk", cwd+"/submodules")
+    makefile.write("include "+EcuM_mk+"\n")
+
+    os_objs_mk = search.find_file("os-objs.mk", cwd)
     makefile.write("include "+os_objs_mk+"\n")
-    os_common_mk = find_file("os-common.mk", cwd)
+    os_common_mk = search.find_file("os-common.mk", cwd)
     makefile.write("include "+os_common_mk+"\n")
+    common_mk = search.find_file("common.mk", cwd)
+    makefile.write("include "+common_mk+"\n")
     makefile.write("\n")
 
     # Generate micro & arch specifc header files
