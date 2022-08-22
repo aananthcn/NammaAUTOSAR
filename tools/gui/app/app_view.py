@@ -21,6 +21,15 @@
 import tkinter as tk
 from tkinter import ttk
 
+import json
+import os
+
+
+class AppInfo:
+    git = None
+    arxml = None
+
+
 AppView = None
 N_AppsStr = None
 N_Apps = 0
@@ -28,25 +37,64 @@ HeaderObjs = 3   # Objects / widgets that are part of the header and shouldn't b
 HeaderSize = 2   # Number of rows in Header Area of view
 MaxApps = 1024
 
-AppStr_List = []
-AppPath_List = []
-
+AppRepoStr_List = []
+AppInfo_List = []
 
 Parent_Frame = None
 Canvas_Frame = None
 Child_Frame = None
 Canvas = None
 
+AppJsonFile = os.getcwd()+"/submodules/AL/applications.json"
 
 
 def update_or_clone_app(app_id):
     print("clone git repo ("+str(app_id)+") is under construction!")
+    
+def select_arxml_file(app_id):
+    print("clone git repo ("+str(app_id)+") is under construction!")
+
+
+def contains_any(str, set):
+    return True in [c in str for c in set]
+
+def validate_git_path(path):
+    if ".git" not in path:
+        return None
+    if contains_any(path, '<>'):
+        return None
+    return path
 
 
 def backup_data():
+    data = []
     for i in range(N_Apps):
-        AppPath_List[i] = AppStr_List[i].get()
-    print(AppPath_List)
+        AppInfo_List[i].git = validate_git_path(AppRepoStr_List[i].get())
+        appinfo = {}
+        appinfo["git"] = AppInfo_List[i].git
+        appinfo["arxml"] = AppInfo_List[i].arxml
+        data.append(appinfo)
+    
+    with open(AppJsonFile, "w") as jfile:
+        json.dump(data, jfile)
+
+
+def restore_data_from_disk():
+    global N_Apps, AppJsonFile, AppInfo_List
+    
+    data = None
+    with open(AppJsonFile) as jfile:
+        data = json.load(jfile)
+        
+    N_Apps = len(data)
+    
+    AppInfo_List.clear()
+    for item in data:
+        appinfo = AppInfo()
+        appinfo.git = item["git"]
+        appinfo.arxml = item["arxml"]
+        AppInfo_List.append(appinfo)
+
 
 
 def app_draw(view, xsize):
@@ -119,21 +167,21 @@ def update_apps(mstr, xsize):
 
 def app_update(xsize):
     global Parent_Frame, Canvas_Frame, Child_Frame, N_Apps, N_AppsStr, HeaderObjs, MaxApps
-    global AppPath_List, Canvas
-
-    # backup current entries
-    #backup_data()
+    global AppInfo_List, Canvas
 
     # Tune memory allocations based on number of rows or boxes
-    n_apps_str = len(AppStr_List)
+    n_apps_str = len(AppRepoStr_List)
     if N_Apps > n_apps_str:
         for i in range(N_Apps - n_apps_str):
-            AppStr_List.insert(len(AppStr_List), tk.StringVar())
-            AppPath_List.insert(len(AppPath_List), "<Enter the git clone path here>")
+            AppRepoStr_List.insert(len(AppRepoStr_List), tk.StringVar())
+            appinfo = AppInfo()
+            appinfo.git = "<Enter the git clone path here>"
+            appinfo.arxml = None
+            AppInfo_List.insert(len(AppInfo_List), appinfo)
     elif n_apps_str > N_Apps:
         for i in range(n_apps_str - N_Apps):
-            del AppStr_List[-1]
-            del AppPath_List[-1]
+            del AppRepoStr_List[-1]
+            del AppInfo_List[-1]
 
     #print("n_apps_str = "+ str(n_apps_str) + ", n_apps = " + str(N_Apps))
     # Draw new objects
@@ -143,13 +191,17 @@ def app_update(xsize):
         label.grid(row=HeaderSize+i, column=0, sticky="e")
 
         # Edit box
-        entry = tk.Entry(Child_Frame, width=int(xsize/(2*5)), textvariable=AppStr_List[i])
-        AppStr_List[i].set(AppPath_List[i])
+        entry = tk.Entry(Child_Frame, width=int(xsize/(2*5)), textvariable=AppRepoStr_List[i])
+        AppRepoStr_List[i].set(AppInfo_List[i].git)
         entry.grid(row=HeaderSize+i, column=1)
 
-        # Button
+        # Button - Update / Clone
         select = tk.Button(Child_Frame, width=10, text="Update", command=lambda id = i : update_or_clone_app(id))
         select.grid(row=HeaderSize+i, column=2)
+
+        # Button - Update / Clone
+        select = tk.Button(Child_Frame, width=20, text="Select ARXML File", command=lambda id = i : select_arxml_file(id))
+        select.grid(row=HeaderSize+i, column=3)
 
     # Set the Canvas scrolling region
     Canvas.config(scrollregion=Canvas.bbox("all"))
@@ -166,7 +218,7 @@ def on_app_view_close():
 ###############################################################################
 # Main Entry Points
 def app_block_constructor(gui, app_blk):
-    print("App block constructor -- under construction")
+    restore_data_from_disk()
 
 
 

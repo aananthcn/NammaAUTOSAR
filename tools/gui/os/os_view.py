@@ -105,6 +105,7 @@ def show_os_config(gui):
     height = gui.main_view.ysize * 90 / 100
     view = tk.Toplevel()
     view.geometry("%dx%d+%d+%d" % (width, height, 10, 15))
+    view.title("AUTOSAR OS Configuration Tool")
     OsConfigViewActive = True
     view.protocol("WM_DELETE_WINDOW", lambda: os_config_close_event(view))
     gui.main_view.child_window = ttk.Notebook(view)

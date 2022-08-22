@@ -72,7 +72,7 @@ AsrBlocksConfigList = [
         # Name and orientation
         "name": "Rte", "text": "Run Time Environment (RTE)", "ori": "H",
         # Position (offset % of screen size), size (% of screen size) & colors
-        "x": 0.0, "y": 64.1, "w": 100.0, "h": 4.7, "bgc": '#FF5008', "fgc": 'white',
+        "x": 0.0, "y": 64.1, "w": 100.0, "h": 5.0, "bgc": '#FF5008', "fgc": 'white',
         # click callback & constructor
         "cb": None, "cons": None
     },
@@ -82,7 +82,7 @@ AsrBlocksConfigList = [
         # Position (offset % of screen size), size (% of screen size) & colors
         "x": 0.0, "y": 68.4, "w": 100.0, "h": 10, "bgc": '#4D4D4D', "fgc": 'white',
         # click callback & constructor
-        "cb": app_view.app_block_click_handler, "cons": None
+        "cb": app_view.app_block_click_handler, "cons": app_view.app_block_constructor
     }
 ]
 
