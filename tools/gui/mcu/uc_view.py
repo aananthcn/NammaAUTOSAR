@@ -117,7 +117,10 @@ def uc_block_click_handler(gui):
         return
 
     # Create a child window
+    width = 370
+    height = 70
     UcView = tk.Toplevel()
+    UcView.geometry("%dx%d+%d+%d" % (width, height, gui.main_view.xsize*25/90, gui.main_view.ysize - height*4))
     UcView.title("Microcontroller Configs")
     UcView.protocol("WM_DELETE_WINDOW", on_uc_view_close)
 

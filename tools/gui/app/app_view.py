@@ -117,8 +117,6 @@ def app_draw(view, xsize):
     global Parent_Frame, Canvas_Frame, Child_Frame, N_Apps, N_AppsStr, HeaderObjs, MaxApps
     global Canvas
     
-    print("xsize = ", xsize)
-    
     view.grid_rowconfigure(0, weight=1)
     view.columnconfigure(0, weight=1)
     Parent_Frame = tk.Frame(view)
@@ -254,4 +252,3 @@ def app_block_click_handler(gui):
     AppView.protocol("WM_DELETE_WINDOW", on_app_view_close)
 
     app_draw(AppView, width)
-    print("App block click handler -- under construction")
