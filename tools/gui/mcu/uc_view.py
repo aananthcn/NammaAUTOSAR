@@ -37,7 +37,7 @@ class Uc_Info:
 FreeAUTOSAR_Boards = {
     "Generic" :
         ["qemu-versatilepb"],
-    "Broadcom" :
+    "RaspberryPi" :
         ["rp2040"],
     "ST" :
         ["stm32f407vet6"]
@@ -155,7 +155,8 @@ def uc_block_click_handler(gui):
     SoCStr.set(gui.uc_info.micro)
     SoC_ComboBox = ttk.Combobox(UcView, width=col2_width, textvariable=SoCStr, state="readonly")
     if gui.uc_info.micro_maker != None:
-        SoC_ComboBox['values'] = FreeAUTOSAR_Boards[gui.uc_info.micro_maker]
+        if gui.uc_info.micro_maker in FreeAUTOSAR_Boards:
+	        SoC_ComboBox['values'] = FreeAUTOSAR_Boards[gui.uc_info.micro_maker]
     else:
         SoC_ComboBox['values'] = []
     SoC_ComboBox.current()

@@ -17,6 +17,7 @@ __pycache__/
 *.ko
 *.obj
 *.elf
+*.bin
 
 # Linker output
 *.ilk
