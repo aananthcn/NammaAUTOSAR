@@ -143,7 +143,7 @@ def show_os_config(gui):
 
     # create new GUI objects
     OsTab = gui_os_tab.OsTab(sg.OS_Cfgs, sg.Tasks)
-    OsTab.draw(os_tab)
+    OsTab.draw(os_tab, gui)
 
     AmTab = gui_am_tab.AmTab(sg.AppModes)
     AmTab.draw(am_tab)

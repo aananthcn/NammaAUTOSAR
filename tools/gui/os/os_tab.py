@@ -23,13 +23,15 @@ class OsTab:
         self.sg_oscfg = None
 
 
-    def draw(self, tab):
+    def draw(self, tab, gui):
         # 1) CPU / SoC - Label + Edit-box
         row = 1
         label = tk.Label(tab, text="CPU / SoC name")
         label.grid(row=row, column=1, sticky="w")
         textb = tk.Entry(tab,text="Entry", width=30, textvariable=self.OS_StrVar[row-1])
-        if "CPU" in self.sg_oscfg:
+        if gui.uc_info.micro != None:
+            self.OS_StrVar[row-1].set(gui.uc_info.micro)
+        elif "CPU" in self.sg_oscfg:
             self.OS_StrVar[row-1].set(self.sg_oscfg["CPU"])
         else:
             print("Error: OS_Cfg does't have key: CPU")
