@@ -43,6 +43,7 @@ MaxApps = 1024
 
 AppRepoStr_List = []
 AppInfo_List = []
+AppChild_list = [] # widgets
 
 Parent_Frame = None
 Canvas_Frame = None
@@ -51,6 +52,35 @@ Canvas = None
 
 AppLayerPath = os.getcwd()+"/submodules/AL/"
 AppsJsonFile = AppLayerPath+"/applications.json"
+
+
+
+# Show app configuration window
+def child_app_press_handler(gui, app_id):
+    view = tk.Toplevel()
+    view.geometry("%dx%d+%d+%d" % (600, 300, 10, 50))
+    view.title(AppInfo_List[app_id].git.split("/")[-1].split(".")[0]+" Configs")
+
+
+
+# This function will draw blocks inside app block
+def app_draw_childrens(gui):
+    # get the app block's widget (canvas) for drawing more blocks inside it
+    view = gui.asr_blocks["App"].widget
+
+    for ch_app in AppChild_list:
+        ch_app.destroy()
+
+    last_widget_w = 0
+    for i, app in enumerate(AppInfo_List):
+        if app.git == None:
+            continue
+        name = app.git.split("/")[-1].split(".")[0]
+        button = tk.Button(view, text=name, command= lambda id = i: child_app_press_handler(gui, id))
+        AppChild_list.append(button)
+        button.place(x=10+last_widget_w, y=20)
+        last_widget_w += button.winfo_reqwidth()
+
 
 
 def update_or_clone_app(app_id):
@@ -110,6 +140,7 @@ def restore_data_from_disk():
         appinfo.git = item["git"]
         appinfo.arxml = item["arxml"]
         AppInfo_List.append(appinfo)
+        AppRepoStr_List.append(tk.StringVar())
 
 
 
@@ -187,11 +218,11 @@ def app_update(xsize):
     n_apps_str = len(AppRepoStr_List)
     if N_Apps > n_apps_str:
         for i in range(N_Apps - n_apps_str):
-            AppRepoStr_List.insert(len(AppRepoStr_List), tk.StringVar())
+            AppRepoStr_List.append(tk.StringVar())
             appinfo = AppInfo()
             appinfo.git = "<Enter the git clone path here>"
             appinfo.arxml = None
-            AppInfo_List.insert(len(AppInfo_List), appinfo)
+            AppInfo_List.append(appinfo)
     elif n_apps_str > N_Apps:
         for i in range(n_apps_str - N_Apps):
             del AppRepoStr_List[-1]
@@ -221,12 +252,13 @@ def app_update(xsize):
     Canvas.config(scrollregion=Canvas.bbox("all"))
 
 
-def on_app_view_close():
+def on_app_view_close(gui):
     global AppView
 
     AppView.destroy()
     AppView = None
     backup_data()
+    app_draw_childrens(gui)
     
 
 ###############################################################################
@@ -249,6 +281,10 @@ def app_block_click_handler(gui):
     AppView = tk.Toplevel()
     AppView.geometry("%dx%d+%d+%d" % (width, height, 10, 50))
     AppView.title("Applications Configs")
-    AppView.protocol("WM_DELETE_WINDOW", on_app_view_close)
+    AppView.protocol("WM_DELETE_WINDOW", lambda: on_app_view_close(gui))
 
     app_draw(AppView, width)
+
+
+def app_post_draw_handler(gui):
+    app_draw_childrens(gui)

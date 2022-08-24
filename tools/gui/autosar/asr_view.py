@@ -38,51 +38,57 @@ import gui.app.app_view as app_view
 AsrBlocksConfigList = [
     {
         # Name and orientation
-        "name": "uC", "text": "MicroController Block", "ori": "H",
+        "name": "uC", "text": "MicroController Block", "txta": "center", "ori": "H",
         # Position (offset % of screen size), size (% of screen size) & colors
         "x": 0.0, "y": 0.0, "w": 100.0, "h": 4.7, "bgc": '#000000', "fgc": 'white',
         # click callback & constructor
-        "cb": uc_view.uc_block_click_handler, "cons": uc_view.uc_block_constructor
+        "cb": uc_view.uc_block_click_handler, "cons": uc_view.uc_block_constructor,
+        "postdraw": None
     },
     {
         # Name and orientation
-        "name": "Os", "text": "AUTOSAR OS", "ori": "V",
+        "name": "Os", "text": "AUTOSAR OS", "txta": "center", "ori": "V",
         # Position (offset % of screen size), size (% of screen size) & colors
         "x": 0.0, "y": 4.06, "w": 2.5, "h": 68.8, "bgc": '#9999FF', "fgc": 'black',
         # click callback & constructor
-        "cb": os_view.os_block_click_handler, "cons": None
+        "cb": os_view.os_block_click_handler, "cons": None,
+        "postdraw": None
     },
     {
         # Name and orientation
-        "name": "Os", "text": "EcuM", "ori": "V",
+        "name": "Os", "text": "EcuM", "txta": "center", "ori": "V",
         # Position (offset % of screen size), size (% of screen size) & colors
         "x": 2.5, "y": 4.06, "w": 2.5, "h": 45, "bgc": '#9999FF', "fgc": 'black',
         # click callback & constructor
-        "cb": None, "cons": None
+        "cb": None, "cons": None,
+        "postdraw": None
     },
     {
         # Name and orientation
-        "name": "Os", "text": "Mcu", "ori": "V",
+        "name": "Os", "text": "Mcu", "txta": "center", "ori": "V",
         # Position (offset % of screen size), size (% of screen size) & colors
         "x": 5.0, "y": 4.06, "w": 2.5, "h": 25, "bgc": '#FF7C80', "fgc": 'black',
         # click callback & constructor
-        "cb": None, "cons": None
+        "cb": None, "cons": None,
+        "postdraw": None
     },
     {
         # Name and orientation
-        "name": "Rte", "text": "Run Time Environment (RTE)", "ori": "H",
+        "name": "Rte", "text": "Run Time Environment (RTE)", "txta": "center", "ori": "H",
         # Position (offset % of screen size), size (% of screen size) & colors
         "x": 0.0, "y": 64.1, "w": 100.0, "h": 5.0, "bgc": '#FF5008', "fgc": 'white',
         # click callback & constructor
-        "cb": None, "cons": None
+        "cb": None, "cons": None,
+        "postdraw": None
     },
     {
         # Name and orientation
-        "name": "App", "text": "Applications", "ori": "H",
+        "name": "App", "text": "Applications", "txta": "n", "ori": "H",
         # Position (offset % of screen size), size (% of screen size) & colors
         "x": 0.0, "y": 68.4, "w": 100.0, "h": 10, "bgc": '#4D4D4D', "fgc": 'white',
         # click callback & constructor
-        "cb": app_view.app_block_click_handler, "cons": app_view.app_block_constructor
+        "cb": app_view.app_block_click_handler, "cons": app_view.app_block_constructor,
+        "postdraw": app_view.app_post_draw_handler
     }
 ]
 
@@ -100,7 +106,8 @@ def show_autosar_modules_view(gui):
     for blk in AsrBlocksConfigList:
         # create block view objects from AsrBlocksConfigList
         key = blk["name"]
-        obj = asr_block.AsrBlock(gui, blk["text"], blk["ori"], blk["x"], blk["y"], blk["w"], blk["h"], blk["fgc"], blk["bgc"], blk["cb"])
+        obj = asr_block.AsrBlock(gui, blk["text"], blk["txta"], blk["ori"], blk["x"], blk["y"], 
+                                 blk["w"], blk["h"], blk["fgc"], blk["bgc"], blk["cb"])
         gui.asr_blocks[key] = obj
 
         # call the block view constructor
@@ -109,4 +116,8 @@ def show_autosar_modules_view(gui):
 
         # draw the block
         obj.draw(gui)
+
+        # post draw callback
+        if blk["postdraw"] != None:
+            blk["postdraw"](gui)
    

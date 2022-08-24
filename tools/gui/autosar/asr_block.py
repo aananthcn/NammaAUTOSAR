@@ -40,6 +40,7 @@ class AsrBlock:
     gui = None
     widget = None
     label = None
+    label_anchor = None
     txtfont = None
     orientation = None
     xpos = None
@@ -51,10 +52,11 @@ class AsrBlock:
     bg_color = None
     callback = None
 
-    def __init__(self, gui, txt, ori, x, y, w, h, fg, bg, cb):
+    def __init__(self, gui, txt, txta, ori, x, y, w, h, fg, bg, cb):
         self.margin = Margin()
         self.gui = gui
         self.label = txt
+        self.label_anchor = txta
         self.orientation = ori
         self.xpos = x
         self.ypos = y
@@ -85,8 +87,13 @@ class AsrBlock:
         angle = "0"
         if self.orientation == "V":
             angle = "90"
-            
-        self.widget.create_text((width/2, height/2), angle=angle, anchor="center",
+
+        text_x = width/2
+        text_y = height/2
+        if self.label_anchor != "c" and self.label_anchor != "center":
+            text_y = 2
+
+        self.widget.create_text((text_x, text_y), angle=angle, anchor=self.label_anchor,
                                 text=self.label, fill=self.fg_color, font=self.txtfont)
         self.widget.bind("<ButtonPress-1>", lambda ev: self.asr_block_cb_facade(ev, self.callback, gui))
         self.widget.bind("<ButtonRelease-1>", lambda ev: ev.widget.configure(relief="raised"))
