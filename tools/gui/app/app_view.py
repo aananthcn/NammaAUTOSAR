@@ -78,8 +78,8 @@ def app_draw_childrens(gui):
         name = app.git.split("/")[-1].split(".")[0]
         button = tk.Button(view, text=name, command= lambda id = i: child_app_press_handler(gui, id))
         AppChild_list.append(button)
-        button.place(x=10+last_widget_w, y=20)
-        last_widget_w += button.winfo_reqwidth()
+        button.place(x=10+last_widget_w, y=28)
+        last_widget_w += button.winfo_reqwidth()+2
 
 
 
@@ -125,6 +125,7 @@ def backup_data():
         json.dump(data, jfile)
 
 
+
 def restore_data_from_disk():
     global N_Apps, AppsJsonFile, AppInfo_List
     
@@ -135,6 +136,7 @@ def restore_data_from_disk():
     N_Apps = len(data)
     
     AppInfo_List.clear()
+    AppRepoStr_List.clear()
     for item in data:
         appinfo = AppInfo()
         appinfo.git = item["git"]

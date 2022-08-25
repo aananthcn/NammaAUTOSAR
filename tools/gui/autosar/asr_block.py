@@ -92,6 +92,7 @@ class AsrBlock:
         text_y = height/2
         if self.label_anchor != "c" and self.label_anchor != "center":
             text_y = 2
+            self.txtfont = tkfont.Font(family='Helvetica', size=14)
 
         self.widget.create_text((text_x, text_y), angle=angle, anchor=self.label_anchor,
                                 text=self.label, fill=self.fg_color, font=self.txtfont)
