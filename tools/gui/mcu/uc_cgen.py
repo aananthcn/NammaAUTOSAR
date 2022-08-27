@@ -82,6 +82,8 @@ def create_source(gui):
     mk_file = search.find_file_ext("mk", app_path)
     makefile.write("include "+mk_file+"\n")
 
+    Mcu_mk = search.find_file("Mcu.mk", cwd+"/submodules")
+    makefile.write("include "+Mcu_mk+"\n")
     EcuM_mk = search.find_file("EcuM.mk", cwd+"/submodules")
     makefile.write("include "+EcuM_mk+"\n")
 

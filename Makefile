@@ -14,6 +14,7 @@ include D:/_E/projects/oss/NammaAUTOSAR/submodules/MCAL/Mcu/start-up/arch/arm/co
 
 NAMMATESTAPP_PATH := D:/_E/projects/oss/NammaAUTOSAR/submodules/AL/NammaTestApp
 include D:/_E/projects/oss/NammaAUTOSAR/submodules/AL/NammaTestApp/namma_test_app.mk
+include D:/_E/projects/oss/NammaAUTOSAR/submodules/MCAL/Mcu/Mcu.mk
 include D:/_E/projects/oss/NammaAUTOSAR/submodules/SL/EcuM/EcuM.mk
 include D:/_E/projects/oss/NammaAUTOSAR/tools/os_builder/src/os-objs.mk
 include D:/_E/projects/oss/NammaAUTOSAR/submodules/SL/Os/os-common.mk
