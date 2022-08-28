@@ -74,4 +74,8 @@ DeclareTask(EcuM_StartupTwo);
 #define OS_MAX_TASK_PRIORITY  (100)
 
 
+extern const u32 _OsTaskValidPriorities[];
+#define OS_NO_OF_PRIORITIES  (5)
+
+
 #endif

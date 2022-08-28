@@ -88,6 +88,7 @@ def generate_code(path, Tasks):
     cf.write("#include \"sg_resources.h\"\n")
 
     max_task_priority = 0
+    task_priority_lst = []
 
     cf.write("\n\n/*   T A S K   D E F I N I T I O N S   */\n")
     cf.write("const OsTaskType _OsTaskList[] = {\n")
@@ -104,6 +105,8 @@ def generate_code(path, Tasks):
         cf.write("\t\t.priority = "+task[TaskParams[PRII]]+",\n")
         if int(task[TaskParams[PRII]]) > max_task_priority:
             max_task_priority = int(task[TaskParams[PRII]])
+        if int(task[TaskParams[PRII]]) not in task_priority_lst:
+            task_priority_lst.append(int(task[TaskParams[PRII]]))
 
         # Init Activations
         cf.write("\t\t.activations = "+task[TaskParams[ACTI]]+",\n")
@@ -141,7 +144,19 @@ def generate_code(path, Tasks):
             cf.write("\n")
     cf.write("};\n")
     
+    # Create valid priorities list
+    cf.write("\n\nconst u32 _OsTaskValidPriorities[] = {\n\t")
+    for i, prio in enumerate(task_priority_lst):
+        if i+1 == len(task_priority_lst):
+            cf.write(str(prio))
+        else:
+            cf.write(str(prio)+", ")
+    cf.write("\n};\n")
+        
+    
     cf.close()
     hf.write("\n\n#define OS_MAX_TASK_PRIORITY  ("+str(max_task_priority)+")\n")
+    hf.write("\n\nextern const u32 _OsTaskValidPriorities[];\n")
+    hf.write("#define OS_NO_OF_PRIORITIES  ("+str(len(task_priority_lst))+")\n")
     hf.write("\n\n#endif\n")
     hf.close()

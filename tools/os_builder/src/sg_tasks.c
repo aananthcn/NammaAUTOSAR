@@ -85,3 +85,8 @@ const OsTaskType _OsTaskList[] = {
 		.stack_size = 512
 	}
 };
+
+
+const u32 _OsTaskValidPriorities[] = {
+	1, 2, 3, 4, 100
+};
