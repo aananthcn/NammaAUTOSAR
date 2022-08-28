@@ -68,5 +68,20 @@ const OsTaskType _OsTaskList[] = {
 		.msglist = NULL,
 		.n_msglist = TASK_D_MESSAGE_MAX,
 		.stack_size = 512
+	},
+	{
+		.handler = OS_TASK(EcuM_StartupTwo),
+		.id = 4,
+		.sch_type = NON_PREEMPTIVE,
+		.priority = 100,
+		.activations = 1,
+		.autostart = true,
+		.appmodes = (const AppModeType **) &EcuM_StartupTwo_AppModes,
+		.n_appmodes = ECUM_STARTUPTWO_APPMODE_MAX,
+		.evtmsks = NULL,
+		.n_evtmsks = ECUM_STARTUPTWO_EVENT_MAX,
+		.msglist = NULL,
+		.n_msglist = ECUM_STARTUPTWO_MESSAGE_MAX,
+		.stack_size = 512
 	}
 };

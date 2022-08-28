@@ -6,7 +6,7 @@ from colorama import Fore, Back, Style
 
 
 def generate_code(path, OsParams):
-    print_info("Generating code for FreeOSEK Parameters")
+    print_info("Generating code for NammaAUTOSAR Parameters")
 
     # create stack definitions
     lfilename = path + "/" + "sg_stack.lds"

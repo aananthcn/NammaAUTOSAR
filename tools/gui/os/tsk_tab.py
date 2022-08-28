@@ -93,7 +93,7 @@ class TaskTab:
         task["RESOURCE"] = []
         task["EVENT"] = []
         task["MESSAGE"] = []
-        task["STACK_SIZE"] = "128"
+        task["STACK_SIZE"] = "512"
 
         return task
 

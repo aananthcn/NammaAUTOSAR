@@ -13,3 +13,7 @@ const AppModeType Task_C_AppModes[] = {
 	OSDEFAULTAPPMODE
 };
 
+const AppModeType EcuM_StartupTwo_AppModes[] = {
+	OSDEFAULTAPPMODE
+};
+

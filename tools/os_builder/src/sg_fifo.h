@@ -4,7 +4,7 @@
 #include <os_fifo.h>
 
 
-#define SG_FIFO_QUEUE_MAX_LEN   (5)
+#define SG_FIFO_QUEUE_MAX_LEN   (101)
 
 extern const OsFifoType* ReadyQueue[];
 

@@ -91,6 +91,7 @@ def backup_os_gui_before_save():
 def os_config_close_event(view):
     global OsConfigViewActive
 
+    backup_os_gui_before_save()
     OsConfigViewActive = False
     view.destroy()
 

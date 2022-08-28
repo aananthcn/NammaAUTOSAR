@@ -49,7 +49,7 @@ def save_oil_file(filename):
     indent -= 1
     f.write(indent*"\t" + "};\n\n")
 
-    # Print FreeOSEK Parameters
+    # Print NammaAUTOSAR Parameters
     f.write(indent*"\t" + "FreeOSEK_PARAMS {\n")
     indent += 1
     for item in FreeOSEK_Params:
@@ -211,7 +211,7 @@ def print_output(OsData, AppMode, TaskData, Counters, Alarms, ISRs):
         print_oil_item_type1(f, task, TaskParams[6], 'EVENT', indent)
         print_oil_item_type1(f, task, TaskParams[7], 'MESSAGE', indent)
 
-        # stack size (FreeOSEK specifics)
+        # stack size (NammaAUTOSAR specifics)
         f.write(indent*"\t" +"STACK_SIZE = " + str(task[TaskParams[STSZ]]) + ";\n")
             
         # End of TaskData body
