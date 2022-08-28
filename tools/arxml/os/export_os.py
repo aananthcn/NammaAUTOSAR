@@ -221,7 +221,7 @@ def export_alarms_to_container(root):
       l3_ctnr = ET.SubElement(l2_ctnr, "SUB-CONTAINERS")
       if alm["Action-Type"] == "ACTIVATETASK" or alm["Action-Type"] == "OsAlarmActivateTask":
          dref = "/AUTOSAR/EcucDefs/Os/OsAlarm/OsAlarmAction/OsAlarmActivateTask"
-         l4_ctnr = lib_conf.insert_conf_container(l3_ctnr, "OsAlarmActivateTask", "conf", dref)
+         l4_ctnr = lib_conf.insert_conf_container(l3_ctnr, "ACTIVATETASK", "conf", dref)
          # References
          references = ET.SubElement(l4_ctnr, "REFERENCE-VALUES")
          # Task references
@@ -229,7 +229,7 @@ def export_alarms_to_container(root):
          lib_conf.insert_conf_reference(references, dref, "/EcucDefs/Os/"+alm["arg1"])
       elif alm["Action-Type"] == "SETEVENT" or alm["Action-Type"] == "OsAlarmSetEvent":
          dref = "/AUTOSAR/EcucDefs/Os/OsAlarm/OsAlarmAction/OsAlarmSetEvent"
-         l4_ctnr = lib_conf.insert_conf_container(l3_ctnr, "OsAlarmSetEvent", "conf", dref)
+         l4_ctnr = lib_conf.insert_conf_container(l3_ctnr, "SETEVENT", "conf", dref)
          # References
          references = ET.SubElement(l4_ctnr, "REFERENCE-VALUES")
          # Task & Event references
@@ -239,7 +239,7 @@ def export_alarms_to_container(root):
          lib_conf.insert_conf_reference(references, dref, "/EcucDefs/Os/"+alm["arg2"])
       elif alm["Action-Type"] == "ALARMCALLBACK" or alm["Action-Type"] == "OsAlarmCallback":
          dref = "/AUTOSAR/EcucDefs/Os/OsAlarm/OsAlarmAction/OsAlarmCallback"
-         l4_ctnr = lib_conf.insert_conf_container(l3_ctnr, "OsAlarmCallback", "conf", dref)
+         l4_ctnr = lib_conf.insert_conf_container(l3_ctnr, "ALARMCALLBACK", "conf", dref)
          # Parameters
          params = ET.SubElement(l4_ctnr, "PARAMETER-VALUES")
          # Callback references

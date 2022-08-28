@@ -97,7 +97,7 @@ class AlarmTab:
         # Use the last alarm's name and numbers to ease the edits made by user 
         alarm["Alarm Name"] = "ALARM_"
         alarm["COUNTER"] = "" # self.sg_alarms[-1]["COUNTER"]
-        alarm["Action-Type"] = "OsAlarmActivateTask" 
+        alarm["Action-Type"] = "ACTIVATETASK"
         alarm["arg1"] = ""
         alarm["arg2"] = "FALSE"
         alarm["IsAutostart"] = "FALSE"
