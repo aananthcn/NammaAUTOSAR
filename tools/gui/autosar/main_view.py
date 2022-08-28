@@ -321,7 +321,8 @@ def update_recent_files(filepath):
     wlist.append(filepath)
     for file in raw_list:
         if file.strip() not in wlist and ".arxml" in file:
-            wlist.append(file.strip())
+            if len(wlist) < 10:
+                wlist.append(file.strip())
 
     wfile = open(RecentFiles, 'w')
     for item in wlist:
