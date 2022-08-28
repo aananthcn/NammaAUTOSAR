@@ -282,7 +282,7 @@ def add_menus(rv, flst):
     FileMenu.add_separator()
     if len(flst) > 0:
         for file_path in flst:
-            FileMenu.add_command(label=file_path, command=lambda: open_arxml_file(file_path))
+            FileMenu.add_command(label=file_path, command=lambda fp = file_path: open_arxml_file(fp))
         FileMenu.add_separator()
     FileMenu.add_command(label="Exit", command=rv.quit)
     MenuBar.add_cascade(label="File", menu=FileMenu)
@@ -317,10 +317,16 @@ def update_recent_files(filepath):
         raw_list = rfile.readlines()
         rfile.close()
 
-    rfile = open(RecentFiles, 'a')
-    if filepath not in raw_list:
-        rfile.write("\n"+filepath)
-    rfile.close()
+    wlist = []
+    wlist.append(filepath)
+    for file in raw_list:
+        if file.strip() not in wlist and ".arxml" in file:
+            wlist.append(file.strip())
+
+    wfile = open(RecentFiles, 'w')
+    for item in wlist:
+        wfile.write(item+"\n")
+    wfile.close()
 
 
 
@@ -334,14 +340,8 @@ def get_recent_files():
         raw_list = []
 
     for item in raw_list:
-        if item.strip() not in file_list:
-            if len(item) > 4: # 4 for a dot and at least 3 letters.
-                file_list.append(item.strip())
-
-    with open(RecentFiles, 'w') as rfile:
-        for line in file_list:
-            rfile.write(f"{line}\n")
-    rfile.close()
+        if item.strip() not in file_list and ".arxml" in item:
+            file_list.append(item.strip())
 
     return file_list
 
