@@ -10,3 +10,6 @@
 	path = submodules/SL/EcuM
 	url = git@github.com:aananthcn/NammaEcuM.git
 	branch = main
+[submodule "submodules/MCAL/Port"]
+	path = submodules/MCAL/Port
+	url = git@github.com:aananthcn/NammaPort.git
