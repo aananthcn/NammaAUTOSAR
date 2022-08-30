@@ -1,7 +1,7 @@
 import tkinter as tk
 from tkinter import ttk
 
-from .evt_wn import EventWindow
+from .evt_cfg import EventWindow
 
 
 class TaskStr:
@@ -256,7 +256,7 @@ class TaskTab:
 
     def backup_data(self):
         n_tasks_str = len(self.tasks_str)
-        # print("tsk_tab.py: backup_data called! || n_tasks_str = "+ str(n_tasks_str))
+        # print("tsk_cfg.py: backup_data called! || n_tasks_str = "+ str(n_tasks_str))
         for i in range(n_tasks_str):
             if len(self.tasks_str[i].name.get()):
                 self.sg_tasks[i]["Task Name"] = self.tasks_str[i].name.get()

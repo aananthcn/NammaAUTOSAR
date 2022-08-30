@@ -29,6 +29,7 @@ import gui.autosar.asr_block as asr_block
 import gui.mcu.uc_view as uc_view
 import gui.os.os_view as os_view
 import gui.app.app_view as app_view
+import gui.port.port_view as port_view
 
 
 
@@ -37,7 +38,7 @@ import gui.app.app_view as app_view
 # # AUTOSAR BLOCKS configuration
 AsrBlocksConfigList = [
     {
-        # Name and orientation
+        # Micro-controller Block
         "name": "uC", "text": "MicroController Block", "txta": "center", "ori": "H",
         # Position (offset % of screen size), size (% of screen size) & colors
         "x": 0.0, "y": 0.0, "w": 100.0, "h": 4.7, "bgc": '#000000', "fgc": 'white',
@@ -46,7 +47,7 @@ AsrBlocksConfigList = [
         "postdraw": None
     },
     {
-        # Name and orientation
+        # AUTOSAR Os
         "name": "Os", "text": "AUTOSAR OS", "txta": "center", "ori": "V",
         # Position (offset % of screen size), size (% of screen size) & colors
         "x": 0.0, "y": 4.06, "w": 2.5, "h": 68.8, "bgc": '#9999FF', "fgc": 'black',
@@ -55,8 +56,8 @@ AsrBlocksConfigList = [
         "postdraw": None
     },
     {
-        # Name and orientation
-        "name": "Os", "text": "EcuM", "txta": "center", "ori": "V",
+        # EcuM
+        "name": "EcuM", "text": "EcuM", "txta": "center", "ori": "V",
         # Position (offset % of screen size), size (% of screen size) & colors
         "x": 2.5, "y": 4.06, "w": 2.5, "h": 45, "bgc": '#9999FF', "fgc": 'black',
         # click callback & constructor
@@ -64,8 +65,8 @@ AsrBlocksConfigList = [
         "postdraw": None
     },
     {
-        # Name and orientation
-        "name": "Os", "text": "Mcu", "txta": "center", "ori": "V",
+        # Mcu
+        "name": "Mcu", "text": "Mcu", "txta": "center", "ori": "V",
         # Position (offset % of screen size), size (% of screen size) & colors
         "x": 5.0, "y": 4.06, "w": 2.5, "h": 25, "bgc": '#FF7C80', "fgc": 'black',
         # click callback & constructor
@@ -73,7 +74,16 @@ AsrBlocksConfigList = [
         "postdraw": None
     },
     {
-        # Name and orientation
+        # Port
+        "name": "Port", "text": "Port", "txta": "center", "ori": "V",
+        # Position (offset % of screen size), size (% of screen size) & colors
+        "x": 75.0, "y": 4.06, "w": 2.5, "h": 25, "bgc": '#FF7C80', "fgc": 'black',
+        # click callback & constructor
+        "cb": port_view.port_block_click_handler, "cons": None,
+        "postdraw": None
+    },
+    {
+        # RTE
         "name": "Rte", "text": "Run Time Environment (RTE)", "txta": "center", "ori": "H",
         # Position (offset % of screen size), size (% of screen size) & colors
         "x": 0.0, "y": 64.1, "w": 100.0, "h": 5.0, "bgc": '#FF5008', "fgc": 'white',
@@ -82,7 +92,7 @@ AsrBlocksConfigList = [
         "postdraw": None
     },
     {
-        # Name and orientation
+        # Test App
         "name": "App", "text": "Applications", "txta": "n", "ori": "H",
         # Position (offset % of screen size), size (% of screen size) & colors
         "x": 0.0, "y": 68.4, "w": 100.0, "h": 10, "bgc": '#4D4D4D', "fgc": 'white',

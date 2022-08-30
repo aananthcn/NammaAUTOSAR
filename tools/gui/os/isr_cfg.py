@@ -1,7 +1,7 @@
 import tkinter as tk
 from tkinter import ttk
 
-from .evt_wn import EventWindow
+from .evt_cfg import EventWindow
 
 
 class IsrStr:

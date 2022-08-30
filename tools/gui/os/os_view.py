@@ -24,14 +24,14 @@ from tkinter import ttk
 import os_builder.scripts.System_Generator as sg
 import os_builder.scripts.oil as oil
 
-import gui.os.os_tab as gui_os_tab
-import gui.os.am_tab as gui_am_tab
-import gui.os.cnt_tab as gui_cr_tab
-import gui.os.msg_tab as gui_ms_tab
-import gui.os.res_tab as gui_rs_tab
-import gui.os.tsk_tab as gui_tk_tab
-import gui.os.alm_tab as gui_al_tab
-import gui.os.isr_tab as gui_ir_tab
+import gui.os.os_cfg as gui_os_tab
+import gui.os.mode_cfg as gui_am_tab
+import gui.os.cnt_cfg as gui_cr_tab
+import gui.os.msg_cfg as gui_ms_tab
+import gui.os.res_cfg as gui_rs_tab
+import gui.os.tsk_cfg as gui_tk_tab
+import gui.os.alm_cfg as gui_al_tab
+import gui.os.isr_cfg as gui_ir_tab
 
 
 OsTab = AmTab = CtrTab = MsgTab = ResTab = TskTab = AlmTab = IsrTab = None
