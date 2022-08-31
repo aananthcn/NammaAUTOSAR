@@ -2,16 +2,46 @@ import tkinter as tk
 from tkinter import ttk
 
 
-class PinStr:
-    id = 0
-    name = None
+StdPinModes = (
+    "PORT_PIN_MODE_ADC",
+    "PORT_PIN_MODE_CAN",
+    "PORT_PIN_MODE_DIO",
+    "PORT_PIN_MODE_DIO_GPT",
+    "PORT_PIN_MODE_DIO_WDG",
+    "PORT_PIN_MODE_FLEXRAY",
+    "PORT_PIN_MODE_ICU",
+    "PORT_PIN_MODE_LIN",
+    "PORT_PIN_MODE_MEM",
+    "PORT_PIN_MODE_PWM",
+    "PORT_PIN_MODE_SPI" 
+)
 
-    def __init__(self, id):
-        self.id = id
-        self.name = tk.StringVar()
+class PinStr:
+    id = None
+    pindir = None
+    dir_changeable = None
+    pin_level = None
+    pin_mode = None
+    pin_initial_mode = None
+    mode_changeable = None
+
+    def __init__(self):
+        self.id = tk.StringVar()
+        self.pindir = tk.StringVar()
+        self.dir_changeable = tk.StringVar()
+        self.pin_level = tk.StringVar()
+        self.pin_mode = tk.StringVar()
+        self.pin_initial_mode = tk.StringVar()
+        self.mode_changeable = tk.StringVar()
 
     def __del__(self):
-        del self.name
+        del self.id
+        del self.pindir
+        del self.dir_changeable
+        del self.pin_level
+        del self.pin_mode
+        del self.pin_initial_mode
+        del self.mode_changeable
 
 
 class PortConfgSetTab:
@@ -21,9 +51,11 @@ class PortConfgSetTab:
 
     pins_str = []
     events = []
-    port_pins = None
-    HeaderObjs = 12 #Objects / widgets that are part of the header and shouldn't be destroyed
-    HeaderSize = 3
+    port_pins = []
+    header_objs = 12 #Objects / widgets that are part of the header and shouldn't be destroyed
+    header_size = 3
+    non_header_objs = []
+    
 
     prf = None  # Parent Frame
     cvf = None  # Canvas Frame
@@ -51,19 +83,103 @@ class PortConfgSetTab:
     def create_empty_portpin(self):
         portpin = {}
         
-        # Use the last task's name and numbers to ease the edits made by user 
-        portpin["Task Name"] = "Task_"
-        portpin["PRIORITY"] = "0"
-        portpin["SCHEDULE"] = "NON" # Pre-emption (NON / FULL)
-        portpin["ACTIVATION"] = "1"
-        portpin["AUTOSTART"] = "FALSE"
-        portpin["AUTOSTART_APPMODE"] = []
-        portpin["RESOURCE"] = []
-        portpin["EVENT"] = []
-        portpin["MESSAGE"] = []
-        portpin["STACK_SIZE"] = "512"
+        portpin["Direction"] = "PORT_PIN_IN"
+        portpin["DirectionChangeable"] = "FALSE"
+        portpin["Id"] = "0 - 65535"
+        portpin["InitialMode"] = "PORT_PIN_MODE_DIO"
+        portpin["LevelValue"] = "PORT_PIN_LEVEL_LOW"
+        portpin["Mode"] = "PORT_PIN_MODE_DIO"
+        portpin["ModeChangeable"] = "FALSE"
 
         return portpin
+
+
+    def update(self):
+        # Backup current task entries from GUI
+        self.backup_data()
+
+        # destroy most old gui widgets
+        self.n_pins = int(self.n_pins_str.get())
+        for obj in self.non_header_objs:
+            obj.destroy()
+        # for i, item in enumerate(self.mnf.winfo_children()):
+        #     if i >= self.header_objs:
+        #         item.destroy()
+
+        # Tune memory allocations based on number of rows or boxes
+        n_pins_str = len(self.pins_str)
+        if self.n_pins > n_pins_str:
+            for i in range(self.n_pins - n_pins_str):
+                self.pins_str.insert(len(self.pins_str), PinStr())
+                self.port_pins.insert(len(self.port_pins), self.create_empty_portpin())
+        elif n_pins_str > self.n_pins:
+            for i in range(n_pins_str - self.n_pins):
+                del self.pins_str[-1]
+                del self.port_pins[-1]
+
+        #print("n_pins_str = "+ str(n_pins_str) + ", n_pins = " + str(self.n_pins))
+        # Draw new objects
+        for i in range(0, self.n_pins):
+            label = tk.Label(self.mnf, text="Pin #")
+            label.grid(row=self.header_size+i, column=0, sticky="e")
+            self.non_header_objs.append(label)
+            
+            # PortPinId
+            entry = tk.Entry(self.mnf, width=10, textvariable=self.pins_str[i].id)
+            self.pins_str[i].id.set(self.port_pins[i]["Id"])
+            entry.grid(row=self.header_size+i, column=1)
+            self.non_header_objs.append(entry)
+
+            # PortPinDirection
+            cmbsel = ttk.Combobox(self.mnf, width=14, textvariable=self.pins_str[i].pindir, state="readonly")
+            cmbsel['values'] = ("PORT_PIN_IN", "PORT_PIN_OUT")
+            self.pins_str[i].pindir.set(self.port_pins[i]["Direction"])
+            cmbsel.current()
+            cmbsel.grid(row=self.header_size+i, column=2)
+            self.non_header_objs.append(cmbsel)
+
+            # PortPinDirectionChangeable
+            cmbsel = ttk.Combobox(self.mnf, width=8, textvariable=self.pins_str[i].dir_changeable, state="readonly")
+            cmbsel['values'] = ("FALSE", "TRUE")
+            self.pins_str[i].dir_changeable.set(self.port_pins[i]["DirectionChangeable"])
+            cmbsel.current()
+            cmbsel.grid(row=self.header_size+i, column=3)
+            self.non_header_objs.append(cmbsel)
+
+            # PortPinLevelValue
+            cmbsel = ttk.Combobox(self.mnf, width=22, textvariable=self.pins_str[i].pin_level, state="readonly")
+            cmbsel['values'] = ("PORT_PIN_LEVEL_LOW", "PORT_PIN_LEVEL_HIGH")
+            self.pins_str[i].pin_level.set(self.port_pins[i]["LevelValue"])
+            cmbsel.current()
+            cmbsel.grid(row=self.header_size+i, column=4)
+            self.non_header_objs.append(cmbsel)
+
+            # PortPinMode
+            cmbsel = ttk.Combobox(self.mnf, width=28, textvariable=self.pins_str[i].pin_mode, state="readonly")
+            cmbsel['values'] = StdPinModes
+            self.pins_str[i].pin_mode.set(self.port_pins[i]["Mode"])
+            cmbsel.current()
+            cmbsel.grid(row=self.header_size+i, column=5)
+            self.non_header_objs.append(cmbsel)
+
+            # PortPinInitialMode
+            cmbsel = ttk.Combobox(self.mnf, width=28, textvariable=self.pins_str[i].pin_initial_mode, state="readonly")
+            cmbsel['values'] = StdPinModes
+            self.pins_str[i].pin_initial_mode.set(self.port_pins[i]["InitialMode"])
+            cmbsel.current()
+            cmbsel.grid(row=self.header_size+i, column=6)
+            self.non_header_objs.append(cmbsel)
+
+            # PortPinModeChangeable
+            cmbsel = ttk.Combobox(self.mnf, width=8, textvariable=self.pins_str[i].mode_changeable, state="readonly")
+            cmbsel['values'] = ("FALSE", "TRUE")
+            self.pins_str[i].mode_changeable.set(self.port_pins[i]["ModeChangeable"])
+            cmbsel.current()
+            cmbsel.grid(row=self.header_size+i, column=7)
+            self.non_header_objs.append(cmbsel)
+
+        # Set the self.cv scrolling region
+        self.cv.config(scrollregion=self.cv.bbox("all"))
 
 
     def draw(self, tab):
@@ -112,134 +228,40 @@ class PortConfgSetTab:
         # Table heading
         label = tk.Label(self.mnf, text=" ")
         label.grid(row=2, column=0, sticky="w")
-        label = tk.Label(self.mnf, text="Task Name")
+        label = tk.Label(self.mnf, text="PortPinId")
         label.grid(row=2, column=1, sticky="w")
-        label = tk.Label(self.mnf, text="PRIORITY")
+        label = tk.Label(self.mnf, text="PinDirection")
         label.grid(row=2, column=2, sticky="we")
-        label = tk.Label(self.mnf, text="PREMPTION")
-        label.grid(row=2, column=3, sticky="we")
-        label = tk.Label(self.mnf, text="ACTIVATION")
-        label.grid(row=2, column=4, sticky="we")
-        label = tk.Label(self.mnf, text="AUTOSTART[]")
-        label.grid(row=2, column=5, sticky="we")
-        label = tk.Label(self.mnf, text="EVENT[]")
-        label.grid(row=2, column=6, sticky="we")
-        label = tk.Label(self.mnf, text="RESOURCE[]")
-        label.grid(row=2, column=7, sticky="we")
-        label = tk.Label(self.mnf, text="MESSAGE[]")
-        label.grid(row=2, column=8, sticky="we")
-        label = tk.Label(self.mnf, text="Stack Size")
-        label.grid(row=2, column=9, sticky="we")
+        label = tk.Label(self.mnf, text="DirChangeable")
+        label.grid(row=2, column=3, sticky="w")
+        label = tk.Label(self.mnf, text="PinLevelValue")
+        label.grid(row=2, column=4, sticky="w")
+        label = tk.Label(self.mnf, text="PortPinMode")
+        label.grid(row=2, column=5, sticky="w")
+        label = tk.Label(self.mnf, text="ModeChangeable")
+        label.grid(row=2, column=6, sticky="w")
+        label = tk.Label(self.mnf, text="PinInitialMode")
+        label.grid(row=2, column=7, sticky="w")
 
         self.update()
-
-
-    def update(self):
-        # Backup current task entries from GUI
-        self.backup_data()
-
-        # destroy most old gui widgets
-        self.n_pins = int(self.n_pins_str.get())
-        for i, item in enumerate(self.mnf.winfo_children()):
-            if i >= self.HeaderObjs:
-                item.destroy()
-
-        # Tune memory allocations based on number of rows or boxes
-        n_pins_str = len(self.pins_str)
-        if self.n_pins > n_pins_str:
-            for i in range(self.n_pins - n_pins_str):
-                self.pins_str.insert(len(self.pins_str), PinStr(n_pins_str+i))
-                self.port_pins.insert(len(self.port_pins), self.create_empty_portpin())
-        elif n_pins_str > self.n_pins:
-            for i in range(n_pins_str - self.n_pins):
-                del self.pins_str[-1]
-                del self.port_pins[-1]
-
-        #print("n_pins_str = "+ str(n_pins_str) + ", n_pins = " + str(self.n_pins))
-        # Draw new objects
-        for i in range(0, self.n_pins):
-            label = tk.Label(self.mnf, text="Task "+str(i)+": ")
-            label.grid(row=self.HeaderSize+i, column=0, sticky="e")
-            
-            # Task Name
-            entry = tk.Entry(self.mnf, width=30, textvariable=self.pins_str[i].name)
-            self.pins_str[i].name.set(self.port_pins[i]["Task Name"])
-            entry.grid(row=self.HeaderSize+i, column=1)
-
-            # PRIORITY
-            entry = tk.Entry(self.mnf, width=10, textvariable=self.pins_str[i].prio, justify='center')
-            self.pins_str[i].prio.set(self.port_pins[i]["PRIORITY"])
-            entry.grid(row=self.HeaderSize+i, column=2)
-
-            # SCHEDULE
-            cmbsel = ttk.Combobox(self.mnf, width=8, textvariable=self.pins_str[i].schedule, state="readonly")
-            cmbsel['values'] = ("NON", "FULL")
-            self.pins_str[i].schedule.set(self.port_pins[i]["SCHEDULE"])
-            cmbsel.current()
-            cmbsel.grid(row=self.HeaderSize+i, column=3)
-
-            # ACTIVATION
-            entry = tk.Entry(self.mnf, width=11, textvariable=self.pins_str[i].activation, justify='center')
-            self.pins_str[i].activation.set(self.port_pins[i]["ACTIVATION"])
-            entry.grid(row=self.HeaderSize+i, column=4)
-
-            # AUTOSTART[]
-            if "AUTOSTART_APPMODE" in self.port_pins[i]:
-                self.pins_str[i].n_appmod = len(self.port_pins[i]["AUTOSTART_APPMODE"])
-            text = "AppModes["+str(self.pins_str[i].n_appmod)+"]"
-            select = tk.Button(self.mnf, width=13, text=text, command=lambda id = i: self.select_autostart_modes(id))
-            select.grid(row=self.HeaderSize+i, column=5)
-
-            # EVENT[]
-            if "EVENT" in self.port_pins[i]:
-                self.pins_str[i].n_events = len(self.port_pins[i]["EVENT"])
-            text = "Events["+str(self.pins_str[i].n_events)+"]"
-            select = tk.Button(self.mnf, width=13, text=text, command=lambda id = i: self.select_events(id))
-            select.grid(row=self.HeaderSize+i, column=6)
-
-            # RESOURCE[]
-            if "RESOURCE" in self.port_pins[i]:
-                self.pins_str[i].n_resources = len(self.port_pins[i]["RESOURCE"])
-            text = "Resources["+str(self.pins_str[i].n_resources)+"]"
-            select = tk.Button(self.mnf, width=13, text=text, command=lambda id = i: self.select_resources(id))
-            select.grid(row=self.HeaderSize+i, column=7)
-
-            # MESSAGE[]
-            if "MESSAGE" in self.port_pins[i]:
-                self.pins_str[i].n_messages = len(self.port_pins[i]["MESSAGE"])
-            text = "Messages["+str(self.pins_str[i].n_messages)+"]"
-            select = tk.Button(self.mnf, width=13, text=text, command=lambda id = i: self.select_messages(id))
-            select.grid(row=self.HeaderSize+i, column=8)
-            
-            # STACK_SIZE
-            entry = tk.Entry(self.mnf, width=11, textvariable=self.pins_str[i].stack_sz, justify='center')
-            self.pins_str[i].stack_sz.set(self.port_pins[i]["STACK_SIZE"])
-            entry.grid(row=self.HeaderSize+i, column=9)
-
-        # Set the self.cv scrolling region
-        self.cv.config(scrollregion=self.cv.bbox("all"))
 
 
     def backup_data(self):
         n_pins_str = len(self.pins_str)
         # print("tsk_cfg.py: backup_data called! || n_pins_str = "+ str(n_pins_str))
         for i in range(n_pins_str):
-            if len(self.pins_str[i].name.get()):
-                self.port_pins[i]["Task Name"] = self.pins_str[i].name.get()
-            if len(self.pins_str[i].prio.get()):
-                self.port_pins[i]["PRIORITY"] = self.pins_str[i].prio.get()
-            if len(self.pins_str[i].schedule.get()):
-                self.port_pins[i]["SCHEDULE"] = self.pins_str[i].schedule.get()
-            if len(self.pins_str[i].activation.get()):
-                self.port_pins[i]["ACTIVATION"] = self.pins_str[i].activation.get()
-            if "AUTOSTART_APPMODE" in self.port_pins[i]:
-                if len(self.port_pins[i]["AUTOSTART_APPMODE"]):
-                    self.port_pins[i]["AUTOSTART"] = "TRUE"
-                else:
-                    self.port_pins[i]["AUTOSTART"] = "FALSE"
-            else:
-                self.port_pins[i]["AUTOSTART"] = "FALSE"
-            if len(self.pins_str[i].stack_sz.get()):
-                self.port_pins[i]["STACK_SIZE"] = self.pins_str[i].stack_sz.get()
-                # print(self.port_pins[i]["STACK_SIZE"])
+            if len(self.pins_str[i].id.get()):
+                self.port_pins[i]["Id"] = self.pins_str[i].id.get()
+            if len(self.pins_str[i].pindir.get()):
+                self.port_pins[i]["Direction"] = self.pins_str[i].pindir.get()
+            if len(self.pins_str[i].dir_changeable.get()):
+                self.port_pins[i]["DirectionChangeable"] = self.pins_str[i].dir_changeable.get()
+            if len(self.pins_str[i].pin_level.get()):
+                self.port_pins[i]["LevelValue"] = self.pins_str[i].pin_level.get()
+            if len(self.pins_str[i].pin_mode.get()):
+                self.port_pins[i]["Mode"] = self.pins_str[i].pin_mode.get()
+            if len(self.pins_str[i].mode_changeable.get()):
+                self.port_pins[i]["ModeChangeable"] = self.pins_str[i].mode_changeable.get()
+            if len(self.pins_str[i].pin_initial_mode.get()):
+                self.port_pins[i]["InitialMode"] = self.pins_str[i].pin_initial_mode.get()
 
