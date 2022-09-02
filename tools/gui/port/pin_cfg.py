@@ -71,6 +71,13 @@ class PortConfigSetTab:
         self.n_pins = 0
         self.n_pins_str = tk.StringVar()
 
+
+    def init(self, n, pinlist):
+        self.n_pins = n
+        for i in range(n):
+            self.port_pins.insert(i, pinlist[i])
+
+
     def __del__(self):
         del self.n_pins_str
         del self.pins_str[:]
@@ -79,13 +86,13 @@ class PortConfigSetTab:
     def create_empty_portpin(self):
         portpin = {}
         
-        portpin["Direction"] = "PORT_PIN_IN"
-        portpin["DirectionChangeable"] = "FALSE"
-        portpin["Id"] = "65535"
-        portpin["InitialMode"] = "PORT_PIN_MODE_DIO"
-        portpin["LevelValue"] = "PORT_PIN_LEVEL_LOW"
-        portpin["Mode"] = "PORT_PIN_MODE_DIO"
-        portpin["ModeChangeable"] = "FALSE"
+        portpin["PortPinDirection"] = "PORT_PIN_IN"
+        portpin["PortPinDirectionChangeable"] = "FALSE"
+        portpin["PortPinId"] = "65535"
+        portpin["PortPinInitialMode"] = "PORT_PIN_MODE_DIO"
+        portpin["PortPinLevelValue"] = "PORT_PIN_LEVEL_LOW"
+        portpin["PortPinMode"] = "PORT_PIN_MODE_DIO"
+        portpin["PortPinModeChangeable"] = "FALSE"
 
         return portpin
 
@@ -118,14 +125,14 @@ class PortConfigSetTab:
             
             # PortPinId
             entry = tk.Entry(self.mnf, width=10, textvariable=self.pins_str[i].id)
-            self.pins_str[i].id.set(self.port_pins[i]["Id"])
+            self.pins_str[i].id.set(self.port_pins[i]["PortPinId"])
             entry.grid(row=self.header_size+i, column=1)
             self.non_header_objs.append(entry)
 
             # PortPinDirection
             cmbsel = ttk.Combobox(self.mnf, width=14, textvariable=self.pins_str[i].pindir, state="readonly")
             cmbsel['values'] = ("PORT_PIN_IN", "PORT_PIN_OUT")
-            self.pins_str[i].pindir.set(self.port_pins[i]["Direction"])
+            self.pins_str[i].pindir.set(self.port_pins[i]["PortPinDirection"])
             cmbsel.current()
             cmbsel.grid(row=self.header_size+i, column=2)
             self.non_header_objs.append(cmbsel)
@@ -133,7 +140,7 @@ class PortConfigSetTab:
             # PortPinDirectionChangeable
             cmbsel = ttk.Combobox(self.mnf, width=8, textvariable=self.pins_str[i].dir_changeable, state="readonly")
             cmbsel['values'] = ("FALSE", "TRUE")
-            self.pins_str[i].dir_changeable.set(self.port_pins[i]["DirectionChangeable"])
+            self.pins_str[i].dir_changeable.set(self.port_pins[i]["PortPinDirectionChangeable"])
             cmbsel.current()
             cmbsel.grid(row=self.header_size+i, column=3)
             self.non_header_objs.append(cmbsel)
@@ -141,7 +148,7 @@ class PortConfigSetTab:
             # PortPinLevelValue
             cmbsel = ttk.Combobox(self.mnf, width=22, textvariable=self.pins_str[i].pin_level, state="readonly")
             cmbsel['values'] = ("PORT_PIN_LEVEL_LOW", "PORT_PIN_LEVEL_HIGH")
-            self.pins_str[i].pin_level.set(self.port_pins[i]["LevelValue"])
+            self.pins_str[i].pin_level.set(self.port_pins[i]["PortPinLevelValue"])
             cmbsel.current()
             cmbsel.grid(row=self.header_size+i, column=4)
             self.non_header_objs.append(cmbsel)
@@ -149,7 +156,7 @@ class PortConfigSetTab:
             # PortPinMode
             cmbsel = ttk.Combobox(self.mnf, width=28, textvariable=self.pins_str[i].pin_mode, state="readonly")
             cmbsel['values'] = StdPinModes
-            self.pins_str[i].pin_mode.set(self.port_pins[i]["Mode"])
+            self.pins_str[i].pin_mode.set(self.port_pins[i]["PortPinMode"])
             cmbsel.current()
             cmbsel.grid(row=self.header_size+i, column=5)
             self.non_header_objs.append(cmbsel)
@@ -157,7 +164,7 @@ class PortConfigSetTab:
             # PortPinInitialMode
             cmbsel = ttk.Combobox(self.mnf, width=28, textvariable=self.pins_str[i].pin_initial_mode, state="readonly")
             cmbsel['values'] = StdPinModes
-            self.pins_str[i].pin_initial_mode.set(self.port_pins[i]["InitialMode"])
+            self.pins_str[i].pin_initial_mode.set(self.port_pins[i]["PortPinInitialMode"])
             cmbsel.current()
             cmbsel.grid(row=self.header_size+i, column=6)
             self.non_header_objs.append(cmbsel)
@@ -165,7 +172,7 @@ class PortConfigSetTab:
             # PortPinModeChangeable
             cmbsel = ttk.Combobox(self.mnf, width=8, textvariable=self.pins_str[i].mode_changeable, state="readonly")
             cmbsel['values'] = ("FALSE", "TRUE")
-            self.pins_str[i].mode_changeable.set(self.port_pins[i]["ModeChangeable"])
+            self.pins_str[i].mode_changeable.set(self.port_pins[i]["PortPinModeChangeable"])
             cmbsel.current()
             cmbsel.grid(row=self.header_size+i, column=7)
             self.non_header_objs.append(cmbsel)
@@ -234,9 +241,9 @@ class PortConfigSetTab:
         label.grid(row=2, column=4, sticky="w")
         label = tk.Label(self.mnf, text="PortPinMode")
         label.grid(row=2, column=5, sticky="w")
-        label = tk.Label(self.mnf, text="ModeChangeable")
-        label.grid(row=2, column=6, sticky="w")
         label = tk.Label(self.mnf, text="PinInitialMode")
+        label.grid(row=2, column=6, sticky="w")
+        label = tk.Label(self.mnf, text="ModeChangeable")
         label.grid(row=2, column=7, sticky="w")
 
         self.update()
@@ -246,19 +253,19 @@ class PortConfigSetTab:
         n_pins_str = len(self.pins_str)
         for i in range(n_pins_str):
             if len(self.pins_str[i].id.get()):
-                self.port_pins[i]["Id"] = self.pins_str[i].id.get()
+                self.port_pins[i]["PortPinId"] = self.pins_str[i].id.get()
             if len(self.pins_str[i].pindir.get()):
-                self.port_pins[i]["Direction"] = self.pins_str[i].pindir.get()
+                self.port_pins[i]["PortPinDirection"] = self.pins_str[i].pindir.get()
             if len(self.pins_str[i].dir_changeable.get()):
-                self.port_pins[i]["DirectionChangeable"] = self.pins_str[i].dir_changeable.get()
+                self.port_pins[i]["PortPinDirectionChangeable"] = self.pins_str[i].dir_changeable.get()
             if len(self.pins_str[i].pin_level.get()):
-                self.port_pins[i]["LevelValue"] = self.pins_str[i].pin_level.get()
+                self.port_pins[i]["PortPinLevelValue"] = self.pins_str[i].pin_level.get()
             if len(self.pins_str[i].pin_mode.get()):
-                self.port_pins[i]["Mode"] = self.pins_str[i].pin_mode.get()
+                self.port_pins[i]["PortPinMode"] = self.pins_str[i].pin_mode.get()
             if len(self.pins_str[i].mode_changeable.get()):
-                self.port_pins[i]["ModeChangeable"] = self.pins_str[i].mode_changeable.get()
+                self.port_pins[i]["PortPinModeChangeable"] = self.pins_str[i].mode_changeable.get()
             if len(self.pins_str[i].pin_initial_mode.get()):
-                self.port_pins[i]["InitialMode"] = self.pins_str[i].pin_initial_mode.get()
+                self.port_pins[i]["PortPinInitialMode"] = self.pins_str[i].pin_initial_mode.get()
 
 
     def save_data(self):

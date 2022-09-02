@@ -130,8 +130,9 @@ def update_arxml(ar_file, port_info):
 
 
 # This function is highly incomplete.....
-def parse_arxml(ar_file, port_info):
-    return # work in progress
+def parse_arxml(ar_file):
+    port_pin_count = None
+    port_pins = []
     # Read ARXML File
     tree = ET.parse(ar_file)
     root = tree.getroot()
@@ -149,18 +150,43 @@ def parse_arxml(ar_file, port_info):
     if containers == None:
         return
 
-    # locate VendorSpecific configs
-    ctnrname = "McuNammaAutosarInfo"
+    # locate PortConfigSet
+    ctnrname = "PortConfigSet"
     ctnrblk = lib_conf.find_ecuc_container_block(ctnrname, containers)
-    params = None
-    if None != ctnrblk:
-        params = lib.get_param_list(ctnrblk)
+    if lib_conf.get_tag(ctnrblk) != "ECUC-CONTAINER-VALUE":
+        return None
+    
+    # now locate PortContainer
+    port_ctnr = None
+    for ecuc_ctnr in ctnrblk:
+        if lib_conf.get_tag(ecuc_ctnr) == "SUB-CONTAINERS":
+            ctnrblk = ecuc_ctnr
+            break
+    for ecuc_ctnr in ctnrblk:
+        if lib_conf.get_tag(ecuc_ctnr) == "ECUC-CONTAINER-VALUE":
+            ctnrblk = ecuc_ctnr
+            break
+    for item in ctnrblk:
+        if lib_conf.get_tag(item) == "SHORT-NAME":
+            if item.text == "PortContainer":
+                port_ctnr = ctnrblk
+                break
 
-    if None != params:
-        for param in params:
-            if param["tag"] == "Micro":
-                port_info.micro = param["val"]
-            if param["tag"] == "MicroArch":
-                port_info.micro_arch = param["val"]
-            if param["tag"] == "MicroMaker":
-                port_info.micro_maker = param["val"]
+    # get PortContainer parameter - Number of Port Pins
+    if port_ctnr == None:
+        return None
+    params = lib_conf.get_param_list(port_ctnr)
+    if params[0]["tag"] == "PortNumberOfPortPins":
+        port_pin_count = int(params[0]["val"])
+        
+    # Now locate SUB-CONTAINERS to parse pin configurations
+    for subctnr in ctnrblk:
+        if lib_conf.get_tag(subctnr) == "SUB-CONTAINERS":
+            for ctnr in subctnr:
+                port_info = {}
+                params = lib_conf.get_param_list(ctnr)
+                for par in params:
+                    port_info[par["tag"]] = par["val"]
+                port_pins.append(port_info)
+    
+    return port_pin_count, port_pins

@@ -22,6 +22,7 @@ import tkinter as tk
 from tkinter import ttk
 
 import gui.port.pin_cfg as pin_cfg
+import arxml.port.arxml_port as arxml_port
 
 
 TabList = []
@@ -69,9 +70,14 @@ def show_port_config(gui):
     for obj in TabList:
         del obj
 
+    # parse port info from arxml file
+    pins, pin_info = arxml_port.parse_arxml(gui.arxml_file)
+
     # create new GUI objects
     ptab = PortTab()
     ptab.tab = pin_cfg.PortConfigSetTab(gui)
+    if pins > 0:
+        ptab.tab.init(pins, pin_info)
     ptab.name = "PortConfigSet"
     ptab.tab.draw(cs_tab)
     TabList.append(ptab)
