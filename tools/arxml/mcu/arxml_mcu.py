@@ -28,7 +28,7 @@ import arxml.core.lib_defs as lib_defs
 # This function updates NammaAUTOSAR Mcu parameters into its container
 def update_uc_info_to_container(root, uc_info):
     ctnrname = "McuNammaAutosarInfo"
-    ctnrval = lib_conf.find_ecuc_container_value(ctnrname, root)
+    ctnrval = lib_conf.find_ecuc_container_block(ctnrname, root)
     
     # Delete node to rewrite new values
     if None != ctnrval:
@@ -109,7 +109,7 @@ def parse_arxml(ar_file, uc_info):
 
     # locate VendorSpecific configs
     ctnrname = "McuNammaAutosarInfo"
-    ctnrval = lib_conf.find_ecuc_container_value(ctnrname, containers)
+    ctnrval = lib_conf.find_ecuc_container_block(ctnrname, containers)
     params = None
     if None != ctnrval:
         params = lib.get_param_list(ctnrval)

@@ -1,6 +1,7 @@
 import tkinter as tk
 from tkinter import ttk
 
+import arxml.port.arxml_port as arxml_port
 
 StdPinModes = (
     "PORT_PIN_MODE_ADC",
@@ -44,7 +45,7 @@ class PinStr:
         del self.mode_changeable
 
 
-class PortConfgSetTab:
+class PortConfigSetTab:
     n_pins = 0
     max_pins = 65535
     n_pins_str = None
@@ -63,15 +64,10 @@ class PortConfgSetTab:
     sb  = None  # Scrollbar
     mnf = None  # Main Frame - where the widgets are scrolled
 
-    active_dialog = None
-    active_widget = None
+    gui = None
 
-    amtab = None
-    rstab = None
-    mstab = None
-
-
-    def __init__(self):
+    def __init__(self, gui):
+        self.gui = gui
         self.n_pins = 0
         self.n_pins_str = tk.StringVar()
 
@@ -85,7 +81,7 @@ class PortConfgSetTab:
         
         portpin["Direction"] = "PORT_PIN_IN"
         portpin["DirectionChangeable"] = "FALSE"
-        portpin["Id"] = "0 - 65535"
+        portpin["Id"] = "65535"
         portpin["InitialMode"] = "PORT_PIN_MODE_DIO"
         portpin["LevelValue"] = "PORT_PIN_LEVEL_LOW"
         portpin["Mode"] = "PORT_PIN_MODE_DIO"
@@ -102,9 +98,6 @@ class PortConfgSetTab:
         self.n_pins = int(self.n_pins_str.get())
         for obj in self.non_header_objs:
             obj.destroy()
-        # for i, item in enumerate(self.mnf.winfo_children()):
-        #     if i >= self.header_objs:
-        #         item.destroy()
 
         # Tune memory allocations based on number of rows or boxes
         n_pins_str = len(self.pins_str)
@@ -117,7 +110,6 @@ class PortConfgSetTab:
                 del self.pins_str[-1]
                 del self.port_pins[-1]
 
-        #print("n_pins_str = "+ str(n_pins_str) + ", n_pins = " + str(self.n_pins))
         # Draw new objects
         for i in range(0, self.n_pins):
             label = tk.Label(self.mnf, text="Pin #")
@@ -218,6 +210,10 @@ class PortConfgSetTab:
         self.n_pins_str.set(self.n_pins)
         spinb.grid(row=0, column=1, sticky="w")
 
+        # Save Button
+        genm = tk.Button(self.mnf, width=10, text="Save Configs", command=self.save_data, bg="#206020", fg='white')
+        genm.grid(row=0, column=2)
+
         # Update buttons frames idle tasks to let tkinter calculate buttons sizes
         self.mnf.update_idletasks()
         # Resize the main frame to show contents for FULL SCREEN (Todo: scroll bars won't work in reduced size window)
@@ -248,7 +244,6 @@ class PortConfgSetTab:
 
     def backup_data(self):
         n_pins_str = len(self.pins_str)
-        # print("tsk_cfg.py: backup_data called! || n_pins_str = "+ str(n_pins_str))
         for i in range(n_pins_str):
             if len(self.pins_str[i].id.get()):
                 self.port_pins[i]["Id"] = self.pins_str[i].id.get()
@@ -264,4 +259,8 @@ class PortConfgSetTab:
                 self.port_pins[i]["ModeChangeable"] = self.pins_str[i].mode_changeable.get()
             if len(self.pins_str[i].pin_initial_mode.get()):
                 self.port_pins[i]["InitialMode"] = self.pins_str[i].pin_initial_mode.get()
+
+
+    def save_data(self):
+        arxml_port.update_arxml(self.gui.arxml_file, self)
 

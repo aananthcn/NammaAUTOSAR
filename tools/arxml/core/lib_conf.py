@@ -159,11 +159,11 @@ def find_containers_in_modconf(root):
 
 
 # arg2: root is CONTAINERS block inside ECUC-MODULE-CONFIGURATION-VALUES
-def find_ecuc_container_value(shortname, root):
+def find_ecuc_container_block(shortname, root):
    ctnrval = None
    
    if shortname == None:
-      print("Error: Invalid argument to find_ecuc_container_value()")
+      print("Error: Invalid argument to find_ecuc_container_block()")
       return
    
    if get_tag(root) == "CONTAINERS":

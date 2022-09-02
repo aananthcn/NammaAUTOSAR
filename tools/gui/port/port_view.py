@@ -28,12 +28,15 @@ TabList = []
 PortConfigViewActive = False
 
 
+class PortTab:
+    tab = None
+    name = None
 
 
-def port_config_close_event(view):
+
+def port_config_close_event(gui, view):
     global PortConfigViewActive
 
-    #backup_os_gui_before_save()
     PortConfigViewActive = False
     view.destroy()
 
@@ -52,7 +55,7 @@ def show_port_config(gui):
     view.geometry("%dx%d+%d+%d" % (width, height, width/5, 15))
     view.title("AUTOSAR Port Configuration Tool")
     PortConfigViewActive = True
-    view.protocol("WM_DELETE_WINDOW", lambda: port_config_close_event(view))
+    view.protocol("WM_DELETE_WINDOW", lambda: port_config_close_event(gui, view))
     gui.main_view.child_window = ttk.Notebook(view)
     
     # Create tabs to configure OS
@@ -67,9 +70,11 @@ def show_port_config(gui):
         del obj
 
     # create new GUI objects
-    obj = pin_cfg.PortConfgSetTab()
-    obj.draw(cs_tab)
-    TabList.append(obj)
+    ptab = PortTab()
+    ptab.tab = pin_cfg.PortConfigSetTab(gui)
+    ptab.name = "PortConfigSet"
+    ptab.tab.draw(cs_tab)
+    TabList.append(ptab)
 
     # gui.main_view.window.bind("<<NotebookTabChanged>>", show_os_tab_switch)
     
