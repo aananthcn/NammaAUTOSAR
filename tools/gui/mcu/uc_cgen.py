@@ -23,7 +23,6 @@ import os
 import arxml.mcu.arxml_mcu as arxml_mcu
 import utils.search as search
 
-import gui.app.app_gen as app_gen
 
 
 def generate_platform_header(gui):

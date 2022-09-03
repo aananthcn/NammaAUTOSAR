@@ -2,6 +2,8 @@ import tkinter as tk
 from tkinter import ttk
 
 import arxml.port.arxml_port as arxml_port
+import gui.port.port_cgen as port_cgen
+
 
 StdPinModes = (
     "PORT_PIN_MODE_ADC",
@@ -270,4 +272,5 @@ class PortConfigSetTab:
 
     def save_data(self):
         arxml_port.update_arxml(self.gui.arxml_file, self)
+        port_cgen.generate_code(self.gui)
 
