@@ -68,7 +68,7 @@ AsrBlocksConfigList = [
         # Mcu
         "name": "Mcu", "text": "Mcu", "txta": "center", "ori": "V",
         # Position (offset % of screen size), size (% of screen size) & colors
-        "x": 5.0, "y": 4.06, "w": 2.5, "h": 25, "bgc": '#FF7C80', "fgc": 'black',
+        "x": 5.0, "y": 4.06, "w": 2.5, "h": 18, "bgc": '#FF7C80', "fgc": 'black',
         # click callback & constructor
         "cb": None, "cons": None,
         "postdraw": None
@@ -77,9 +77,18 @@ AsrBlocksConfigList = [
         # Port
         "name": "Port", "text": "Port", "txta": "center", "ori": "V",
         # Position (offset % of screen size), size (% of screen size) & colors
-        "x": 75.0, "y": 4.06, "w": 2.5, "h": 25, "bgc": '#FF7C80', "fgc": 'black',
+        "x": 74.0, "y": 4.06, "w": 2.5, "h": 18, "bgc": '#FF7C80', "fgc": 'black',
         # click callback & constructor
         "cb": port_view.port_block_click_handler, "cons": None,
+        "postdraw": None
+    },
+    {
+        # Port
+        "name": "Dio", "text": "Dio", "txta": "center", "ori": "V",
+        # Position (offset % of screen size), size (% of screen size) & colors
+        "x": 71.5, "y": 4.06, "w": 2.5, "h": 18, "bgc": '#FF7C80', "fgc": 'black',
+        # click callback & constructor
+        "cb": None, "cons": None,
         "postdraw": None
     },
     {

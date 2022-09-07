@@ -32,9 +32,6 @@ class Margin:
     bottom = 100
 
 
-def asr_block_cb_null(gui):
-    print("Info: click callback not registered!")
-
 
 class AsrBlock:
     gui = None
@@ -67,7 +64,7 @@ class AsrBlock:
         if cb != None:
             self.callback = cb
         else:
-            self.callback = asr_block_cb_null
+            self.callback = self.asr_block_cb_null
         self.txtfont = tkfont.Font(family='Helvetica', size=16)
 
     def draw(self, gui):
@@ -109,3 +106,5 @@ class AsrBlock:
         self.label = label
         self.draw(gui)
         
+    def asr_block_cb_null(self, gui):
+        print("Info: click callback not registered for "+self.label+"!")

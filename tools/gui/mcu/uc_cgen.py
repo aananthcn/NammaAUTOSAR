@@ -59,6 +59,9 @@ def create_source(gui):
     mcu_path = search.find_dir("EcuM", cwd+"/submodules")
     makefile.write("ECUM_PATH := "+mcu_path+"\n")
 
+    port_path = search.find_dir("Port", cwd+"/submodules")
+    makefile.write("PORT_PATH := "+port_path+"\n")
+
     os_path = search.find_dir("Os", cwd+"/submodules")
     makefile.write("OS_PATH := "+os_path+"\n")
 
@@ -74,7 +77,8 @@ def create_source(gui):
     microarch_mk = search.find_file(gui.uc_info.micro_arch+".mk", cwd)
     makefile.write("include "+microarch_mk+"\n")
     makefile.write("\n")
-    
+
+    ################################################################
     # Temporary work around. This function needs a redesign
     app_path = search.find_dir("NammaTestApp", cwd+"/submodules")
     makefile.write("NAMMATESTAPP_PATH := "+app_path+"\n")
@@ -85,6 +89,8 @@ def create_source(gui):
     makefile.write("include "+Mcu_mk+"\n")
     EcuM_mk = search.find_file("EcuM.mk", cwd+"/submodules")
     makefile.write("include "+EcuM_mk+"\n")
+    Port_mk = search.find_file("Port.mk", cwd+"/submodules")
+    makefile.write("include "+Port_mk+"\n")
 
     os_objs_mk = search.find_file("os-objs.mk", cwd)
     makefile.write("include "+os_objs_mk+"\n")
@@ -93,6 +99,8 @@ def create_source(gui):
     common_mk = search.find_file("common.mk", cwd)
     makefile.write("include "+common_mk+"\n")
     makefile.write("\n")
+    # Temporary work around. This function needs a redesign
+    ##################################################################
 
     # Generate micro & arch specifc header files
     generate_platform_header(gui)

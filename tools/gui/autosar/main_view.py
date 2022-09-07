@@ -74,7 +74,7 @@ class FreeAutosarConfTool:
     arxml_file = None
     
     # Graphical Attributes
-    title = "AUTOSAR Builder"
+    title = "NammaAUTOSAR Builder"
     main_view = None        # the GUI root frame
     micro_block = None      # the Microcontroller block widget
     recentfiles = None
