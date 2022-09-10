@@ -4,6 +4,8 @@ from tkinter import ttk
 import arxml.port.arxml_port as arxml_port
 import gui.port.port_cgen as port_cgen
 
+import gui.lib.window as window
+
 
 StdPinModes = (
     "PORT_PIN_MODE_ADC",
@@ -58,14 +60,8 @@ class PortConfigSetTab:
     header_objs = 12 #Objects / widgets that are part of the header and shouldn't be destroyed
     header_size = 3
     non_header_objs = []
-    
-
-    prf = None  # Parent Frame
-    cvf = None  # Canvas Frame
-    cv  = None  # Canvas
-    sb  = None  # Scrollbar
-    mnf = None  # Main Frame - where the widgets are scrolled
-
+    xsize = None
+    ysize = None
     gui = None
 
     def __init__(self, gui):
@@ -121,18 +117,18 @@ class PortConfigSetTab:
 
         # Draw new objects
         for i in range(0, self.n_pins):
-            label = tk.Label(self.mnf, text="Pin #")
+            label = tk.Label(self.scrollw.mnf, text="Pin #")
             label.grid(row=self.header_size+i, column=0, sticky="e")
             self.non_header_objs.append(label)
             
             # PortPinId
-            entry = tk.Entry(self.mnf, width=10, textvariable=self.pins_str[i].id)
+            entry = tk.Entry(self.scrollw.mnf, width=10, textvariable=self.pins_str[i].id)
             self.pins_str[i].id.set(self.port_pins[i]["PortPinId"])
             entry.grid(row=self.header_size+i, column=1)
             self.non_header_objs.append(entry)
 
             # PortPinDirection
-            cmbsel = ttk.Combobox(self.mnf, width=14, textvariable=self.pins_str[i].pindir, state="readonly")
+            cmbsel = ttk.Combobox(self.scrollw.mnf, width=14, textvariable=self.pins_str[i].pindir, state="readonly")
             cmbsel['values'] = ("PORT_PIN_IN", "PORT_PIN_OUT")
             self.pins_str[i].pindir.set(self.port_pins[i]["PortPinDirection"])
             cmbsel.current()
@@ -140,7 +136,7 @@ class PortConfigSetTab:
             self.non_header_objs.append(cmbsel)
 
             # PortPinDirectionChangeable
-            cmbsel = ttk.Combobox(self.mnf, width=8, textvariable=self.pins_str[i].dir_changeable, state="readonly")
+            cmbsel = ttk.Combobox(self.scrollw.mnf, width=8, textvariable=self.pins_str[i].dir_changeable, state="readonly")
             cmbsel['values'] = ("FALSE", "TRUE")
             self.pins_str[i].dir_changeable.set(self.port_pins[i]["PortPinDirectionChangeable"])
             cmbsel.current()
@@ -148,7 +144,7 @@ class PortConfigSetTab:
             self.non_header_objs.append(cmbsel)
 
             # PortPinLevelValue
-            cmbsel = ttk.Combobox(self.mnf, width=22, textvariable=self.pins_str[i].pin_level, state="readonly")
+            cmbsel = ttk.Combobox(self.scrollw.mnf, width=22, textvariable=self.pins_str[i].pin_level, state="readonly")
             cmbsel['values'] = ("PORT_PIN_LEVEL_LOW", "PORT_PIN_LEVEL_HIGH")
             self.pins_str[i].pin_level.set(self.port_pins[i]["PortPinLevelValue"])
             cmbsel.current()
@@ -156,7 +152,7 @@ class PortConfigSetTab:
             self.non_header_objs.append(cmbsel)
 
             # PortPinMode
-            cmbsel = ttk.Combobox(self.mnf, width=28, textvariable=self.pins_str[i].pin_mode, state="readonly")
+            cmbsel = ttk.Combobox(self.scrollw.mnf, width=28, textvariable=self.pins_str[i].pin_mode, state="readonly")
             cmbsel['values'] = StdPinModes
             self.pins_str[i].pin_mode.set(self.port_pins[i]["PortPinMode"])
             cmbsel.current()
@@ -164,7 +160,7 @@ class PortConfigSetTab:
             self.non_header_objs.append(cmbsel)
 
             # PortPinInitialMode
-            cmbsel = ttk.Combobox(self.mnf, width=28, textvariable=self.pins_str[i].pin_initial_mode, state="readonly")
+            cmbsel = ttk.Combobox(self.scrollw.mnf, width=28, textvariable=self.pins_str[i].pin_initial_mode, state="readonly")
             cmbsel['values'] = StdPinModes
             self.pins_str[i].pin_initial_mode.set(self.port_pins[i]["PortPinInitialMode"])
             cmbsel.current()
@@ -172,7 +168,7 @@ class PortConfigSetTab:
             self.non_header_objs.append(cmbsel)
 
             # PortPinModeChangeable
-            cmbsel = ttk.Combobox(self.mnf, width=8, textvariable=self.pins_str[i].mode_changeable, state="readonly")
+            cmbsel = ttk.Combobox(self.scrollw.mnf, width=8, textvariable=self.pins_str[i].mode_changeable, state="readonly")
             cmbsel['values'] = ("FALSE", "TRUE")
             self.pins_str[i].mode_changeable.set(self.port_pins[i]["PortPinModeChangeable"])
             cmbsel.current()
@@ -180,75 +176,50 @@ class PortConfigSetTab:
             self.non_header_objs.append(cmbsel)
 
         # Set the self.cv scrolling region
-        self.cv.config(scrollregion=self.cv.bbox("all"))
+        self.scrollw.scroll()
 
 
-    def draw(self, tab):
-        tab.grid_rowconfigure(0, weight=1)
-        tab.columnconfigure(0, weight=1)
-        self.prf = tk.Frame(tab)
-        self.prf.grid(sticky="news")
-
-        # Create a frame for the canvas with non-zero row&column weights
-        self.cvf = tk.Frame(self.prf)
-        self.cvf.grid(row=2, column=0, pady=(5, 0), sticky='nw')
-        self.cvf.grid_rowconfigure(0, weight=1)
-        self.cvf.grid_columnconfigure(0, weight=1)
-
-        # Set grid_propagate to False to allow canvas frame resizing later
-        self.cvf.grid_propagate(False)
-
-        # Add a canvas in that frame
-        self.cv = tk.Canvas(self.cvf)
-        self.cv.grid(row=0, column=0, sticky="news")
-
-        # Link a scrollbar to the canvas
-        self.sb = tk.Scrollbar(self.cvf, orient="vertical", command=self.cv.yview)
-        self.sb.grid(row=0, column=1, sticky='ns')
-        self.cv.configure(yscrollcommand=self.sb.set)
-
-        # Create a frame to draw task table
-        self.mnf = tk.Frame(self.cv)
-        self.cv.create_window((0, 0), window=self.mnf, anchor='nw')
-
+    def draw(self, tab, xsize, ysize):
+        self.xsize = xsize
+        self.ysize = ysize
+        self.scrollw = window.ScrollableWindow(tab, self.xsize, self.ysize)
+        
         #Number of modes - Label + Spinbox
-        label = tk.Label(self.mnf, text="No. of Pins:")
+        label = tk.Label(self.scrollw.mnf, text="No. of Pins:")
         label.grid(row=0, column=0, sticky="w")
-        spinb = tk.Spinbox(self.mnf, width=10, textvariable=self.n_pins_str, command=lambda : self.update(),
+        spinb = tk.Spinbox(self.scrollw.mnf, width=10, textvariable=self.n_pins_str, command=lambda : self.update(),
                     values=tuple(range(0,self.max_pins+1)))
         self.n_pins_str.set(self.n_pins)
         spinb.grid(row=0, column=1, sticky="w")
 
         # Save Button
-        genm = tk.Button(self.mnf, width=10, text="Save Configs", command=self.save_data, bg="#206020", fg='white')
+        genm = tk.Button(self.scrollw.mnf, width=10, text="Save Configs", command=self.save_data, bg="#206020", fg='white')
         genm.grid(row=0, column=2)
 
         # Update buttons frames idle tasks to let tkinter calculate buttons sizes
-        self.mnf.update_idletasks()
-        # Resize the main frame to show contents for FULL SCREEN (Todo: scroll bars won't work in reduced size window)
-        canvas_w = tab.winfo_screenwidth()-self.sb.winfo_width()
-        canvas_h = tab.winfo_screenheight()-(spinb.winfo_height()*6)
-        self.cvf.config(width=canvas_w, height=canvas_h)
+        self.scrollw.update()
 
         # Table heading
-        label = tk.Label(self.mnf, text=" ")
+        label = tk.Label(self.scrollw.mnf, text=" ")
         label.grid(row=2, column=0, sticky="w")
-        label = tk.Label(self.mnf, text="PortPinId")
+        label = tk.Label(self.scrollw.mnf, text="PortPinId")
         label.grid(row=2, column=1, sticky="w")
-        label = tk.Label(self.mnf, text="PinDirection")
+        label = tk.Label(self.scrollw.mnf, text="PinDirection")
         label.grid(row=2, column=2, sticky="we")
-        label = tk.Label(self.mnf, text="DirChangeable")
+        label = tk.Label(self.scrollw.mnf, text="DirChangeable")
         label.grid(row=2, column=3, sticky="w")
-        label = tk.Label(self.mnf, text="PinLevelValue")
+        label = tk.Label(self.scrollw.mnf, text="PinLevelValue")
         label.grid(row=2, column=4, sticky="w")
-        label = tk.Label(self.mnf, text="PortPinMode")
+        label = tk.Label(self.scrollw.mnf, text="PortPinMode")
         label.grid(row=2, column=5, sticky="w")
-        label = tk.Label(self.mnf, text="PinInitialMode")
+        label = tk.Label(self.scrollw.mnf, text="PinInitialMode")
         label.grid(row=2, column=6, sticky="w")
-        label = tk.Label(self.mnf, text="ModeChangeable")
+        label = tk.Label(self.scrollw.mnf, text="ModeChangeable")
         label.grid(row=2, column=7, sticky="w")
 
         self.update()
+        self.scrollw.scroll()
+
 
 
     def backup_data(self):

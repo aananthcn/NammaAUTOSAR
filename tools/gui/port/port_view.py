@@ -79,7 +79,7 @@ def show_port_config(gui):
     if pins > 0:
         ptab.tab.init(pins, pin_info)
     ptab.name = "PortConfigSet"
-    ptab.tab.draw(cs_tab)
+    ptab.tab.draw(cs_tab, width, height)
     TabList.append(ptab)
 
     # gui.main_view.window.bind("<<NotebookTabChanged>>", show_os_tab_switch)

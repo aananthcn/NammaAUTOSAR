@@ -179,12 +179,11 @@ class DioConfigTab:
             self.non_header_objs.append(cmbsel)
 
         # Set the self.cv scrolling region
-        # self.cv.config(scrollregion=self.cv.bbox("all"))
-        self.scrollw.scroll_view()
+        self.scrollw.scroll()
 
 
-    def draw(self, tab):
-        self.scrollw = window.ScrollableWindow(tab)
+    def draw(self, tab, xsize, ysize):
+        self.scrollw = window.ScrollableWindow(tab, xsize, ysize)
 
         #Number of modes - Label + Spinbox
         label = tk.Label(self.scrollw.mnf, text="No. of Pins:")

@@ -2,6 +2,7 @@ import tkinter as tk
 from tkinter import ttk
 
 from .evt_cfg import EventWindow
+import gui.lib.window as window
 
 
 class IsrStr:
@@ -39,11 +40,8 @@ class IsrTab:
     sg_isrs = None
     HeaderObjs = 10 #Objects / widgets that are part of the header and shouldn't be destroyed
     HeaderSize = 3
-    prf = None  # Parent Frame
-    cvf = None  # Canvas Frame
-    cv  = None  # Canvas
-    sb  = None  # Scrollbar
-    mnf = None  # Main Frame - where the widgets are scrolled
+    xsize = None
+    ysize = None
 
     active_dialog = None
     active_widget = None
@@ -90,65 +88,36 @@ class IsrTab:
         return isr
 
 
-    def draw(self, tab):
-        tab.grid_rowconfigure(0, weight=1)
-        tab.columnconfigure(0, weight=1)
-        self.prf = tk.Frame(tab)
-        self.prf.grid(sticky="news")
-
-        # Create a frame for the canvas with non-zero row&column weights
-        self.cvf = tk.Frame(self.prf)
-        self.cvf.grid(row=2, column=0, pady=(5, 0), sticky='nw')
-        self.cvf.grid_rowconfigure(0, weight=1)
-        self.cvf.grid_columnconfigure(0, weight=1)
-
-        # Set grid_propagate to False to allow canvas frame resizing later
-        self.cvf.grid_propagate(False)
-
-        # Add a canvas in that frame
-        self.cv = tk.Canvas(self.cvf)
-        self.cv.grid(row=0, column=0, sticky="news")
-
-        # Link a scrollbar to the canvas
-        self.sb = tk.Scrollbar(self.cvf, orient="vertical", command=self.cv.yview)
-        self.sb.grid(row=0, column=1, sticky='ns')
-        self.cv.configure(yscrollcommand=self.sb.set)
-
-        # Create a frame to draw isr table
-        self.mnf = tk.Frame(self.cv)
-        self.cv.create_window((0, 0), window=self.mnf, anchor='nw')
+    def draw(self, tab, xsize, ysize):
+        self.xsize = xsize
+        self.ysize = ysize
+        self.scrollw = window.ScrollableWindow(tab, self.xsize, self.ysize)
 
         #Number of modes - Label + Spinbox
-        label = tk.Label(self.mnf, text="No. of Tasks:")
+        label = tk.Label(self.scrollw.mnf, text="No. of Tasks:")
         label.grid(row=0, column=0, sticky="w")
-        spinb = tk.Spinbox(self.mnf, width=10, textvariable=self.n_isrs_str, command=lambda : self.update(),
+        spinb = tk.Spinbox(self.scrollw.mnf, width=10, textvariable=self.n_isrs_str, command=lambda : self.update(),
                     values=tuple(range(0,self.max_isrs+1)))
         self.n_isrs_str.set(self.n_isrs)
         spinb.grid(row=0, column=1, sticky="w")
 
         # Update buttons frames idle isrs to let tkinter calculate buttons sizes
-        self.mnf.update_idletasks()
-        # Resize the main frame to show contents for FULL SCREEN (Todo: scroll bars won't work in reduced size window)
-        canvas_w = tab.winfo_screenwidth()-self.sb.winfo_width()
-        canvas_h = tab.winfo_screenheight()-(spinb.winfo_height()*6)
-        # print("screen: "+str(tab.winfo_screenwidth())+" x "+str(tab.winfo_screenheight()))
-        # print("canvas: "+str(canvas_w)+" x "+str(canvas_h))
-        self.cvf.config(width=canvas_w, height=canvas_h)
+        self.scrollw.update()
 
         # Table heading
-        label = tk.Label(self.mnf, text=" ")
+        label = tk.Label(self.scrollw.mnf, text=" ")
         label.grid(row=2, column=0, sticky="w")
-        label = tk.Label(self.mnf, text="ISR Name")
+        label = tk.Label(self.scrollw.mnf, text="ISR Name")
         label.grid(row=2, column=1, sticky="w")
-        label = tk.Label(self.mnf, text="IRQn")
+        label = tk.Label(self.scrollw.mnf, text="IRQn")
         label.grid(row=2, column=2, sticky="we")
-        label = tk.Label(self.mnf, text="CATEGORY")
+        label = tk.Label(self.scrollw.mnf, text="CATEGORY")
         label.grid(row=2, column=3, sticky="we")
-        label = tk.Label(self.mnf, text="PRIORITY")
+        label = tk.Label(self.scrollw.mnf, text="PRIORITY")
         label.grid(row=2, column=4, sticky="we")
-        label = tk.Label(self.mnf, text="RESOURCE(S)")
+        label = tk.Label(self.scrollw.mnf, text="RESOURCE(S)")
         label.grid(row=2, column=5, sticky="we")
-        label = tk.Label(self.mnf, text="STACK SIZE")
+        label = tk.Label(self.scrollw.mnf, text="STACK SIZE")
         label.grid(row=2, column=6, sticky="we")
 
         self.update()
@@ -160,7 +129,7 @@ class IsrTab:
 
         # destroy most old gui widgets
         self.n_isrs = int(self.n_isrs_str.get())
-        for i, item in enumerate(self.mnf.winfo_children()):
+        for i, item in enumerate(self.scrollw.mnf.winfo_children()):
             if i >= self.HeaderObjs:
                 item.destroy()
 
@@ -178,28 +147,28 @@ class IsrTab:
         #print("n_isrs_str = "+ str(n_isrs_str) + ", n_isrs = " + str(self.n_isrs))
         # Draw new objects
         for i in range(0, self.n_isrs):
-            label = tk.Label(self.mnf, text="ISR "+str(i)+": ")
+            label = tk.Label(self.scrollw.mnf, text="ISR "+str(i)+": ")
             label.grid(row=self.HeaderSize+i, column=0, sticky="e")
             
             # ISR Name
-            entry = tk.Entry(self.mnf, width=30, textvariable=self.isrs_str[i].name)
+            entry = tk.Entry(self.scrollw.mnf, width=30, textvariable=self.isrs_str[i].name)
             self.isrs_str[i].name.set(self.sg_isrs[i]["ISR Name"])
             entry.grid(row=self.HeaderSize+i, column=1)
 
             # IRQn
-            entry = tk.Entry(self.mnf, width=10, textvariable=self.isrs_str[i].irqn, justify='center')
+            entry = tk.Entry(self.scrollw.mnf, width=10, textvariable=self.isrs_str[i].irqn, justify='center')
             self.isrs_str[i].irqn.set(self.sg_isrs[i]["IRQn"])
             entry.grid(row=self.HeaderSize+i, column=2)
 
             # CATEGORY
-            cmbsel = ttk.Combobox(self.mnf, width=8, textvariable=self.isrs_str[i].category, state="readonly", justify='center')
+            cmbsel = ttk.Combobox(self.scrollw.mnf, width=8, textvariable=self.isrs_str[i].category, state="readonly", justify='center')
             cmbsel['values'] = ("1", "2")
             self.isrs_str[i].category.set(self.sg_isrs[i]["CATEGORY"])
             cmbsel.current()
             cmbsel.grid(row=self.HeaderSize+i, column=3)
 
             # PRIORITY
-            entry = tk.Entry(self.mnf, width=10, textvariable=self.isrs_str[i].priority, justify='center')
+            entry = tk.Entry(self.scrollw.mnf, width=10, textvariable=self.isrs_str[i].priority, justify='center')
             self.isrs_str[i].priority.set(self.sg_isrs[i]["OsIsrInterruptPriority"])
             entry.grid(row=self.HeaderSize+i, column=4)
 
@@ -207,16 +176,16 @@ class IsrTab:
             if "RESOURCE" in self.sg_isrs[i]:
                 self.isrs_str[i].n_resources = len(self.sg_isrs[i]["RESOURCE"])
             text = "Resources["+str(self.isrs_str[i].n_resources)+"]"
-            select = tk.Button(self.mnf, width=12, text=text, command=lambda id = i: self.select_resources(id))
+            select = tk.Button(self.scrollw.mnf, width=12, text=text, command=lambda id = i: self.select_resources(id))
             select.grid(row=self.HeaderSize+i, column=5)
 
             # PRIORITY
-            entry = tk.Entry(self.mnf, width=10, textvariable=self.isrs_str[i].stack_size, justify='center')
+            entry = tk.Entry(self.scrollw.mnf, width=10, textvariable=self.isrs_str[i].stack_size, justify='center')
             self.isrs_str[i].stack_size.set(self.sg_isrs[i]["OsIsrStackSize"])
             entry.grid(row=self.HeaderSize+i, column=6)
             
         # Set the self.cv scrolling region
-        self.cv.config(scrollregion=self.cv.bbox("all"))
+        self.scrollw.scroll()
 
 
     def backup_data(self):

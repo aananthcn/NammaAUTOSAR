@@ -83,7 +83,7 @@ def show_dio_tabs(gui):
     #if pins > 0:
     #    dtab.tab.init(pins, pin_info)
     dtab.name = "DioConfig"
-    dtab.tab.draw(dc_tab)
+    dtab.tab.draw(dc_tab, width, height)
     TabList.append(dtab)
     
     dtab = DioTab()
@@ -91,7 +91,7 @@ def show_dio_tabs(gui):
     #if pins > 0:
     #    dtab.tab.init(pins, pin_info)
     dtab.name = "DioGeneral"
-    dtab.tab.draw(dg_tab)
+    dtab.tab.draw(dg_tab, width, height)
 
     # gui.main_view.window.bind("<<NotebookTabChanged>>", show_os_tab_switch)
     

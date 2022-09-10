@@ -109,28 +109,29 @@ def show_os_config(gui):
     view.title("AUTOSAR OS Configuration Tool")
     OsConfigViewActive = True
     view.protocol("WM_DELETE_WINDOW", lambda: os_config_close_event(view))
-    gui.main_view.child_window = ttk.Notebook(view)
+    gui.main_view.child_window = view
+    notebook = ttk.Notebook(view)
     
     # Create tabs to configure OS
-    os_tab = ttk.Frame(gui.main_view.child_window)
-    am_tab = ttk.Frame(gui.main_view.child_window)
-    cr_tab = ttk.Frame(gui.main_view.child_window)
-    ms_tab = ttk.Frame(gui.main_view.child_window)
-    rs_tab = ttk.Frame(gui.main_view.child_window)
-    tk_tab = ttk.Frame(gui.main_view.child_window)
-    al_tab = ttk.Frame(gui.main_view.child_window)
-    ir_tab = ttk.Frame(gui.main_view.child_window)
+    os_tab = ttk.Frame(notebook)
+    am_tab = ttk.Frame(notebook)
+    cr_tab = ttk.Frame(notebook)
+    ms_tab = ttk.Frame(notebook)
+    rs_tab = ttk.Frame(notebook)
+    tk_tab = ttk.Frame(notebook)
+    al_tab = ttk.Frame(notebook)
+    ir_tab = ttk.Frame(notebook)
     
     # Add tabs to configure OS
-    gui.main_view.child_window.add(os_tab, text ='OS Configs')
-    gui.main_view.child_window.add(am_tab, text =' AppModes ')
-    gui.main_view.child_window.add(cr_tab, text =' Counters ')
-    gui.main_view.child_window.add(ms_tab, text =' Messages ')
-    gui.main_view.child_window.add(rs_tab, text =' Resources ')
-    gui.main_view.child_window.add(tk_tab, text ='   Tasks   ')
-    gui.main_view.child_window.add(al_tab, text ='  Alarms  ')
-    gui.main_view.child_window.add(ir_tab, text ='   ISRs   ')
-    gui.main_view.child_window.pack(expand = 1, fill ="both")
+    notebook.add(os_tab, text ='OS Configs')
+    notebook.add(am_tab, text =' AppModes ')
+    notebook.add(cr_tab, text =' Counters ')
+    notebook.add(ms_tab, text =' Messages ')
+    notebook.add(rs_tab, text =' Resources ')
+    notebook.add(tk_tab, text ='   Tasks   ')
+    notebook.add(al_tab, text ='  Alarms  ')
+    notebook.add(ir_tab, text ='   ISRs   ')
+    notebook.pack(expand = 1, fill ="both")
 
     # destroy old GUI objects
     del OsTab
@@ -153,19 +154,19 @@ def show_os_config(gui):
     CtrTab.draw(cr_tab)
 
     MsgTab = gui_ms_tab.MessageTab(sg.Tasks)
-    MsgTab.draw(ms_tab)
+    MsgTab.draw(ms_tab, width, height)
 
     ResTab = gui_rs_tab.ResourceTab(sg.Tasks)
-    ResTab.draw(rs_tab)
+    ResTab.draw(rs_tab, width, height)
 
     TskTab = gui_tk_tab.TaskTab(sg.Tasks, AmTab, ResTab, MsgTab)
-    TskTab.draw(tk_tab)
+    TskTab.draw(tk_tab, width, height)
     
     AlmTab = gui_al_tab.AlarmTab(sg.Alarms, TskTab, AmTab, CtrTab)
-    AlmTab.draw(al_tab)
+    AlmTab.draw(al_tab, width, height)
 
     IsrTab = gui_ir_tab.IsrTab(sg.ISRs, ResTab, MsgTab)
-    IsrTab.draw(ir_tab)
+    IsrTab.draw(ir_tab, width, height)
 
     gui.main_view.window.bind("<<NotebookTabChanged>>", show_os_tab_switch)
     

@@ -4,6 +4,8 @@ from tkinter import ttk
 from .evt_cfg import EventWindow
 from copy import copy
 
+import gui.lib.window as window
+
 
 class AlarmStr:
     id = None
@@ -53,11 +55,9 @@ class AlarmTab:
     sg_alarms = None
     HeaderObjs = 12 #Objects / widgets that are part of the header and shouldn't be destroyed
     HeaderSize = 3
-    prf = None  # Parent Frame
-    cvf = None  # Canvas Frame
-    cv  = None  # Canvas
-    sb  = None  # Scrollbar
-    mnf = None  # Main Frame - where the widgets are scrolled
+
+    xsize = None
+    ysize = None
 
     active_dialog = None
     active_widget = None
@@ -141,69 +141,42 @@ class AlarmTab:
         return events
 
 
-    def draw(self, tab):
-        tab.grid_rowconfigure(0, weight=1)
-        tab.columnconfigure(0, weight=1)
-        self.prf = tk.Frame(tab)
-        self.prf.grid(sticky="news")
-
-        # Create a frame for the canvas with non-zero row&column weights
-        self.cvf = tk.Frame(self.prf)
-        self.cvf.grid(row=2, column=0, pady=(5, 0), sticky='nw')
-        self.cvf.grid_rowconfigure(0, weight=1)
-        self.cvf.grid_columnconfigure(0, weight=1)
-
-        # Set grid_propagate to False to allow canvas frame resizing later
-        self.cvf.grid_propagate(False)
-
-        # Add a canvas in that frame
-        self.cv = tk.Canvas(self.cvf)
-        self.cv.grid(row=0, column=0, sticky="news")
-
-        # Link a scrollbar to the canvas
-        self.sb = tk.Scrollbar(self.cvf, orient="vertical", command=self.cv.yview)
-        self.sb.grid(row=0, column=1, sticky='ns')
-        self.cv.configure(yscrollcommand=self.sb.set)
-
-        # Create a frame to draw task table
-        self.mnf = tk.Frame(self.cv)
-        self.cv.create_window((0, 0), window=self.mnf, anchor='nw')
+    def draw(self, tab, xsize, ysize):
+        self.xsize = xsize
+        self.ysize = ysize
+        self.scrollw = window.ScrollableWindow(tab, self.xsize, self.ysize)
 
         #Number of modes - Label + Spinbox
-        label = tk.Label(self.mnf, text="No. of Alarms:")
+        label = tk.Label(self.scrollw.mnf, text="No. of Alarms:")
         label.grid(row=0, column=0, sticky="w")
-        spinb = tk.Spinbox(self.mnf, width=10, textvariable=self.n_alarms_str, command=lambda : self.update(),
+        spinb = tk.Spinbox(self.scrollw.mnf, width=10, textvariable=self.n_alarms_str, command=lambda : self.update(),
                     values=tuple(range(1,self.max_alarms+1)))
         self.n_alarms_str.set(self.n_alarms)
         spinb.grid(row=0, column=1, sticky="w")
 
         # Update buttons frames idle sg_alarms to let tkinter calculate buttons sizes
-        self.mnf.update_idletasks()
-        # Resize the main frame to show contents for FULL SCREEN (Todo: scroll bars won't work in reduced size window)
-        canvas_w = tab.winfo_screenwidth()-self.sb.winfo_width()
-        canvas_h = tab.winfo_screenheight()-(spinb.winfo_height()*6)
-        self.cvf.config(width=canvas_w, height=canvas_h)
+        self.scrollw.update()
 
         # Table heading
-        label = tk.Label(self.mnf, text=" ")
+        label = tk.Label(self.scrollw.mnf, text=" ")
         label.grid(row=2, column=0, sticky="w")
-        label = tk.Label(self.mnf, text="Alarm Name")
+        label = tk.Label(self.scrollw.mnf, text="Alarm Name")
         label.grid(row=2, column=1, sticky="w")
-        label = tk.Label(self.mnf, text="COUNTER")
+        label = tk.Label(self.scrollw.mnf, text="COUNTER")
         label.grid(row=2, column=2, sticky="we")
-        label = tk.Label(self.mnf, text="Action-Type")
+        label = tk.Label(self.scrollw.mnf, text="Action-Type")
         label.grid(row=2, column=3, sticky="we")
-        label = tk.Label(self.mnf, text="arg1")
+        label = tk.Label(self.scrollw.mnf, text="arg1")
         label.grid(row=2, column=4, sticky="we")
-        label = tk.Label(self.mnf, text="arg2")
+        label = tk.Label(self.scrollw.mnf, text="arg2")
         label.grid(row=2, column=5, sticky="we")
-        label = tk.Label(self.mnf, text="IsAutoStart")
+        label = tk.Label(self.scrollw.mnf, text="IsAutoStart")
         label.grid(row=2, column=6, sticky="we")
-        label = tk.Label(self.mnf, text="ALARMTIME")
+        label = tk.Label(self.scrollw.mnf, text="ALARMTIME")
         label.grid(row=2, column=7, sticky="we")
-        label = tk.Label(self.mnf, text="CYCLETIME")
+        label = tk.Label(self.scrollw.mnf, text="CYCLETIME")
         label.grid(row=2, column=8, sticky="we")
-        label = tk.Label(self.mnf, text="APPMODE")
+        label = tk.Label(self.scrollw.mnf, text="APPMODE")
         label.grid(row=2, column=9, sticky="we")
 
         self.update()
@@ -215,7 +188,7 @@ class AlarmTab:
                 
         # destroy most old gui widgets
         self.n_alarms = int(self.n_alarms_str.get())
-        for i, item in enumerate(self.mnf.winfo_children()):
+        for i, item in enumerate(self.scrollw.mnf.winfo_children()):
             if i >= self.HeaderObjs:
                 item.destroy()
 
@@ -233,23 +206,23 @@ class AlarmTab:
         #print("n_alarms_str = "+ str(n_alarms_str) + ", n_alarms = " + str(self.n_alarms))
         # Draw new objects
         for i in range(0, self.n_alarms):
-            label = tk.Label(self.mnf, text="Alarm "+str(i)+": ")
+            label = tk.Label(self.scrollw.mnf, text="Alarm "+str(i)+": ")
             label.grid(row=self.HeaderSize+i, column=0, sticky="e")
             
             # Alarm Name
-            entry = tk.Entry(self.mnf, width=30, textvariable=self.alarms_str[i].name)
+            entry = tk.Entry(self.scrollw.mnf, width=30, textvariable=self.alarms_str[i].name)
             self.alarms_str[i].name.set(self.sg_alarms[i]["Alarm Name"])
             entry.grid(row=self.HeaderSize+i, column=1)
 
             # COUNTER
-            cmbsel = ttk.Combobox(self.mnf, width=17, textvariable=self.alarms_str[i].counter, state="readonly")
+            cmbsel = ttk.Combobox(self.scrollw.mnf, width=17, textvariable=self.alarms_str[i].counter, state="readonly")
             cmbsel['values'] = self.extract_counter_names()
             self.alarms_str[i].counter.set(self.sg_alarms[i]["COUNTER"])
             cmbsel.current()
             cmbsel.grid(row=self.HeaderSize+i, column=2)
 
             # Action-Type
-            cmbsel = ttk.Combobox(self.mnf, width=17, textvariable=self.alarms_str[i].action_type, state="readonly")
+            cmbsel = ttk.Combobox(self.scrollw.mnf, width=17, textvariable=self.alarms_str[i].action_type, state="readonly")
             cmbsel['values'] = ("ACTIVATETASK", "SETEVENT", "ALARMCALLBACK")
             self.alarms_str[i].action_type.set(self.sg_alarms[i]["Action-Type"])
             cmbsel.current()
@@ -259,12 +232,12 @@ class AlarmTab:
             # arg1
             if self.sg_alarms[i]["Action-Type"] == "ALARMCALLBACK":
                 # Draw Entry box for ALARMCALLBACK
-                entry = tk.Entry(self.mnf, width=30, textvariable=self.alarms_str[i].action_arg1)
+                entry = tk.Entry(self.scrollw.mnf, width=30, textvariable=self.alarms_str[i].action_arg1)
                 self.alarms_str[i].action_arg1.set(self.sg_alarms[i]["arg1"])
                 entry.grid(row=self.HeaderSize+i, column=4)
             else: 
                 # Draw Combobox for Task select
-                cmbsel = ttk.Combobox(self.mnf, width=30-3, textvariable=self.alarms_str[i].action_arg1, state="readonly")
+                cmbsel = ttk.Combobox(self.scrollw.mnf, width=30-3, textvariable=self.alarms_str[i].action_arg1, state="readonly")
                 cmbsel['values'] = self.extract_task_names()
                 self.alarms_str[i].action_arg1.set(self.sg_alarms[i]["arg1"])
                 cmbsel.current()
@@ -274,7 +247,7 @@ class AlarmTab:
             # arg2
             if self.sg_alarms[i]["Action-Type"] == "SETEVENT":
                 # Draw Combobox for Event select
-                cmbsel = ttk.Combobox(self.mnf, width=25-3, textvariable=self.alarms_str[i].action_arg2, state="readonly")
+                cmbsel = ttk.Combobox(self.scrollw.mnf, width=25-3, textvariable=self.alarms_str[i].action_arg2, state="readonly")
                 event_list = self.extract_task_events(i)
                 cmbsel['values'] = event_list
                 if self.sg_alarms[i]["arg2"] in event_list:
@@ -286,7 +259,7 @@ class AlarmTab:
 
 
             # IsAutoStart
-            cmbsel = ttk.Combobox(self.mnf, width=8, textvariable=self.alarms_str[i].is_autostart, state="readonly")
+            cmbsel = ttk.Combobox(self.scrollw.mnf, width=8, textvariable=self.alarms_str[i].is_autostart, state="readonly")
             cmbsel['values'] = ("TRUE", "FALSE")
             self.alarms_str[i].is_autostart.set(self.sg_alarms[i]["IsAutostart"])
             cmbsel.current()
@@ -298,12 +271,12 @@ class AlarmTab:
                 continue
 
             # ALARMTIME
-            entry = tk.Entry(self.mnf, width=11, textvariable=self.alarms_str[i].alarm_time, justify='center')
+            entry = tk.Entry(self.scrollw.mnf, width=11, textvariable=self.alarms_str[i].alarm_time, justify='center')
             self.alarms_str[i].alarm_time.set(self.sg_alarms[i]["ALARMTIME"])
             entry.grid(row=self.HeaderSize+i, column=7)
 
             # CYCLETIME
-            entry = tk.Entry(self.mnf, width=11, textvariable=self.alarms_str[i].cycle_time, justify='center')
+            entry = tk.Entry(self.scrollw.mnf, width=11, textvariable=self.alarms_str[i].cycle_time, justify='center')
             self.alarms_str[i].cycle_time.set(self.sg_alarms[i]["CYCLETIME"])
             entry.grid(row=self.HeaderSize+i, column=8)
 
@@ -311,11 +284,11 @@ class AlarmTab:
             if "APPMODE[]" in self.sg_alarms[i]:
                 self.alarms_str[i].n_appmodes = len(self.sg_alarms[i]["APPMODE[]"])
             text = "SELECT["+str(self.alarms_str[i].n_appmodes)+"]"
-            select = tk.Button(self.mnf, width=10, text=text, command=lambda id = i: self.select_autostart_modes(id))
+            select = tk.Button(self.scrollw.mnf, width=10, text=text, command=lambda id = i: self.select_autostart_modes(id))
             select.grid(row=self.HeaderSize+i, column=9)
 
         # Set the self.cv scrolling region
-        self.cv.config(scrollregion=self.cv.bbox("all"))
+        self.scrollw.scroll()
 
 
     def backup_data(self):

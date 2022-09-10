@@ -115,7 +115,7 @@ class DioGeneralTab:
 
 
 
-    def draw(self, tab):
+    def draw(self, tab, xsize, ysize):
         return
         tab.grid_rowconfigure(0, weight=1)
         tab.columnconfigure(0, weight=1)

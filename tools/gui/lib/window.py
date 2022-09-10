@@ -33,9 +33,10 @@ class ScrollableWindow:
     ysize = None
 
 
-    def __init__(self, root):
+    def __init__(self, root, xsize, ysize):
         self.rtf = root
-        self.get_sizes(root)
+        self.xsize = xsize
+        self.ysize = ysize
         self.rtf.grid_rowconfigure(0, weight=1)
         self.rtf.columnconfigure(0, weight=1)
         
@@ -63,12 +64,6 @@ class ScrollableWindow:
         self.cv.create_window((0, 0), window=self.mnf, anchor='nw')
 
         
-    def get_sizes(self, rtf):
-        rtf.update()
-        self.xsize = rtf.winfo_width()
-        self.ysize = rtf.winfo_height()
-
-
     def update(self):
         # Update widgets frames idle tasks to let tkinter calculate widget sizes
         self.mnf.update_idletasks()
@@ -80,7 +75,7 @@ class ScrollableWindow:
         self.cvf.config(width=canvas_w, height=canvas_h)
 
 
-    def scroll_view(self):
+    def scroll(self):
         # Set the self.cv scrolling region
         self.cv.config(scrollregion=self.cv.bbox("all"))
     
