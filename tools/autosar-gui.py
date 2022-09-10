@@ -21,7 +21,7 @@
 import os
 import sys
 
-from gui.autosar.main_view import FreeAutosarConfTool
+from gui.lib.main_view import FreeAutosarConfTool
 
 
 def main(fpath, ftype):

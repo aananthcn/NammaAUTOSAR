@@ -24,12 +24,14 @@ from tkinter import *
 import tkinter.ttk as ttk
 
 import arxml.mcu.arxml_mcu as arxml_mcu
-import gui.autosar.asr_block as asr_block
+import gui.lib.asr_block as asr_block
 
 import gui.mcu.uc_view as uc_view
 import gui.os.os_view as os_view
 import gui.app.app_view as app_view
+
 import gui.port.port_view as port_view
+import gui.dio.dio_view as dio_view
 
 
 
@@ -88,7 +90,7 @@ AsrBlocksConfigList = [
         # Position (offset % of screen size), size (% of screen size) & colors
         "x": 71.5, "y": 4.06, "w": 2.5, "h": 18, "bgc": '#FF7C80', "fgc": 'black',
         # click callback & constructor
-        "cb": None, "cons": None,
+        "cb": dio_view.dio_block_click_handler, "cons": None,
         "postdraw": None
     },
     {

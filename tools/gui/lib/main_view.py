@@ -38,7 +38,7 @@ from tkinter import filedialog
 
 import gui.os.os_view as os_view
 import gui.mcu.uc_view as uc_view
-import gui.autosar.asr_view as av
+import gui.lib.asr_view as av
 
 import arxml.core.lib as lib
 

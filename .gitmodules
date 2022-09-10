@@ -13,3 +13,6 @@
 [submodule "submodules/MCAL/Port"]
 	path = submodules/MCAL/Port
 	url = git@github.com:aananthcn/NammaPort.git
+[submodule "submodules/MCAL/Dio"]
+	path = submodules/MCAL/Dio
+	url = git@github.com:aananthcn/NammaDio.git
