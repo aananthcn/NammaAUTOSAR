@@ -7,21 +7,7 @@ import gui.lib.window as window
 import gui.port.port_cgen as port_cgen
 
 
-StdPinModes = (
-    "PORT_PIN_MODE_ADC",
-    "PORT_PIN_MODE_CAN",
-    "PORT_PIN_MODE_DIO",
-    "PORT_PIN_MODE_DIO_GPT",
-    "PORT_PIN_MODE_DIO_WDG",
-    "PORT_PIN_MODE_FLEXRAY",
-    "PORT_PIN_MODE_ICU",
-    "PORT_PIN_MODE_LIN",
-    "PORT_PIN_MODE_MEM",
-    "PORT_PIN_MODE_PWM",
-    "PORT_PIN_MODE_SPI" 
-)
-
-class PinStr:
+class DioPort:
     id = None
     pindir = None
     dir_changeable = None
@@ -56,7 +42,8 @@ class DioConfigTab:
 
     pins_str = []
     events = []
-    port_pins = []
+    dio_pins = []
+    dio_ports = []
     header_objs = 12 #Objects / widgets that are part of the header and shouldn't be destroyed
     header_size = 3
     non_header_objs = []
@@ -69,15 +56,12 @@ class DioConfigTab:
     def __init__(self, gui):
         self.gui = gui
         self.toplvl = gui.main_view.child_window
-        self.n_pins = 0
+        pins, ports = arxml_port.parse_arxml(gui.arxml_file)
+        for port in ports:
+            if port['PortPinMode'] == "PORT_PIN_MODE_DIO":
+                self.n_pins += 1
+                self.dio_ports.append(port)
         self.n_pins_str = tk.StringVar()
-
-
-    def init(self, n, pinlist):
-        self.n_pins = n
-        for i in range(n):
-            self.port_pins.insert(i, pinlist[i])
-
 
     def __del__(self):
         del self.n_pins_str
@@ -85,20 +69,59 @@ class DioConfigTab:
 
 
     def create_empty_portpin(self):
-        portpin = {}
+        diopin = {}
         
-        portpin["PortPinDirection"] = "PORT_PIN_IN"
-        portpin["PortPinDirectionChangeable"] = "FALSE"
-        portpin["PortPinId"] = "65535"
-        portpin["PortPinInitialMode"] = "PORT_PIN_MODE_DIO"
-        portpin["PortPinLevelValue"] = "PORT_PIN_LEVEL_LOW"
-        portpin["PortPinMode"] = "PORT_PIN_MODE_DIO"
-        portpin["PortPinModeChangeable"] = "FALSE"
+        diopin["DioPortId"] = "int"
+        diopin["DioChannelId"] = "int"
+        diopin["DioChannelGroupIdentification"] = "str"
+        diopin["DioPortOffset"] = "int"
+        diopin["DioPortMask"] = "int"
 
-        return portpin
+        return diopin
+
+
+    def draw(self, tab, xsize, ysize):
+        self.scrollw = window.ScrollableWindow(tab, xsize, ysize)
+
+        #Number of modes - Label + Spinbox
+        label = tk.Label(self.scrollw.mnf, text="No. of Dio Pins:")
+        label.grid(row=0, column=0, sticky="w")
+        dio_entry = tk.Entry(self.scrollw.mnf, width=10, justify='center')
+        dio_entry.insert(0, str(self.n_pins))
+        dio_entry.config(state='readonly')
+        dio_entry.grid(row=0, column=1, sticky="w")
+
+        # Save Button
+        genm = tk.Button(self.scrollw.mnf, width=10, text="Save Configs", command=self.save_data, bg="#206020", fg='white')
+        genm.grid(row=0, column=2)
+
+        self.scrollw.update()
+        
+        if self.n_pins == 0:
+            label = tk.Label(self.scrollw.mnf, text="No ports are configured as DIO in Port module. Please open "
+                             "Port module and configure pins as DIO to see them here.""", justify="left")
+            label.grid(row=2, column=3, sticky="w")
+            return
+
+        # Table heading
+        label = tk.Label(self.scrollw.mnf, text=" ")
+        label.grid(row=2, column=0, sticky="w")
+        label = tk.Label(self.scrollw.mnf, text="DioPortId")
+        label.grid(row=2, column=1, sticky="w")
+        label = tk.Label(self.scrollw.mnf, text="DioChannelId")
+        label.grid(row=2, column=2, sticky="we")
+        label = tk.Label(self.scrollw.mnf, text="DioChannelGroupIdentification")
+        label.grid(row=2, column=3, sticky="w")
+        label = tk.Label(self.scrollw.mnf, text="DioPortOffset")
+        label.grid(row=2, column=4, sticky="w")
+        label = tk.Label(self.scrollw.mnf, text="DioPortMask")
+        label.grid(row=2, column=5, sticky="w")
+
+        self.update()
 
 
     def update(self):
+        return
         # Backup current task entries from GUI
         self.backup_data()
 
@@ -112,11 +135,11 @@ class DioConfigTab:
         if self.n_pins > n_pins_str:
             for i in range(self.n_pins - n_pins_str):
                 self.pins_str.insert(len(self.pins_str), PinStr())
-                self.port_pins.insert(len(self.port_pins), self.create_empty_portpin())
+                self.dio_pins.insert(len(self.dio_pins), self.create_empty_portpin())
         elif n_pins_str > self.n_pins:
             for i in range(n_pins_str - self.n_pins):
                 del self.pins_str[-1]
-                del self.port_pins[-1]
+                del self.dio_pins[-1]
 
         # Draw new objects
         for i in range(0, self.n_pins):
@@ -126,14 +149,14 @@ class DioConfigTab:
             
             # PortPinId
             entry = tk.Entry(self.scrollw.mnf, width=10, textvariable=self.pins_str[i].id)
-            self.pins_str[i].id.set(self.port_pins[i]["PortPinId"])
+            self.pins_str[i].id.set(self.dio_pins[i]["PortPinId"])
             entry.grid(row=self.header_size+i, column=1)
             self.non_header_objs.append(entry)
 
             # PortPinDirection
             cmbsel = ttk.Combobox(self.scrollw.mnf, width=14, textvariable=self.pins_str[i].pindir, state="readonly")
             cmbsel['values'] = ("PORT_PIN_IN", "PORT_PIN_OUT")
-            self.pins_str[i].pindir.set(self.port_pins[i]["PortPinDirection"])
+            self.pins_str[i].pindir.set(self.dio_pins[i]["PortPinDirection"])
             cmbsel.current()
             cmbsel.grid(row=self.header_size+i, column=2)
             self.non_header_objs.append(cmbsel)
@@ -141,7 +164,7 @@ class DioConfigTab:
             # PortPinDirectionChangeable
             cmbsel = ttk.Combobox(self.scrollw.mnf, width=8, textvariable=self.pins_str[i].dir_changeable, state="readonly")
             cmbsel['values'] = ("FALSE", "TRUE")
-            self.pins_str[i].dir_changeable.set(self.port_pins[i]["PortPinDirectionChangeable"])
+            self.pins_str[i].dir_changeable.set(self.dio_pins[i]["PortPinDirectionChangeable"])
             cmbsel.current()
             cmbsel.grid(row=self.header_size+i, column=3)
             self.non_header_objs.append(cmbsel)
@@ -149,7 +172,7 @@ class DioConfigTab:
             # PortPinLevelValue
             cmbsel = ttk.Combobox(self.scrollw.mnf, width=22, textvariable=self.pins_str[i].pin_level, state="readonly")
             cmbsel['values'] = ("PORT_PIN_LEVEL_LOW", "PORT_PIN_LEVEL_HIGH")
-            self.pins_str[i].pin_level.set(self.port_pins[i]["PortPinLevelValue"])
+            self.pins_str[i].pin_level.set(self.dio_pins[i]["PortPinLevelValue"])
             cmbsel.current()
             cmbsel.grid(row=self.header_size+i, column=4)
             self.non_header_objs.append(cmbsel)
@@ -157,7 +180,7 @@ class DioConfigTab:
             # PortPinMode
             cmbsel = ttk.Combobox(self.scrollw.mnf, width=28, textvariable=self.pins_str[i].pin_mode, state="readonly")
             cmbsel['values'] = StdPinModes
-            self.pins_str[i].pin_mode.set(self.port_pins[i]["PortPinMode"])
+            self.pins_str[i].pin_mode.set(self.dio_pins[i]["PortPinMode"])
             cmbsel.current()
             cmbsel.grid(row=self.header_size+i, column=5)
             self.non_header_objs.append(cmbsel)
@@ -165,7 +188,7 @@ class DioConfigTab:
             # PortPinInitialMode
             cmbsel = ttk.Combobox(self.scrollw.mnf, width=28, textvariable=self.pins_str[i].pin_initial_mode, state="readonly")
             cmbsel['values'] = StdPinModes
-            self.pins_str[i].pin_initial_mode.set(self.port_pins[i]["PortPinInitialMode"])
+            self.pins_str[i].pin_initial_mode.set(self.dio_pins[i]["PortPinInitialMode"])
             cmbsel.current()
             cmbsel.grid(row=self.header_size+i, column=6)
             self.non_header_objs.append(cmbsel)
@@ -173,7 +196,7 @@ class DioConfigTab:
             # PortPinModeChangeable
             cmbsel = ttk.Combobox(self.scrollw.mnf, width=8, textvariable=self.pins_str[i].mode_changeable, state="readonly")
             cmbsel['values'] = ("FALSE", "TRUE")
-            self.pins_str[i].mode_changeable.set(self.port_pins[i]["PortPinModeChangeable"])
+            self.pins_str[i].mode_changeable.set(self.dio_pins[i]["PortPinModeChangeable"])
             cmbsel.current()
             cmbsel.grid(row=self.header_size+i, column=7)
             self.non_header_objs.append(cmbsel)
@@ -182,62 +205,23 @@ class DioConfigTab:
         self.scrollw.scroll()
 
 
-    def draw(self, tab, xsize, ysize):
-        self.scrollw = window.ScrollableWindow(tab, xsize, ysize)
-
-        #Number of modes - Label + Spinbox
-        label = tk.Label(self.scrollw.mnf, text="No. of Pins:")
-        label.grid(row=0, column=0, sticky="w")
-        spinb = tk.Spinbox(self.scrollw.mnf, width=10, textvariable=self.n_pins_str, command=lambda : self.update(),
-                    values=tuple(range(0,self.max_pins+1)))
-        self.n_pins_str.set(self.n_pins)
-        spinb.grid(row=0, column=1, sticky="w")
-
-        # Save Button
-        genm = tk.Button(self.scrollw.mnf, width=10, text="Save Configs", command=self.save_data, bg="#206020", fg='white')
-        genm.grid(row=0, column=2)
-
-        self.scrollw.update()
-        
-
-        # Table heading
-        label = tk.Label(self.scrollw.mnf, text=" ")
-        label.grid(row=2, column=0, sticky="w")
-        label = tk.Label(self.scrollw.mnf, text="PortPinId")
-        label.grid(row=2, column=1, sticky="w")
-        label = tk.Label(self.scrollw.mnf, text="PinDirection")
-        label.grid(row=2, column=2, sticky="we")
-        label = tk.Label(self.scrollw.mnf, text="DirChangeable")
-        label.grid(row=2, column=3, sticky="w")
-        label = tk.Label(self.scrollw.mnf, text="PinLevelValue")
-        label.grid(row=2, column=4, sticky="w")
-        label = tk.Label(self.scrollw.mnf, text="PortPinMode")
-        label.grid(row=2, column=5, sticky="w")
-        label = tk.Label(self.scrollw.mnf, text="PinInitialMode")
-        label.grid(row=2, column=6, sticky="w")
-        label = tk.Label(self.scrollw.mnf, text="ModeChangeable")
-        label.grid(row=2, column=7, sticky="w")
-
-        self.update()
-
-
     def backup_data(self):
         n_pins_str = len(self.pins_str)
         for i in range(n_pins_str):
             if len(self.pins_str[i].id.get()):
-                self.port_pins[i]["PortPinId"] = self.pins_str[i].id.get()
+                self.dio_pins[i]["PortPinId"] = self.pins_str[i].id.get()
             if len(self.pins_str[i].pindir.get()):
-                self.port_pins[i]["PortPinDirection"] = self.pins_str[i].pindir.get()
+                self.dio_pins[i]["PortPinDirection"] = self.pins_str[i].pindir.get()
             if len(self.pins_str[i].dir_changeable.get()):
-                self.port_pins[i]["PortPinDirectionChangeable"] = self.pins_str[i].dir_changeable.get()
+                self.dio_pins[i]["PortPinDirectionChangeable"] = self.pins_str[i].dir_changeable.get()
             if len(self.pins_str[i].pin_level.get()):
-                self.port_pins[i]["PortPinLevelValue"] = self.pins_str[i].pin_level.get()
+                self.dio_pins[i]["PortPinLevelValue"] = self.pins_str[i].pin_level.get()
             if len(self.pins_str[i].pin_mode.get()):
-                self.port_pins[i]["PortPinMode"] = self.pins_str[i].pin_mode.get()
+                self.dio_pins[i]["PortPinMode"] = self.pins_str[i].pin_mode.get()
             if len(self.pins_str[i].mode_changeable.get()):
-                self.port_pins[i]["PortPinModeChangeable"] = self.pins_str[i].mode_changeable.get()
+                self.dio_pins[i]["PortPinModeChangeable"] = self.pins_str[i].mode_changeable.get()
             if len(self.pins_str[i].pin_initial_mode.get()):
-                self.port_pins[i]["PortPinInitialMode"] = self.pins_str[i].pin_initial_mode.get()
+                self.dio_pins[i]["PortPinInitialMode"] = self.pins_str[i].pin_initial_mode.get()
 
 
     def save_data(self):
