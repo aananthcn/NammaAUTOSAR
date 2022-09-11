@@ -51,7 +51,7 @@ def show_dio_tabs(gui):
         return
 
     # Create a child window (tabbed view)
-    width = gui.main_view.xsize * 80 / 100
+    width = gui.main_view.xsize * 60 / 100
     height = gui.main_view.ysize * 80 / 100
     view = tk.Toplevel()
     gui.main_view.child_window = view
