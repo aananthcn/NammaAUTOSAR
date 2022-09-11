@@ -35,9 +35,9 @@ class DioConfigTab:
     max_pins = 65535
     n_pins_str = None
 
-    dio_str = []
-    dio_pins = []
-    dio_ports = []
+    dio_str = []    # dio pin GUI str structure
+    dio_pins = []   # pins info structure from Dio ARXML & info pulled from Port ARXML
+    dio_ports = []  # copy of port info
     header_objs = 12 #Objects / widgets that are part of the header and shouldn't be destroyed
     header_size = 3
     non_header_objs = []
@@ -51,10 +51,19 @@ class DioConfigTab:
         self.gui = gui
         self.toplvl = gui.main_view.child_window
         pins, ports = arxml_port.parse_arxml(gui.arxml_file)
-        for port in ports:
+        for i, port in enumerate(ports):
             if port['PortPinMode'] == "PORT_PIN_MODE_DIO":
                 self.n_pins += 1
+                # add the port info from Port module to a local port list
                 self.dio_ports.append(port)
+                # create new dio pin GUI str and dio pin info
+                diostr = DioPortStr()
+                diopin = self.create_empty_diopin()
+                # now, pull out info from local port and populate local dio & str list
+                diostr.port_id.set(port["PortPinId"])
+                diopin["DioPortId"] = port["PortPinId"]
+                self.dio_str.append(diostr)
+                self.dio_pins.append(diopin)
         self.n_pins_str = tk.StringVar()
 
     def __del__(self):
@@ -62,7 +71,7 @@ class DioConfigTab:
         del self.dio_str[:]
 
 
-    def create_empty_portpin(self):
+    def create_empty_diopin(self):
         diopin = {}
         
         diopin["DioPortId"] = "65535"
@@ -100,10 +109,10 @@ class DioConfigTab:
         # Table heading
         label = tk.Label(self.scrollw.mnf, text=" ")
         label.grid(row=2, column=0, sticky="w")
-        label = tk.Label(self.scrollw.mnf, text="DioPortId")
-        label.grid(row=2, column=1, sticky="w")
         label = tk.Label(self.scrollw.mnf, text="DioChannelId")
-        label.grid(row=2, column=2, sticky="we")
+        label.grid(row=2, column=1, sticky="we")
+        label = tk.Label(self.scrollw.mnf, text="DioPortId")
+        label.grid(row=2, column=2, sticky="w")
         label = tk.Label(self.scrollw.mnf, text="DioChannelGroupIdentification")
         label.grid(row=2, column=3, sticky="w")
         label = tk.Label(self.scrollw.mnf, text="DioPortOffset")
@@ -119,20 +128,8 @@ class DioConfigTab:
         self.backup_data()
 
         # destroy most old gui widgets
-        #self.n_pins = int(self.n_pins_str.get())
         for obj in self.non_header_objs:
             obj.destroy()
-
-        # Tune memory allocations based on number of rows or boxes
-        n_pins_str = len(self.dio_str)
-        if self.n_pins > n_pins_str:
-            for i in range(self.n_pins - n_pins_str):
-                self.dio_str.insert(len(self.dio_str), DioPortStr())
-                self.dio_pins.insert(len(self.dio_pins), self.create_empty_portpin())
-        elif n_pins_str > self.n_pins:
-            for i in range(n_pins_str - self.n_pins):
-                del self.dio_str[-1]
-                del self.dio_pins[-1]
 
         # Draw new objects
         for i in range(0, self.n_pins):
@@ -140,18 +137,19 @@ class DioConfigTab:
             label.grid(row=self.header_size+i, column=0, sticky="e")
             self.non_header_objs.append(label)
             
-            # DioPortId
-            entry = tk.Entry(self.scrollw.mnf, width=10, textvariable=self.dio_str[i].port_id)
-            self.dio_str[i].port_id.set(self.dio_pins[i]["DioPortId"])
-            entry.grid(row=self.header_size+i, column=1)
-            self.non_header_objs.append(entry)
-
             # DioChannelId
             entry = tk.Entry(self.scrollw.mnf, width=10, textvariable=self.dio_str[i].chan_id)
             self.dio_str[i].chan_id.set(self.dio_pins[i]["DioChannelId"])
-            entry.grid(row=self.header_size+i, column=2)
+            entry.grid(row=self.header_size+i, column=1)
             self.non_header_objs.append(entry)
             
+            # DioPortId
+            entry = tk.Entry(self.scrollw.mnf, width=10, textvariable=self.dio_str[i].port_id)
+            self.dio_str[i].port_id.set(self.dio_pins[i]["DioPortId"])
+            entry.config(state='readonly')
+            entry.grid(row=self.header_size+i, column=2)
+            self.non_header_objs.append(entry)
+
             # DioChannelGroupIdentification
             entry = tk.Entry(self.scrollw.mnf, width=30, textvariable=self.dio_str[i].chan_grp_id)
             self.dio_str[i].chan_grp_id.set(self.dio_pins[i]["DioChannelGroupIdentification"])
