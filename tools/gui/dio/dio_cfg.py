@@ -4,30 +4,20 @@ from tkinter import ttk
 import arxml.port.arxml_port as arxml_port
 
 import gui.lib.window as window
-import gui.port.port_cgen as port_cgen
 
 
     
 class DioPortStr:
     port_id = None
     chan_id = None
-    chan_grp_id = None
-    chan_grp_port_offset = None
-    chan_grp_port_mask = None
 
     def __init__(self):
         self.port_id = tk.StringVar()
         self.chan_id = tk.StringVar()
-        self.chan_grp_id = tk.StringVar()
-        self.chan_grp_port_offset = tk.StringVar()
-        self.chan_grp_port_mask = tk.StringVar()
 
     def __del__(self):
         del self.port_id
         del self.chan_id
-        del self.chan_grp_id
-        del self.chan_grp_port_offset
-        del self.chan_grp_port_mask
 
 
 class DioConfigTab:
@@ -51,7 +41,7 @@ class DioConfigTab:
         self.gui = gui
         self.toplvl = gui.main_view.child_window
         pins, ports = arxml_port.parse_arxml(gui.arxml_file)
-        for i, port in enumerate(ports):
+        for port in ports:
             if port['PortPinMode'] == "PORT_PIN_MODE_DIO":
                 self.n_pins += 1
                 # add the port info from Port module to a local port list
@@ -66,20 +56,19 @@ class DioConfigTab:
                 self.dio_pins.append(diopin)
         self.n_pins_str = tk.StringVar()
 
+
     def __del__(self):
         del self.n_pins_str
         del self.dio_str[:]
+        del self.dio_pins[:]
+        del self.dio_ports[:]
+        del self.non_header_objs[:]
 
 
     def create_empty_diopin(self):
         diopin = {}
-        
         diopin["DioPortId"] = "65535"
         diopin["DioChannelId"] = "65535"
-        diopin["DioChannelGroupIdentification"] = "ChGrp_"
-        diopin["DioPortOffset"] = "e.g., 0x4"
-        diopin["DioPortMask"] = "e.g., 0xF0F"
-
         return diopin
 
 
@@ -109,16 +98,10 @@ class DioConfigTab:
         # Table heading
         label = tk.Label(self.scrollw.mnf, text=" ")
         label.grid(row=2, column=0, sticky="w")
-        label = tk.Label(self.scrollw.mnf, text="DioChannelId")
-        label.grid(row=2, column=1, sticky="we")
         label = tk.Label(self.scrollw.mnf, text="DioPortId")
-        label.grid(row=2, column=2, sticky="w")
-        label = tk.Label(self.scrollw.mnf, text="DioChannelGroupIdentification")
-        label.grid(row=2, column=3, sticky="w")
-        label = tk.Label(self.scrollw.mnf, text="DioPortOffset")
-        label.grid(row=2, column=4, sticky="w")
-        label = tk.Label(self.scrollw.mnf, text="DioPortMask")
-        label.grid(row=2, column=5, sticky="w")
+        label.grid(row=2, column=1, sticky="w")
+        label = tk.Label(self.scrollw.mnf, text="DioChannelId")
+        label.grid(row=2, column=2, sticky="we")
 
         self.update()
 
@@ -133,39 +116,21 @@ class DioConfigTab:
 
         # Draw new objects
         for i in range(0, self.n_pins):
-            label = tk.Label(self.scrollw.mnf, text="Chan #")
+            label = tk.Label(self.scrollw.mnf, text="Pin #")
             label.grid(row=self.header_size+i, column=0, sticky="e")
             self.non_header_objs.append(label)
-            
-            # DioChannelId
-            entry = tk.Entry(self.scrollw.mnf, width=10, textvariable=self.dio_str[i].chan_id)
-            self.dio_str[i].chan_id.set(self.dio_pins[i]["DioChannelId"])
-            entry.grid(row=self.header_size+i, column=1)
-            self.non_header_objs.append(entry)
-            
+
             # DioPortId
             entry = tk.Entry(self.scrollw.mnf, width=10, textvariable=self.dio_str[i].port_id)
             self.dio_str[i].port_id.set(self.dio_pins[i]["DioPortId"])
             entry.config(state='readonly')
+            entry.grid(row=self.header_size+i, column=1)
+            self.non_header_objs.append(entry)
+            
+            # DioChannelId
+            entry = tk.Entry(self.scrollw.mnf, width=10, textvariable=self.dio_str[i].chan_id)
+            self.dio_str[i].chan_id.set(self.dio_pins[i]["DioChannelId"])
             entry.grid(row=self.header_size+i, column=2)
-            self.non_header_objs.append(entry)
-
-            # DioChannelGroupIdentification
-            entry = tk.Entry(self.scrollw.mnf, width=30, textvariable=self.dio_str[i].chan_grp_id)
-            self.dio_str[i].chan_grp_id.set(self.dio_pins[i]["DioChannelGroupIdentification"])
-            entry.grid(row=self.header_size+i, column=3)
-            self.non_header_objs.append(entry)
-
-            # Channel Group - DioPortOffset
-            entry = tk.Entry(self.scrollw.mnf, width=15, textvariable=self.dio_str[i].chan_grp_port_offset)
-            self.dio_str[i].chan_grp_port_offset.set(self.dio_pins[i]["DioPortOffset"])
-            entry.grid(row=self.header_size+i, column=4)
-            self.non_header_objs.append(entry)
-
-            # Channel Group - DioPortMask
-            entry = tk.Entry(self.scrollw.mnf, width=15, textvariable=self.dio_str[i].chan_grp_port_mask)
-            self.dio_str[i].chan_grp_port_mask.set(self.dio_pins[i]["DioPortMask"])
-            entry.grid(row=self.header_size+i, column=5)
             self.non_header_objs.append(entry)
 
         # Set the self.cv scrolling region
@@ -179,12 +144,6 @@ class DioConfigTab:
                 self.dio_pins[i]["DioPortId"] = self.dio_str[i].port_id.get()
             if len(self.dio_str[i].chan_id.get()):
                 self.dio_pins[i]["DioChannelId"] = self.dio_str[i].chan_id.get()
-            if len(self.dio_str[i].chan_grp_id.get()):
-                self.dio_pins[i]["DioChannelGroupIdentification"] = self.dio_str[i].chan_grp_id.get()
-            if len(self.dio_str[i].chan_grp_port_offset.get()):
-                self.dio_pins[i]["DioPortOffset"] = self.dio_str[i].chan_grp_port_offset.get()
-            if len(self.dio_str[i].chan_grp_port_mask.get()):
-                self.dio_pins[i]["DioPortMask"] = self.dio_str[i].chan_grp_port_mask.get()
 
 
     def save_data(self):

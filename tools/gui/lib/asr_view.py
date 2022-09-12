@@ -85,7 +85,7 @@ AsrBlocksConfigList = [
         "postdraw": None
     },
     {
-        # Port
+        # Dio
         "name": "Dio", "text": "Dio", "txta": "center", "ori": "V",
         # Position (offset % of screen size), size (% of screen size) & colors
         "x": 71.5, "y": 4.06, "w": 2.5, "h": 18, "bgc": '#FF7C80', "fgc": 'black',
