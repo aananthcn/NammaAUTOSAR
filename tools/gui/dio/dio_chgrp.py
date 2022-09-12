@@ -45,7 +45,8 @@ class DioChannelGroupTab:
         self.n_chgrps_str = tk.StringVar()
         pins, ports = arxml_port.parse_arxml(gui.arxml_file)
         for port in ports:
-            self.port_pin_ids.append(port["PortPinId"])
+            if port['PortPinMode'] == "PORT_PIN_MODE_DIO":
+                self.port_pin_ids.append(port["PortPinId"])
 
 
     def __del__(self):
