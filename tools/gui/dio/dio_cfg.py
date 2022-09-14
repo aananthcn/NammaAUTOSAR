@@ -72,8 +72,9 @@ class DioConfigTab:
         return diopin
 
 
-    def draw(self, tab, xsize, ysize):
-        self.scrollw = window.ScrollableWindow(tab, xsize, ysize)
+    def draw(self, tab):
+        self.tabstr = tab
+        self.scrollw = window.ScrollableWindow(tab.frame, tab.xsize, tab.ysize)
 
         #Number of modes - Label + Spinbox
         label = tk.Label(self.scrollw.mnf, text="No. of Dio Pins:")
@@ -147,6 +148,7 @@ class DioConfigTab:
 
 
     def save_data(self):
+        self.tabstr.save_cb()
         return
         arxml_port.update_arxml(self.gui.arxml_file, self)
         port_cgen.generate_code(self.gui)

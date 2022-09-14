@@ -35,9 +35,8 @@ class DioChannelGroupTab:
     header_objs = 12 #Objects / widgets that are part of the header and shouldn't be destroyed
     header_size = 3
     non_header_objs = []
-    xsize = None
-    ysize = None
     gui = None
+    tabstr = None
 
     def __init__(self, gui):
         self.gui = gui
@@ -119,10 +118,9 @@ class DioChannelGroupTab:
         self.scrollw.scroll()
 
 
-    def draw(self, tab, xsize, ysize):
-        self.xsize = xsize
-        self.ysize = ysize
-        self.scrollw = window.ScrollableWindow(tab, self.xsize, self.ysize)
+    def draw(self, tab):
+        self.tabstr = tab
+        self.scrollw = window.ScrollableWindow(tab.frame, tab.xsize, tab.ysize)
         
         #Number of modes - Label + Spinbox
         label = tk.Label(self.scrollw.mnf, text="No. of Chan. Groups:")
@@ -167,6 +165,8 @@ class DioChannelGroupTab:
 
 
     def save_data(self):
+        self.tabstr.save_cb()
+        return
         arxml_port.update_arxml(self.gui.arxml_file, self)
         port_cgen.generate_code(self.gui)
 

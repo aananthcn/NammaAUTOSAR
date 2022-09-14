@@ -34,6 +34,16 @@ PortConfigViewActive = False
 class DioTab:
     tab = None
     name = None
+    xsize = None
+    ysize = None
+    frame = None
+    save_cb = None
+    
+    def __init__(self, f, w, h):
+        self.save_cb = dio_save_callback
+        self.frame = f
+        self.xsize = w
+        self.ysize = h
 
 
 
@@ -43,6 +53,9 @@ def dio_config_close_event(gui, view):
     PortConfigViewActive = False
     view.destroy()
 
+
+def dio_save_callback():
+    print("dio save callback called!!")
 
     
 def show_dio_tabs(gui):
@@ -63,14 +76,14 @@ def show_dio_tabs(gui):
     notebook = ttk.Notebook(view)
     
     # Create tabs to configure Dio
-    cfg_tab = ttk.Frame(notebook)
-    cgr_tab = ttk.Frame(notebook)
-    gen_tab = ttk.Frame(notebook)
+    cfg_frame = ttk.Frame(notebook)
+    cgr_frame = ttk.Frame(notebook)
+    gen_frame = ttk.Frame(notebook)
     
     # Add tabs to configure Dio
-    notebook.add(cfg_tab, text ='DioConfig')
-    notebook.add(cgr_tab, text ='DioChannelGroup')
-    notebook.add(gen_tab, text ='DioGeneral')
+    notebook.add(cfg_frame, text ='DioConfig')
+    notebook.add(cgr_frame, text ='DioChannelGroup')
+    notebook.add(gen_frame, text ='DioGeneral')
     notebook.pack(expand = 1, fill ="both")
 
     # destroy old GUI objects
@@ -78,21 +91,23 @@ def show_dio_tabs(gui):
         del obj
 
     # create new GUI objects
-    dtab = DioTab()
+    dtab = DioTab(cfg_frame, width, height)
     dtab.tab = dio_cfg.DioConfigTab(gui)
     dtab.name = "DioConfig"
-    dtab.tab.draw(cfg_tab, width, height)
+    dtab.tab.draw(dtab)
     TabList.append(dtab)
     
-    dtab = DioTab()
+    dtab = DioTab(cgr_frame, width, height)
     dtab.tab = dio_chgrp.DioChannelGroupTab(gui)
     dtab.name = "DioChannelGroup"
-    dtab.tab.draw(cgr_tab, width, height)
+    dtab.tab.draw(dtab)
+    TabList.append(dtab)
     
-    dtab = DioTab()
+    dtab = DioTab(gen_frame, width, height)
     dtab.tab = dio_cfggen.DioGeneralTab(gui)
     dtab.name = "DioGeneral"
-    dtab.tab.draw(gen_tab, width, height)
+    dtab.tab.draw(dtab)
+    TabList.append(dtab)
 
     # gui.main_view.window.bind("<<NotebookTabChanged>>", show_os_tab_switch)
     
