@@ -146,10 +146,8 @@ class DioConfigTab:
             if len(self.dio_str[i].chan_id.get()):
                 self.dio_pins[i]["DioChannelId"] = self.dio_str[i].chan_id.get()
 
-
+        
     def save_data(self):
-        self.tabstr.save_cb()
-        return
-        arxml_port.update_arxml(self.gui.arxml_file, self)
-        port_cgen.generate_code(self.gui)
-
+        self.backup_data()
+        self.tabstr.save_cb(self.gui)
+        

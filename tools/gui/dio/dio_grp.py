@@ -57,6 +57,7 @@ class DioChannelGroupTab:
 
     def create_empty_chgrp(self):
         chgrp = {}
+        chgrp["PortPinId"] = "65535"
         chgrp["DioChannelGroupIdentification"] = "ChGrp_"
         chgrp["DioPortOffset"] = "e.g., 0x4"
         chgrp["DioPortMask"] = "e.g., 0xF0F"
@@ -156,6 +157,8 @@ class DioChannelGroupTab:
     def backup_data(self):
         n_chgrps_str = len(self.chgrps_str)
         for i in range(n_chgrps_str):
+            if len(self.chgrps_str[i].port_pin_id.get()):
+                self.port_chgrps[i]["PortPinId"] = self.chgrps_str[i].port_pin_id.get()
             if len(self.chgrps_str[i].chan_grp_id.get()):
                 self.port_chgrps[i]["DioChannelGroupIdentification"] = self.chgrps_str[i].chan_grp_id.get()
             if len(self.chgrps_str[i].chan_grp_port_offset.get()):
@@ -165,8 +168,5 @@ class DioChannelGroupTab:
 
 
     def save_data(self):
-        self.tabstr.save_cb()
-        return
-        arxml_port.update_arxml(self.gui.arxml_file, self)
-        port_cgen.generate_code(self.gui)
-
+        self.backup_data()
+        self.tabstr.save_cb(self.gui)

@@ -28,10 +28,12 @@ class DioGeneralTab:
     gui = None
     config = None
     tabstr = None
+    gen_data = None
 
     def __init__(self, gui):
         self.gui = gui
         self.config = DioGeneralStr()
+        self.gen_data = {}
 
     def __del__(self):
         del self.config
@@ -93,13 +95,18 @@ class DioGeneralTab:
         genm = tk.Button(tab.frame, width=10, text="Save Configs", command=self.save_data, bg="#206020", fg='white')
         genm.grid(row=7, column=1)
 
+        self.backup_data()
         tab.frame.mainloop()
 
 
 
-    def save_data(self):
-        self.tabstr.save_cb()
-        return
-        arxml_port.update_arxml(self.gui.arxml_file, self)
-        port_cgen.generate_code(self.gui)
+    def backup_data(self):
+        self.gen_data["DioDevErrorDetect"]      = self.config.error_detect.get()
+        self.gen_data["DioVersionInfoApi"]      = self.config.verion_api.get()
+        self.gen_data["DioFlipChannelApi"]      = self.config.flip_chan_api.get()
+        self.gen_data["DioMaskedWritePortApi"]  = self.config.masked_write_port_api.get()
 
+        
+    def save_data(self):
+        self.backup_data()
+        self.tabstr.save_cb(self.gui)
