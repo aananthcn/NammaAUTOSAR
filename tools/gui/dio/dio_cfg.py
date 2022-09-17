@@ -2,6 +2,7 @@ import tkinter as tk
 from tkinter import ttk
 
 import arxml.port.arxml_port as arxml_port
+import arxml.dio.arxml_dio as arxml_dio
 
 import gui.lib.window as window
 
@@ -40,7 +41,9 @@ class DioConfigTab:
     def __init__(self, gui):
         self.gui = gui
         self.toplvl = gui.main_view.child_window
-        pins, ports = arxml_port.parse_arxml(gui.arxml_file)
+        pins, ports = arxml_port.parse_arxml(gui.arxml_file) # Temporary
+        dio_pins, dio_ports = arxml_dio.parse_arxml(gui.arxml_file)
+        print("dio_cfg: Pins as per Dio ARXML = ", dio_pins)
         for port in ports:
             if port['PortPinMode'] == "PORT_PIN_MODE_DIO":
                 self.n_pins += 1
@@ -52,9 +55,20 @@ class DioConfigTab:
                 # now, pull out info from local port and populate local dio & str list
                 diostr.port_id.set(port["PortPinId"])
                 diopin["DioPortId"] = port["PortPinId"]
+                diostr.chan_id.set(self.get_chan_id(port["PortPinId"], dio_ports))
+                diopin["DioChannelId"] = self.get_chan_id(port["PortPinId"], dio_ports)
                 self.dio_str.append(diostr)
                 self.dio_pins.append(diopin)
         self.n_pins_str = tk.StringVar()
+
+
+    def get_chan_id(self, port_id, dio_ports):
+        chan_id = None
+        for port in dio_ports:
+            if port["DioPortId"] == port_id:
+                chan_id = port["DioChannelId"]
+                break
+        return chan_id
 
 
     def __del__(self):

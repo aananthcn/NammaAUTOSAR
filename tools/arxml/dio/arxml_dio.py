@@ -39,9 +39,11 @@ def update_dio_config_container(root, dio_cfg, dio_grp):
     dref = "/AUTOSAR/EcucDefs/Dio/"+ctnrname
     ctnrblk = lib_conf.insert_conf_container(root, ctnrname, "conf", dref)
     
+    # Create a sub-container    
+    subctnr1 = ET.SubElement(ctnrblk, "SUB-CONTAINERS")
+
+    # Now dump all pin informations as container within sub-container
     for pin in dio_cfg.dio_pins:
-        # Create a sub-container    
-        subctnr1 = ET.SubElement(ctnrblk, "SUB-CONTAINERS")
         subctnr1_name = "DioPort"
         dref = "/AUTOSAR/EcucDefs/Dio/"+ctnrname+"/"+subctnr1_name
         cctnrblk1 = lib_conf.insert_conf_container(subctnr1, subctnr1_name, "conf", dref)
@@ -159,12 +161,68 @@ def update_arxml(ar_file, dio_cfg, dio_grp, dio_gen):
     print("Info: Dio Configs are saved to " + ar_file)    
 
 
+def parse_arxml_dioconfig(containers):
+    dio_n_pins = None
+    dio_configs = []
+    
+    # locate DioConfig
+    ctnrname = "DioConfig"
+    ctnrblk = lib_conf.find_ecuc_container_block(ctnrname, containers)
+    if lib_conf.get_tag(ctnrblk) != "ECUC-CONTAINER-VALUE":
+        return None
+    
+    # now locate DioPort
+    dio_cfg_ctnr = ctnrblk
+    dio_sub_ctnr = None
+    for ecuc_ctnr in ctnrblk:
+        if lib_conf.get_tag(ecuc_ctnr) == "SUB-CONTAINERS":
+            dio_sub_ctnr = ecuc_ctnr
+            break
+    for ecuc_ctnr in dio_sub_ctnr:
+        if lib_conf.get_tag(ecuc_ctnr) == "ECUC-CONTAINER-VALUE":
+            ctnrblk = ecuc_ctnr
+            break
+    for item in ctnrblk:
+        if lib_conf.get_tag(item) == "SHORT-NAME":
+            if item.text == "DioPort":
+                dio_n_pins = len(dio_sub_ctnr) # we have found the right SUB-CONTAINER!!
+                break
+
+    # get PortContainer parameter - Number of Dio Pins
+    if dio_cfg_ctnr == None or dio_sub_ctnr == None:
+        return None
+    
+    # let us parse all SUB-CONTAINERS of DioConfig
+    for ctnr in dio_sub_ctnr:
+        cfg = {}
+        params = lib_conf.get_param_list(ctnr)
+        for par in params:
+            cfg[par["tag"]] = par["val"]
+    
+        # now check for sub-containers within the DioConfig SUB-CONTAINER
+        for sctnr in ctnr:
+            if lib_conf.get_tag(sctnr) == "SUB-CONTAINERS":
+                for item in sctnr:
+                    esctnr = None
+                    if lib_conf.get_tag(item) == "ECUC-CONTAINER-VALUE":
+                        esctnr = item
+                        break
+                if esctnr != None:
+                    params = lib_conf.get_param_list(esctnr)
+                    for par in params:
+                        cfg[par["tag"]] = par["val"]
+        
+        dio_configs.append(cfg)
+
+    return dio_n_pins, dio_configs
+
+
+
 # This function parses ARXML and extract the Dio information
-# Returns: No of dio_pins, Dio pin dictionary
+# Returns: No of dio_configs, Dio pin dictionary
 def parse_arxml(ar_file):
-    return 0, None
-    dio_pin_count = None
-    dio_pins = []
+    dio_n_pins = None
+    dio_configs = []
     # Read ARXML File
     tree = ET.parse(ar_file)
     root = tree.getroot()
@@ -181,44 +239,9 @@ def parse_arxml(ar_file):
     containers = lib_conf.find_containers_in_modconf(modconf)
     if containers == None:
         return
-
-    # locate PortConfigSet
-    ctnrname = "PortConfigSet"
-    ctnrblk = lib_conf.find_ecuc_container_block(ctnrname, containers)
-    if lib_conf.get_tag(ctnrblk) != "ECUC-CONTAINER-VALUE":
-        return None
     
-    # now locate PortContainer
-    dio_ctnr = None
-    for ecuc_ctnr in ctnrblk:
-        if lib_conf.get_tag(ecuc_ctnr) == "SUB-CONTAINERS":
-            ctnrblk = ecuc_ctnr
-            break
-    for ecuc_ctnr in ctnrblk:
-        if lib_conf.get_tag(ecuc_ctnr) == "ECUC-CONTAINER-VALUE":
-            ctnrblk = ecuc_ctnr
-            break
-    for item in ctnrblk:
-        if lib_conf.get_tag(item) == "SHORT-NAME":
-            if item.text == "PortContainer":
-                dio_ctnr = ctnrblk
-                break
-
-    # get PortContainer parameter - Number of Dio Pins
-    if dio_ctnr == None:
-        return None
-    params = lib_conf.get_param_list(dio_ctnr)
-    if params[0]["tag"] == "PortNumberOfPortPins":
-        dio_pin_count = int(params[0]["val"])
-        
-    # Now locate SUB-CONTAINERS to parse pin configurations
-    for subctnr in ctnrblk:
-        if lib_conf.get_tag(subctnr) == "SUB-CONTAINERS":
-            for ctnr in subctnr:
-                dio_info = {}
-                params = lib_conf.get_param_list(ctnr)
-                for par in params:
-                    dio_info[par["tag"]] = par["val"]
-                dio_pins.append(dio_info)
+    dio_n_pins, dio_configs = parse_arxml_dioconfig(containers)
+    print("dio_configs = ", dio_configs)
     
-    return dio_pin_count, dio_pins
+    return dio_n_pins, dio_configs
+
