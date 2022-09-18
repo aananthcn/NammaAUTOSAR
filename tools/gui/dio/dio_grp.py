@@ -2,11 +2,13 @@ import tkinter as tk
 from tkinter import ttk
 
 import arxml.port.arxml_port as arxml_port
+import arxml.dio.arxml_dio as arxml_dio
 
 import gui.lib.window as window
 
 
 class ChGrpStr:
+    port_pin_id = None
     chan_grp_id = None
     chan_grp_port_offset = None
     chan_grp_port_mask = None
@@ -46,6 +48,10 @@ class DioChannelGroupTab:
         for port in ports:
             if port['PortPinMode'] == "PORT_PIN_MODE_DIO":
                 self.port_pin_ids.append(port["PortPinId"])
+        dio_pins, dio_ports = arxml_dio.parse_arxml(gui.arxml_file)
+        for diop in dio_ports:
+            if "DioChannelGroupIdentification" in diop:
+                self.init_chgrp(diop)
 
 
     def __del__(self):
@@ -53,6 +59,28 @@ class DioChannelGroupTab:
         del self.chgrps_str[:]
         del self.port_chgrps[:]
         del self.non_header_objs[:]
+
+
+    def init_chgrp(self, dioport):
+        self.n_chgrps += 1
+        
+        # create new objects
+        chgrp = {}
+        chgrp_str = ChGrpStr()
+        
+        # initialize objects
+        chgrp["PortPinId"] = dioport["DioPortId"]
+        chgrp_str.port_pin_id.set(dioport["DioPortId"])
+        chgrp["DioChannelGroupIdentification"] = dioport["DioChannelGroupIdentification"]
+        chgrp_str.chan_grp_id.set(dioport["DioChannelGroupIdentification"])
+        chgrp["DioPortOffset"] = dioport["DioPortOffset"]
+        chgrp_str.chan_grp_port_offset.set(dioport["DioPortOffset"])
+        chgrp["DioPortMask"] = dioport["DioPortMask"]
+        chgrp_str.chan_grp_port_mask.set(dioport["DioPortMask"])
+        
+        # add them to self for gui update
+        self.chgrps_str.append(chgrp_str)
+        self.port_chgrps.append(chgrp)
 
 
     def create_empty_chgrp(self):
