@@ -42,8 +42,9 @@ class DioConfigTab:
         self.gui = gui
         self.toplvl = gui.main_view.child_window
         pins, ports = arxml_port.parse_arxml(gui.arxml_file) # Temporary
-        dio_pins, dio_ports = arxml_dio.parse_arxml(gui.arxml_file)
-        print("dio_cfg: Pins as per Dio ARXML = ", dio_pins)
+        dio_pins, dio_ports, dio_gen = arxml_dio.parse_arxml(gui.arxml_file)
+        if pins != dio_pins:
+            print("Error: dio_cfg -- Pins as per Dio ARXML = ", dio_pins, ". But as per Port ARXML = ", pins)
         for port in ports:
             if port['PortPinMode'] == "PORT_PIN_MODE_DIO":
                 self.n_pins += 1

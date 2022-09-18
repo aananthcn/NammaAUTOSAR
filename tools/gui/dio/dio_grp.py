@@ -48,7 +48,7 @@ class DioChannelGroupTab:
         for port in ports:
             if port['PortPinMode'] == "PORT_PIN_MODE_DIO":
                 self.port_pin_ids.append(port["PortPinId"])
-        dio_pins, dio_ports = arxml_dio.parse_arxml(gui.arxml_file)
+        dio_pins, dio_ports, dio_gen = arxml_dio.parse_arxml(gui.arxml_file)
         for diop in dio_ports:
             if "DioChannelGroupIdentification" in diop:
                 self.init_chgrp(diop)

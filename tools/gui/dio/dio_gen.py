@@ -2,6 +2,8 @@ import tkinter as tk
 from tkinter import ttk
 
 import arxml.port.arxml_port as arxml_port
+import arxml.dio.arxml_dio as arxml_dio
+
 import gui.port.port_cgen as port_cgen
 
 
@@ -34,6 +36,11 @@ class DioGeneralTab:
         self.gui = gui
         self.config = DioGeneralStr()
         self.gen_data = {}
+        dio_pins, dio_cfg, dio_gen = arxml_dio.parse_arxml(gui.arxml_file)
+        self.gen_data["DioDevErrorDetect"]      = dio_gen["DioDevErrorDetect"]
+        self.gen_data["DioVersionInfoApi"]      = dio_gen["DioVersionInfoApi"]
+        self.gen_data["DioFlipChannelApi"]      = dio_gen["DioFlipChannelApi"]
+        self.gen_data["DioMaskedWritePortApi"]  = dio_gen["DioMaskedWritePortApi"]
 
     def __del__(self):
         del self.config
@@ -53,7 +60,7 @@ class DioGeneralTab:
         
         cmbsel = ttk.Combobox(tab.frame, width=14, textvariable=self.config.error_detect, state="readonly")
         cmbsel['values'] = dio_cmbsel
-        self.config.error_detect.set("FALSE")
+        self.config.error_detect.set(self.gen_data["DioDevErrorDetect"])
         cmbsel.current()
         cmbsel.grid(row=2, column=1)
 
@@ -63,7 +70,7 @@ class DioGeneralTab:
         
         cmbsel = ttk.Combobox(tab.frame, width=14, textvariable=self.config.verion_api, state="readonly")
         cmbsel['values'] = dio_cmbsel
-        self.config.verion_api.set("FALSE")
+        self.config.verion_api.set(self.gen_data["DioVersionInfoApi"])
         cmbsel.current()
         cmbsel.grid(row=3, column=1)
 
@@ -73,7 +80,7 @@ class DioGeneralTab:
         
         cmbsel = ttk.Combobox(tab.frame, width=14, textvariable=self.config.flip_chan_api, state="readonly")
         cmbsel['values'] = dio_cmbsel
-        self.config.flip_chan_api.set("FALSE")
+        self.config.flip_chan_api.set(self.gen_data["DioFlipChannelApi"])
         cmbsel.current()
         cmbsel.grid(row=4, column=1)
 
@@ -83,7 +90,7 @@ class DioGeneralTab:
         
         cmbsel = ttk.Combobox(tab.frame, width=14, textvariable=self.config.masked_write_port_api, state="readonly")
         cmbsel['values'] = dio_cmbsel
-        self.config.masked_write_port_api.set("FALSE")
+        self.config.masked_write_port_api.set(self.gen_data["DioMaskedWritePortApi"])
         cmbsel.current()
         cmbsel.grid(row=5, column=1)
 

@@ -223,6 +223,7 @@ def parse_arxml_dioconfig(containers):
 def parse_arxml(ar_file):
     dio_n_pins = None
     dio_configs = []
+    dio_general = {}
     # Read ARXML File
     tree = ET.parse(ar_file)
     root = tree.getroot()
@@ -241,7 +242,15 @@ def parse_arxml(ar_file):
         return
     
     dio_n_pins, dio_configs = parse_arxml_dioconfig(containers)
-    print("dio_configs = ", dio_configs)
+
+    # locate & parse DioGeneral
+    ctnrname = "DioGeneral"
+    ctnrblk = lib_conf.find_ecuc_container_block(ctnrname, containers)
+    if lib_conf.get_tag(ctnrblk) != "ECUC-CONTAINER-VALUE":
+        return None
+    params = lib_conf.get_param_list(ctnrblk)
+    for par in params:
+        dio_general[par["tag"]] = par["val"]
     
-    return dio_n_pins, dio_configs
+    return dio_n_pins, dio_configs, dio_general
 
