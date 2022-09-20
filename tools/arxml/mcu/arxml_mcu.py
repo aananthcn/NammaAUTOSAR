@@ -90,6 +90,9 @@ def update_arxml(ar_file, uc_info):
 
 # This function is highly incomplete.....
 def parse_arxml(ar_file, uc_info):
+    if ar_file == None:
+        return
+    
     # Read ARXML File
     tree = ET.parse(ar_file)
     root = tree.getroot()
