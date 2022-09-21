@@ -132,6 +132,8 @@ def update_arxml(ar_file, port_info):
 # This function parses ARXML and extract the Port information
 # Returns: No of port, Port dictionary
 def parse_arxml(ar_file):
+    if ar_file == None:
+        return None, None
     port_pin_count = None
     port_pins = []
     # Read ARXML File

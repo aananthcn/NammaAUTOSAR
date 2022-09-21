@@ -62,6 +62,9 @@ def create_source(gui):
     port_path = search.find_dir("Port", cwd+"/submodules")
     makefile.write("PORT_PATH := "+port_path+"\n")
 
+    dio_path = search.find_dir("Dio", cwd+"/submodules")
+    makefile.write("DIO_PATH := "+dio_path+"\n")
+
     os_path = search.find_dir("Os", cwd+"/submodules")
     makefile.write("OS_PATH := "+os_path+"\n")
 
@@ -91,6 +94,8 @@ def create_source(gui):
     makefile.write("include "+EcuM_mk+"\n")
     Port_mk = search.find_file("Port.mk", cwd+"/submodules")
     makefile.write("include "+Port_mk+"\n")
+    Dio_mk = search.find_file("Dio.mk", cwd+"/submodules")
+    makefile.write("include "+Dio_mk+"\n")
 
     os_objs_mk = search.find_file("os-objs.mk", cwd)
     makefile.write("include "+os_objs_mk+"\n")

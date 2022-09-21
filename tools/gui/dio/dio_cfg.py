@@ -41,8 +41,11 @@ class DioConfigTab:
     def __init__(self, gui):
         self.gui = gui
         self.toplvl = gui.main_view.child_window
+        self.n_pins_str = tk.StringVar()
         pins, ports = arxml_port.parse_arxml(gui.arxml_file) # Temporary
         dio_pins, dio_ports, dio_gen = arxml_dio.parse_arxml(gui.arxml_file)
+        if pins == None or dio_pins == None:
+            return
         if pins != dio_pins:
             print("Error: dio_cfg -- Pins as per Dio ARXML = ", dio_pins, ". But as per Port ARXML = ", pins)
         for port in ports:
@@ -60,7 +63,6 @@ class DioConfigTab:
                 diopin["DioChannelId"] = self.get_chan_id(port["PortPinId"], dio_ports)
                 self.dio_str.append(diostr)
                 self.dio_pins.append(diopin)
-        self.n_pins_str = tk.StringVar()
 
 
     def get_chan_id(self, port_id, dio_ports):

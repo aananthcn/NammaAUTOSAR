@@ -221,6 +221,8 @@ def parse_arxml_dioconfig(containers):
 # This function parses ARXML and extract the Dio information
 # Returns: No of dio_configs, Dio pin dictionary
 def parse_arxml(ar_file):
+    if ar_file == None:
+        return None, None, None
     dio_n_pins = None
     dio_configs = []
     dio_general = {}

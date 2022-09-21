@@ -27,6 +27,7 @@ import arxml.dio.arxml_dio as arxml_dio
 import gui.dio.dio_cfg as dio_cfg
 import gui.dio.dio_gen as dio_gen
 import gui.dio.dio_grp as dio_grp
+import gui.dio.dio_cgen as dio_cgen
 
 
 TabList = []
@@ -46,7 +47,6 @@ class DioTab:
         self.frame = f
         self.xsize = w
         self.ysize = h
-
 
 
 def dio_config_close_event(gui, view):
@@ -72,7 +72,7 @@ def dio_save_callback(gui):
             continue
 
     arxml_dio.update_arxml(gui.arxml_file, dio_cfg, dio_grp, dio_gen)
-    # port_cgen.generate_code(self.gui)
+    dio_cgen.generate_code(gui)
 
     
 def show_dio_tabs(gui):

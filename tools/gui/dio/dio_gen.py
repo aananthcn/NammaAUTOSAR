@@ -37,6 +37,12 @@ class DioGeneralTab:
         self.config = DioGeneralStr()
         self.gen_data = {}
         dio_pins, dio_cfg, dio_gen = arxml_dio.parse_arxml(gui.arxml_file)
+        if dio_pins == None:
+            self.gen_data["DioDevErrorDetect"]      = "FALSE"
+            self.gen_data["DioVersionInfoApi"]      = "FALSE"
+            self.gen_data["DioFlipChannelApi"]      = "FALSE"
+            self.gen_data["DioMaskedWritePortApi"]  = "FALSE"
+            return
         self.gen_data["DioDevErrorDetect"]      = dio_gen["DioDevErrorDetect"]
         self.gen_data["DioVersionInfoApi"]      = dio_gen["DioVersionInfoApi"]
         self.gen_data["DioFlipChannelApi"]      = dio_gen["DioFlipChannelApi"]

@@ -52,6 +52,12 @@ def generate_headerfile(port_src_path, pins, pin_info):
     hf.write("} Port_ConfigType;\n\n")
     hf.write("extern Port_ConfigType PortConfigs;\n\n")
     
+    max_port_id = 0
+    for item in pin_info:
+        if int(item["PortPinId"]) > max_port_id:
+            max_port_id = int(item["PortPinId"])
+    hf.write("#define MAX_PORT_ID  ("+str(max_port_id)+")\n\n")
+    
     hf.write("\n\n#endif\n")
     hf.close()
 
