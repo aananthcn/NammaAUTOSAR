@@ -64,7 +64,7 @@ class DioChannelGroupTab:
         self.gui = gui
         self.n_chgrps = 0
         self.n_chgrps_str = tk.StringVar()
-        pins, ports = arxml_port.parse_arxml(gui.arxml_file)
+        pins, ports, general = arxml_port.parse_arxml(gui.arxml_file)
         if pins == None or ports == None:
             return
         for port in ports:

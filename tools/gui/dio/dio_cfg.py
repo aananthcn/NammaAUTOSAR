@@ -62,7 +62,7 @@ class DioConfigTab:
         self.gui = gui
         self.toplvl = gui.main_view.child_window
         self.n_pins_str = tk.StringVar()
-        pins, ports = arxml_port.parse_arxml(gui.arxml_file) # Temporary
+        pins, ports, general = arxml_port.parse_arxml(gui.arxml_file) # Temporary
         dio_pins, dio_ports, dio_gen = arxml_dio.parse_arxml(gui.arxml_file)
         if pins == None or dio_pins == None:
             return

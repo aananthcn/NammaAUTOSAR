@@ -22,101 +22,99 @@ import tkinter as tk
 from tkinter import ttk
 
 import arxml.port.arxml_port as arxml_port
-import arxml.dio.arxml_dio as arxml_dio
-
 import gui.port.port_cgen as port_cgen
 
 
-class DioGeneralStr:
+class PortGeneralStr:
     error_detect = None
     verion_api = None
-    flip_chan_api = None
-    masked_write_port_api = None
+    pin_dir_api = None
+    pin_mode_api = None
 
     def __init__(self):
         self.error_detect = tk.StringVar()
         self.verion_api = tk.StringVar()
-        self.flip_chan_api = tk.StringVar()
-        self.masked_write_port_api = tk.StringVar()
+        self.pin_dir_api = tk.StringVar()
+        self.pin_mode_api = tk.StringVar()
 
     def __del__(self):
         del self.error_detect
         del self.verion_api
-        del self.flip_chan_api
-        del self.masked_write_port_api
+        del self.pin_dir_api
+        del self.pin_mode_api
 
 
-class DioGeneralTab:
+class PortGeneralTab:
     gui = None
     config = None
-    tabstr = None
+    tab_struct = None
     gen_data = None
 
     def __init__(self, gui):
         self.gui = gui
-        self.config = DioGeneralStr()
+        self.config = PortGeneralStr()
         self.gen_data = {}
-        dio_pins, dio_cfg, dio_gen = arxml_dio.parse_arxml(gui.arxml_file)
-        if dio_pins == None:
-            self.gen_data["DioDevErrorDetect"]      = "FALSE"
-            self.gen_data["DioVersionInfoApi"]      = "FALSE"
-            self.gen_data["DioFlipChannelApi"]      = "FALSE"
-            self.gen_data["DioMaskedWritePortApi"]  = "FALSE"
+        port_pins, port_cfg, port_gen = arxml_port.parse_arxml(gui.arxml_file)
+        if port_pins == None or port_gen == None:
+            self.gen_data["PortDevErrorDetect"]      = "FALSE"
+            self.gen_data["PortVersionInfoApi"]      = "FALSE"
+            self.gen_data["PortSetPinDirectionApi"]  = "FALSE"
+            self.gen_data["PortSetPinModeApi"]       = "FALSE"
             return
-        self.gen_data["DioDevErrorDetect"]      = dio_gen["DioDevErrorDetect"]
-        self.gen_data["DioVersionInfoApi"]      = dio_gen["DioVersionInfoApi"]
-        self.gen_data["DioFlipChannelApi"]      = dio_gen["DioFlipChannelApi"]
-        self.gen_data["DioMaskedWritePortApi"]  = dio_gen["DioMaskedWritePortApi"]
+        self.gen_data["PortDevErrorDetect"]      = port_gen["PortDevErrorDetect"]
+        self.gen_data["PortVersionInfoApi"]      = port_gen["PortVersionInfoApi"]
+        self.gen_data["PortSetPinDirectionApi"]  = port_gen["PortSetPinDirectionApi"]
+        self.gen_data["PortSetPinModeApi"]       = port_gen["PortSetPinModeApi"]
 
     def __del__(self):
         del self.config
 
 
     def draw(self, tab):
-        self.tabstr = tab
-        dio_cmbsel = ("FALSE", "TRUE")
+        self.tab_struct = tab
+        port_cmbsel = ("FALSE", "TRUE")
         
         # empty space
         label = tk.Label(tab.frame, text="")
         label.grid(row=1, column=0, sticky="e")
 
-        # DioDevErrorDetect
-        label = tk.Label(tab.frame, text="DioDevErrorDetect: ")
+        # PortDevErrorDetect
+        label = tk.Label(tab.frame, text="PortDevErrorDetect: ")
         label.grid(row=2, column=0, sticky="e")
         
         cmbsel = ttk.Combobox(tab.frame, width=14, textvariable=self.config.error_detect, state="readonly")
-        cmbsel['values'] = dio_cmbsel
-        self.config.error_detect.set(self.gen_data["DioDevErrorDetect"])
+        cmbsel['values'] = port_cmbsel
+        self.config.error_detect.set(self.gen_data["PortDevErrorDetect"])
         cmbsel.current()
         cmbsel.grid(row=2, column=1)
 
-        # DioVersionInfoApi
-        label = tk.Label(tab.frame, text="DioVersionInfoApi: ")
+        # PortVersionInfoApi
+        label = tk.Label(tab.frame, text="PortVersionInfoApi: ")
         label.grid(row=3, column=0, sticky="e")
         
         cmbsel = ttk.Combobox(tab.frame, width=14, textvariable=self.config.verion_api, state="readonly")
-        cmbsel['values'] = dio_cmbsel
-        self.config.verion_api.set(self.gen_data["DioVersionInfoApi"])
+        cmbsel['values'] = port_cmbsel
+        self.config.verion_api.set(self.gen_data["PortVersionInfoApi"])
         cmbsel.current()
         cmbsel.grid(row=3, column=1)
 
-        # DioFlipChannelApi
-        label = tk.Label(tab.frame, text="DioFlipChannelApi: ")
+        # PortSetPinDirectionApi
+        label = tk.Label(tab.frame, text="PortSetPinDirectionApi: ")
         label.grid(row=4, column=0, sticky="e")
         
-        cmbsel = ttk.Combobox(tab.frame, width=14, textvariable=self.config.flip_chan_api, state="readonly")
-        cmbsel['values'] = dio_cmbsel
-        self.config.flip_chan_api.set(self.gen_data["DioFlipChannelApi"])
+        cmbsel = ttk.Combobox(tab.frame, width=14, textvariable=self.config.pin_dir_api, state="readonly")
+        cmbsel['values'] = port_cmbsel
+        self.config.pin_dir_api.set(self.gen_data["PortSetPinDirectionApi"])
         cmbsel.current()
         cmbsel.grid(row=4, column=1)
 
-        # DioMaskedWritePortApi
-        label = tk.Label(tab.frame, text="DioMaskedWritePortApi: ")
+        # PortSetPinModeApi
+        label = tk.Label(tab.frame, text="PortSetPinModeApi: ")
         label.grid(row=5, column=0, sticky="e")
         
-        cmbsel = ttk.Combobox(tab.frame, width=14, textvariable=self.config.masked_write_port_api, state="readonly")
-        cmbsel['values'] = dio_cmbsel
-        self.config.masked_write_port_api.set(self.gen_data["DioMaskedWritePortApi"])
+        cmbsel = ttk.Combobox(tab.frame, width=14, textvariable=self.config.pin_mode_api, state="readonly")
+        cmbsel['values'] = port_cmbsel
+        self.config.pin_mode_api.set(self.gen_data["PortSetPinModeApi"])
         cmbsel.current()
         cmbsel.grid(row=5, column=1)
 
@@ -134,12 +132,12 @@ class DioGeneralTab:
 
 
     def backup_data(self):
-        self.gen_data["DioDevErrorDetect"]      = self.config.error_detect.get()
-        self.gen_data["DioVersionInfoApi"]      = self.config.verion_api.get()
-        self.gen_data["DioFlipChannelApi"]      = self.config.flip_chan_api.get()
-        self.gen_data["DioMaskedWritePortApi"]  = self.config.masked_write_port_api.get()
+        self.gen_data["PortDevErrorDetect"]      = self.config.error_detect.get()
+        self.gen_data["PortVersionInfoApi"]      = self.config.verion_api.get()
+        self.gen_data["PortSetPinDirectionApi"]  = self.config.pin_dir_api.get()
+        self.gen_data["PortSetPinModeApi"]       = self.config.pin_mode_api.get()
 
         
     def save_data(self):
         self.backup_data()
-        self.tabstr.save_cb(self.gui)
+        self.tab_struct.save_cb(self.gui)

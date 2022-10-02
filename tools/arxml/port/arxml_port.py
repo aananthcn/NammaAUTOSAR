@@ -192,4 +192,4 @@ def parse_arxml(ar_file):
                     port_info[par["tag"]] = par["val"]
                 port_pins.append(port_info)
     
-    return port_pin_count, port_pins
+    return port_pin_count, port_pins, None

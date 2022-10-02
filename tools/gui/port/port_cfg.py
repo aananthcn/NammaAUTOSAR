@@ -22,7 +22,6 @@ import tkinter as tk
 from tkinter import ttk
 
 import arxml.port.arxml_port as arxml_port
-import gui.port.port_cgen as port_cgen
 
 import gui.lib.window as window
 
@@ -73,6 +72,7 @@ class PortConfigSetTab:
     n_pins = 0
     max_pins = 65535
     n_pins_str = None
+    tab_struct = None
 
     pins_str = []
     events = []
@@ -80,8 +80,6 @@ class PortConfigSetTab:
     header_objs = 12 #Objects / widgets that are part of the header and shouldn't be destroyed
     header_size = 3
     non_header_objs = []
-    xsize = None
-    ysize = None
     gui = None
 
     def __init__(self, gui):
@@ -199,10 +197,9 @@ class PortConfigSetTab:
         self.scrollw.scroll()
 
 
-    def draw(self, tab, xsize, ysize):
-        self.xsize = xsize
-        self.ysize = ysize
-        self.scrollw = window.ScrollableWindow(tab, self.xsize, self.ysize)
+    def draw(self, tab):
+        self.scrollw = window.ScrollableWindow(tab.frame, tab.xsize, tab.ysize)
+        self.tab_struct = tab
         
         #Number of modes - Label + Spinbox
         label = tk.Label(self.scrollw.mnf, text="No. of Pins:")
@@ -262,6 +259,8 @@ class PortConfigSetTab:
 
 
     def save_data(self):
-        arxml_port.update_arxml(self.gui.arxml_file, self)
-        port_cgen.generate_code(self.gui)
+        # arxml_port.update_arxml(self.gui.arxml_file, self)
+        # port_cgen.generate_code(self.gui)
+        self.backup_data()
+        self.tab_struct.save_cb(self.gui)
 
