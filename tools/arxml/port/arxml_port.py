@@ -38,25 +38,19 @@ def update_port_gen_to_container(root, tab_gen):
     dref = "/AUTOSAR/EcucDefs/Port/"+ctnrname
     ctnrblk = lib_conf.insert_conf_container(root, ctnrname, "conf", dref)
 
-    # Create a sub-container    
-    subctnr1 = ET.SubElement(ctnrblk, "SUB-CONTAINERS")
-    subctnr1_name = "PortContainer"
-    dref = "/AUTOSAR/EcucDefs/Port/"+ctnrname+"/"+subctnr1_name
-    cctnrblk1 = lib_conf.insert_conf_container(subctnr1, subctnr1_name, "conf", dref)
-
     # Parameters
-    params = ET.SubElement(cctnrblk1, "PARAMETER-VALUES")
+    params = ET.SubElement(ctnrblk, "PARAMETER-VALUES")
 
-    refname = "/AUTOSAR/EcucDefs/Port/"+ctnrname+"/"+subctnr1_name+"/PortDevErrorDetect"
+    refname = "/AUTOSAR/EcucDefs/Port/"+ctnrname+"/PortDevErrorDetect"
     lib_conf.insert_conf_param(params, refname, "numerical", "bool", tab_gen.gen_data["PortDevErrorDetect"])
 
-    refname = "/AUTOSAR/EcucDefs/Port/"+ctnrname+"/"+subctnr1_name+"/PortVersionInfoApi"
+    refname = "/AUTOSAR/EcucDefs/Port/"+ctnrname+"/PortVersionInfoApi"
     lib_conf.insert_conf_param(params, refname, "numerical", "bool", tab_gen.gen_data["PortVersionInfoApi"])
 
-    refname = "/AUTOSAR/EcucDefs/Port/"+ctnrname+"/"+subctnr1_name+"/PortSetPinDirectionApi"
+    refname = "/AUTOSAR/EcucDefs/Port/"+ctnrname+"/PortSetPinDirectionApi"
     lib_conf.insert_conf_param(params, refname, "numerical", "bool", tab_gen.gen_data["PortSetPinDirectionApi"])
 
-    refname = "/AUTOSAR/EcucDefs/Port/"+ctnrname+"/"+subctnr1_name+"/PortSetPinModeApi"
+    refname = "/AUTOSAR/EcucDefs/Port/"+ctnrname+"/PortSetPinModeApi"
     lib_conf.insert_conf_param(params, refname, "numerical", "bool", tab_gen.gen_data["PortSetPinModeApi"])
 
 
@@ -230,5 +224,15 @@ def parse_arxml(ar_file):
                 for par in params:
                     port_info[par["tag"]] = par["val"]
                 port_pins.append(port_info)
-    
-    return port_pin_count, port_pins, None
+
+    # locate PortGeneral
+    ctnrname = "PortGeneral"
+    port_general = {}
+    ctnrblk = lib_conf.find_ecuc_container_block(ctnrname, containers)
+    if lib_conf.get_tag(ctnrblk) != "ECUC-CONTAINER-VALUE":
+        return None
+    params = lib_conf.get_param_list(ctnrblk)
+    for par in params:
+        port_general[par["tag"]] = par["val"]
+        
+    return port_pin_count, port_pins, port_general
