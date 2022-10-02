@@ -21,7 +21,7 @@
 import tkinter as tk
 from tkinter import ttk
 
-import gui.port.pin_cfg as pin_cfg
+import gui.port.port_cfg as port_cfg
 import arxml.port.arxml_port as arxml_port
 
 
@@ -60,10 +60,12 @@ def show_port_config(gui):
     gui.main_view.child_window = ttk.Notebook(view)
     
     # Create tabs to configure OS
-    cs_tab = ttk.Frame(gui.main_view.child_window)
+    pcs_tab = ttk.Frame(gui.main_view.child_window)
+    pgn_tab = ttk.Frame(gui.main_view.child_window)
     
     # Add tabs to configure OS
-    gui.main_view.child_window.add(cs_tab, text ='PortConfigSet')
+    gui.main_view.child_window.add(pcs_tab, text ='PortConfigSet')
+    gui.main_view.child_window.add(pgn_tab, text ='PortGeneral')
     gui.main_view.child_window.pack(expand = 1, fill ="both")
 
     # destroy old GUI objects
@@ -75,14 +77,21 @@ def show_port_config(gui):
 
     # create new GUI objects
     ptab = PortTab()
-    ptab.tab = pin_cfg.PortConfigSetTab(gui)
+    ptab.tab = port_cfg.PortConfigSetTab(gui)
     if pins > 0:
         ptab.tab.init(pins, pin_info)
     ptab.name = "PortConfigSet"
-    ptab.tab.draw(cs_tab, width, height)
+    ptab.tab.draw(pcs_tab, width, height)
     TabList.append(ptab)
 
-    # gui.main_view.window.bind("<<NotebookTabChanged>>", show_os_tab_switch)
+    # create new GUI objects
+    ptab = PortTab()
+    ptab.tab = port_cfg.PortConfigSetTab(gui)
+    if pins > 0:
+        ptab.tab.init(pins, pin_info)
+    ptab.name = "PortGeneral"
+    ptab.tab.draw(pgn_tab, width, height)
+    TabList.append(ptab)
     
 
 # Main Entry Point

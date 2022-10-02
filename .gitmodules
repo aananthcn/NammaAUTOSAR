@@ -16,3 +16,6 @@
 [submodule "submodules/MCAL/Dio"]
 	path = submodules/MCAL/Dio
 	url = git@github.com:aananthcn/NammaDio.git
+[submodule "submodules/MCAL/Spi"]
+	path = submodules/MCAL/Spi
+	url = git@github.com:aananthcn/NammaSpi.git

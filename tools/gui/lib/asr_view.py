@@ -94,6 +94,15 @@ AsrBlocksConfigList = [
         "postdraw": None
     },
     {
+        # Spi
+        "name": "Spi", "text": "Spi", "txta": "center", "ori": "V",
+        # Position (offset % of screen size), size (% of screen size) & colors
+        "x": 50, "y": 4.06, "w": 2.5, "h": 18, "bgc": '#FF7C80', "fgc": 'black',
+        # click callback & constructor
+        "cb": None, "cons": None,
+        "postdraw": None
+    },
+    {
         # RTE
         "name": "Rte", "text": "Run Time Environment (RTE)", "txta": "center", "ori": "H",
         # Position (offset % of screen size), size (% of screen size) & colors
