@@ -57,7 +57,7 @@ def port_save_callback(gui):
         if tab.name == "PortGeneral":
             port_gen = tab.tab
             continue
-    arxml_port.update_arxml(gui.arxml_file, port_cfg)
+    arxml_port.update_arxml(gui.arxml_file, port_cfg, port_gen)
     port_cgen.generate_code(gui)
 
 
@@ -108,15 +108,15 @@ def show_port_config(gui):
     if pins > 0:
         ptab.tab.init(pins, pin_info)
     ptab.name = "PortConfigSet"
-    ptab.tab.draw(ptab)
     TabList.append(ptab)
+    ptab.tab.draw(ptab)
 
     # create new GUI objects
     ptab = PortTab(pgn_frame, width, height)
     ptab.tab = port_gen.PortGeneralTab(gui)
     ptab.name = "PortGeneral"
-    ptab.tab.draw(ptab)
     TabList.append(ptab)
+    ptab.tab.draw(ptab)
     
 
 # Main Entry Point

@@ -26,8 +26,44 @@ import arxml.core.lib_defs as lib_defs
 
 
 
+def update_port_gen_to_container(root, tab_gen):
+    ctnrname = "PortGeneral"
+    pcs_ctnrblk = lib_conf.find_ecuc_container_block(ctnrname, root)
+    
+    # Delete node to rewrite new values
+    if None != pcs_ctnrblk:
+        root.remove(pcs_ctnrblk)
+    
+    # Create a new container - PortGeneral
+    dref = "/AUTOSAR/EcucDefs/Port/"+ctnrname
+    ctnrblk = lib_conf.insert_conf_container(root, ctnrname, "conf", dref)
+
+    # Create a sub-container    
+    subctnr1 = ET.SubElement(ctnrblk, "SUB-CONTAINERS")
+    subctnr1_name = "PortContainer"
+    dref = "/AUTOSAR/EcucDefs/Port/"+ctnrname+"/"+subctnr1_name
+    cctnrblk1 = lib_conf.insert_conf_container(subctnr1, subctnr1_name, "conf", dref)
+
+    # Parameters
+    params = ET.SubElement(cctnrblk1, "PARAMETER-VALUES")
+
+    refname = "/AUTOSAR/EcucDefs/Port/"+ctnrname+"/"+subctnr1_name+"/PortDevErrorDetect"
+    lib_conf.insert_conf_param(params, refname, "numerical", "bool", tab_gen.gen_data["PortDevErrorDetect"])
+
+    refname = "/AUTOSAR/EcucDefs/Port/"+ctnrname+"/"+subctnr1_name+"/PortVersionInfoApi"
+    lib_conf.insert_conf_param(params, refname, "numerical", "bool", tab_gen.gen_data["PortVersionInfoApi"])
+
+    refname = "/AUTOSAR/EcucDefs/Port/"+ctnrname+"/"+subctnr1_name+"/PortSetPinDirectionApi"
+    lib_conf.insert_conf_param(params, refname, "numerical", "bool", tab_gen.gen_data["PortSetPinDirectionApi"])
+
+    refname = "/AUTOSAR/EcucDefs/Port/"+ctnrname+"/"+subctnr1_name+"/PortSetPinModeApi"
+    lib_conf.insert_conf_param(params, refname, "numerical", "bool", tab_gen.gen_data["PortSetPinModeApi"])
+
+
+
+
 # This function updates NammaAUTOSAR Port parameters into its container
-def update_port_info_to_container(root, tab):
+def update_port_info_to_container(root, tab_cfg):
     ctnrname = "PortConfigSet"
     pcs_ctnrblk = lib_conf.find_ecuc_container_block(ctnrname, root)
     
@@ -48,7 +84,7 @@ def update_port_info_to_container(root, tab):
     # Parameters
     params = ET.SubElement(cctnrblk1, "PARAMETER-VALUES")
     refname = "/AUTOSAR/EcucDefs/Port/"+ctnrname+"/"+subctnr1_name+"/PortNumberOfPortPins"
-    lib_conf.insert_conf_param(params, refname, "numerical", "int", str(len(tab.pins_str)))
+    lib_conf.insert_conf_param(params, refname, "numerical", "int", str(len(tab_cfg.pins_str)))
     
     # Create a sub-container    
     subctnr2 = ET.SubElement(cctnrblk1, "SUB-CONTAINERS")
@@ -56,44 +92,44 @@ def update_port_info_to_container(root, tab):
     dref = "/AUTOSAR/EcucDefs/Port/"+ctnrname+"/"+subctnr1_name+"/"+subctnr2_name
     
     # Insert pin info as conf_container values
-    for i in range(len(tab.pins_str)):
+    for i in range(len(tab_cfg.pins_str)):
         cctnrblk2 = lib_conf.insert_conf_container(subctnr2, subctnr2_name, "conf", dref)
         params = ET.SubElement(cctnrblk2, "PARAMETER-VALUES")
 
         # Parameter - PortPinId
         refname = "/AUTOSAR/EcucDefs/Port/"+ctnrname+"/"+subctnr1_name+"/PortPin/PortPinId"
-        lib_conf.insert_conf_param(params, refname, "numerical", "int", tab.pins_str[i].id.get())
+        lib_conf.insert_conf_param(params, refname, "numerical", "int", tab_cfg.pins_str[i].id.get())
 
         # Parameter - PortPinDirection
         refname = "/AUTOSAR/EcucDefs/Port/"+ctnrname+"/"+subctnr1_name+"/PortPin/PortPinDirection"
-        lib_conf.insert_conf_param(params, refname, "numerical", "int", tab.pins_str[i].pindir.get())
+        lib_conf.insert_conf_param(params, refname, "numerical", "int", tab_cfg.pins_str[i].pindir.get())
 
         # Parameter - PortPinDirectionChangeable
         refname = "/AUTOSAR/EcucDefs/Port/"+ctnrname+"/"+subctnr1_name+"/PortPin/PortPinDirectionChangeable"
-        lib_conf.insert_conf_param(params, refname, "numerical", "int", tab.pins_str[i].dir_changeable.get())
+        lib_conf.insert_conf_param(params, refname, "numerical", "int", tab_cfg.pins_str[i].dir_changeable.get())
 
         # Parameter - PortPinLevelValue
         refname = "/AUTOSAR/EcucDefs/Port/"+ctnrname+"/"+subctnr1_name+"/PortPin/PortPinLevelValue"
-        lib_conf.insert_conf_param(params, refname, "numerical", "int", tab.pins_str[i].pin_level.get())
+        lib_conf.insert_conf_param(params, refname, "numerical", "int", tab_cfg.pins_str[i].pin_level.get())
 
         # Parameter - PortPinMode
         refname = "/AUTOSAR/EcucDefs/Port/"+ctnrname+"/"+subctnr1_name+"/PortPin/PortPinMode"
-        lib_conf.insert_conf_param(params, refname, "numerical", "int", tab.pins_str[i].pin_mode.get())
+        lib_conf.insert_conf_param(params, refname, "numerical", "int", tab_cfg.pins_str[i].pin_mode.get())
 
         # Parameter - PortPinModeChangeable
         refname = "/AUTOSAR/EcucDefs/Port/"+ctnrname+"/"+subctnr1_name+"/PortPin/PortPinModeChangeable"
-        lib_conf.insert_conf_param(params, refname, "numerical", "int", tab.pins_str[i].mode_changeable.get())
+        lib_conf.insert_conf_param(params, refname, "numerical", "int", tab_cfg.pins_str[i].mode_changeable.get())
 
         # Parameter - PortPinInitialMode 
         refname = "/AUTOSAR/EcucDefs/Port/"+ctnrname+"/"+subctnr1_name+"/PortPin/PortPinInitialMode"
-        lib_conf.insert_conf_param(params, refname, "numerical", "int", tab.pins_str[i].pin_initial_mode.get())
+        lib_conf.insert_conf_param(params, refname, "numerical", "int", tab_cfg.pins_str[i].pin_initial_mode.get())
     
     
     
 
 
 # Write ARXML with port info
-def update_arxml(ar_file, port_info):
+def update_arxml(ar_file, port_info, port_gen):
     # Following line is added to avoid ns0 prefix added
     ET.register_namespace('', "http://autosar.org/schema/r4.0")
     ET.register_namespace('xsi', "http://www.w3.org/2001/XMLSchema-instance")
@@ -118,8 +154,11 @@ def update_arxml(ar_file, port_info):
     if containers == None:
         return
 
-    # Add Port Tab contents to CONTAINER
+    # Add PortConfigSet contents to CONTAINER
     update_port_info_to_container(containers, port_info)
+    
+    # Add PortGeneral contents to CONTAINER
+    update_port_gen_to_container(containers, port_gen)
 
     # Save ARXML contents to file
     ET.indent(tree, space="\t", level=0)
