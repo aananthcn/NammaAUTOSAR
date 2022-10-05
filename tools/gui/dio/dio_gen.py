@@ -48,32 +48,32 @@ class DioGeneralStr:
 
 class DioGeneralTab:
     gui = None
-    config = None
-    tabstr = None
-    gen_data = None
+    tab_struct = None # passed from *_view.py file
+    gen_str = None
+    gen_dict = None
 
     def __init__(self, gui):
         self.gui = gui
-        self.config = DioGeneralStr()
-        self.gen_data = {}
+        self.gen_str = DioGeneralStr()
+        self.gen_dict = {}
         dio_pins, dio_cfg, dio_gen = arxml_dio.parse_arxml(gui.arxml_file)
         if dio_pins == None:
-            self.gen_data["DioDevErrorDetect"]      = "FALSE"
-            self.gen_data["DioVersionInfoApi"]      = "FALSE"
-            self.gen_data["DioFlipChannelApi"]      = "FALSE"
-            self.gen_data["DioMaskedWritePortApi"]  = "FALSE"
+            self.gen_dict["DioDevErrorDetect"]      = "FALSE"
+            self.gen_dict["DioVersionInfoApi"]      = "FALSE"
+            self.gen_dict["DioFlipChannelApi"]      = "FALSE"
+            self.gen_dict["DioMaskedWritePortApi"]  = "FALSE"
             return
-        self.gen_data["DioDevErrorDetect"]      = dio_gen["DioDevErrorDetect"]
-        self.gen_data["DioVersionInfoApi"]      = dio_gen["DioVersionInfoApi"]
-        self.gen_data["DioFlipChannelApi"]      = dio_gen["DioFlipChannelApi"]
-        self.gen_data["DioMaskedWritePortApi"]  = dio_gen["DioMaskedWritePortApi"]
+        self.gen_dict["DioDevErrorDetect"]      = dio_gen["DioDevErrorDetect"]
+        self.gen_dict["DioVersionInfoApi"]      = dio_gen["DioVersionInfoApi"]
+        self.gen_dict["DioFlipChannelApi"]      = dio_gen["DioFlipChannelApi"]
+        self.gen_dict["DioMaskedWritePortApi"]  = dio_gen["DioMaskedWritePortApi"]
 
     def __del__(self):
-        del self.config
+        del self.gen_str
 
 
     def draw(self, tab):
-        self.tabstr = tab
+        self.tab_struct = tab
         dio_cmbsel = ("FALSE", "TRUE")
         
         # empty space
@@ -84,9 +84,9 @@ class DioGeneralTab:
         label = tk.Label(tab.frame, text="DioDevErrorDetect: ")
         label.grid(row=2, column=0, sticky="e")
         
-        cmbsel = ttk.Combobox(tab.frame, width=14, textvariable=self.config.error_detect, state="readonly")
+        cmbsel = ttk.Combobox(tab.frame, width=14, textvariable=self.gen_str.error_detect, state="readonly")
         cmbsel['values'] = dio_cmbsel
-        self.config.error_detect.set(self.gen_data["DioDevErrorDetect"])
+        self.gen_str.error_detect.set(self.gen_dict["DioDevErrorDetect"])
         cmbsel.current()
         cmbsel.grid(row=2, column=1)
 
@@ -94,9 +94,9 @@ class DioGeneralTab:
         label = tk.Label(tab.frame, text="DioVersionInfoApi: ")
         label.grid(row=3, column=0, sticky="e")
         
-        cmbsel = ttk.Combobox(tab.frame, width=14, textvariable=self.config.verion_api, state="readonly")
+        cmbsel = ttk.Combobox(tab.frame, width=14, textvariable=self.gen_str.verion_api, state="readonly")
         cmbsel['values'] = dio_cmbsel
-        self.config.verion_api.set(self.gen_data["DioVersionInfoApi"])
+        self.gen_str.verion_api.set(self.gen_dict["DioVersionInfoApi"])
         cmbsel.current()
         cmbsel.grid(row=3, column=1)
 
@@ -104,9 +104,9 @@ class DioGeneralTab:
         label = tk.Label(tab.frame, text="DioFlipChannelApi: ")
         label.grid(row=4, column=0, sticky="e")
         
-        cmbsel = ttk.Combobox(tab.frame, width=14, textvariable=self.config.flip_chan_api, state="readonly")
+        cmbsel = ttk.Combobox(tab.frame, width=14, textvariable=self.gen_str.flip_chan_api, state="readonly")
         cmbsel['values'] = dio_cmbsel
-        self.config.flip_chan_api.set(self.gen_data["DioFlipChannelApi"])
+        self.gen_str.flip_chan_api.set(self.gen_dict["DioFlipChannelApi"])
         cmbsel.current()
         cmbsel.grid(row=4, column=1)
 
@@ -114,9 +114,9 @@ class DioGeneralTab:
         label = tk.Label(tab.frame, text="DioMaskedWritePortApi: ")
         label.grid(row=5, column=0, sticky="e")
         
-        cmbsel = ttk.Combobox(tab.frame, width=14, textvariable=self.config.masked_write_port_api, state="readonly")
+        cmbsel = ttk.Combobox(tab.frame, width=14, textvariable=self.gen_str.masked_write_port_api, state="readonly")
         cmbsel['values'] = dio_cmbsel
-        self.config.masked_write_port_api.set(self.gen_data["DioMaskedWritePortApi"])
+        self.gen_str.masked_write_port_api.set(self.gen_dict["DioMaskedWritePortApi"])
         cmbsel.current()
         cmbsel.grid(row=5, column=1)
 
@@ -129,17 +129,17 @@ class DioGeneralTab:
         genm.grid(row=7, column=1)
 
         self.backup_data()
-        tab.frame.mainloop()
+        # tab.frame.mainloop()
 
 
 
     def backup_data(self):
-        self.gen_data["DioDevErrorDetect"]      = self.config.error_detect.get()
-        self.gen_data["DioVersionInfoApi"]      = self.config.verion_api.get()
-        self.gen_data["DioFlipChannelApi"]      = self.config.flip_chan_api.get()
-        self.gen_data["DioMaskedWritePortApi"]  = self.config.masked_write_port_api.get()
+        self.gen_dict["DioDevErrorDetect"]      = self.gen_str.error_detect.get()
+        self.gen_dict["DioVersionInfoApi"]      = self.gen_str.verion_api.get()
+        self.gen_dict["DioFlipChannelApi"]      = self.gen_str.flip_chan_api.get()
+        self.gen_dict["DioMaskedWritePortApi"]  = self.gen_str.masked_write_port_api.get()
 
         
     def save_data(self):
         self.backup_data()
-        self.tabstr.save_cb(self.gui)
+        self.tab_struct.save_cb(self.gui)

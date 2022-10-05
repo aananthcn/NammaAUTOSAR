@@ -72,7 +72,6 @@ class PortConfigSetTab:
     n_pins = 0
     max_pins = 65535
     n_pins_str = None
-    tab_struct = None
 
     pins_str = []
     events = []
@@ -81,6 +80,7 @@ class PortConfigSetTab:
     header_size = 3
     non_header_objs = []
     gui = None
+    tab_struct = None # passed from *_view.py file
 
     def __init__(self, gui):
         self.gui = gui

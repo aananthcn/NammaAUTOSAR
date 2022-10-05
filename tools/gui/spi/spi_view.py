@@ -22,7 +22,8 @@
 import tkinter as tk
 from tkinter import ttk
 
-
+import gui.spi.spi_gen as spi_gen
+import gui.spi.spi_seq as spi_seq
 
 
 TabList = []
@@ -77,7 +78,7 @@ def show_spi_tabs(gui):
         return
 
     # Create a child window (tabbed view)
-    width = gui.main_view.xsize * 45 / 100
+    width = gui.main_view.xsize * 55 / 100
     height = gui.main_view.ysize * 80 / 100
     view = tk.Toplevel()
     gui.main_view.child_window = view
@@ -110,7 +111,6 @@ def show_spi_tabs(gui):
     for obj in TabList:
         del obj
 
-    return
 
     # create new GUI objects
     dtab = SpiTab(gen_frame, width, height)
@@ -120,11 +120,12 @@ def show_spi_tabs(gui):
     dtab.tab.draw(dtab)
     
     dtab = SpiTab(seq_frame, width, height)
-    dtab.tab = spi_seq.SpiChannelGroupTab(gui)
+    dtab.tab = spi_seq.SpiSequenceTab(gui)
     dtab.name = "SpiSequence"
     TabList.append(dtab)
     dtab.tab.draw(dtab)
     
+    return
     dtab = SpiTab(chn_frame, width, height)
     dtab.tab = spi_chn.SpiConfigTab(gui)
     dtab.name = "SpiChannel"

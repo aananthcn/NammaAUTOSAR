@@ -57,6 +57,7 @@ class DioConfigTab:
     scrollw = None
 
     gui = None
+    tab_struct = None # passed from *_view.py file
 
     def __init__(self, gui):
         self.gui = gui
@@ -110,7 +111,7 @@ class DioConfigTab:
 
 
     def draw(self, tab):
-        self.tabstr = tab
+        self.tab_struct = tab
         self.scrollw = window.ScrollableWindow(tab.frame, tab.xsize, tab.ysize)
 
         #Number of modes - Label + Spinbox
@@ -186,5 +187,5 @@ class DioConfigTab:
         
     def save_data(self):
         self.backup_data()
-        self.tabstr.save_cb(self.gui)
+        self.tab_struct.save_cb(self.gui)
         
