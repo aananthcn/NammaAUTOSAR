@@ -24,6 +24,7 @@ from tkinter import ttk
 
 import gui.spi.spi_gen as spi_gen
 import gui.spi.spi_seq as spi_seq
+import gui.spi.spi_chan as spi_chn
 
 
 TabList = []
@@ -125,13 +126,13 @@ def show_spi_tabs(gui):
     TabList.append(dtab)
     dtab.tab.draw(dtab)
     
-    return
     dtab = SpiTab(chn_frame, width, height)
-    dtab.tab = spi_chn.SpiConfigTab(gui)
+    dtab.tab = spi_chn.SpiChannelTab(gui)
     dtab.name = "SpiChannel"
     TabList.append(dtab)
     dtab.tab.draw(dtab)
 
+    return
     dtab = SpiTab(clst_frame, width, height)
     dtab.tab = spi_clst.xxxxxx(gui)
     dtab.name = "SpiChannelList"

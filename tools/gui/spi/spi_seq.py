@@ -47,7 +47,7 @@ class SpiSeqStr:
 
 class SpiSequenceTab:
     n_spi_seqs = 0
-    max_spi_seqs = 65535
+    max_spi_seqs = 255
     n_spi_seqs_str = None
 
     gui = None
@@ -163,9 +163,6 @@ class SpiSequenceTab:
             self.spi_seqs_str[i].spijob_assignment.set(self.spi_seqs[i]["SpiJobAssignment"])
             select.grid(row=self.header_size+i, column=4)
             self.non_header_objs.append(select)
-            # text = "AppModes["+str(self.tasks_str[i].n_appmod)+"]"
-            # select = tk.Button(self.scrollw.mnf, width=13, text=text, command=lambda id = i: self.select_autostart_modes(id))
-            # select.grid(row=self.HeaderSize+i, column=5)
             
         # Set the self.cv scrolling region
         self.scrollw.scroll()
