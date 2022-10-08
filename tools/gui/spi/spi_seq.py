@@ -22,27 +22,9 @@ import tkinter as tk
 from tkinter import ttk
 
 import gui.lib.window as window
+import gui.lib.asr_widget as dappa # dappa in Tamil means box
 
 
-
-
-class SpiSeqStr:
-    spi_sequence_id = None
-    interruptible_seq = None
-    seq_end_notifictn = None
-    spijob_assignment = None
-
-    def __init__(self):
-        self.spi_sequence_id = tk.StringVar()
-        self.interruptible_seq = tk.StringVar()
-        self.seq_end_notifictn = tk.StringVar()
-        self.spijob_assignment = tk.StringVar()
-
-    def __del__(self):
-        del self.spi_sequence_id
-        del self.interruptible_seq
-        del self.seq_end_notifictn
-        del self.spijob_assignment
 
 
 class SpiSequenceTab:
@@ -52,58 +34,35 @@ class SpiSequenceTab:
 
     gui = None
     tab_struct = None # passed from *_view.py file
+    configs = [] # all UI configs (tkinter strings) are stored here.
     
-    spi_seqs_str = []
-    spi_seqs = []
-    
+    header = ["label", "SpiSequenceId", "SpiInterruptibleSequence", "SpiSeqEndNotification", "SpiJobAssignment"]
     header_objs = 12 #Objects / widgets that are part of the header and shouldn't be destroyed
     header_size = 3
     non_header_objs = []
+    dappas_per_row = len(header)
+
 
     def __init__(self, gui):
         self.gui = gui
         self.n_spi_seqs = 0
         self.n_spi_seqs_str = tk.StringVar()
+
         #spi_sequence = arxml_spi.parse_arxml(gui.arxml_file)
         spi_sequence = None
         if spi_sequence == None:
             return 
-        for seq in spi_sequence:
-            if "SpiSequenceId" in seq:
-                self.init_spi_seq(seq)
 
 
     def __del__(self):
         del self.n_spi_seqs_str
-        del self.spi_seqs_str[:]
-        del self.spi_seqs[:]
         del self.non_header_objs[:]
 
 
-    def init_spi_seq(self, seq):
-        self.n_spi_seqs += 1
-        
-        # create new objects
-        spi_seq = {}
-        spi_seq_str = SpiSeqStr()
-        
-        # initialize objects
-        spi_seq["SpiSequenceId"] = seq["SpiSequenceId"]
-        spi_seq_str.spi_sequence_id.set(seq["SpiSequenceId"])
-        spi_seq["SpiInterruptibleSequence"] = seq["SpiInterruptibleSequence"]
-        spi_seq_str.interruptible_seq.set(seq["SpiInterruptibleSequence"])
-        spi_seq["SpiSeqEndNotification"] = seq["SpiSeqEndNotification"]
-        spi_seq_str.seq_end_notifictn.set(seq["SpiSeqEndNotification"])
-        spi_seq["SpiJobAssignment"] = seq["SpiJobAssignment"]
-        spi_seq_str.spijob_assignment.set(seq["SpiJobAssignment"])
-        
-        # add them to self for gui update
-        self.spi_seqs_str.append(spi_seq_str)
-        self.spi_seqs.append(spi_seq)
 
-
-    def create_empty_spi_seq(self):
+    def create_empty_configs(self):
         spi_seq = {}
+        spi_seq["label"] = "Spi Seq #"
         spi_seq["SpiSequenceId"] = str(self.n_spi_seqs-1)
         spi_seq["SpiInterruptibleSequence"] = "FALSE"
         spi_seq["SpiSeqEndNotification"] = "e.g: SeqEndNotificationFunc"
@@ -111,59 +70,47 @@ class SpiSequenceTab:
         return spi_seq
 
 
-    def update(self):
-        # Backup current task entries from GUI
-        self.backup_data()
 
+    def delete_dappa_row(self):
+        objlist = self.non_header_objs[-self.dappas_per_row:]
+        for obj in objlist:
+            obj.destroy()
+        del self.non_header_objs[-self.dappas_per_row:]
+
+
+
+    def draw_dappa_row(self, i):
+        dappa.label(self, "Spi Sequence #", self.header_size+i, 0, "e")
+
+        # SpiSequenceId
+        dappa.entry(self, "SpiSequenceId", i, self.header_size+i, 1, 10, "readonly")
+
+        # Spi Sequence - SpiInterruptibleSequence
+        dappa.combo(self, "SpiInterruptibleSequence", i, self.header_size+i, 2, 15, "readonly", ("FALSE", "TRUE"))
+        
+        # Spi Sequence - SpiSeqEndNotification
+        dappa.entry(self, "SpiSeqEndNotification", i, self.header_size+i, 3, 30, "normal")
+        
+        # Spi Sequence - SpiJobAssignment
+        dappa.button(self, "SpiJobAssignment", i, self.header_size+i, 4, 13, "Job [#]", self.select_spi_jobs)
+
+
+
+    def update(self):
         # destroy most old gui widgets
         self.n_spi_seqs = int(self.n_spi_seqs_str.get())
-        for obj in self.non_header_objs:
-            obj.destroy()
 
         # Tune memory allocations based on number of rows or boxes
-        n_spi_seqs_str = len(self.spi_seqs_str)
-        if self.n_spi_seqs > n_spi_seqs_str:
-            for i in range(self.n_spi_seqs - n_spi_seqs_str):
-                self.spi_seqs_str.insert(len(self.spi_seqs_str), SpiSeqStr())
-                self.spi_seqs.insert(len(self.spi_seqs), self.create_empty_spi_seq())
-        elif n_spi_seqs_str > self.n_spi_seqs:
-            for i in range(n_spi_seqs_str - self.n_spi_seqs):
-                del self.spi_seqs_str[-1]
-                del self.spi_seqs[-1]
+        n_dappa_rows = len(self.configs)
+        if self.n_spi_seqs > n_dappa_rows:
+            for i in range(self.n_spi_seqs - n_dappa_rows):
+                self.configs.insert(len(self.configs), dappa.AsrCfgStr(self.header, self.create_empty_configs()))
+                self.draw_dappa_row(n_dappa_rows+i)
+        elif n_dappa_rows > self.n_spi_seqs:
+            for i in range(n_dappa_rows - self.n_spi_seqs):
+                self.delete_dappa_row()
+                del self.configs[-1]
 
-        # Draw new objects
-        for i in range(0, self.n_spi_seqs):
-            label = tk.Label(self.scrollw.mnf, text="Spi Sequence #")
-            label.grid(row=self.header_size+i, column=0, sticky="e")
-            self.non_header_objs.append(label)
-
-            # SpiSequenceId
-            entry = tk.Entry(self.scrollw.mnf, width=10, textvariable=self.spi_seqs_str[i].spi_sequence_id, state="readonly")
-            self.spi_seqs_str[i].spi_sequence_id.set(self.spi_seqs[i]["SpiSequenceId"])
-            entry.grid(row=self.header_size+i, column=1)
-            self.non_header_objs.append(entry)
-
-            # Spi Sequence - SpiInterruptibleSequence
-            cmbsel = ttk.Combobox(self.scrollw.mnf, width=15, textvariable=self.spi_seqs_str[i].interruptible_seq, state="readonly")
-            cmbsel['values'] = ("FALSE", "TRUE")
-            self.spi_seqs_str[i].interruptible_seq.set(self.spi_seqs[i]["SpiInterruptibleSequence"])
-            cmbsel.current()
-            cmbsel.grid(row=self.header_size+i, column=2)
-            self.non_header_objs.append(cmbsel)
-            
-            # Spi Sequence - SpiSeqEndNotification
-            entry = tk.Entry(self.scrollw.mnf, width=30, textvariable=self.spi_seqs_str[i].seq_end_notifictn)
-            self.spi_seqs_str[i].seq_end_notifictn.set(self.spi_seqs[i]["SpiSeqEndNotification"])
-            entry.grid(row=self.header_size+i, column=3)
-            self.non_header_objs.append(entry)
-            
-            # Spi Sequence - SpiJobAssignment
-            text = "Job [#]"
-            select = tk.Button(self.scrollw.mnf, width=13, text=text, command=lambda id = i: self.select_spi_jobs(id))
-            self.spi_seqs_str[i].spijob_assignment.set(self.spi_seqs[i]["SpiJobAssignment"])
-            select.grid(row=self.header_size+i, column=4)
-            self.non_header_objs.append(select)
-            
         # Set the self.cv scrolling region
         self.scrollw.scroll()
 
@@ -188,16 +135,7 @@ class SpiSequenceTab:
         self.scrollw.update()
 
         # Table heading
-        label = tk.Label(self.scrollw.mnf, text=" ")
-        label.grid(row=2, column=0, sticky="w")
-        label = tk.Label(self.scrollw.mnf, text="SequenceID")
-        label.grid(row=2, column=1, sticky="w")
-        label = tk.Label(self.scrollw.mnf, text="SpiInterruptibleSequence")
-        label.grid(row=2, column=2, sticky="we")
-        label = tk.Label(self.scrollw.mnf, text="SpiSeqEndNotification")
-        label.grid(row=2, column=3, sticky="w")
-        label = tk.Label(self.scrollw.mnf, text="SpiJobAssignment")
-        label.grid(row=2, column=4, sticky="w")
+        dappa.heading(self, 2)
 
         self.update()
 
@@ -206,17 +144,5 @@ class SpiSequenceTab:
         print("select_spi_jobs() called with ",id, " as argument!")
 
 
-    def backup_data(self):
-        n_spi_seqs_str = len(self.spi_seqs_str)
-        for i in range(n_spi_seqs_str):
-            if len(self.spi_seqs_str[i].spi_sequence_id.get()):
-                self.spi_seqs[i]["SpiSequenceId"] = self.spi_seqs_str[i].spi_sequence_id.get()
-            if len(self.spi_seqs_str[i].interruptible_seq.get()):
-                self.spi_seqs[i]["SpiInterruptibleSequence"] = self.spi_seqs_str[i].interruptible_seq.get()
-            if len(self.spi_seqs_str[i].seq_end_notifictn.get()):
-                self.spi_seqs[i]["SpiSeqEndNotification"] = self.spi_seqs_str[i].seq_end_notifictn.get()
-
-
     def save_data(self):
-        self.backup_data()
         self.tab_struct.save_cb(self.gui)

@@ -22,7 +22,6 @@ import tkinter as tk
 from tkinter import ttk
 
 import gui.lib.window as window
-
 import gui.lib.asr_widget as dappa # dappa in Tamil means box
 
 
@@ -34,7 +33,7 @@ class SpiChannelTab:
 
     gui = None
     tab_struct = None # passed from *_view.py file
-    configs = [] # all Spi configs tkinter strings are stored here.
+    configs = [] # all UI configs (tkinter strings) are stored here.
 
     header = ["label", "SpiChannelId", "SpiChannelType", "SpiDataWidth", "SpiDefaultData", "SpiEbMaxLength",
               "SpiIbNBuffers", "SpiTransferStart"]
@@ -42,6 +41,7 @@ class SpiChannelTab:
     header_size = 3
     non_header_objs = []
     dappas_per_row = len(header)
+
 
     def __init__(self, gui):
         self.gui = gui
@@ -52,9 +52,6 @@ class SpiChannelTab:
         spi_channel = None
         if spi_channel == None:
             return 
-        for chan in spi_channel:
-            if "SpiChannelId" in chan:
-                self.init_spi_chan(chan)
 
 
     def __del__(self):
@@ -62,7 +59,7 @@ class SpiChannelTab:
         del self.non_header_objs[:]
 
 
-    def create_empty_spi_chan(self):
+    def create_empty_configs(self):
         spi_chan = {}
         spi_chan["label"] = "Spi Channel #"
         spi_chan["SpiChannelId"] = str(self.n_spi_chans-1)
@@ -76,7 +73,7 @@ class SpiChannelTab:
 
 
 
-    def draw_dappa(self, i):
+    def draw_dappa_row(self, i):
         dappa.label(self, "Spi Channel #", self.header_size+i, 0, "e")
 
         # SpiChannelId
@@ -120,8 +117,8 @@ class SpiChannelTab:
         n_dappa_rows = len(self.configs)
         if self.n_spi_chans > n_dappa_rows:
             for i in range(self.n_spi_chans - n_dappa_rows):
-                self.configs.insert(len(self.configs), dappa.AsrCfgStr(self.header, self.create_empty_spi_chan()))
-                self.draw_dappa(n_dappa_rows+i)
+                self.configs.insert(len(self.configs), dappa.AsrCfgStr(self.header, self.create_empty_configs()))
+                self.draw_dappa_row(n_dappa_rows+i)
         elif n_dappa_rows > self.n_spi_chans:
             for i in range(n_dappa_rows - self.n_spi_chans):
                 self.delete_dappa_row()

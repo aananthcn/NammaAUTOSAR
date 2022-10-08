@@ -33,36 +33,36 @@ class AsrCfgStr:
     datavar = None
 
     # initialize keys and create display (tkinter string) objects
-    def __init__(self, headings, values):
-        self.dispvar = {}
-        self.datavar = {}
+    def __init__(view, headings, values):
+        view.dispvar = {}
+        view.datavar = {}
         if headings == None or values == None or len(headings) != len(values):
             print("ConfigStr.__init__(): invalid argument!")
             return
         
         for key in headings:
-            self.dispvar[key] = tk.StringVar()
-            self.datavar[key] = values[key]
+            view.dispvar[key] = tk.StringVar()
+            view.datavar[key] = values[key]
 
     # remove all tkinter string objects
-    def __del__(self):
-        for key in self.dispvar:
-            self.dispvar[key].__del__()
-        del self.dispvar
-        del self.datavar
+    def __del__(view):
+        for key in view.dispvar:
+            view.dispvar[key].__del__()
+        del view.dispvar
+        del view.datavar
 
-    def set(self, values):
-        if values == None or len(self.dispvar) != len(values):
+    def set(view, values):
+        if values == None or len(view.dispvar) != len(values):
             print("ConfigStr.set(): invalid argument!")
             return
 
-        for key in self.dispvar:
-            self.dispvar[key].set(values[key])
+        for key in view.dispvar:
+            view.dispvar[key].set(values[key])
 
-    def get(self):
+    def get(view):
         values = {}
-        for key in self.dispvar:
-            values[key] = self.dispvar[key].get()
+        for key in view.dispvar:
+            values[key] = view.dispvar[key].get()
 
 
 
@@ -97,6 +97,12 @@ def spinb(view, key, index, row, col, width, state, values):
     view.configs[index].dispvar[key].set(view.configs[index].datavar[key])
     spinb.grid(row=row, column=col)
     view.non_header_objs.append(spinb)
+
+def button(view, key, index, row, col, width, text, cb):
+    select = tk.Button(view.scrollw.mnf, width=width, text=text, command=lambda id = index : cb(id))
+    view.configs[index].dispvar[key].set(view.configs[index].datavar[key])
+    select.grid(row=row, column=col)
+    view.non_header_objs.append(select)
 
 
 def heading(view, row):
