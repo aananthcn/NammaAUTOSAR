@@ -25,30 +25,17 @@ import arxml.port.arxml_port as arxml_port
 import arxml.dio.arxml_dio as arxml_dio
 
 import gui.lib.window as window
-
+import gui.lib.asr_widget as dappa # dappa in Tamil means box
 
     
-class DioPortStr:
-    port_id = None
-    chan_id = None
-
-    def __init__(self):
-        self.port_id = tk.StringVar()
-        self.chan_id = tk.StringVar()
-
-    def __del__(self):
-        del self.port_id
-        del self.chan_id
-
 
 class DioConfigTab:
     n_pins = 0
     max_pins = 65535
     n_pins_str = None
 
-    dio_str = []    # dio pin GUI str structure
-    dio_pins = []   # pins info structure from Dio ARXML & info pulled from Port ARXML
     dio_ports = []  # copy of port info
+
     header_objs = 12 #Objects / widgets that are part of the header and shouldn't be destroyed
     header_size = 3
     non_header_objs = []
@@ -57,7 +44,11 @@ class DioConfigTab:
     scrollw = None
 
     gui = None
+    scrollw = None
     tab_struct = None # passed from *_view.py file
+    configs = [] # all UI configs (tkinter strings) are stored here.
+    cfgkeys = ["DioPortId", "DioChannelId"]
+    dappas_per_row = len(cfgkeys) + 1 # +1 for row labels
 
     def __init__(self, gui):
         self.gui = gui
@@ -69,21 +60,34 @@ class DioConfigTab:
             return
         if pins != dio_pins:
             print("Error: dio_cfg -- Pins as per Dio ARXML = ", dio_pins, ". But as per Port ARXML = ", pins)
+
+        # scan all Dorts and add them to self.configs list for display
         for port in ports:
             if port['PortPinMode'] == "PORT_PIN_MODE_DIO":
                 self.n_pins += 1
+
                 # add the port info from Port module to a local port list
                 self.dio_ports.append(port)
-                # create new dio pin GUI str and dio pin info
-                diostr = DioPortStr()
-                diopin = self.create_empty_diopin()
-                # now, pull out info from local port and populate local dio & str list
-                diostr.port_id.set(port["PortPinId"])
+                diopin = self.create_empty_configs()
                 diopin["DioPortId"] = port["PortPinId"]
-                diostr.chan_id.set(self.get_chan_id(port["PortPinId"], dio_ports))
                 diopin["DioChannelId"] = self.get_chan_id(port["PortPinId"], dio_ports)
-                self.dio_str.append(diostr)
-                self.dio_pins.append(diopin)
+
+                # create new dio pin GUI str and dio pin info
+                self.configs.insert(len(self.configs), dappa.AsrCfgStr(self.cfgkeys, diopin))
+
+
+    def __del__(self):
+        del self.n_pins_str
+        del self.dio_ports[:]
+        del self.non_header_objs[:]
+        del self.configs[:]
+
+
+    def create_empty_configs(self):
+        diopin = {}
+        diopin["DioPortId"] = "65535"
+        diopin["DioChannelId"] = "65535"
+        return diopin
 
 
     def get_chan_id(self, port_id, dio_ports):
@@ -95,31 +99,44 @@ class DioConfigTab:
         return chan_id
 
 
-    def __del__(self):
-        del self.n_pins_str
-        del self.dio_str[:]
-        del self.dio_pins[:]
-        del self.dio_ports[:]
-        del self.non_header_objs[:]
+
+    def delete_dappa_row(self):
+        objlist = self.non_header_objs[-self.dappas_per_row:]
+        for obj in objlist:
+            obj.destroy()
+        del self.non_header_objs[-self.dappas_per_row:]
 
 
-    def create_empty_diopin(self):
-        diopin = {}
-        diopin["DioPortId"] = "65535"
-        diopin["DioChannelId"] = "65535"
-        return diopin
+
+    def draw_dappa_row(self, i):
+        dappa.label(self, "Pin #", self.header_size+i, 0, "e")
+
+        # DioPortId
+        dappa.entry(self, "DioPortId", i, self.header_size+i, 1, 10, "readonly")
+
+        # DioChannelId
+        dappa.entry(self, "DioChannelId", i, self.header_size+i, 2, 10, "normal")
+
+
+
+    def update(self):
+        # Draw new objects
+        for i in range(0, self.n_pins):
+            self.draw_dappa_row(i)
+
+        # Set the self.cv scrolling region
+        self.scrollw.scroll()
 
 
     def draw(self, tab):
         self.tab_struct = tab
         self.scrollw = window.ScrollableWindow(tab.frame, tab.xsize, tab.ysize)
 
-        #Number of modes - Label + Spinbox
+        #Number of Dio pins
         label = tk.Label(self.scrollw.mnf, text="No. of Dio Pins:")
         label.grid(row=0, column=0, sticky="w")
-        dio_entry = tk.Entry(self.scrollw.mnf, width=10, justify='center')
-        dio_entry.insert(0, str(self.n_pins))
-        dio_entry.config(state='readonly')
+        dio_entry = tk.Entry(self.scrollw.mnf, width=10, textvariable=self.n_pins_str, justify='center', state="readonly")
+        self.n_pins_str.set(self.n_pins)
         dio_entry.grid(row=0, column=1, sticky="w")
 
         # Save Button
@@ -134,58 +151,13 @@ class DioConfigTab:
             label.grid(row=2, column=3, sticky="w")
             return
 
-        # Table heading
-        label = tk.Label(self.scrollw.mnf, text=" ")
-        label.grid(row=2, column=0, sticky="w")
-        label = tk.Label(self.scrollw.mnf, text="DioPortId")
-        label.grid(row=2, column=1, sticky="w")
-        label = tk.Label(self.scrollw.mnf, text="DioChannelId")
-        label.grid(row=2, column=2, sticky="we")
+        # Table heading @2nd row, 1st column
+        dappa.place_heading(self, 2, 1)
 
         self.update()
 
 
-    def update(self):
-        # Backup current task entries from GUI
-        self.backup_data()
 
-        # destroy most old gui widgets
-        for obj in self.non_header_objs:
-            obj.destroy()
-
-        # Draw new objects
-        for i in range(0, self.n_pins):
-            label = tk.Label(self.scrollw.mnf, text="Pin #")
-            label.grid(row=self.header_size+i, column=0, sticky="e")
-            self.non_header_objs.append(label)
-
-            # DioPortId
-            entry = tk.Entry(self.scrollw.mnf, width=10, textvariable=self.dio_str[i].port_id)
-            self.dio_str[i].port_id.set(self.dio_pins[i]["DioPortId"])
-            entry.config(state='readonly')
-            entry.grid(row=self.header_size+i, column=1)
-            self.non_header_objs.append(entry)
-            
-            # DioChannelId
-            entry = tk.Entry(self.scrollw.mnf, width=10, textvariable=self.dio_str[i].chan_id)
-            self.dio_str[i].chan_id.set(self.dio_pins[i]["DioChannelId"])
-            entry.grid(row=self.header_size+i, column=2)
-            self.non_header_objs.append(entry)
-
-        # Set the self.cv scrolling region
-        self.scrollw.scroll()
-
-
-    def backup_data(self):
-        n_pins_str = len(self.dio_str)
-        for i in range(n_pins_str):
-            if len(self.dio_str[i].port_id.get()):
-                self.dio_pins[i]["DioPortId"] = self.dio_str[i].port_id.get()
-            if len(self.dio_str[i].chan_id.get()):
-                self.dio_pins[i]["DioChannelId"] = self.dio_str[i].chan_id.get()
-
-        
     def save_data(self):
-        self.backup_data()
         self.tab_struct.save_cb(self.gui)
         

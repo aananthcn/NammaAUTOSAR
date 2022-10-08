@@ -43,7 +43,7 @@ def update_dio_config_container(root, dio_cfg, dio_grp):
     subctnr1 = ET.SubElement(ctnrblk, "SUB-CONTAINERS")
 
     # Now dump all pin informations as container within sub-container
-    for pin in dio_cfg.dio_pins:
+    for pin in dio_cfg:
         subctnr1_name = "DioPort"
         dref = "/AUTOSAR/EcucDefs/Dio/"+ctnrname+"/"+subctnr1_name
         cctnrblk1 = lib_conf.insert_conf_container(subctnr1, subctnr1_name, "conf", dref)

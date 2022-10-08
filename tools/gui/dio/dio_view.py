@@ -62,7 +62,9 @@ def dio_save_callback(gui):
     dio_gen = None
     for tab in TabList:
         if tab.name == "DioConfig":
-            dio_cfg = tab.tab
+            dio_cfg = []
+            for cfg in tab.tab.configs:
+                dio_cfg.append(cfg.get())
             continue
         if tab.name == "DioChannelGroup":
             dio_grp = tab.tab
@@ -70,7 +72,6 @@ def dio_save_callback(gui):
         if tab.name == "DioGeneral":
             dio_gen = tab.tab.configs[0].get()
             continue
-
     arxml_dio.update_arxml(gui.arxml_file, dio_cfg, dio_grp, dio_gen)
     dio_cgen.generate_code(gui)
 
