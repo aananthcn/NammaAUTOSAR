@@ -23,35 +23,8 @@ from tkinter import ttk
 
 import gui.lib.window as window
 
+import gui.lib.asr_widget as dappa # dappa in Tamil means box
 
-
-
-class SpiChanStr:
-    spi_channel_id = None
-    spi_chann_type = None
-    spi_chan_width = None
-    spi_deflt_data = None
-    spi_eb_max_len = None
-    spi_ib_n_buffs = None
-    spi_tran_start = None
-
-    def __init__(self):
-        self.spi_channel_id = tk.StringVar()
-        self.spi_chann_type = tk.StringVar()
-        self.spi_chan_width = tk.StringVar()
-        self.spi_deflt_data = tk.StringVar()
-        self.spi_eb_max_len = tk.StringVar()
-        self.spi_ib_n_buffs = tk.StringVar()
-        self.spi_tran_start = tk.StringVar()
-
-    def __del__(self):
-        del self.spi_channel_id
-        del self.spi_chann_type
-        del self.spi_chan_width
-        del self.spi_deflt_data
-        del self.spi_eb_max_len
-        del self.spi_ib_n_buffs
-        del self.spi_tran_start
 
 
 class SpiChannelTab:
@@ -61,18 +34,20 @@ class SpiChannelTab:
 
     gui = None
     tab_struct = None # passed from *_view.py file
-    
-    spi_chans_str = []
-    spi_chans = []
-    
+    configs = [] # all Spi configs tkinter strings are stored here.
+
+    header = ["label", "SpiChannelId", "SpiChannelType", "SpiDataWidth", "SpiDefaultData", "SpiEbMaxLength",
+              "SpiIbNBuffers", "SpiTransferStart"]
     header_objs = 12 #Objects / widgets that are part of the header and shouldn't be destroyed
     header_size = 3
     non_header_objs = []
+    dappas_per_row = len(header)
 
     def __init__(self, gui):
         self.gui = gui
         self.n_spi_chans = 0
         self.n_spi_chans_str = tk.StringVar()
+
         #spi_channel = arxml_spi.parse_arxml(gui.arxml_file)
         spi_channel = None
         if spi_channel == None:
@@ -84,41 +59,12 @@ class SpiChannelTab:
 
     def __del__(self):
         del self.n_spi_chans_str
-        del self.spi_chans_str[:]
-        del self.spi_chans[:]
         del self.non_header_objs[:]
-
-
-    def init_spi_chan(self, chan):
-        self.n_spi_chans += 1
-        
-        # create new objects
-        spi_chan = {}
-        spi_chan_str = SpiChanStr()
-        
-        # initialize objects
-        spi_chan["SpiChannelId"] = chan["SpiChannelId"]
-        spi_chan_str.spi_channel_id.set(chan["SpiChannelId"])
-        spi_chan["SpiChannelType"] = chan["SpiChannelType"]
-        spi_chan_str.spi_chann_type.set(chan["SpiChannelType"])
-        spi_chan["SpiDataWidth"] = chan["SpiDataWidth"]
-        spi_chan_str.spi_chan_width.set(chan["SpiDataWidth"])
-        spi_chan["SpiDefaultData"] = chan["SpiDefaultData"]
-        spi_chan_str.spi_deflt_data.set(chan["SpiDefaultData"])
-        spi_chan["SpiEbMaxLength"] = chan["SpiEbMaxLength"]
-        spi_chan_str.spi_eb_max_len.set(chan["SpiEbMaxLength"])
-        spi_chan["SpiIbNBuffers"] = chan["SpiIbNBuffers"]
-        spi_chan_str.spi_ib_n_buffs.set(chan["SpiIbNBuffers"])
-        spi_chan["SpiTransferStart"] = chan["SpiTransferStart"]
-        spi_chan_str.spi_tran_start.set(chan["SpiTransferStart"])
-        
-        # add them to self for gui update
-        self.spi_chans_str.append(spi_chan_str)
-        self.spi_chans.append(spi_chan)
 
 
     def create_empty_spi_chan(self):
         spi_chan = {}
+        spi_chan["label"] = "Spi Channel #"
         spi_chan["SpiChannelId"] = str(self.n_spi_chans-1)
         spi_chan["SpiChannelType"] = "IB"
         spi_chan["SpiDataWidth"] = "4" # bytes
@@ -129,83 +75,61 @@ class SpiChannelTab:
         return spi_chan
 
 
-    def update(self):
-        # Backup current task entries from GUI
-        self.backup_data()
 
+    def draw_dappa(self, i):
+        dappa.label(self, "Spi Channel #", self.header_size+i, 0, "e")
+
+        # SpiChannelId
+        dappa.entry(self, "SpiChannelId", i, self.header_size+i, 1, 10, "readonly")
+
+        # SpiChannelType
+        values = ("IB (Internal Buffer)", "EB (External Buffer)")
+        dappa.combo(self, "SpiChannelType", i, self.header_size+i, 2, 17, "readonly", values)
+
+        # SpiDataWidth
+        dappa.spinb(self, "SpiDataWidth", i,self.header_size+i, 3, 13, "normal", tuple(range(1,33)))
+
+        # SpiDefaultData
+        dappa.entry(self, "SpiDefaultData", i, self.header_size+i, 4, 17, "normal")
+
+        # SpiEbMaxLength
+        dappa.spinb(self, "SpiEbMaxLength", i, self.header_size+i, 5, 13, "normal", tuple(range(0,65536)))
+
+        # SpiIbNBuffers
+        dappa.spinb(self, "SpiIbNBuffers", i, self.header_size+i, 6, 13, "normal", tuple(range(0,65536)))
+
+        # SpiTransferStart
+        values = ("MSB", "LSB")
+        dappa.combo(self, "SpiTransferStart", i, self.header_size+i, 7, 10, "readonly", values)
+
+
+
+    def delete_dappa_row(self):
+        objlist = self.non_header_objs[-self.dappas_per_row:]
+        for obj in objlist:
+            obj.destroy()
+        del self.non_header_objs[-self.dappas_per_row:]
+
+
+
+    def update(self):
         # destroy most old gui widgets
         self.n_spi_chans = int(self.n_spi_chans_str.get())
-        for obj in self.non_header_objs:
-            obj.destroy()
 
         # Tune memory allocations based on number of rows or boxes
-        n_spi_chans_str = len(self.spi_chans_str)
-        if self.n_spi_chans > n_spi_chans_str:
-            for i in range(self.n_spi_chans - n_spi_chans_str):
-                self.spi_chans_str.insert(len(self.spi_chans_str), SpiChanStr())
-                self.spi_chans.insert(len(self.spi_chans), self.create_empty_spi_chan())
-        elif n_spi_chans_str > self.n_spi_chans:
-            for i in range(n_spi_chans_str - self.n_spi_chans):
-                del self.spi_chans_str[-1]
-                del self.spi_chans[-1]
+        n_dappa_rows = len(self.configs)
+        if self.n_spi_chans > n_dappa_rows:
+            for i in range(self.n_spi_chans - n_dappa_rows):
+                self.configs.insert(len(self.configs), dappa.AsrCfgStr(self.header, self.create_empty_spi_chan()))
+                self.draw_dappa(n_dappa_rows+i)
+        elif n_dappa_rows > self.n_spi_chans:
+            for i in range(n_dappa_rows - self.n_spi_chans):
+                self.delete_dappa_row()
+                del self.configs[-1]
 
-        # Draw new objects
-        for i in range(0, self.n_spi_chans):
-            label = tk.Label(self.scrollw.mnf, text="Spi Sequence #")
-            label.grid(row=self.header_size+i, column=0, sticky="e")
-            self.non_header_objs.append(label)
-
-            # SpiChannelId
-            entry = tk.Entry(self.scrollw.mnf, width=10, textvariable=self.spi_chans_str[i].spi_channel_id, state="readonly")
-            self.spi_chans_str[i].spi_channel_id.set(self.spi_chans[i]["SpiChannelId"])
-            entry.grid(row=self.header_size+i, column=1)
-            self.non_header_objs.append(entry)
-
-            # SpiChannelType
-            cmbsel = ttk.Combobox(self.scrollw.mnf, width=18, textvariable=self.spi_chans_str[i].spi_chann_type, state="readonly")
-            cmbsel['values'] = ("IB (Internal Buffer)", "EB (External Buffer")
-            self.spi_chans_str[i].spi_chann_type.set(self.spi_chans[i]["SpiChannelType"])
-            cmbsel.current()
-            cmbsel.grid(row=self.header_size+i, column=2)
-            self.non_header_objs.append(cmbsel)
-
-            # SpiDataWidth
-            spinb = tk.Spinbox(self.scrollw.mnf, width=13, textvariable=self.spi_chans_str[i].spi_chan_width,
-                               values=tuple(range(1,33)))
-            self.spi_chans_str[i].spi_chan_width.set(self.spi_chans[i]["SpiDataWidth"])
-            spinb.grid(row=self.header_size+i, column=3)
-            self.non_header_objs.append(spinb)
-
-            # SpiDefaultData
-            entry = tk.Entry(self.scrollw.mnf, width=17, textvariable=self.spi_chans_str[i].spi_deflt_data)
-            self.spi_chans_str[i].spi_deflt_data.set(self.spi_chans[i]["SpiDefaultData"])
-            entry.grid(row=self.header_size+i, column=4)
-            self.non_header_objs.append(entry)
-
-            # SpiEbMaxLength
-            spinb = tk.Spinbox(self.scrollw.mnf, width=13, textvariable=self.spi_chans_str[i].spi_eb_max_len,
-                               values=tuple(range(0,65536)))
-            self.spi_chans_str[i].spi_eb_max_len.set(self.spi_chans[i]["SpiEbMaxLength"])
-            spinb.grid(row=self.header_size+i, column=5)
-            self.non_header_objs.append(spinb)
-
-            # SpiIbNBuffers
-            spinb = tk.Spinbox(self.scrollw.mnf, width=13, textvariable=self.spi_chans_str[i].spi_ib_n_buffs,
-                               values=tuple(range(0,65536)))
-            self.spi_chans_str[i].spi_ib_n_buffs.set(self.spi_chans[i]["SpiIbNBuffers"])
-            spinb.grid(row=self.header_size+i, column=6)
-            self.non_header_objs.append(spinb)
-
-            # SpiTransferStart
-            cmbsel = ttk.Combobox(self.scrollw.mnf, width=10, textvariable=self.spi_chans_str[i].spi_tran_start, state="readonly")
-            cmbsel['values'] = ("MSB", "LSB")
-            self.spi_chans_str[i].spi_tran_start.set(self.spi_chans[i]["SpiTransferStart"])
-            cmbsel.current()
-            cmbsel.grid(row=self.header_size+i, column=7)
-            self.non_header_objs.append(cmbsel)
-            
-        # Set the self.cv scrolling region
+        # Support scrollable view
         self.scrollw.scroll()
+
 
 
     def draw(self, tab):
@@ -228,37 +152,12 @@ class SpiChannelTab:
         self.scrollw.update()
 
         # Table heading
-        label = tk.Label(self.scrollw.mnf, text=" ")
-        label.grid(row=2, column=0, sticky="w")
-        label = tk.Label(self.scrollw.mnf, text="SpiChannelId")
-        label.grid(row=2, column=1, sticky="w")
-        label = tk.Label(self.scrollw.mnf, text="SpiChannelType")
-        label.grid(row=2, column=2, sticky="we")
-        label = tk.Label(self.scrollw.mnf, text="SpiDataWidth")
-        label.grid(row=2, column=3, sticky="w")
-        label = tk.Label(self.scrollw.mnf, text="SpiDefaultData")
-        label.grid(row=2, column=4, sticky="w")
-        label = tk.Label(self.scrollw.mnf, text="SpiEbMaxLength")
-        label.grid(row=2, column=5, sticky="w")
-        label = tk.Label(self.scrollw.mnf, text="SpiIbNBuffers")
-        label.grid(row=2, column=6, sticky="w")
-        label = tk.Label(self.scrollw.mnf, text="SpiTransferStart")
-        label.grid(row=2, column=7, sticky="w")
-
+        dappa.heading(self, 2)
+        
         self.update()
 
 
-    def backup_data(self):
-        n_spi_chans_str = len(self.spi_chans_str)
-        for i in range(n_spi_chans_str):
-            if len(self.spi_chans_str[i].spi_channel_id.get()):
-                self.spi_chans[i]["SpiChannelId"] = self.spi_chans_str[i].spi_channel_id.get()
-            if len(self.spi_chans_str[i].spi_chann_type.get()):
-                self.spi_chans[i]["SpiChannelType"] = self.spi_chans_str[i].spi_chann_type.get()
-            if len(self.spi_chans_str[i].spi_chan_width.get()):
-                self.spi_chans[i]["SpiDataWidth"] = self.spi_chans_str[i].spi_chan_width.get()
-
 
     def save_data(self):
-        self.backup_data()
+        # self.backup_data()
         self.tab_struct.save_cb(self.gui)
