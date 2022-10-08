@@ -32,15 +32,16 @@ class SpiChannelTab:
     n_spi_chans_str = None
 
     gui = None
+    scrollw = None
     tab_struct = None # passed from *_view.py file
     configs = [] # all UI configs (tkinter strings) are stored here.
+    cfgkeys = ["SpiChannelId", "SpiChannelType", "SpiDataWidth", "SpiDefaultData", "SpiEbMaxLength",
+               "SpiIbNBuffers", "SpiTransferStart"]
 
-    header = ["label", "SpiChannelId", "SpiChannelType", "SpiDataWidth", "SpiDefaultData", "SpiEbMaxLength",
-              "SpiIbNBuffers", "SpiTransferStart"]
     header_objs = 12 #Objects / widgets that are part of the header and shouldn't be destroyed
     header_size = 3
     non_header_objs = []
-    dappas_per_row = len(header)
+    dappas_per_row = len(cfgkeys) + 1 # +1 for row labels
 
 
     def __init__(self, gui):
@@ -57,11 +58,11 @@ class SpiChannelTab:
     def __del__(self):
         del self.n_spi_chans_str
         del self.non_header_objs[:]
+        del self.configs[:]
 
 
     def create_empty_configs(self):
         spi_chan = {}
-        spi_chan["label"] = "Spi Channel #"
         spi_chan["SpiChannelId"] = str(self.n_spi_chans-1)
         spi_chan["SpiChannelType"] = "IB"
         spi_chan["SpiDataWidth"] = "4" # bytes
@@ -81,23 +82,23 @@ class SpiChannelTab:
 
         # SpiChannelType
         values = ("IB (Internal Buffer)", "EB (External Buffer)")
-        dappa.combo(self, "SpiChannelType", i, self.header_size+i, 2, 17, "readonly", values)
+        dappa.combo(self, "SpiChannelType", i, self.header_size+i, 2, 17, values)
 
         # SpiDataWidth
-        dappa.spinb(self, "SpiDataWidth", i,self.header_size+i, 3, 13, "normal", tuple(range(1,33)))
+        dappa.spinb(self, "SpiDataWidth", i,self.header_size+i, 3, 13, tuple(range(1,33)))
 
         # SpiDefaultData
         dappa.entry(self, "SpiDefaultData", i, self.header_size+i, 4, 17, "normal")
 
         # SpiEbMaxLength
-        dappa.spinb(self, "SpiEbMaxLength", i, self.header_size+i, 5, 13, "normal", tuple(range(0,65536)))
+        dappa.spinb(self, "SpiEbMaxLength", i, self.header_size+i, 5, 13, tuple(range(0,65536)))
 
         # SpiIbNBuffers
-        dappa.spinb(self, "SpiIbNBuffers", i, self.header_size+i, 6, 13, "normal", tuple(range(0,65536)))
+        dappa.spinb(self, "SpiIbNBuffers", i, self.header_size+i, 6, 13, tuple(range(0,65536)))
 
         # SpiTransferStart
         values = ("MSB", "LSB")
-        dappa.combo(self, "SpiTransferStart", i, self.header_size+i, 7, 10, "readonly", values)
+        dappa.combo(self, "SpiTransferStart", i, self.header_size+i, 7, 10, values)
 
 
 
@@ -117,7 +118,7 @@ class SpiChannelTab:
         n_dappa_rows = len(self.configs)
         if self.n_spi_chans > n_dappa_rows:
             for i in range(self.n_spi_chans - n_dappa_rows):
-                self.configs.insert(len(self.configs), dappa.AsrCfgStr(self.header, self.create_empty_configs()))
+                self.configs.insert(len(self.configs), dappa.AsrCfgStr(self.cfgkeys, self.create_empty_configs()))
                 self.draw_dappa_row(n_dappa_rows+i)
         elif n_dappa_rows > self.n_spi_chans:
             for i in range(n_dappa_rows - self.n_spi_chans):
@@ -148,8 +149,8 @@ class SpiChannelTab:
         # Update buttons frames idle tasks to let tkinter calculate buttons sizes
         self.scrollw.update()
 
-        # Table heading
-        dappa.heading(self, 2)
+        # Table heading @2nd row, 1st column
+        dappa.place_heading(self, 2, 1)
         
         self.update()
 

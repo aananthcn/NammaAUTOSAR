@@ -33,14 +33,15 @@ class SpiSequenceTab:
     n_spi_seqs_str = None
 
     gui = None
+    scrollw = None
     tab_struct = None # passed from *_view.py file
     configs = [] # all UI configs (tkinter strings) are stored here.
+    cfgkeys = ["SpiSequenceId", "SpiInterruptibleSequence", "SpiSeqEndNotification", "SpiJobAssignment"]
     
-    header = ["label", "SpiSequenceId", "SpiInterruptibleSequence", "SpiSeqEndNotification", "SpiJobAssignment"]
     header_objs = 12 #Objects / widgets that are part of the header and shouldn't be destroyed
     header_size = 3
     non_header_objs = []
-    dappas_per_row = len(header)
+    dappas_per_row = len(cfgkeys) + 1 # +1 for row labels
 
 
     def __init__(self, gui):
@@ -57,12 +58,12 @@ class SpiSequenceTab:
     def __del__(self):
         del self.n_spi_seqs_str
         del self.non_header_objs[:]
+        del self.configs[:]
 
 
 
     def create_empty_configs(self):
         spi_seq = {}
-        spi_seq["label"] = "Spi Seq #"
         spi_seq["SpiSequenceId"] = str(self.n_spi_seqs-1)
         spi_seq["SpiInterruptibleSequence"] = "FALSE"
         spi_seq["SpiSeqEndNotification"] = "e.g: SeqEndNotificationFunc"
@@ -86,7 +87,7 @@ class SpiSequenceTab:
         dappa.entry(self, "SpiSequenceId", i, self.header_size+i, 1, 10, "readonly")
 
         # Spi Sequence - SpiInterruptibleSequence
-        dappa.combo(self, "SpiInterruptibleSequence", i, self.header_size+i, 2, 15, "readonly", ("FALSE", "TRUE"))
+        dappa.combo(self, "SpiInterruptibleSequence", i, self.header_size+i, 2, 15, ("FALSE", "TRUE"))
         
         # Spi Sequence - SpiSeqEndNotification
         dappa.entry(self, "SpiSeqEndNotification", i, self.header_size+i, 3, 30, "normal")
@@ -104,7 +105,7 @@ class SpiSequenceTab:
         n_dappa_rows = len(self.configs)
         if self.n_spi_seqs > n_dappa_rows:
             for i in range(self.n_spi_seqs - n_dappa_rows):
-                self.configs.insert(len(self.configs), dappa.AsrCfgStr(self.header, self.create_empty_configs()))
+                self.configs.insert(len(self.configs), dappa.AsrCfgStr(self.cfgkeys, self.create_empty_configs()))
                 self.draw_dappa_row(n_dappa_rows+i)
         elif n_dappa_rows > self.n_spi_seqs:
             for i in range(n_dappa_rows - self.n_spi_seqs):
@@ -134,8 +135,8 @@ class SpiSequenceTab:
         # Update buttons frames idle tasks to let tkinter calculate buttons sizes
         self.scrollw.update()
 
-        # Table heading
-        dappa.heading(self, 2)
+        # Table heading @2nd row, 1st column
+        dappa.place_heading(self, 2, 1)
 
         self.update()
 

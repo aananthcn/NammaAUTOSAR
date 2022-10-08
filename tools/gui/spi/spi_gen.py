@@ -21,186 +21,99 @@
 import tkinter as tk
 from tkinter import ttk
 
-
-
-class SpiGeneralStr:
-    cancel_api = None
-    ch_buf_allowed = None
-    dev_err_detect = None
-    hw_status_api = None
-    intr_seq_allowed = None
-    level_delivered = None
-    main_per_func = None
-    sup_con_sync_tx = None
-    version_api = None
-
-    def __init__(self):
-        self.cancel_api = tk.StringVar()
-        self.ch_buf_allowed = tk.StringVar()
-        self.dev_err_detect = tk.StringVar()
-        self.hw_status_api = tk.StringVar()
-        self.intr_seq_allowed = tk.StringVar()
-        self.level_delivered = tk.StringVar()
-        self.main_per_func = tk.StringVar()
-        self.sup_con_sync_tx = tk.StringVar()
-        self.version_api = tk.StringVar()
-
-    def __del__(self):
-        del self.cancel_api
-        del self.ch_buf_allowed
-        del self.dev_err_detect
-        del self.hw_status_api
-        del self.intr_seq_allowed
-        del self.level_delivered
-        del self.main_per_func
-        del self.sup_con_sync_tx
-        del self.version_api
+import gui.lib.window as window
+import gui.lib.asr_widget as dappa # dappa in Tamil means box
 
 
 
 class SpiGeneralTab:
     gui = None
+    scrollw = None
     tab_struct = None # passed from *_view.py file
-    gen_str = None
-    gen_dict = None
+    configs = [] # all UI configs (tkinter strings) are stored here.
+    cfgkeys = ["SpiLevelDelivered", "SpiChannelBuffersAllowed", "SpiInterruptibleSeqAllowed",
+               "SpiHwStatusApi", "SpiCancelApi", "SpiVersionInfoApi", "SpiDevErrorDetect",
+               "SpiSupportConcurrentSyncTransmit", "SpiMainFunctionPeriod"]
+
+    non_header_objs = []
+    dappas_per_col = len(cfgkeys)
 
     def __init__(self, gui):
         self.gui = gui
-        self.gen_str = SpiGeneralStr()
-        # self.gen_dict = arxml_spi.parse_arxml(gui.arxml_file)
-        self.gen_dict = None
-        if self.gen_dict == None:
-            self.gen_dict = {}
-            self.gen_dict["SpiLevelDelivered"]                  = "1"
-            self.gen_dict["SpiChannelBuffersAllowed"]           = "IB"
-            self.gen_dict["SpiInterruptibleSeqAllowed"]         = "FALSE"
-            self.gen_dict["SpiHwStatusApi"]                     = "FALSE"
-            self.gen_dict["SpiCancelApi"]                       = "FALSE"
-            self.gen_dict["SpiVersionInfoApi"]                  = "FALSE"
-            self.gen_dict["SpiDevErrorDetect"]                  = "FALSE"
-            self.gen_dict["SpiSupportConcurrentSyncTransmit"]   = "FALSE"
-            self.gen_dict["SpiMainFunctionPeriod"]              = "0.01" # secs = 100 ms
+
+        #gen_dict = arxml_spi.parse_arxml(gui.arxml_file)
+        gen_dict = None
+        if gen_dict == None:
+            return
 
     def __del__(self):
-        del self.gen_str
+        del self.configs[:]
+
+
+    def create_empty_configs(self):
+        gen_dict = {}
+        gen_dict["SpiLevelDelivered"]                  = "1"
+        gen_dict["SpiChannelBuffersAllowed"]           = "IB"
+        gen_dict["SpiInterruptibleSeqAllowed"]         = "FALSE"
+        gen_dict["SpiHwStatusApi"]                     = "FALSE"
+        gen_dict["SpiCancelApi"]                       = "FALSE"
+        gen_dict["SpiVersionInfoApi"]                  = "FALSE"
+        gen_dict["SpiDevErrorDetect"]                  = "FALSE"
+        gen_dict["SpiSupportConcurrentSyncTransmit"]   = "FALSE"
+        gen_dict["SpiMainFunctionPeriod"]              = "0.01" # secs = 100 ms
+        return gen_dict
 
 
     def draw(self, tab):
         self.tab_struct = tab
+        self.scrollw = window.ScrollableWindow(tab.frame, tab.xsize, tab.ysize)
         spi_cmbsel = ("FALSE", "TRUE")
-        
-        # empty space
-        label = tk.Label(tab.frame, text="")
-        label.grid(row=1, column=0, sticky="e")
+
+        # Create config string for AUTOSAR configs on this tab
+        self.configs.append(dappa.AsrCfgStr(self.cfgkeys, self.create_empty_configs()))
+
+        # Table heading @0th row, 0th column
+        dappa.place_column_heading(self, row=0, col=0)
 
         # SpiLevelDelivered
-        label = tk.Label(tab.frame, text="SpiLevelDelivered: ")
-        label.grid(row=2, column=0, sticky="e")
-        
-        cmbsel = ttk.Combobox(tab.frame, width=20, textvariable=self.gen_str.level_delivered, state="readonly")
-        cmbsel['values'] = ('0', '1', '2')
-        self.gen_str.level_delivered.set(self.gen_dict["SpiLevelDelivered"])
-        cmbsel.current()
-        cmbsel.grid(row=2, column=1)
+        dappa.combo(self, "SpiLevelDelivered", 0, 0, 1, 20, ('0', '1', '2'))
 
         # SpiChannelBuffersAllowed
-        label = tk.Label(tab.frame, text="SpiChannelBuffersAllowed: ")
-        label.grid(row=3, column=0, sticky="e")
-        
-        cmbsel = ttk.Combobox(tab.frame, width=20, textvariable=self.gen_str.ch_buf_allowed, state="readonly")
-        cmbsel['values'] = ('IB (Internal Buffer)', 'EB (External Buffer)', 'IB / EB')
-        self.gen_str.ch_buf_allowed.set(self.gen_dict["SpiChannelBuffersAllowed"])
-        cmbsel.current()
-        cmbsel.grid(row=3, column=1)
+        values = ('IB (Internal Buffer)', 'EB (External Buffer)', 'IB / EB')
+        dappa.combo(self, "SpiChannelBuffersAllowed", 0, 1, 1, 20, values)
 
         # SpiInterruptibleSeqAllowed
-        label = tk.Label(tab.frame, text="SpiInterruptibleSeqAllowed: ")
-        label.grid(row=4, column=0, sticky="e")
-        
-        cmbsel = ttk.Combobox(tab.frame, width=20, textvariable=self.gen_str.intr_seq_allowed, state="readonly")
-        cmbsel['values'] = spi_cmbsel
-        self.gen_str.intr_seq_allowed.set(self.gen_dict["SpiInterruptibleSeqAllowed"])
-        cmbsel.current()
-        cmbsel.grid(row=4, column=1)
+        dappa.combo(self, "SpiInterruptibleSeqAllowed", 0, 2, 1, 20, spi_cmbsel)
 
         # SpiHwStatusApi
-        label = tk.Label(tab.frame, text="SpiHwStatusApi: ")
-        label.grid(row=5, column=0, sticky="e")
-        
-        cmbsel = ttk.Combobox(tab.frame, width=20, textvariable=self.gen_str.hw_status_api, state="readonly")
-        cmbsel['values'] = spi_cmbsel
-        self.gen_str.hw_status_api.set(self.gen_dict["SpiHwStatusApi"])
-        cmbsel.current()
-        cmbsel.grid(row=5, column=1)
+        dappa.combo(self, "SpiHwStatusApi", 0, 3, 1, 20, spi_cmbsel)
 
         # SpiCancelApi
-        label = tk.Label(tab.frame, text="SpiCancelApi: ")
-        label.grid(row=6, column=0, sticky="e")
-        
-        cmbsel = ttk.Combobox(tab.frame, width=20, textvariable=self.gen_str.cancel_api, state="readonly")
-        cmbsel['values'] = spi_cmbsel
-        self.gen_str.cancel_api.set(self.gen_dict["SpiCancelApi"])
-        cmbsel.current()
-        cmbsel.grid(row=6, column=1)
+        dappa.combo(self, "SpiCancelApi", 0, 4, 1, 20, spi_cmbsel)
 
         # SpiVersionInfoApi
-        label = tk.Label(tab.frame, text="SpiVersionInfoApi: ")
-        label.grid(row=7, column=0, sticky="e")
-        
-        cmbsel = ttk.Combobox(tab.frame, width=20, textvariable=self.gen_str.version_api, state="readonly")
-        cmbsel['values'] = spi_cmbsel
-        self.gen_str.version_api.set(self.gen_dict["SpiVersionInfoApi"])
-        cmbsel.current()
-        cmbsel.grid(row=7, column=1)
+        dappa.combo(self, "SpiVersionInfoApi", 0, 5, 1, 20, spi_cmbsel)
 
         # SpiDevErrorDetect
-        label = tk.Label(tab.frame, text="SpiDevErrorDetect: ")
-        label.grid(row=8, column=0, sticky="e")
-        
-        cmbsel = ttk.Combobox(tab.frame, width=20, textvariable=self.gen_str.dev_err_detect, state="readonly")
-        cmbsel['values'] = spi_cmbsel
-        self.gen_str.dev_err_detect.set(self.gen_dict["SpiDevErrorDetect"])
-        cmbsel.current()
-        cmbsel.grid(row=8, column=1)
+        dappa.combo(self, "SpiDevErrorDetect", 0, 6, 1, 20, spi_cmbsel)
 
         # SpiSupportConcurrentSyncTransmit
-        label = tk.Label(tab.frame, text="SpiSupportConcurrentSyncTransmit: ")
-        label.grid(row=9, column=0, sticky="e")
-        
-        cmbsel = ttk.Combobox(tab.frame, width=20, textvariable=self.gen_str.sup_con_sync_tx, state="readonly")
-        cmbsel['values'] = spi_cmbsel
-        self.gen_str.sup_con_sync_tx.set(self.gen_dict["SpiSupportConcurrentSyncTransmit"])
-        cmbsel.current()
-        cmbsel.grid(row=9, column=1)
+        dappa.combo(self, "SpiSupportConcurrentSyncTransmit", 0, 7, 1, 20, spi_cmbsel)
 
         # SpiMainFunctionPeriod
-        label = tk.Label(tab.frame, text="SpiMainFunctionPeriod (sec): ")
-        label.grid(row=10, column=0, sticky="e")
-        
-        entry = tk.Entry(tab.frame, width=23, textvariable=self.gen_str.main_per_func)
-        self.gen_str.main_per_func.set(self.gen_dict["SpiMainFunctionPeriod"])
-        entry.grid(row=10, column=1)
+        dappa.entry(self, "SpiMainFunctionPeriod", 0, 8, 1, 23, "normal")
 
-        # empty space
-        label = tk.Label(tab.frame, text="")
-        label.grid(row=11, column=0, sticky="e")
+        # Place save button
+        space = tk.Label(self.scrollw.mnf)
+        space.grid(row=9, column=1)
+        saveb = tk.Button(self.scrollw.mnf, width=10, text="Save Configs", command=self.save_data, bg="#206020", fg='white')
+        saveb.grid(row=10, column=1)
 
-        # Save Button
-        genm = tk.Button(tab.frame, width=10, text="Save Configs", command=self.save_data, bg="#206020", fg='white')
-        genm.grid(row=12, column=1)
-
-        self.backup_data()
-        #tab.frame.mainloop()
+        # Support scrollable view
+        self.scrollw.scroll()
 
 
 
-    def backup_data(self):
-        self.gen_dict["SpiDevErrorDetect"]      = self.gen_str.cancel_api.get()
-        self.gen_dict["SpiVersionInfoApi"]      = self.gen_str.ch_buf_allowed.get()
-        self.gen_dict["SpiFlipChannelApi"]      = self.gen_str.dev_err_detect.get()
-        self.gen_dict["SpiMaskedWritePortApi"]  = self.gen_str.hw_status_api.get()
-
-        
     def save_data(self):
-        self.backup_data()
+        # self.backup_data()
         self.tab_struct.save_cb(self.gui)

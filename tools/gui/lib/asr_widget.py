@@ -83,8 +83,8 @@ def entry(view, key, index, row, col, width, state):
     view.non_header_objs.append(entry)
 
 
-def combo(view, key, index, row, col, width, state, values):
-    cmbsel = ttk.Combobox(view.scrollw.mnf, width=width, textvariable=view.configs[index].dispvar[key], state=state)
+def combo(view, key, index, row, col, width, values):
+    cmbsel = ttk.Combobox(view.scrollw.mnf, width=width, textvariable=view.configs[index].dispvar[key], state="readonly")
     cmbsel['values'] = values
     view.configs[index].dispvar[key].set(view.configs[index].datavar[key])
     cmbsel.current()
@@ -92,7 +92,7 @@ def combo(view, key, index, row, col, width, state, values):
     view.non_header_objs.append(cmbsel)
 
 
-def spinb(view, key, index, row, col, width, state, values):
+def spinb(view, key, index, row, col, width, values):
     spinb = tk.Spinbox(view.scrollw.mnf, width=width, textvariable=view.configs[index].dispvar[key], values=values)
     view.configs[index].dispvar[key].set(view.configs[index].datavar[key])
     spinb.grid(row=row, column=col)
@@ -105,10 +105,19 @@ def button(view, key, index, row, col, width, text, cb):
     view.non_header_objs.append(select)
 
 
-def heading(view, row):
-    for i, label in enumerate(view.header):
+
+###############################################################################
+# headings and column-headings
+###############################################################################
+def place_heading(view, row, col):
+    # place all the keys as column @row & @col
+    for i, label in enumerate(view.cfgkeys):
         label = tk.Label(view.scrollw.mnf, text=label)
-        if i == 0:
-            label.grid(row=row, column=i, sticky="e")
-        else:
-            label.grid(row=row, column=i, sticky="w")
+        label.grid(row=row, column=col+i, sticky="w")
+
+
+def place_column_heading(view, row, col):
+    # place all the keys as column @row & @col
+    for i, label in enumerate(view.cfgkeys):
+        label = tk.Label(view.scrollw.mnf, text=label)
+        label.grid(row=row+i, column=col, sticky="e")
