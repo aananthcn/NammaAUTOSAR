@@ -68,7 +68,7 @@ def dio_save_callback(gui):
             dio_grp = tab.tab
             continue
         if tab.name == "DioGeneral":
-            dio_gen = tab.tab
+            dio_gen = tab.tab.configs[0].get()
             continue
 
     arxml_dio.update_arxml(gui.arxml_file, dio_cfg, dio_grp, dio_gen)

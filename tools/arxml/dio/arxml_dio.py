@@ -115,13 +115,13 @@ def update_dio_info_to_container(root, dio_cfg, dio_grp, dio_gen):
     params = ET.SubElement(ctnrblk, "PARAMETER-VALUES")
     
     refname = dref+"/DioDevErrorDetect"
-    lib_conf.insert_conf_param(params, refname, "numerical", "bool", dio_gen.gen_data["DioDevErrorDetect"])
+    lib_conf.insert_conf_param(params, refname, "numerical", "bool", dio_gen["DioDevErrorDetect"])
     refname = dref+"/DioVersionInfoApi"
-    lib_conf.insert_conf_param(params, refname, "numerical", "bool", dio_gen.gen_data["DioVersionInfoApi"])
+    lib_conf.insert_conf_param(params, refname, "numerical", "bool", dio_gen["DioVersionInfoApi"])
     refname = dref+"/DioFlipChannelApi"
-    lib_conf.insert_conf_param(params, refname, "numerical", "bool", dio_gen.gen_data["DioFlipChannelApi"])
+    lib_conf.insert_conf_param(params, refname, "numerical", "bool", dio_gen["DioFlipChannelApi"])
     refname = dref+"/DioMaskedWritePortApi"
-    lib_conf.insert_conf_param(params, refname, "numerical", "bool", dio_gen.gen_data["DioMaskedWritePortApi"])
+    lib_conf.insert_conf_param(params, refname, "numerical", "bool", dio_gen["DioMaskedWritePortApi"])
 
 
 

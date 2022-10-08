@@ -60,9 +60,9 @@ class AsrCfgStr:
             view.dispvar[key].set(values[key])
 
     def get(view):
-        values = {}
         for key in view.dispvar:
-            values[key] = view.dispvar[key].get()
+            view.datavar[key] = view.dispvar[key].get()
+        return view.datavar
 
 
 
