@@ -30,7 +30,7 @@ class SpiGeneralTab:
     gui = None
     scrollw = None
     tab_struct = None # passed from *_view.py file
-    configs = [] # all UI configs (tkinter strings) are stored here.
+    configs = None # all UI configs (tkinter strings) are stored here.
     cfgkeys = ["SpiLevelDelivered", "SpiChannelBuffersAllowed", "SpiInterruptibleSeqAllowed",
                "SpiHwStatusApi", "SpiCancelApi", "SpiVersionInfoApi", "SpiDevErrorDetect",
                "SpiSupportConcurrentSyncTransmit", "SpiMainFunctionPeriod"]
@@ -40,6 +40,7 @@ class SpiGeneralTab:
 
     def __init__(self, gui):
         self.gui = gui
+        self.configs = []
 
         #gen_dict = arxml_spi.parse_arxml(gui.arxml_file)
         gen_dict = None

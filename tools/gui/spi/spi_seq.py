@@ -35,7 +35,7 @@ class SpiSequenceTab:
     gui = None
     tab_struct = None # passed from *_view.py file
     scrollw = None
-    configs = [] # all UI configs (tkinter strings) are stored here.
+    configs = None # all UI configs (tkinter strings) are stored here.
     cfgkeys = ["SpiSequenceId", "SpiInterruptibleSequence", "SpiSeqEndNotification", "SpiJobAssignment"]
     
     header_objs = 12 #Objects / widgets that are part of the header and shouldn't be destroyed
@@ -46,6 +46,7 @@ class SpiSequenceTab:
 
     def __init__(self, gui):
         self.gui = gui
+        self.configs = []
         self.n_spi_seqs = 0
         self.n_spi_seqs_str = tk.StringVar()
 

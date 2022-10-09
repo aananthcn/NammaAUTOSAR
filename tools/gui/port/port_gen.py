@@ -52,6 +52,7 @@ class PortGeneralTab:
 
     def __init__(self, gui):
         self.gui = gui
+        self.configs = []
         self.config = PortGeneralStr()
         self.gen_dict = {}
         port_pins, port_cfg, port_gen = arxml_port.parse_arxml(gui.arxml_file)

@@ -84,6 +84,7 @@ class PortConfigSetTab:
 
     def __init__(self, gui):
         self.gui = gui
+        self.configs = []
         self.n_pins = 0
         self.n_pins_str = tk.StringVar()
 

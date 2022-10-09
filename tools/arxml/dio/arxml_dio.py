@@ -64,33 +64,34 @@ def update_dio_config_container(root, dio_cfg, dio_grp):
         lib_conf.insert_conf_param(params, refname, "numerical", "int", pin["DioChannelId"])
 
         # Check if Channel Group information corresponding to this DioPortId exists
-        this_chgrp = None
+        this_chgrp = []
         if len(dio_grp) > 0:
             for chgrp in dio_grp:
-                if chgrp["PortPinId"] == pin["DioPortId"]:
-                    this_chgrp = chgrp
-                    break
+                if chgrp["DioPortId"] == pin["DioPortId"]:
+                    this_chgrp.append(chgrp)
 
         # Add Channel Group information corresponding to this DioPortId
-        if this_chgrp != None:
+        if len(this_chgrp) > 0:
             # Create a sub-container    
             subctnr2 = ET.SubElement(cctnrblk1, "SUB-CONTAINERS")
             subctnr2_name = "DioChannelGroup"
             dref = "/AUTOSAR/EcucDefs/Dio/"+ctnrname+"/"+subctnr1_name+"/"+subctnr2_name
+
+        for grp in this_chgrp:
             cctnrblk2 = lib_conf.insert_conf_container(subctnr2, subctnr2_name, "conf", dref)
 
             # Parameters - 1
             params = ET.SubElement(cctnrblk2, "PARAMETER-VALUES")
             refname = dref+"/DioChannelGroupIdentification"
-            lib_conf.insert_conf_param(params, refname, "text", "enum", this_chgrp["DioChannelGroupIdentification"])
+            lib_conf.insert_conf_param(params, refname, "text", "enum", grp["DioChannelGroupIdentification"])
             # Parameters - 2
             params = ET.SubElement(cctnrblk2, "PARAMETER-VALUES")
             refname = dref+"/DioPortOffset"
-            lib_conf.insert_conf_param(params, refname, "numerical", "int", this_chgrp["DioPortOffset"])
+            lib_conf.insert_conf_param(params, refname, "numerical", "int", grp["DioPortOffset"])
             # Parameters - 3
             params = ET.SubElement(cctnrblk2, "PARAMETER-VALUES")
             refname = dref+"/DioPortMask"
-            lib_conf.insert_conf_param(params, refname, "numerical", "int", this_chgrp["DioPortMask"])
+            lib_conf.insert_conf_param(params, refname, "numerical", "int", grp["DioPortMask"])
 
 
 
@@ -161,9 +162,11 @@ def update_arxml(ar_file, dio_cfg, dio_grp, dio_gen):
     print("Info: Dio Configs are saved to " + ar_file)    
 
 
+
 def parse_arxml_dioconfig(containers):
     dio_n_pins = None
     dio_configs = []
+    dio_groups = []
     
     # locate DioConfig
     ctnrname = "DioConfig"
@@ -174,47 +177,53 @@ def parse_arxml_dioconfig(containers):
     # now locate DioPort
     dio_cfg_ctnr = ctnrblk
     dio_sub_ctnr = None
+    dioport_ctnr = None
     for ecuc_ctnr in ctnrblk:
         if lib_conf.get_tag(ecuc_ctnr) == "SUB-CONTAINERS":
             dio_sub_ctnr = ecuc_ctnr
-            break
-    for ecuc_ctnr in dio_sub_ctnr:
-        if lib_conf.get_tag(ecuc_ctnr) == "ECUC-CONTAINER-VALUE":
-            ctnrblk = ecuc_ctnr
-            break
-    for item in ctnrblk:
-        if lib_conf.get_tag(item) == "SHORT-NAME":
-            if item.text == "DioPort":
-                dio_n_pins = len(dio_sub_ctnr) # we have found the right SUB-CONTAINER!!
-                break
+            for ecuc_ctnr in dio_sub_ctnr:
+                if lib_conf.get_tag(ecuc_ctnr) == "ECUC-CONTAINER-VALUE":
+                    ctnrblk = ecuc_ctnr
+                    for item in ctnrblk:
+                        if lib_conf.get_tag(item) == "SHORT-NAME":
+                            if item.text == "DioPort":
+                                dio_n_pins = len(dio_sub_ctnr) # we have found the right SUB-CONTAINER!!
+                                dioport_ctnr = ctnrblk
+                                # Note: breaking based on assumption that there will be only one port ;-)
+                                break
+                                # this will be extended as dioport_ctnr[] list later, as I don't know if the
+                                # current ARXML format that I understand is correct.
 
-    # get PortContainer parameter - Number of Dio Pins
-    if dio_cfg_ctnr == None or dio_sub_ctnr == None:
-        return None
+    # get the 'DioPortId' of this DioPort
+    dio_port_id_cfg = {}
+    params = lib_conf.get_param_list(dioport_ctnr)
+    for par in params:
+        dio_port_id_cfg[par["tag"]] = par["val"]
     
-    # let us parse all SUB-CONTAINERS of DioConfig
-    for ctnr in dio_sub_ctnr:
-        cfg = {}
-        params = lib_conf.get_param_list(ctnr)
-        for par in params:
-            cfg[par["tag"]] = par["val"]
+    # parse dio config from subcontainer
+    nodes = lib_conf.findall_subcontainers_with_name("DioChannel", dioport_ctnr)
+    if nodes != None:
+        for node in nodes:
+            params = lib_conf.get_param_list(node)
+            cfg = {}
+            for par in params:
+                cfg[par["tag"]] = par["val"]
+            cfg["DioPortId"] = dio_port_id_cfg["DioPortId"]
+            dio_configs.append(cfg)
     
-        # now check for sub-containers within the DioConfig SUB-CONTAINER
-        for sctnr in ctnr:
-            if lib_conf.get_tag(sctnr) == "SUB-CONTAINERS":
-                for item in sctnr:
-                    esctnr = None
-                    if lib_conf.get_tag(item) == "ECUC-CONTAINER-VALUE":
-                        esctnr = item
-                        break
-                if esctnr != None:
-                    params = lib_conf.get_param_list(esctnr)
-                    for par in params:
-                        cfg[par["tag"]] = par["val"]
-        
-        dio_configs.append(cfg)
+    # parse dio group from subcontainer
+    nodes = lib_conf.findall_subcontainers_with_name("DioChannelGroup", dioport_ctnr)
+    if nodes != None:
+        for node in nodes:
+            params = lib_conf.get_param_list(node)
+            cfg = {}
+            for par in params:
+                cfg[par["tag"]] = par["val"]
+            cfg["DioPortId"] = dio_port_id_cfg["DioPortId"]
+            dio_groups.append(cfg)
+    
 
-    return dio_n_pins, dio_configs
+    return dio_n_pins, dio_configs, dio_groups
 
 
 
@@ -243,7 +252,7 @@ def parse_arxml(ar_file):
     if containers == None:
         return
     
-    dio_n_pins, dio_configs = parse_arxml_dioconfig(containers)
+    dio_n_pins, dio_configs, dio_groups = parse_arxml_dioconfig(containers)
 
     # locate & parse DioGeneral
     ctnrname = "DioGeneral"
@@ -254,5 +263,5 @@ def parse_arxml(ar_file):
     for par in params:
         dio_general[par["tag"]] = par["val"]
     
-    return dio_n_pins, dio_configs, dio_general
+    return dio_n_pins, dio_configs, dio_groups, dio_general
 

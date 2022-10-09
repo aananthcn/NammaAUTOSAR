@@ -37,7 +37,7 @@ class DioChannelGroupTab:
     gui = None
     tab_struct = None # passed from *_view.py file
     scrollw = None
-    configs = [] # all UI configs (tkinter strings) are stored here.
+    configs = None # all UI configs (tkinter strings) are stored here.
     cfgkeys = ["DioPortId", "DioChannelGroupIdentification", "DioPortOffset", "DioPortMask"]
 
     port_pin_ids = []
@@ -50,6 +50,7 @@ class DioChannelGroupTab:
 
     def __init__(self, gui):
         self.gui = gui
+        self.configs = []
         self.n_chgrps = 0
         self.n_chgrps_str = tk.StringVar()
 
@@ -60,11 +61,10 @@ class DioChannelGroupTab:
             if port['PortPinMode'] == "PORT_PIN_MODE_DIO":
                 self.port_pin_ids.append(port["PortPinId"])
 
-        dio_pins, dio_cfgs, dio_gen = arxml_dio.parse_arxml(gui.arxml_file)
-        for dioc in dio_cfgs:
-            if "DioChannelGroupIdentification" in dioc:
-                # self.init_chgrp(dioc)
-                self.configs.insert(len(self.configs), dappa.AsrCfgStr(self.cfgkeys, dioc))
+        dio_pins, dio_cfgs, dio_grps, dio_gen = arxml_dio.parse_arxml(gui.arxml_file)
+        for grp in dio_grps:
+            if "DioChannelGroupIdentification" in grp:
+                self.configs.insert(len(self.configs), dappa.AsrCfgStr(self.cfgkeys, grp))
                 self.n_chgrps += 1
         self.n_chgrps_str.set(self.n_chgrps)
 
@@ -74,7 +74,6 @@ class DioChannelGroupTab:
         del self.non_header_objs[:]
         del self.port_pin_ids[:]
         del self.configs[:]
-        print("dio_grp.__del__() called")
 
 
 

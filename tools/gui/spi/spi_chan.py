@@ -34,7 +34,7 @@ class SpiChannelTab:
     gui = None
     scrollw = None
     tab_struct = None # passed from *_view.py file
-    configs = [] # all UI configs (tkinter strings) are stored here.
+    configs = None # all UI configs (tkinter strings) are stored here.
     cfgkeys = ["SpiChannelId", "SpiChannelType", "SpiDataWidth", "SpiDefaultData", "SpiEbMaxLength",
                "SpiIbNBuffers", "SpiTransferStart"]
 
@@ -46,6 +46,7 @@ class SpiChannelTab:
 
     def __init__(self, gui):
         self.gui = gui
+        self.configs = []
         self.n_spi_chans = 0
         self.n_spi_chans_str = tk.StringVar()
 

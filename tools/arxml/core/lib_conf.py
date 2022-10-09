@@ -176,3 +176,26 @@ def find_ecuc_container_block(shortname, root):
                      break
                   
    return ctnrval
+
+
+def findall_subcontainers_with_name(shortname, root):
+   ctnrnode = []
+   
+   if shortname == None:
+      print("Error: Invalid argument to find_subcontainer_with_name()")
+      return
+   
+   for child in list(root):
+      if get_tag(child) == "SUB-CONTAINERS":
+         for ecu_ctnr in list(child):
+            if get_tag(ecu_ctnr) == "ECUC-CONTAINER-VALUE":
+               for item in list(ecu_ctnr):
+                  if get_tag(item) == "SHORT-NAME":
+                     if item.text == shortname:
+                        ctnrnode.append(ecu_ctnr)
+
+   # if there is no ECUC-CONTAINER with name == "shortname", return None
+   if len(ctnrnode) == 0:
+      ctnrnode = None
+   
+   return ctnrnode

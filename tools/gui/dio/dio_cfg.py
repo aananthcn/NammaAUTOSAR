@@ -46,16 +46,17 @@ class DioConfigTab:
     gui = None
     scrollw = None
     tab_struct = None # passed from *_view.py file
-    configs = [] # all UI configs (tkinter strings) are stored here.
+    configs = None # all UI configs (tkinter strings) are stored here.
     cfgkeys = ["DioPortId", "DioChannelId"]
     dappas_per_row = len(cfgkeys) + 1 # +1 for row labels
 
     def __init__(self, gui):
         self.gui = gui
+        self.configs = []
         self.toplvl = gui.main_view.child_window
         self.n_pins_str = tk.StringVar()
         pins, ports, general = arxml_port.parse_arxml(gui.arxml_file) # Temporary
-        dio_pins, dio_ports, dio_gen = arxml_dio.parse_arxml(gui.arxml_file)
+        dio_pins, dio_ports, dio_grps, dio_gen = arxml_dio.parse_arxml(gui.arxml_file)
         if pins == None or dio_pins == None:
             return
         if pins != dio_pins:
@@ -93,7 +94,7 @@ class DioConfigTab:
     def get_chan_id(self, port_id, dio_ports):
         chan_id = None
         for port in dio_ports:
-            if port["DioPortId"] == port_id:
+            if port["DioChannelId"] == port_id:
                 chan_id = port["DioChannelId"]
                 break
         return chan_id

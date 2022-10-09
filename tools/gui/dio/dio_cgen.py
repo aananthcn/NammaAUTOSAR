@@ -74,7 +74,7 @@ def generate_sourcefile(dio_src_path, dio_info):
 def generate_code(gui):
     cwd = os.getcwd()
     dio_src_path = search.find_dir("Dio", cwd+"/submodules/MCAL/")
-    pins, dio_configs, dio_general = arxml_dio.parse_arxml(gui.arxml_file)
+    pins, dio_configs, dio_groups, dio_general = arxml_dio.parse_arxml(gui.arxml_file)
     generate_headerfile(dio_src_path, dio_configs)
     generate_sourcefile(dio_src_path, dio_configs)
     uc_cgen.create_source(gui)

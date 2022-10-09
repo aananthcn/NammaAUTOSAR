@@ -33,7 +33,7 @@ import gui.port.port_cgen as port_cgen
 class DioGeneralTab:
     gui = None
     tab_struct = None # passed from *_view.py file
-    configs = [] # all UI configs (tkinter strings) are stored here.
+    configs = None # all UI configs (tkinter strings) are stored here.
     cfgkeys = ["DioDevErrorDetect", "DioVersionInfoApi", "DioFlipChannelApi", "DioMaskedWritePortApi"]
 
     non_header_objs = []
@@ -41,7 +41,8 @@ class DioGeneralTab:
 
     def __init__(self, gui):
         self.gui = gui
-        dio_pins, dio_cfg, dio_gen = arxml_dio.parse_arxml(gui.arxml_file)
+        self.configs = []
+        dio_pins, dio_cfg, dio_grp, dio_gen = arxml_dio.parse_arxml(gui.arxml_file)
         if dio_gen == None:
             self.configs.append(dappa.AsrCfgStr(self.cfgkeys, self.create_empty_configs()))
         else:

@@ -51,7 +51,6 @@ class DioTab:
     def __del__(self):
         del self.tab
         del self.frame
-        print("DioTab.__del__() called")
 
 
 def dio_config_close_event(gui, view):
@@ -59,10 +58,6 @@ def dio_config_close_event(gui, view):
 
     PortConfigViewActive = False
     view.destroy()
-    for tab in TabList:
-        for obj in tab.tab.non_header_objs:
-            obj.destroy()
-    del TabList[:]
 
 
 def dio_save_callback(gui):
@@ -119,8 +114,6 @@ def show_dio_tabs(gui):
 
     # # destroy old GUI objects
     del TabList[:]
-    # for obj in TabList:
-    #     del obj
 
     # create new GUI objects
     dtab = DioTab(cfg_frame, width, height)
