@@ -21,124 +21,80 @@
 import tkinter as tk
 from tkinter import ttk
 
+import gui.lib.window as window
+import gui.lib.asr_widget as dappa # dappa in Tamil means box
+
 import arxml.port.arxml_port as arxml_port
 import gui.port.port_cgen as port_cgen
 
 
-class PortGeneralStr:
-    error_detect = None
-    verion_api = None
-    pin_dir_api = None
-    pin_mode_api = None
-
-    def __init__(self):
-        self.error_detect = tk.StringVar()
-        self.verion_api = tk.StringVar()
-        self.pin_dir_api = tk.StringVar()
-        self.pin_mode_api = tk.StringVar()
-
-    def __del__(self):
-        del self.error_detect
-        del self.verion_api
-        del self.pin_dir_api
-        del self.pin_mode_api
-
 
 class PortGeneralTab:
     gui = None
-    config = None
     tab_struct = None # passed from *_view.py file
-    gen_dict = None
+    configs = None # all UI configs (tkinter strings) are stored here.
+    cfgkeys = ["PortDevErrorDetect", "PortVersionInfoApi", "PortSetPinDirectionApi", "PortSetPinModeApi"]
+
+    non_header_objs = []
+    dappas_per_col = len(cfgkeys)
+
 
     def __init__(self, gui):
         self.gui = gui
         self.configs = []
-        self.config = PortGeneralStr()
-        self.gen_dict = {}
         port_pins, port_cfg, port_gen = arxml_port.parse_arxml(gui.arxml_file)
-        if port_pins == None or port_gen == None:
-            self.gen_dict["PortDevErrorDetect"]      = "FALSE"
-            self.gen_dict["PortVersionInfoApi"]      = "FALSE"
-            self.gen_dict["PortSetPinDirectionApi"]  = "FALSE"
-            self.gen_dict["PortSetPinModeApi"]       = "FALSE"
-            return
-        self.gen_dict["PortDevErrorDetect"]      = port_gen["PortDevErrorDetect"]
-        self.gen_dict["PortVersionInfoApi"]      = port_gen["PortVersionInfoApi"]
-        self.gen_dict["PortSetPinDirectionApi"]  = port_gen["PortSetPinDirectionApi"]
-        self.gen_dict["PortSetPinModeApi"]       = port_gen["PortSetPinModeApi"]
+        if port_gen == None:
+            self.configs.append(dappa.AsrCfgStr(self.cfgkeys, self.create_empty_configs()))
+        else:
+            self.configs.append(dappa.AsrCfgStr(self.cfgkeys, port_gen))
+
 
     def __del__(self):
-        del self.config
+        del self.configs[:]
+
+
+    def create_empty_configs(self):
+        port_gen = {}
+        port_gen["PortDevErrorDetect"]      = "FALSE"
+        port_gen["PortVersionInfoApi"]      = "FALSE"
+        port_gen["PortSetPinDirectionApi"]  = "FALSE"
+        port_gen["PortSetPinModeApi"]       = "FALSE"
+        return port_gen
+
 
 
     def draw(self, tab):
         self.tab_struct = tab
+        self.scrollw = window.ScrollableWindow(tab.frame, tab.xsize, tab.ysize)
         port_cmbsel = ("FALSE", "TRUE")
-        
-        # empty space
-        label = tk.Label(tab.frame, text="")
-        label.grid(row=1, column=0, sticky="e")
+
+        # Table heading @0th row, 0th column
+        dappa.place_column_heading(self, row=0, col=0)
 
         # PortDevErrorDetect
-        label = tk.Label(tab.frame, text="PortDevErrorDetect: ")
-        label.grid(row=2, column=0, sticky="e")
-        
-        cmbsel = ttk.Combobox(tab.frame, width=14, textvariable=self.config.error_detect, state="readonly")
-        cmbsel['values'] = port_cmbsel
-        self.config.error_detect.set(self.gen_dict["PortDevErrorDetect"])
-        cmbsel.current()
-        cmbsel.grid(row=2, column=1)
+        dappa.combo(self, "PortDevErrorDetect", 0, 0, 1, 14, port_cmbsel)
 
         # PortVersionInfoApi
-        label = tk.Label(tab.frame, text="PortVersionInfoApi: ")
-        label.grid(row=3, column=0, sticky="e")
-        
-        cmbsel = ttk.Combobox(tab.frame, width=14, textvariable=self.config.verion_api, state="readonly")
-        cmbsel['values'] = port_cmbsel
-        self.config.verion_api.set(self.gen_dict["PortVersionInfoApi"])
-        cmbsel.current()
-        cmbsel.grid(row=3, column=1)
+        dappa.combo(self, "PortVersionInfoApi", 0, 1, 1, 14, port_cmbsel)
 
         # PortSetPinDirectionApi
-        label = tk.Label(tab.frame, text="PortSetPinDirectionApi: ")
-        label.grid(row=4, column=0, sticky="e")
-        
-        cmbsel = ttk.Combobox(tab.frame, width=14, textvariable=self.config.pin_dir_api, state="readonly")
-        cmbsel['values'] = port_cmbsel
-        self.config.pin_dir_api.set(self.gen_dict["PortSetPinDirectionApi"])
-        cmbsel.current()
-        cmbsel.grid(row=4, column=1)
+        dappa.combo(self, "PortSetPinDirectionApi", 0, 2, 1, 14, port_cmbsel)
 
         # PortSetPinModeApi
-        label = tk.Label(tab.frame, text="PortSetPinModeApi: ")
-        label.grid(row=5, column=0, sticky="e")
-        
-        cmbsel = ttk.Combobox(tab.frame, width=14, textvariable=self.config.pin_mode_api, state="readonly")
-        cmbsel['values'] = port_cmbsel
-        self.config.pin_mode_api.set(self.gen_dict["PortSetPinModeApi"])
-        cmbsel.current()
-        cmbsel.grid(row=5, column=1)
+        dappa.combo(self, "PortSetPinModeApi", 0, 3, 1, 14, port_cmbsel)
 
         # empty space
-        label = tk.Label(tab.frame, text="")
+        label = tk.Label(self.scrollw.mnf, text="")
         label.grid(row=6, column=0, sticky="e")
 
         # Save Button
-        genm = tk.Button(tab.frame, width=10, text="Save Configs", command=self.save_data, bg="#206020", fg='white')
+        genm = tk.Button(self.scrollw.mnf, width=10, text="Save Configs", command=self.save_data, bg="#206020", fg='white')
         genm.grid(row=7, column=1)
 
-        self.backup_data()
-        tab.frame.mainloop()
+        self.scrollw.scroll()
 
 
 
-    def backup_data(self):
-        self.gen_dict["PortDevErrorDetect"]      = self.config.error_detect.get()
-        self.gen_dict["PortVersionInfoApi"]      = self.config.verion_api.get()
-        self.gen_dict["PortSetPinDirectionApi"]  = self.config.pin_dir_api.get()
-        self.gen_dict["PortSetPinModeApi"]       = self.config.pin_mode_api.get()
-
-        
     def save_data(self):
-        self.backup_data()
+        # self.backup_data()
         self.tab_struct.save_cb(self.gui)

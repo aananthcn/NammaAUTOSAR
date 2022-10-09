@@ -26,7 +26,7 @@ import arxml.core.lib_defs as lib_defs
 
 
 
-def update_port_gen_to_container(root, tab_gen):
+def update_port_gen_to_container(root, port_gen):
     ctnrname = "PortGeneral"
     pcs_ctnrblk = lib_conf.find_ecuc_container_block(ctnrname, root)
     
@@ -41,18 +41,17 @@ def update_port_gen_to_container(root, tab_gen):
     # Parameters
     params = ET.SubElement(ctnrblk, "PARAMETER-VALUES")
 
-    return
     refname = "/AUTOSAR/EcucDefs/Port/"+ctnrname+"/PortDevErrorDetect"
-    lib_conf.insert_conf_param(params, refname, "numerical", "bool", tab_gen.gen_data["PortDevErrorDetect"])
+    lib_conf.insert_conf_param(params, refname, "numerical", "bool", port_gen["PortDevErrorDetect"])
 
     refname = "/AUTOSAR/EcucDefs/Port/"+ctnrname+"/PortVersionInfoApi"
-    lib_conf.insert_conf_param(params, refname, "numerical", "bool", tab_gen.gen_data["PortVersionInfoApi"])
+    lib_conf.insert_conf_param(params, refname, "numerical", "bool", port_gen["PortVersionInfoApi"])
 
     refname = "/AUTOSAR/EcucDefs/Port/"+ctnrname+"/PortSetPinDirectionApi"
-    lib_conf.insert_conf_param(params, refname, "numerical", "bool", tab_gen.gen_data["PortSetPinDirectionApi"])
+    lib_conf.insert_conf_param(params, refname, "numerical", "bool", port_gen["PortSetPinDirectionApi"])
 
     refname = "/AUTOSAR/EcucDefs/Port/"+ctnrname+"/PortSetPinModeApi"
-    lib_conf.insert_conf_param(params, refname, "numerical", "bool", tab_gen.gen_data["PortSetPinModeApi"])
+    lib_conf.insert_conf_param(params, refname, "numerical", "bool", port_gen["PortSetPinModeApi"])
 
 
 
@@ -235,5 +234,7 @@ def parse_arxml(ar_file):
     params = lib_conf.get_param_list(ctnrblk)
     for par in params:
         port_general[par["tag"]] = par["val"]
+    if len(port_general) == 0:
+        port_general = None
         
     return port_pin_count, port_pins, port_general

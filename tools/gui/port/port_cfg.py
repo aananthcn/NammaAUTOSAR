@@ -71,8 +71,6 @@ class PortConfigSetTab:
         self.n_pins_str = tk.StringVar()
 
         self.n_pins, ports, general = arxml_port.parse_arxml(gui.arxml_file)
-        # print(self.n_pins)
-        # print(ports)
         if self.n_pins == None or ports == None:
             self.n_pins = 0
             self.configs.insert(len(self.configs), dappa.AsrCfgStr(self.cfgkeys, self.create_empty_configs()))
@@ -84,7 +82,6 @@ class PortConfigSetTab:
 
     def __del__(self):
         del self.n_pins_str
-        # del self.pins_str[:]
         del self.non_header_objs[:]
         del self.configs[:]
 

@@ -57,7 +57,7 @@ def port_save_callback(gui):
                 port_cfg.append(cfg.get())
             continue
         if tab.name == "PortGeneral":
-            port_gen = tab.tab
+            port_gen = tab.tab.configs[0].get()
             continue
     arxml_port.update_arxml(gui.arxml_file, port_cfg, port_gen)
     port_cgen.generate_code(gui)
