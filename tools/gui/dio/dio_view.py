@@ -48,15 +48,25 @@ class DioTab:
         self.xsize = w
         self.ysize = h
 
+    def __del__(self):
+        del self.tab
+        del self.frame
+        print("DioTab.__del__() called")
+
 
 def dio_config_close_event(gui, view):
-    global PortConfigViewActive
+    global PortConfigViewActive, TabList
 
     PortConfigViewActive = False
     view.destroy()
+    for tab in TabList:
+        for obj in tab.tab.non_header_objs:
+            obj.destroy()
+    del TabList[:]
 
 
 def dio_save_callback(gui):
+    global TabList
     dio_cfg = None
     dio_grp = None
     dio_gen = None
@@ -67,7 +77,9 @@ def dio_save_callback(gui):
                 dio_cfg.append(cfg.get())
             continue
         if tab.name == "DioChannelGroup":
-            dio_grp = tab.tab
+            dio_grp = []
+            for cfg in tab.tab.configs:
+                dio_grp.append(cfg.get())
             continue
         if tab.name == "DioGeneral":
             dio_gen = tab.tab.configs[0].get()
@@ -75,7 +87,8 @@ def dio_save_callback(gui):
     arxml_dio.update_arxml(gui.arxml_file, dio_cfg, dio_grp, dio_gen)
     dio_cgen.generate_code(gui)
 
-    
+
+
 def show_dio_tabs(gui):
     global PortConfigViewActive, TabList
     
@@ -104,9 +117,10 @@ def show_dio_tabs(gui):
     notebook.add(gen_frame, text ='DioGeneral')
     notebook.pack(expand = 1, fill ="both")
 
-    # destroy old GUI objects
-    for obj in TabList:
-        del obj
+    # # destroy old GUI objects
+    del TabList[:]
+    # for obj in TabList:
+    #     del obj
 
     # create new GUI objects
     dtab = DioTab(cfg_frame, width, height)

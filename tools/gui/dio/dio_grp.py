@@ -25,25 +25,8 @@ import arxml.port.arxml_port as arxml_port
 import arxml.dio.arxml_dio as arxml_dio
 
 import gui.lib.window as window
+import gui.lib.asr_widget as dappa # dappa in Tamil means box
 
-
-class ChGrpStr:
-    port_pin_id = None
-    chan_grp_id = None
-    chan_grp_port_offset = None
-    chan_grp_port_mask = None
-
-    def __init__(self):
-        self.port_pin_id = tk.StringVar()
-        self.chan_grp_id = tk.StringVar()
-        self.chan_grp_port_offset = tk.StringVar()
-        self.chan_grp_port_mask = tk.StringVar()
-
-    def __del__(self):
-        del self.port_pin_id
-        del self.chan_grp_id
-        del self.chan_grp_port_offset
-        del self.chan_grp_port_mask
 
 
 class DioChannelGroupTab:
@@ -51,122 +34,108 @@ class DioChannelGroupTab:
     max_chgrps = 65535
     n_chgrps_str = None
 
-    chgrps_str = []
-    port_chgrps = []
+    gui = None
+    tab_struct = None # passed from *_view.py file
+    scrollw = None
+    configs = [] # all UI configs (tkinter strings) are stored here.
+    cfgkeys = ["DioPortId", "DioChannelGroupIdentification", "DioPortOffset", "DioPortMask"]
+
     port_pin_ids = []
     header_objs = 12 #Objects / widgets that are part of the header and shouldn't be destroyed
     header_size = 3
     non_header_objs = []
-    gui = None
-    tab_struct = None # passed from *_view.py file
+    dappas_per_row = len(cfgkeys) + 1 # +1 for row labels
+    init_view_done = False
+
 
     def __init__(self, gui):
         self.gui = gui
         self.n_chgrps = 0
         self.n_chgrps_str = tk.StringVar()
+
         pins, ports, general = arxml_port.parse_arxml(gui.arxml_file)
         if pins == None or ports == None:
             return
         for port in ports:
             if port['PortPinMode'] == "PORT_PIN_MODE_DIO":
                 self.port_pin_ids.append(port["PortPinId"])
-        dio_pins, dio_ports, dio_gen = arxml_dio.parse_arxml(gui.arxml_file)
-        for diop in dio_ports:
-            if "DioChannelGroupIdentification" in diop:
-                self.init_chgrp(diop)
+
+        dio_pins, dio_cfgs, dio_gen = arxml_dio.parse_arxml(gui.arxml_file)
+        for dioc in dio_cfgs:
+            if "DioChannelGroupIdentification" in dioc:
+                # self.init_chgrp(dioc)
+                self.configs.insert(len(self.configs), dappa.AsrCfgStr(self.cfgkeys, dioc))
+                self.n_chgrps += 1
+        self.n_chgrps_str.set(self.n_chgrps)
 
 
     def __del__(self):
         del self.n_chgrps_str
-        del self.chgrps_str[:]
-        del self.port_chgrps[:]
         del self.non_header_objs[:]
+        del self.port_pin_ids[:]
+        del self.configs[:]
+        print("dio_grp.__del__() called")
 
 
-    def init_chgrp(self, dioport):
-        self.n_chgrps += 1
-        
-        # create new objects
+
+
+    def create_empty_configs(self):
         chgrp = {}
-        chgrp_str = ChGrpStr()
-        
-        # initialize objects
-        chgrp["PortPinId"] = dioport["DioPortId"]
-        chgrp_str.port_pin_id.set(dioport["DioPortId"])
-        chgrp["DioChannelGroupIdentification"] = dioport["DioChannelGroupIdentification"]
-        chgrp_str.chan_grp_id.set(dioport["DioChannelGroupIdentification"])
-        chgrp["DioPortOffset"] = dioport["DioPortOffset"]
-        chgrp_str.chan_grp_port_offset.set(dioport["DioPortOffset"])
-        chgrp["DioPortMask"] = dioport["DioPortMask"]
-        chgrp_str.chan_grp_port_mask.set(dioport["DioPortMask"])
-        
-        # add them to self for gui update
-        self.chgrps_str.append(chgrp_str)
-        self.port_chgrps.append(chgrp)
-
-
-    def create_empty_chgrp(self):
-        chgrp = {}
-        chgrp["PortPinId"] = "65535"
+        chgrp["DioPortId"] = "65535"
         chgrp["DioChannelGroupIdentification"] = "ChGrp_"
         chgrp["DioPortOffset"] = "e.g., 0x4"
         chgrp["DioPortMask"] = "e.g., 0xF0F"
         return chgrp
 
 
-    def update(self):
-        # Backup current task entries from GUI
-        self.backup_data()
 
-        # destroy most old gui widgets
-        self.n_chgrps = int(self.n_chgrps_str.get())
-        for obj in self.non_header_objs:
+    def delete_dappa_row(self):
+        objlist = self.non_header_objs[-self.dappas_per_row:]
+        for obj in objlist:
             obj.destroy()
+        del self.non_header_objs[-self.dappas_per_row:]
+
+
+
+    def draw_dappa_row(self, i):
+        dappa.label(self, "Channel Group #", self.header_size+i, 0, "e")
+
+        # DioPortId
+        dappa.combo(self, "DioPortId", i, self.header_size+i, 1, 14, self.port_pin_ids)
+
+        # DioChannelGroupIdentification
+        dappa.entry(self, "DioChannelGroupIdentification", i, self.header_size+i, 2, 30, "normal")
+
+        # Channel Group - DioPortOffset
+        dappa.entry(self, "DioPortOffset", i, self.header_size+i, 3, 15, "normal")
+
+        # Channel Group - DioPortMask
+        dappa.entry(self, "DioPortMask", i, self.header_size+i, 4, 15, "normal")
+
+
+
+    def update(self):
+        # get dappas to be added or removed
+        self.n_chgrps = int(self.n_chgrps_str.get())
 
         # Tune memory allocations based on number of rows or boxes
-        n_chgrps_str = len(self.chgrps_str)
-        if self.n_chgrps > n_chgrps_str:
-            for i in range(self.n_chgrps - n_chgrps_str):
-                self.chgrps_str.insert(len(self.chgrps_str), ChGrpStr())
-                self.port_chgrps.insert(len(self.port_chgrps), self.create_empty_chgrp())
-        elif n_chgrps_str > self.n_chgrps:
-            for i in range(n_chgrps_str - self.n_chgrps):
-                del self.chgrps_str[-1]
-                del self.port_chgrps[-1]
+        n_dappa_rows = len(self.configs)
+        if not self.init_view_done:
+            for i in range(n_dappa_rows):
+                self.draw_dappa_row(i)
+            self.init_view_done = True
+        elif self.n_chgrps > n_dappa_rows:
+            for i in range(self.n_chgrps - n_dappa_rows):
+                self.configs.insert(len(self.configs), dappa.AsrCfgStr(self.cfgkeys, self.create_empty_configs()))
+                self.draw_dappa_row(n_dappa_rows+i)
+        elif n_dappa_rows > self.n_chgrps:
+            for i in range(n_dappa_rows - self.n_chgrps):
+                self.delete_dappa_row()
+                del self.configs[-1]
 
-        # Draw new objects
-        for i in range(0, self.n_chgrps):
-            label = tk.Label(self.scrollw.mnf, text="Channel Group #")
-            label.grid(row=self.header_size+i, column=0, sticky="e")
-            self.non_header_objs.append(label)
-
-            # PortPinId
-            cmbsel = ttk.Combobox(self.scrollw.mnf, width=14, textvariable=self.chgrps_str[i].port_pin_id, state="readonly")
-            cmbsel['values'] = self.port_pin_ids
-            # self.config.masked_write_port_api.set("FALSE")
-            cmbsel.current(0)
-            cmbsel.grid(row=self.header_size+i, column=1)
-
-            # DioChannelGroupIdentification
-            entry = tk.Entry(self.scrollw.mnf, width=30, textvariable=self.chgrps_str[i].chan_grp_id)
-            self.chgrps_str[i].chan_grp_id.set(self.port_chgrps[i]["DioChannelGroupIdentification"])
-            entry.grid(row=self.header_size+i, column=2)
-            self.non_header_objs.append(entry)
-
-            # Channel Group - DioPortOffset
-            entry = tk.Entry(self.scrollw.mnf, width=15, textvariable=self.chgrps_str[i].chan_grp_port_offset)
-            self.chgrps_str[i].chan_grp_port_offset.set(self.port_chgrps[i]["DioPortOffset"])
-            entry.grid(row=self.header_size+i, column=3)
-            self.non_header_objs.append(entry)
-
-            # Channel Group - DioPortMask
-            entry = tk.Entry(self.scrollw.mnf, width=15, textvariable=self.chgrps_str[i].chan_grp_port_mask)
-            self.chgrps_str[i].chan_grp_port_mask.set(self.port_chgrps[i]["DioPortMask"])
-            entry.grid(row=self.header_size+i, column=4)
-            self.non_header_objs.append(entry)
-            
         # Set the self.cv scrolling region
         self.scrollw.scroll()
+
 
 
     def draw(self, tab):
@@ -188,35 +157,12 @@ class DioChannelGroupTab:
         # Update buttons frames idle tasks to let tkinter calculate buttons sizes
         self.scrollw.update()
 
-        # Table heading
-        label = tk.Label(self.scrollw.mnf, text=" ")
-        label.grid(row=2, column=0, sticky="w")
-        label = tk.Label(self.scrollw.mnf, text="PortPinId")
-        label.grid(row=2, column=1, sticky="w")
-        label = tk.Label(self.scrollw.mnf, text="Channel Group ID")
-        label.grid(row=2, column=2, sticky="w")
-        label = tk.Label(self.scrollw.mnf, text="DioPortOffset")
-        label.grid(row=2, column=3, sticky="we")
-        label = tk.Label(self.scrollw.mnf, text="DioPortMask")
-        label.grid(row=2, column=4, sticky="w")
+        # Table heading @2nd row, 1st column
+        dappa.place_heading(self, 2, 1)
 
         self.update()
 
 
 
-    def backup_data(self):
-        n_chgrps_str = len(self.chgrps_str)
-        for i in range(n_chgrps_str):
-            if len(self.chgrps_str[i].port_pin_id.get()):
-                self.port_chgrps[i]["PortPinId"] = self.chgrps_str[i].port_pin_id.get()
-            if len(self.chgrps_str[i].chan_grp_id.get()):
-                self.port_chgrps[i]["DioChannelGroupIdentification"] = self.chgrps_str[i].chan_grp_id.get()
-            if len(self.chgrps_str[i].chan_grp_port_offset.get()):
-                self.port_chgrps[i]["DioPortOffset"] = self.chgrps_str[i].chan_grp_port_offset.get()
-            if len(self.chgrps_str[i].chan_grp_port_mask.get()):
-                self.port_chgrps[i]["DioPortMask"] = self.chgrps_str[i].chan_grp_port_mask.get()
-
-
     def save_data(self):
-        self.backup_data()
         self.tab_struct.save_cb(self.gui)

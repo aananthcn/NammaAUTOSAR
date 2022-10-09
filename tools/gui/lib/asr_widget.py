@@ -36,7 +36,7 @@ class AsrCfgStr:
     def __init__(view, headings, values):
         view.dispvar = {}
         view.datavar = {}
-        if headings == None or values == None or len(headings) != len(values):
+        if headings == None or values == None or len(headings) > len(values):
             print("ConfigStr.__init__(): invalid argument!")
             return
         
@@ -52,7 +52,7 @@ class AsrCfgStr:
         del view.datavar
 
     def set(view, values):
-        if values == None or len(view.dispvar) != len(values):
+        if values == None or len(view.dispvar) > len(values):
             print("ConfigStr.set(): invalid argument!")
             return
 

@@ -111,7 +111,7 @@ class SpiChannelTab:
 
 
     def update(self):
-        # destroy most old gui widgets
+        # get dappas to be added or removed
         self.n_spi_chans = int(self.n_spi_chans_str.get())
 
         # Tune memory allocations based on number of rows or boxes

@@ -65,8 +65,8 @@ def update_dio_config_container(root, dio_cfg, dio_grp):
 
         # Check if Channel Group information corresponding to this DioPortId exists
         this_chgrp = None
-        if len(dio_grp.port_chgrps) > 0:
-            for chgrp in dio_grp.port_chgrps:
+        if len(dio_grp) > 0:
+            for chgrp in dio_grp:
                 if chgrp["PortPinId"] == pin["DioPortId"]:
                     this_chgrp = chgrp
                     break

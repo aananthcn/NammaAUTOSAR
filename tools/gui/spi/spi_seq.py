@@ -33,8 +33,8 @@ class SpiSequenceTab:
     n_spi_seqs_str = None
 
     gui = None
-    scrollw = None
     tab_struct = None # passed from *_view.py file
+    scrollw = None
     configs = [] # all UI configs (tkinter strings) are stored here.
     cfgkeys = ["SpiSequenceId", "SpiInterruptibleSequence", "SpiSeqEndNotification", "SpiJobAssignment"]
     
@@ -98,7 +98,7 @@ class SpiSequenceTab:
 
 
     def update(self):
-        # destroy most old gui widgets
+        # get dappas to be added or removed
         self.n_spi_seqs = int(self.n_spi_seqs_str.get())
 
         # Tune memory allocations based on number of rows or boxes
