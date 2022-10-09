@@ -52,7 +52,9 @@ def port_save_callback(gui):
     port_gen = None
     for tab in TabList:
         if tab.name == "PortConfigSet":
-            port_cfg = tab.tab
+            port_cfg = []
+            for cfg in tab.tab.configs:
+                port_cfg.append(cfg.get())
             continue
         if tab.name == "PortGeneral":
             port_gen = tab.tab
@@ -99,14 +101,9 @@ def show_port_config(gui):
     for obj in TabList:
         del obj
 
-    # parse port info from arxml file
-    pins, pin_info, port_general = arxml_port.parse_arxml(gui.arxml_file)
-
     # create new GUI objects
     ptab = PortTab(pcs_frame, width, height)
     ptab.tab = port_cfg.PortConfigSetTab(gui)
-    if pins > 0:
-        ptab.tab.init(pins, pin_info)
     ptab.name = "PortConfigSet"
     TabList.append(ptab)
     ptab.tab.draw(ptab)

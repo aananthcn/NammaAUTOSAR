@@ -41,7 +41,6 @@ class DioConfigTab:
     non_header_objs = []
     
     toplvl = None
-    scrollw = None
 
     gui = None
     scrollw = None

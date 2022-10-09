@@ -24,6 +24,7 @@ from tkinter import ttk
 import arxml.port.arxml_port as arxml_port
 
 import gui.lib.window as window
+import gui.lib.asr_widget as dappa # dappa in Tamil means box
 
 
 StdPinModes = (
@@ -40,67 +41,55 @@ StdPinModes = (
     "PORT_PIN_MODE_SPI" 
 )
 
-class PinStr:
-    id = None
-    pindir = None
-    dir_changeable = None
-    pin_level = None
-    pin_mode = None
-    pin_initial_mode = None
-    mode_changeable = None
-
-    def __init__(self):
-        self.id = tk.StringVar()
-        self.pindir = tk.StringVar()
-        self.dir_changeable = tk.StringVar()
-        self.pin_level = tk.StringVar()
-        self.pin_mode = tk.StringVar()
-        self.pin_initial_mode = tk.StringVar()
-        self.mode_changeable = tk.StringVar()
-
-    def __del__(self):
-        del self.id
-        del self.pindir
-        del self.dir_changeable
-        del self.pin_level
-        del self.pin_mode
-        del self.pin_initial_mode
-        del self.mode_changeable
-
 
 class PortConfigSetTab:
     n_pins = 0
     max_pins = 65535
     n_pins_str = None
 
-    pins_str = []
+    # pins_str = []
     events = []
     port_pins = []
+
+    gui = None
+    tab_struct = None # passed from *_view.py file
+    scrollw = None
+    configs = None # all UI configs (tkinter strings) are stored here.
+    cfgkeys = ["PortPinId", "PortPinDirection", "PortPinDirectionChangeable", "PortPinLevelValue",
+               "PortPinMode", "PortPinInitialMode", "PortPinModeChangeable"]
+    dappas_per_row = len(cfgkeys) + 1 # +1 for row labels
+    init_view_done = False
+
     header_objs = 12 #Objects / widgets that are part of the header and shouldn't be destroyed
     header_size = 3
     non_header_objs = []
-    gui = None
-    tab_struct = None # passed from *_view.py file
+
 
     def __init__(self, gui):
         self.gui = gui
         self.configs = []
-        self.n_pins = 0
         self.n_pins_str = tk.StringVar()
 
+        self.n_pins, ports, general = arxml_port.parse_arxml(gui.arxml_file)
+        # print(self.n_pins)
+        # print(ports)
+        if self.n_pins == None or ports == None:
+            self.n_pins = 0
+            self.configs.insert(len(self.configs), dappa.AsrCfgStr(self.cfgkeys, self.create_empty_configs()))
 
-    def init(self, n, pinlist):
-        self.n_pins = n
-        for i in range(n):
-            self.port_pins.insert(i, pinlist[i])
+        self.n_pins = len(ports)
+        for port in ports:
+            self.configs.insert(len(self.configs), dappa.AsrCfgStr(self.cfgkeys, port))
 
 
     def __del__(self):
         del self.n_pins_str
-        del self.pins_str[:]
+        # del self.pins_str[:]
+        del self.non_header_objs[:]
+        del self.configs[:]
 
 
-    def create_empty_portpin(self):
+    def create_empty_configs(self):
         portpin = {}
         
         portpin["PortPinDirection"] = "PORT_PIN_IN"
@@ -114,85 +103,59 @@ class PortConfigSetTab:
         return portpin
 
 
-    def update(self):
-        # Backup current task entries from GUI
-        self.backup_data()
 
-        # destroy most old gui widgets
-        self.n_pins = int(self.n_pins_str.get())
-        for obj in self.non_header_objs:
+    def delete_dappa_row(self):
+        objlist = self.non_header_objs[-self.dappas_per_row:]
+        for obj in objlist:
             obj.destroy()
+        del self.non_header_objs[-self.dappas_per_row:]
+
+
+
+    def draw_dappa_row(self, i):
+        dappa.label(self, "Pin #", self.header_size+i, 0, "e")
+
+        # PortPinId
+        dappa.entry(self, "PortPinId", i, self.header_size+i, 1, 10, "normal")
+
+        # PortPinDirection
+        dappa.combo(self, "PortPinDirection", i, self.header_size+i, 2, 18, ("PORT_PIN_IN", "PORT_PIN_OUT"))
+
+        # PortPinDirectionChangeable
+        dappa.combo(self, "PortPinDirectionChangeable", i, self.header_size+i, 3, 20, ("FALSE", "TRUE"))
+
+        # PortPinLevelValue
+        values = ("PORT_PIN_LEVEL_LOW", "PORT_PIN_LEVEL_HIGH")
+        dappa.combo(self, "PortPinLevelValue", i, self.header_size+i, 4, 22, values)
+
+        # PortPinMode
+        dappa.combo(self, "PortPinMode", i, self.header_size+i, 5, 28, StdPinModes)
+
+        # PortPinInitialMode
+        dappa.combo(self, "PortPinInitialMode", i, self.header_size+i, 6, 28, StdPinModes)
+
+        # PortPinModeChangeable
+        dappa.combo(self, "PortPinModeChangeable", i, self.header_size+i, 7, 18, StdPinModes)
+
+
+
+    def update(self):
+        self.n_pins = int(self.n_pins_str.get())
 
         # Tune memory allocations based on number of rows or boxes
-        n_pins_str = len(self.pins_str)
-        if self.n_pins > n_pins_str:
-            for i in range(self.n_pins - n_pins_str):
-                self.pins_str.insert(len(self.pins_str), PinStr())
-                self.port_pins.insert(len(self.port_pins), self.create_empty_portpin())
-        elif n_pins_str > self.n_pins:
-            for i in range(n_pins_str - self.n_pins):
-                del self.pins_str[-1]
-                del self.port_pins[-1]
-
-        # Draw new objects
-        for i in range(0, self.n_pins):
-            label = tk.Label(self.scrollw.mnf, text="Pin #")
-            label.grid(row=self.header_size+i, column=0, sticky="e")
-            self.non_header_objs.append(label)
-            
-            # PortPinId
-            entry = tk.Entry(self.scrollw.mnf, width=10, textvariable=self.pins_str[i].id)
-            self.pins_str[i].id.set(self.port_pins[i]["PortPinId"])
-            entry.grid(row=self.header_size+i, column=1)
-            self.non_header_objs.append(entry)
-
-            # PortPinDirection
-            cmbsel = ttk.Combobox(self.scrollw.mnf, width=14, textvariable=self.pins_str[i].pindir, state="readonly")
-            cmbsel['values'] = ("PORT_PIN_IN", "PORT_PIN_OUT")
-            self.pins_str[i].pindir.set(self.port_pins[i]["PortPinDirection"])
-            cmbsel.current()
-            cmbsel.grid(row=self.header_size+i, column=2)
-            self.non_header_objs.append(cmbsel)
-
-            # PortPinDirectionChangeable
-            cmbsel = ttk.Combobox(self.scrollw.mnf, width=8, textvariable=self.pins_str[i].dir_changeable, state="readonly")
-            cmbsel['values'] = ("FALSE", "TRUE")
-            self.pins_str[i].dir_changeable.set(self.port_pins[i]["PortPinDirectionChangeable"])
-            cmbsel.current()
-            cmbsel.grid(row=self.header_size+i, column=3)
-            self.non_header_objs.append(cmbsel)
-
-            # PortPinLevelValue
-            cmbsel = ttk.Combobox(self.scrollw.mnf, width=22, textvariable=self.pins_str[i].pin_level, state="readonly")
-            cmbsel['values'] = ("PORT_PIN_LEVEL_LOW", "PORT_PIN_LEVEL_HIGH")
-            self.pins_str[i].pin_level.set(self.port_pins[i]["PortPinLevelValue"])
-            cmbsel.current()
-            cmbsel.grid(row=self.header_size+i, column=4)
-            self.non_header_objs.append(cmbsel)
-
-            # PortPinMode
-            cmbsel = ttk.Combobox(self.scrollw.mnf, width=28, textvariable=self.pins_str[i].pin_mode, state="readonly")
-            cmbsel['values'] = StdPinModes
-            self.pins_str[i].pin_mode.set(self.port_pins[i]["PortPinMode"])
-            cmbsel.current()
-            cmbsel.grid(row=self.header_size+i, column=5)
-            self.non_header_objs.append(cmbsel)
-
-            # PortPinInitialMode
-            cmbsel = ttk.Combobox(self.scrollw.mnf, width=28, textvariable=self.pins_str[i].pin_initial_mode, state="readonly")
-            cmbsel['values'] = StdPinModes
-            self.pins_str[i].pin_initial_mode.set(self.port_pins[i]["PortPinInitialMode"])
-            cmbsel.current()
-            cmbsel.grid(row=self.header_size+i, column=6)
-            self.non_header_objs.append(cmbsel)
-
-            # PortPinModeChangeable
-            cmbsel = ttk.Combobox(self.scrollw.mnf, width=8, textvariable=self.pins_str[i].mode_changeable, state="readonly")
-            cmbsel['values'] = ("FALSE", "TRUE")
-            self.pins_str[i].mode_changeable.set(self.port_pins[i]["PortPinModeChangeable"])
-            cmbsel.current()
-            cmbsel.grid(row=self.header_size+i, column=7)
-            self.non_header_objs.append(cmbsel)
+        n_dappa_rows = len(self.configs)
+        if not self.init_view_done:
+            for i in range(n_dappa_rows):
+                self.draw_dappa_row(i)
+            self.init_view_done = True
+        elif self.n_pins > n_dappa_rows:
+            for i in range(self.n_pins - n_dappa_rows):
+                self.configs.insert(len(self.configs), dappa.AsrCfgStr(self.cfgkeys, self.create_empty_configs()))
+                self.draw_dappa_row(n_dappa_rows+i)
+        elif n_dappa_rows > self.n_pins:
+            for i in range(n_dappa_rows - self.n_pins):
+                self.delete_dappa_row()
+                del self.configs[-1]
 
         # Set the self.cv scrolling region
         self.scrollw.scroll()
@@ -217,51 +180,14 @@ class PortConfigSetTab:
         # Update buttons frames idle tasks to let tkinter calculate buttons sizes
         self.scrollw.update()
 
-        # Table heading
-        label = tk.Label(self.scrollw.mnf, text=" ")
-        label.grid(row=2, column=0, sticky="w")
-        label = tk.Label(self.scrollw.mnf, text="PortPinId")
-        label.grid(row=2, column=1, sticky="w")
-        label = tk.Label(self.scrollw.mnf, text="PinDirection")
-        label.grid(row=2, column=2, sticky="we")
-        label = tk.Label(self.scrollw.mnf, text="DirChangeable")
-        label.grid(row=2, column=3, sticky="w")
-        label = tk.Label(self.scrollw.mnf, text="PinLevelValue")
-        label.grid(row=2, column=4, sticky="w")
-        label = tk.Label(self.scrollw.mnf, text="PortPinMode")
-        label.grid(row=2, column=5, sticky="w")
-        label = tk.Label(self.scrollw.mnf, text="PinInitialMode")
-        label.grid(row=2, column=6, sticky="w")
-        label = tk.Label(self.scrollw.mnf, text="ModeChangeable")
-        label.grid(row=2, column=7, sticky="w")
+        # Table heading @2nd row, 1st column
+        dappa.place_heading(self, 2, 1)
 
         self.update()
         self.scrollw.scroll()
 
 
 
-    def backup_data(self):
-        n_pins_str = len(self.pins_str)
-        for i in range(n_pins_str):
-            if len(self.pins_str[i].id.get()):
-                self.port_pins[i]["PortPinId"] = self.pins_str[i].id.get()
-            if len(self.pins_str[i].pindir.get()):
-                self.port_pins[i]["PortPinDirection"] = self.pins_str[i].pindir.get()
-            if len(self.pins_str[i].dir_changeable.get()):
-                self.port_pins[i]["PortPinDirectionChangeable"] = self.pins_str[i].dir_changeable.get()
-            if len(self.pins_str[i].pin_level.get()):
-                self.port_pins[i]["PortPinLevelValue"] = self.pins_str[i].pin_level.get()
-            if len(self.pins_str[i].pin_mode.get()):
-                self.port_pins[i]["PortPinMode"] = self.pins_str[i].pin_mode.get()
-            if len(self.pins_str[i].mode_changeable.get()):
-                self.port_pins[i]["PortPinModeChangeable"] = self.pins_str[i].mode_changeable.get()
-            if len(self.pins_str[i].pin_initial_mode.get()):
-                self.port_pins[i]["PortPinInitialMode"] = self.pins_str[i].pin_initial_mode.get()
-
-
     def save_data(self):
-        # arxml_port.update_arxml(self.gui.arxml_file, self)
-        # port_cgen.generate_code(self.gui)
-        self.backup_data()
         self.tab_struct.save_cb(self.gui)
 
