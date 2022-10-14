@@ -36,13 +36,17 @@ class AsrCfgStr:
     def __init__(view, headings, values):
         view.dispvar = {}
         view.datavar = {}
-        if headings == None or values == None or len(headings) > len(values):
+        # if headings == None or values == None or len(headings) > len(values):
+        if headings == None or values == None:
             print("ConfigStr.__init__(): invalid argument!")
             return
         
         for key in headings:
             view.dispvar[key] = tk.StringVar()
-            view.datavar[key] = values[key]
+            if key in values:
+                view.datavar[key] = values[key]
+            else:
+                view.datavar[key] = None
 
     # remove all tkinter string objects
     def __del__(view):
@@ -52,7 +56,8 @@ class AsrCfgStr:
         del view.datavar
 
     def set(view, values):
-        if values == None or len(view.dispvar) > len(values):
+        # if values == None or len(view.dispvar) > len(values):
+        if values == None:
             print("ConfigStr.set(): invalid argument!")
             return
 
@@ -61,7 +66,8 @@ class AsrCfgStr:
 
     def get(view):
         for key in view.dispvar:
-            view.datavar[key] = view.dispvar[key].get()
+            if isinstance(view.datavar[key], str):
+	            view.datavar[key] = view.dispvar[key].get()
         return view.datavar
 
 

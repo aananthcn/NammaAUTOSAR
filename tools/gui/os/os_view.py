@@ -27,19 +27,21 @@ import os_builder.scripts.oil as oil
 import gui.os.os_cfg as gui_os_tab
 import gui.os.mode_cfg as gui_am_tab
 import gui.os.cnt_cfg as gui_cr_tab
-import gui.os.msg_cfg as gui_ms_tab
+# import gui.os.msg_cfg as gui_ms_tab
 import gui.os.res_cfg as gui_rs_tab
 import gui.os.tsk_cfg as gui_tk_tab
 import gui.os.alm_cfg as gui_al_tab
 import gui.os.isr_cfg as gui_ir_tab
 
 
-OsTab = AmTab = CtrTab = MsgTab = ResTab = TskTab = AlmTab = IsrTab = None
+# OsTab = AmTab = CtrTab = MsgTab = ResTab = TskTab = AlmTab = IsrTab = None
+OsTab = AmTab = CtrTab = ResTab = TskTab = AlmTab = IsrTab = None
 OsConfigViewActive = False
 
 
 def show_os_tab_switch(event):
-    global OsTab, AmTab, CtrTab, MsgTab, ResTab, TskTab, AlmTab, IsrTab 
+    # global OsTab, AmTab, CtrTab, MsgTab, ResTab, TskTab, AlmTab, IsrTab 
+    global OsTab, AmTab, CtrTab, ResTab, TskTab, AlmTab, IsrTab 
 
     current_tab = None #this variable can be used for debugging!
     if gui.main_view.window.tab(gui.main_view.window.select(), "text").strip() == "OS Configs":
@@ -51,8 +53,8 @@ def show_os_tab_switch(event):
         current_tab = AmTab
     if gui.main_view.window.tab(gui.main_view.window.select(), "text").strip() == "Counters":
         current_tab = CtrTab
-    if gui.main_view.window.tab(gui.main_view.window.select(), "text").strip() == "Messages":
-        current_tab = MsgTab
+    # if gui.main_view.window.tab(gui.main_view.window.select(), "text").strip() == "Messages":
+    #     current_tab = MsgTab
     if gui.main_view.window.tab(gui.main_view.window.select(), "text").strip() == "Resources":
         current_tab = ResTab
     if gui.main_view.window.tab(gui.main_view.window.select(), "text").strip() == "Tasks":
@@ -66,7 +68,8 @@ def show_os_tab_switch(event):
 
 
 def backup_os_gui_before_save():
-    global OsTab, AmTab, CtrTab, MsgTab, ResTab, TskTab, AlmTab, IsrTab
+    # global OsTab, AmTab, CtrTab, MsgTab, ResTab, TskTab, AlmTab, IsrTab
+    global OsTab, AmTab, CtrTab, ResTab, TskTab, AlmTab, IsrTab
     global OsConfigViewActive
 
     # Do not backup if the view is not active
@@ -80,7 +83,7 @@ def backup_os_gui_before_save():
     OsTab.backup_data()
     AmTab.backup_data()
     CtrTab.backup_data()
-    MsgTab.backup_data()
+    # MsgTab.backup_data()
     ResTab.backup_data()
     TskTab.backup_data()
     AlmTab.backup_data()
@@ -98,7 +101,8 @@ def os_config_close_event(view):
 
     
 def show_os_config(gui):
-    global OsTab, AmTab, CtrTab, MsgTab, ResTab, TskTab, AlmTab, IsrTab
+    # global OsTab, AmTab, CtrTab, MsgTab, ResTab, TskTab, AlmTab, IsrTab
+    global OsTab, AmTab, CtrTab, ResTab, TskTab, AlmTab, IsrTab
     global OsConfigViewActive
 
     # Create a child window (tabbed view)
@@ -116,28 +120,28 @@ def show_os_config(gui):
     os_tab = ttk.Frame(notebook)
     am_tab = ttk.Frame(notebook)
     cr_tab = ttk.Frame(notebook)
-    ms_tab = ttk.Frame(notebook)
+    # ms_tab = ttk.Frame(notebook)
     rs_tab = ttk.Frame(notebook)
     tk_tab = ttk.Frame(notebook)
     al_tab = ttk.Frame(notebook)
     ir_tab = ttk.Frame(notebook)
     
     # Add tabs to configure OS
-    notebook.add(os_tab, text ='OS Configs')
-    notebook.add(am_tab, text =' AppModes ')
-    notebook.add(cr_tab, text =' Counters ')
-    notebook.add(ms_tab, text =' Messages ')
-    notebook.add(rs_tab, text =' Resources ')
-    notebook.add(tk_tab, text ='   Tasks   ')
-    notebook.add(al_tab, text ='  Alarms  ')
-    notebook.add(ir_tab, text ='   ISRs   ')
+    notebook.add(os_tab, text ='Os        ')
+    notebook.add(am_tab, text ='OsAppMode ')
+    notebook.add(cr_tab, text ='OsCounter ')
+    # notebook.add(ms_tab, text =' Messages ')
+    notebook.add(rs_tab, text ='OsResource')
+    notebook.add(tk_tab, text ='OsTasks   ')
+    notebook.add(al_tab, text ='OsAlarm   ')
+    notebook.add(ir_tab, text ='OsIsr   ')
     notebook.pack(expand = 1, fill ="both")
 
     # destroy old GUI objects
     del OsTab
     del AmTab
     del CtrTab
-    del MsgTab
+    # del MsgTab
     del ResTab
     del TskTab
     del AlmTab
@@ -153,19 +157,21 @@ def show_os_config(gui):
     CtrTab = gui_cr_tab.CounterTab(sg.Counters)
     CtrTab.draw(cr_tab)
 
-    MsgTab = gui_ms_tab.MessageTab(sg.Tasks)
-    MsgTab.draw(ms_tab, width, height)
+    # MsgTab = gui_ms_tab.MessageTab(sg.Tasks)
+    # MsgTab.draw(ms_tab, width, height)
 
     ResTab = gui_rs_tab.ResourceTab(sg.Tasks)
     ResTab.draw(rs_tab, width, height)
 
-    TskTab = gui_tk_tab.TaskTab(sg.Tasks, AmTab, ResTab, MsgTab)
+    # TskTab = gui_tk_tab.TaskTab(sg.Tasks, AmTab, ResTab, MsgTab)
+    TskTab = gui_tk_tab.TaskTab(sg.Tasks, AmTab, ResTab)
     TskTab.draw(tk_tab, width, height)
     
     AlmTab = gui_al_tab.AlarmTab(sg.Alarms, TskTab, AmTab, CtrTab)
     AlmTab.draw(al_tab, width, height)
 
-    IsrTab = gui_ir_tab.IsrTab(sg.ISRs, ResTab, MsgTab)
+    # IsrTab = gui_ir_tab.IsrTab(sg.ISRs, ResTab, MsgTab)
+    IsrTab = gui_ir_tab.IsrTab(sg.ISRs, ResTab)
     IsrTab.draw(ir_tab, width, height)
 
     gui.main_view.window.bind("<<NotebookTabChanged>>", show_os_tab_switch)

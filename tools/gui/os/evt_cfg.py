@@ -35,6 +35,7 @@ class EventWindow:
     HeaderSize = 1
     xsize = None
     ysize = None
+    mnf = None
     
 
     def __init__(self, task):
@@ -50,6 +51,7 @@ class EventWindow:
         del self.n_events_str
         del self.events_str[:]
 
+
     def update_events(self, mstr):
         self.n_events = int(mstr.get())
         # print("Update events: "+ str(self.n_events))        
@@ -58,11 +60,10 @@ class EventWindow:
                 item.destroy()
         self.update()
 
-    def draw(self, tab):
-        self.xsize = xsize
-        self.ysize = ysize
-        self.scrollw = window.ScrollableWindow(tab, self.xsize, self.ysize)
 
+    def draw(self, tab):
+        self.mnf = tab
+        
         #Number of Events - Label + Spinbox
         label = tk.Label(self.mnf, text="No. of Events:")
         label.grid(row=0, column=0, sticky="w")
@@ -70,10 +71,6 @@ class EventWindow:
                     values=tuple(range(0,self.max_events)))
         self.n_events_str.set(self.n_events)
         spinb.grid(row=0, column=1, sticky="w")
-
-        # Update buttons frames idle tasks to let tkinter calculate buttons sizes
-        self.scrollw.update()
-
         self.update()
 
 
@@ -101,9 +98,6 @@ class EventWindow:
             self.events_str[i].set(self.events[i])
             entry.grid(row=self.HeaderSize+i, column=1)
 
-        # Set the self.cv scrolling region
-        self.scrollw.scroll()
-
 
     def backup_data(self):
         n_events_str = len(self.events_str)
@@ -112,8 +106,7 @@ class EventWindow:
 
 
     def extract_events(self, task):
-        if "EVENT" in task:
-            # print(task["EVENT"])
+        if task != None and "EVENT" in task:
             self.events = copy(task["EVENT"])
         else:
             self.events = []

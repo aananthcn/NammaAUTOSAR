@@ -67,10 +67,11 @@ class IsrTab:
     active_widget = None
 
     rstab = None
-    mstab = None
+    # mstab = None
 
 
-    def __init__(self, isrs, rstab, mstab):
+    # def __init__(self, isrs, rstab, mstab):
+    def __init__(self, isrs, rstab):
         self.sg_isrs = isrs
         # if not self.sg_isrs:
         #     nisr = self.create_empty_isr()
@@ -83,7 +84,7 @@ class IsrTab:
         
         # collect all info from other tabs
         self.rstab = rstab
-        self.mstab = mstab
+        # self.mstab = mstab
 
 
     def __del__(self):

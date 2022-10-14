@@ -137,8 +137,11 @@ class AlarmTab:
 
     def extract_task_names(self):
         del self.task_names[:]
-        for tsk in self.tktab.tasks_str:
-            self.task_names.append(tsk.name.get())
+        for tsk in self.tktab.configs:
+            tsk_data = tsk.get()
+            self.task_names.append(tsk_data["Task Name"])
+        # for tsk in self.tktab.tasks_str:
+        #     self.task_names.append(tsk.name.get())
         return self.task_names
 
 
@@ -152,10 +155,11 @@ class AlarmTab:
 
         # get events from tasks configured in Alarm[alarm_id]
         task_name = self.sg_alarms[alarm_id]["arg1"]
-        for task in self.tktab.sg_tasks:
-            if task_name == task["Task Name"]:
-                if "EVENT" in task:
-                    events = copy(task["EVENT"])
+        # for task in self.tktab.sg_tasks:
+        for task in self.tktab.configs:
+            if task_name == task.get()["Task Name"]:
+                if "EVENT" in task.get():
+                    events = copy(task.get()["EVENT"])
                     break
 
         return events
