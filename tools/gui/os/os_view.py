@@ -127,14 +127,14 @@ def show_os_config(gui):
     ir_tab = ttk.Frame(notebook)
     
     # Add tabs to configure OS
-    notebook.add(os_tab, text ='Os        ')
+    notebook.add(os_tab, text ='   Os     ')
     notebook.add(am_tab, text ='OsAppMode ')
     notebook.add(cr_tab, text ='OsCounter ')
     # notebook.add(ms_tab, text =' Messages ')
     notebook.add(rs_tab, text ='OsResource')
     notebook.add(tk_tab, text ='OsTasks   ')
     notebook.add(al_tab, text ='OsAlarm   ')
-    notebook.add(ir_tab, text ='OsIsr   ')
+    notebook.add(ir_tab, text ='  OsIsr   ')
     notebook.pack(expand = 1, fill ="both")
 
     # destroy old GUI objects

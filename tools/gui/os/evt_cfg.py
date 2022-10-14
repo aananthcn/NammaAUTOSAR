@@ -106,7 +106,7 @@ class EventWindow:
 
 
     def extract_events(self, task):
-        if task != None and "EVENT" in task:
+        if task != None and "EVENT" in task and task["EVENT"]:
             self.events = copy(task["EVENT"])
         else:
             self.events = []

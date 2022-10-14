@@ -25,46 +25,8 @@ from .evt_cfg import EventWindow
 from copy import copy
 
 import gui.lib.window as window
+import gui.lib.asr_widget as dappa # dappa in Tamil means box
 
-
-class AlarmStr:
-    id = None
-    name = None
-    counter = None
-    action_type = None
-    action_arg1 = None
-    action_arg2 = None
-    is_autostart = None
-    alarm_time = None
-    cycle_time = None
-    n_appmodes = None
-    appmodes = None
-
-    def __init__(self, id):
-        self.id = id
-        self.name = tk.StringVar()
-        self.counter = tk.StringVar()
-        self.action_type = tk.StringVar()
-        self.action_arg1 = tk.StringVar()
-        self.action_arg2 = tk.StringVar()
-        self.is_autostart = tk.StringVar()
-        self.alarm_time = tk.StringVar()
-        self.cycle_time = tk.StringVar()
-        self.n_appmodes = 0  # start with zero appmodes
-        self.appmodes = []
-
-    def __del__(self):
-        del self.id
-        del self.name
-        del self.counter
-        del self.action_type
-        del self.action_arg1
-        del self.action_arg2
-        del self.is_autostart
-        del self.alarm_time
-        del self.cycle_time
-        del self.n_appmodes
-        del self.appmodes
 
 
 class AlarmTab:
@@ -72,15 +34,22 @@ class AlarmTab:
     max_alarms = 1024
     n_alarms_str = None
     alarms_str = []
-    sg_alarms = None
+    # sg_alarms = None
+    
     HeaderObjs = 12 #Objects / widgets that are part of the header and shouldn't be destroyed
     HeaderSize = 3
-
     xsize = None
     ysize = None
 
     active_dialog = None
     active_widget = None
+
+    non_header_objs = []
+    scrollw = None
+    configs = None # all UI configs (tkinter strings) are stored here.
+    cfgkeys = ["Alarm Name", "COUNTER", "Action-Type", "arg1", "arg2", "IsAutostart", "ALARMTIME", "CYCLETIME", "APPMODE"]
+    dappas_per_row = len(cfgkeys) + 1 # +1 for row labels
+    init_view_done = False
 
     amtab = None
     crtab = None
@@ -91,15 +60,14 @@ class AlarmTab:
 
 
     def __init__(self, alarms, tktab, amtab, crtab):
-        self.sg_alarms = alarms
-        if not self.sg_alarms:
-            nalarm = self.create_empty_alarm()
-            self.sg_alarms.append(nalarm)
-        self.n_alarms = len(self.sg_alarms)
+        self.n_alarms = len(alarms)
         self.n_alarms_str = tk.StringVar()
-        for i in range(self.n_alarms):
-            self.alarms_str.insert(i, AlarmStr(i))
-        
+        self.configs = []
+
+        # add alarms to UI configs which is passed from ARXML file 
+        for alarm in alarms:
+            self.configs.insert(len(self.configs), dappa.AsrCfgStr(self.cfgkeys, alarm))
+
         # collect all info from other tabs
         self.amtab = amtab
         self.crtab = crtab
@@ -108,12 +76,12 @@ class AlarmTab:
 
     def __del__(self):
         del self.n_alarms_str
-        del self.alarms_str[:]
+        del self.non_header_objs[:]
+        del self.configs[:]
 
 
-    def create_empty_alarm(self):
+    def create_empty_configs(self):
         alarm = {}
-        
         # Use the last alarm's name and numbers to ease the edits made by user 
         alarm["Alarm Name"] = "ALARM_"
         alarm["COUNTER"] = "" # self.sg_alarms[-1]["COUNTER"]
@@ -127,42 +95,97 @@ class AlarmTab:
 
         return alarm
 
-    
-    def extract_counter_names(self):
-        del self.counter_names[:]
-        for cntr in self.crtab.Ctr_StrVar:
-            self.counter_names.append(cntr.name.get())
-        return self.counter_names
+
+ 
+    def delete_dappa_row(self):
+        objlist = self.non_header_objs[-self.dappas_per_row:]
+        for obj in objlist:
+            obj.destroy()
+        del self.non_header_objs[-self.dappas_per_row:]
 
 
-    def extract_task_names(self):
-        del self.task_names[:]
-        for tsk in self.tktab.configs:
-            tsk_data = tsk.get()
-            self.task_names.append(tsk_data["Task Name"])
-        # for tsk in self.tktab.tasks_str:
-        #     self.task_names.append(tsk.name.get())
-        return self.task_names
+
+    def draw_dappa_row(self, i):
+        dappa.label(self, "Alarm "+str(i)+": ", self.HeaderSize+i, 0, "e")
+        
+        # Alarm Name
+        dappa.entry(self, "Alarm Name", i, self.HeaderSize+i, 1, 30, "normal")
+
+        # COUNTER
+        dappa.combo(self, "COUNTER", i, self.HeaderSize+i, 2, 17, self.extract_counter_names())
+
+        # Action-Type
+        values = ("ACTIVATETASK", "SETEVENT", "ALARMCALLBACK")
+        atcb = dappa.combo(self, "Action-Type", i, self.HeaderSize+i, 3, 17, values)
+        atcb.bind("<<ComboboxSelected>>", self.action_type_selected)
+
+        # arg1
+        if self.configs[i].datavar["Action-Type"] == "ALARMCALLBACK":
+            # Draw Entry box for ALARMCALLBACK
+            dappa.entry(self, "arg1", i, self.HeaderSize+i, 4, 30, "normal")
+        else: 
+            # Draw Combobox for Task select
+            arg1 = dappa.combo(self, "arg1", i, self.HeaderSize+i, 4, 30-3, self.extract_task_names())
+            arg1.bind("<<ComboboxSelected>>", self.arg1_task_selected)
+
+        # arg2
+        if self.configs[i].datavar["Action-Type"] == "SETEVENT":
+            # Draw Combobox for Event select
+            event_list = self.extract_task_events(i)
+            if self.configs[i].datavar["arg2"] not in event_list:
+                self.configs[i].datavar["arg2"] = ""
+            dappa.combo(self, "arg2", i, self.HeaderSize+i, 5, 25-3, event_list)
+        else:
+            dappa.label(self, "", self.HeaderSize+i, 5, "e")
 
 
-    def extract_task_events(self, aid):
-        events = []
-        alarm_id = int(aid)
+        # IsAutoStart
+        isas = dappa.combo(self, "IsAutostart", i, self.HeaderSize+i, 6, 8, ("TRUE", "FALSE"))
+        isas.bind("<<ComboboxSelected>>", self.isautostart_changed)
 
-        # For action type == ALARMCALLBACK, there are no events associated!
-        if self.sg_alarms[alarm_id]["Action-Type"] == "ALARMCALLBACK":
-            return events
+        # ALARMTIME, CYCLETIME AND APPMODE are not required if IsAutostart is False
+        if self.configs[i].datavar["IsAutostart"] == "FALSE":
+            dappa.label(self, "", self.HeaderSize+i, 7, "e")
+            dappa.label(self, "", self.HeaderSize+i, 8, "e")
+            dappa.label(self, "", self.HeaderSize+i, 9, "e")
+            return
 
-        # get events from tasks configured in Alarm[alarm_id]
-        task_name = self.sg_alarms[alarm_id]["arg1"]
-        # for task in self.tktab.sg_tasks:
-        for task in self.tktab.configs:
-            if task_name == task.get()["Task Name"]:
-                if "EVENT" in task.get():
-                    events = copy(task.get()["EVENT"])
-                    break
+        # ALARMTIME
+        dappa.entry(self, "ALARMTIME", i, self.HeaderSize+i, 7, 11, "normal")
 
-        return events
+        # CYCLETIME
+        dappa.entry(self, "CYCLETIME", i, self.HeaderSize+i, 8, 11, "normal")
+
+        # APPMODE[]
+        n_appmode = 0
+        if self.configs[i].datavar["APPMODE"]:
+            n_appmode = len(self.configs[i].datavar["APPMODE"])
+        cb = lambda id = i: self.select_autostart_modes(id)
+        dappa.button(self, "APPMODE", i, self.HeaderSize+i, 9, 10, "SELECT["+str(n_appmode)+"]", cb)
+
+
+
+    def update(self):
+        # get dappas to be added or removed
+        self.n_alarms = int(self.n_alarms_str.get())
+        
+        # Tune memory allocations based on number of rows or boxes
+        n_dappa_rows = len(self.configs)
+        if not self.init_view_done:
+            for i in range(n_dappa_rows):
+                self.draw_dappa_row(i)
+            self.init_view_done = True
+        elif self.n_alarms > n_dappa_rows:
+            for i in range(self.n_alarms - n_dappa_rows):
+                self.configs.insert(len(self.configs), dappa.AsrCfgStr(self.cfgkeys, self.create_empty_configs()))
+                self.draw_dappa_row(n_dappa_rows+i)
+        elif n_dappa_rows > self.n_alarms:
+            for i in range(n_dappa_rows - self.n_alarms):
+                self.delete_dappa_row()
+                del self.configs[-1]
+
+        # Set the self.cv scrolling region
+        self.scrollw.scroll()
 
 
     def draw(self, tab, xsize, ysize):
@@ -181,172 +204,63 @@ class AlarmTab:
         # Update buttons frames idle sg_alarms to let tkinter calculate buttons sizes
         self.scrollw.update()
 
-        # Table heading
-        label = tk.Label(self.scrollw.mnf, text=" ")
-        label.grid(row=2, column=0, sticky="w")
-        label = tk.Label(self.scrollw.mnf, text="Alarm Name")
-        label.grid(row=2, column=1, sticky="w")
-        label = tk.Label(self.scrollw.mnf, text="COUNTER")
-        label.grid(row=2, column=2, sticky="we")
-        label = tk.Label(self.scrollw.mnf, text="Action-Type")
-        label.grid(row=2, column=3, sticky="we")
-        label = tk.Label(self.scrollw.mnf, text="arg1")
-        label.grid(row=2, column=4, sticky="we")
-        label = tk.Label(self.scrollw.mnf, text="arg2")
-        label.grid(row=2, column=5, sticky="we")
-        label = tk.Label(self.scrollw.mnf, text="IsAutoStart")
-        label.grid(row=2, column=6, sticky="we")
-        label = tk.Label(self.scrollw.mnf, text="ALARMTIME")
-        label.grid(row=2, column=7, sticky="we")
-        label = tk.Label(self.scrollw.mnf, text="CYCLETIME")
-        label.grid(row=2, column=8, sticky="we")
-        label = tk.Label(self.scrollw.mnf, text="APPMODE")
-        label.grid(row=2, column=9, sticky="we")
+        # Table heading @2nd row, 1st column
+        dappa.place_heading(self, 2, 1)
 
         self.update()
 
 
-    def update(self):
-        # Backup current task entries from GUI
-        self.backup_data()
-                
-        # destroy most old gui widgets
-        self.n_alarms = int(self.n_alarms_str.get())
-        for i, item in enumerate(self.scrollw.mnf.winfo_children()):
-            if i >= self.HeaderObjs:
-                item.destroy()
-
-        # Tune memory allocations based on number of rows or boxes
-        n_alarms_str = len(self.alarms_str)
-        if self.n_alarms > n_alarms_str:
-            for i in range(self.n_alarms - n_alarms_str):
-                self.alarms_str.insert(len(self.alarms_str), AlarmStr(n_alarms_str+i))
-                self.sg_alarms.insert(len(self.sg_alarms), self.create_empty_alarm())
-        elif n_alarms_str > self.n_alarms:
-            for i in range(n_alarms_str - self.n_alarms):
-                del self.alarms_str[-1]
-                del self.sg_alarms[-1]
-
-        #print("n_alarms_str = "+ str(n_alarms_str) + ", n_alarms = " + str(self.n_alarms))
-        # Draw new objects
-        for i in range(0, self.n_alarms):
-            label = tk.Label(self.scrollw.mnf, text="Alarm "+str(i)+": ")
-            label.grid(row=self.HeaderSize+i, column=0, sticky="e")
-            
-            # Alarm Name
-            entry = tk.Entry(self.scrollw.mnf, width=30, textvariable=self.alarms_str[i].name)
-            self.alarms_str[i].name.set(self.sg_alarms[i]["Alarm Name"])
-            entry.grid(row=self.HeaderSize+i, column=1)
-
-            # COUNTER
-            cmbsel = ttk.Combobox(self.scrollw.mnf, width=17, textvariable=self.alarms_str[i].counter, state="readonly")
-            cmbsel['values'] = self.extract_counter_names()
-            self.alarms_str[i].counter.set(self.sg_alarms[i]["COUNTER"])
-            cmbsel.current()
-            cmbsel.grid(row=self.HeaderSize+i, column=2)
-
-            # Action-Type
-            cmbsel = ttk.Combobox(self.scrollw.mnf, width=17, textvariable=self.alarms_str[i].action_type, state="readonly")
-            cmbsel['values'] = ("ACTIVATETASK", "SETEVENT", "ALARMCALLBACK")
-            self.alarms_str[i].action_type.set(self.sg_alarms[i]["Action-Type"])
-            cmbsel.current()
-            cmbsel.grid(row=self.HeaderSize+i, column=3)
-            cmbsel.bind("<<ComboboxSelected>>", self.action_type_selected)
-
-            # arg1
-            if self.sg_alarms[i]["Action-Type"] == "ALARMCALLBACK":
-                # Draw Entry box for ALARMCALLBACK
-                entry = tk.Entry(self.scrollw.mnf, width=30, textvariable=self.alarms_str[i].action_arg1)
-                self.alarms_str[i].action_arg1.set(self.sg_alarms[i]["arg1"])
-                entry.grid(row=self.HeaderSize+i, column=4)
-            else: 
-                # Draw Combobox for Task select
-                cmbsel = ttk.Combobox(self.scrollw.mnf, width=30-3, textvariable=self.alarms_str[i].action_arg1, state="readonly")
-                cmbsel['values'] = self.extract_task_names()
-                self.alarms_str[i].action_arg1.set(self.sg_alarms[i]["arg1"])
-                cmbsel.current()
-                cmbsel.grid(row=self.HeaderSize+i, column=4)
-                cmbsel.bind("<<ComboboxSelected>>", self.arg1_task_selected)
-
-            # arg2
-            if self.sg_alarms[i]["Action-Type"] == "SETEVENT":
-                # Draw Combobox for Event select
-                cmbsel = ttk.Combobox(self.scrollw.mnf, width=25-3, textvariable=self.alarms_str[i].action_arg2, state="readonly")
-                event_list = self.extract_task_events(i)
-                cmbsel['values'] = event_list
-                if self.sg_alarms[i]["arg2"] in event_list:
-                    self.alarms_str[i].action_arg2.set(self.sg_alarms[i]["arg2"])
-                else:
-                    self.alarms_str[i].action_arg2.set("")
-                cmbsel.current()
-                cmbsel.grid(row=self.HeaderSize+i, column=5)
+    def extract_task_names(self):
+        del self.task_names[:]
+        for tsk in self.tktab.configs:
+            tsk_data = tsk.get()
+            self.task_names.append(tsk_data["Task Name"])
+        return self.task_names
 
 
-            # IsAutoStart
-            cmbsel = ttk.Combobox(self.scrollw.mnf, width=8, textvariable=self.alarms_str[i].is_autostart, state="readonly")
-            cmbsel['values'] = ("TRUE", "FALSE")
-            self.alarms_str[i].is_autostart.set(self.sg_alarms[i]["IsAutostart"])
-            cmbsel.current()
-            cmbsel.grid(row=self.HeaderSize+i, column=6)
-            cmbsel.bind("<<ComboboxSelected>>", self.isautostart_changed)
+    def extract_task_events(self, aid):
+        events = []
+        alarm_id = int(aid)
 
-            # ALARMTIME, CYCLETIME AND APPMODE are not required if IsAutostart is False
-            if self.sg_alarms[i]["IsAutostart"] == "FALSE":
-                continue
+        # For action type == ALARMCALLBACK, there are no events associated!
+        if self.configs[alarm_id].datavar["Action-Type"] == "ALARMCALLBACK":
+            return events
 
-            # ALARMTIME
-            entry = tk.Entry(self.scrollw.mnf, width=11, textvariable=self.alarms_str[i].alarm_time, justify='center')
-            self.alarms_str[i].alarm_time.set(self.sg_alarms[i]["ALARMTIME"])
-            entry.grid(row=self.HeaderSize+i, column=7)
+        # get events from tasks configured in Alarm[alarm_id]
+        task_name = self.configs[alarm_id].datavar["arg1"]
+        for task in self.tktab.configs:
+            if task_name == task.get()["Task Name"]:
+                if "EVENT" in task.get():
+                    events = copy(task.get()["EVENT"])
+                    break
 
-            # CYCLETIME
-            entry = tk.Entry(self.scrollw.mnf, width=11, textvariable=self.alarms_str[i].cycle_time, justify='center')
-            self.alarms_str[i].cycle_time.set(self.sg_alarms[i]["CYCLETIME"])
-            entry.grid(row=self.HeaderSize+i, column=8)
+        return events
 
-            # APPMODE[]
-            if "APPMODE[]" in self.sg_alarms[i]:
-                self.alarms_str[i].n_appmodes = len(self.sg_alarms[i]["APPMODE[]"])
-            text = "SELECT["+str(self.alarms_str[i].n_appmodes)+"]"
-            select = tk.Button(self.scrollw.mnf, width=10, text=text, command=lambda id = i: self.select_autostart_modes(id))
-            select.grid(row=self.HeaderSize+i, column=9)
 
-        # Set the self.cv scrolling region
-        self.scrollw.scroll()
+
+    def extract_counter_names(self):
+        del self.counter_names[:]
+        for cntr in self.crtab.Ctr_StrVar:
+            self.counter_names.append(cntr.name.get())
+        return self.counter_names
+
 
 
     def backup_data(self):
-        n_alarms_str = len(self.alarms_str)
-        for i in range(n_alarms_str):
-            if len(self.alarms_str[i].name.get()):
-                self.sg_alarms[i]["Alarm Name"] = self.alarms_str[i].name.get()
-            if len(self.alarms_str[i].counter.get()):
-                self.sg_alarms[i]["COUNTER"] = self.alarms_str[i].counter.get()
-            if len(self.alarms_str[i].action_type.get()):
-                self.sg_alarms[i]["Action-Type"] = self.alarms_str[i].action_type.get()
-            if len(self.alarms_str[i].action_arg1.get()):
-                self.sg_alarms[i]["arg1"] = self.alarms_str[i].action_arg1.get()
-            if len(self.alarms_str[i].action_arg2.get()):
-                self.sg_alarms[i]["arg2"] = self.alarms_str[i].action_arg2.get()
-            if self.sg_alarms[i]["IsAutostart"] == "FALSE":
-                continue
-            if len(self.alarms_str[i].alarm_time.get()):
-                self.sg_alarms[i]["ALARMTIME"] = self.alarms_str[i].alarm_time.get()
-            if len(self.alarms_str[i].cycle_time.get()):
-                self.sg_alarms[i]["CYCLETIME"] = self.alarms_str[i].cycle_time.get()
+        print("alm_cfg.backup_data() called!")
 
 
     def on_autostart_dialog_close(self, task_id):
         # remove old selections
-        if "APPMODE[]" in self.sg_alarms[task_id]:
-            del self.sg_alarms[task_id]["APPMODE[]"][:]
-        else:
-            self.sg_alarms[task_id]["APPMODE[]"] = []
+        if self.configs[task_id].datavar["APPMODE"]:
+            del self.configs[task_id].datavar["APPMODE"][:]
 
         # update new selections
         if len(self.active_widget.curselection()):
             for i in self.active_widget.curselection():
-                self.sg_alarms[task_id]["APPMODE[]"].append(self.active_widget.get(i))
+                if not self.configs[task_id].datavar["APPMODE"]:
+                    self.configs[task_id].datavar["APPMODE"] = []
+                self.configs[task_id].datavar["APPMODE"].append(self.active_widget.get(i))
         
         # dialog elements are no longer needed, destroy them. Else, new dialogs will not open!
         self.active_widget.destroy()
@@ -371,32 +285,29 @@ class AlarmTab:
         for i, obj in enumerate(self.amtab.AM_StrVar):
             appmode = obj.get()
             self.active_widget.insert(i, appmode)
-            if "APPMODE[]" in self.sg_alarms[id]:
-                if appmode in self.sg_alarms[id]["APPMODE[]"]:
+            if self.configs[id].datavar["APPMODE"]:
+                if appmode in self.configs[id].datavar["APPMODE"]:
                     self.active_widget.selection_set(i)
         self.active_widget.pack()
 
 
     def action_type_selected(self, event):
-        # backup all action_type selects and update the screen
-        for i, alm in enumerate(self.sg_alarms):
-            alm["Action-Type"] = self.alarms_str[i].action_type.get()
-            if "arg2" not in alm:
-                alm["arg2"] = ""
+        # this function needs a re-visit
         self.update()
 
 
     def arg1_task_selected(self, event):
+        # this function needs a re-visit
         self.update()
 
 
     def isautostart_changed(self, event):
-        for i, alm in enumerate(self.sg_alarms):
-            alm["IsAutostart"] = self.alarms_str[i].is_autostart.get()
-            if "ALARMTIME" not in alm:
-                alm["ALARMTIME"] = "50"
-            if "CYCLETIME" not in alm:
-                alm["CYCLETIME"] = "1000"
-            if "APPMODE[]" not in alm:
-                alm["APPMODE[]"] = []
+        # this function needs a re-visit
+        for i, alm in enumerate(self.configs):
+            if "ALARMTIME" not in alm.datavar:
+                alm.datavar["ALARMTIME"] = "50"
+            if "CYCLETIME" not in alm.datavar:
+                alm.datavar["CYCLETIME"] = "1000"
+            if "APPMODE[]" not in alm.datavar:
+                alm.datavar["APPMODE[]"] = []
         self.update()

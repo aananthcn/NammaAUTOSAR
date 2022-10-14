@@ -80,6 +80,7 @@ def label(view, label, row, col, align):
     label = tk.Label(view.scrollw.mnf, text=label)
     label.grid(row=row, column=col, sticky=align)
     view.non_header_objs.append(label)
+    return label
 
 
 def entry(view, key, index, row, col, width, state):
@@ -87,6 +88,7 @@ def entry(view, key, index, row, col, width, state):
     view.configs[index].dispvar[key].set(view.configs[index].datavar[key])
     entry.grid(row=row, column=col)
     view.non_header_objs.append(entry)
+    return entry
 
 
 def combo(view, key, index, row, col, width, values):
@@ -96,6 +98,7 @@ def combo(view, key, index, row, col, width, values):
     cmbsel.current()
     cmbsel.grid(row=row, column=col)
     view.non_header_objs.append(cmbsel)
+    return cmbsel
 
 
 def spinb(view, key, index, row, col, width, values):
@@ -103,13 +106,22 @@ def spinb(view, key, index, row, col, width, values):
     view.configs[index].dispvar[key].set(view.configs[index].datavar[key])
     spinb.grid(row=row, column=col)
     view.non_header_objs.append(spinb)
+    return spinb
+
 
 def button(view, key, index, row, col, width, text, cb):
     select = tk.Button(view.scrollw.mnf, width=width, text=text, command=lambda id = index : cb(id))
     view.configs[index].dispvar[key].set(view.configs[index].datavar[key])
     select.grid(row=row, column=col)
     view.non_header_objs.append(select)
+    return select
 
+
+def button_selections(view, idx, cfg_label):
+    n_btn_entries = 0
+    if idx < len(view.configs) and view.configs[idx].datavar[cfg_label]:
+        n_btn_entries = len(view.configs[idx].datavar[cfg_label])
+    return n_btn_entries
 
 
 ###############################################################################
