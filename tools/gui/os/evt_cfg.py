@@ -31,8 +31,8 @@ class EventWindow:
     n_events_str = None
     events_str = []
     events = []
-    HeaderObjs = 2 #Objects / widgets that are part of the header and shouldn't be destroyed
-    HeaderSize = 1
+    n_header_objs = 2 #Objects / widgets that are part of the header and shouldn't be destroyed
+    header_row = 1
     xsize = None
     ysize = None
     mnf = None
@@ -56,7 +56,7 @@ class EventWindow:
         self.n_events = int(mstr.get())
         # print("Update events: "+ str(self.n_events))        
         for i, item in enumerate(self.mnf.winfo_children()):
-            if i >= self.HeaderObjs:
+            if i >= self.n_header_objs:
                 item.destroy()
         self.update()
 
@@ -93,10 +93,10 @@ class EventWindow:
         # Draw new objects
         for i in range(0, self.n_events):
             label = tk.Label(self.mnf, text="Event "+str(i)+": ")
-            label.grid(row=self.HeaderSize+i, column=0, sticky="w")
+            label.grid(row=self.header_row+i, column=0, sticky="w")
             entry = tk.Entry(self.mnf, width=40, textvariable=self.events_str[i])
             self.events_str[i].set(self.events[i])
-            entry.grid(row=self.HeaderSize+i, column=1)
+            entry.grid(row=self.header_row+i, column=1)
 
 
     def backup_data(self):

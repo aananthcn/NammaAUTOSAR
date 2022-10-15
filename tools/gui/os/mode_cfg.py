@@ -26,8 +26,8 @@ class AmTab:
     N_AppModes_str = None
     AppModes = None
     MaxAppModes = 16
-    HeaderSize = 2
-    HeaderObjs = 2 #Objects / widgets that are part of the header and shouldn't be destroyed
+    header_row = 2
+    n_header_objs = 2 #Objects / widgets that are part of the header and shouldn't be destroyed
     AM_StrVar = []
 
     def __init__(self, appmodes):
@@ -55,7 +55,7 @@ class AmTab:
     def update_am(self, tab, am_str):
         self.N_AppModes = int(am_str.get())
         for i, item in enumerate(tab.winfo_children()):
-            if i >= self.HeaderObjs:
+            if i >= self.n_header_objs:
                 item.destroy()
         self.update(tab)
         
@@ -90,10 +90,11 @@ class AmTab:
         # Draw new objects
         for i in range(0, self.N_AppModes):
             label = tk.Label(tab, text="Mode "+str(i)+": ")
-            label.grid(row=self.HeaderSize+i, column=1, sticky="w")
+            label.grid(row=self.header_row+i, column=1, sticky="w")
             entry = tk.Entry(tab, width=30, textvariable=self.AM_StrVar[i])
             self.AM_StrVar[i].set(self.AppModes[i])
-            entry.grid(row=self.HeaderSize+i, column=2)
+            entry.grid(row=self.header_row+i, column=2)
+
 
     def backup_data(self):
         n_am_strvar = len(self.AM_StrVar)

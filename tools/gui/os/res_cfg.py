@@ -31,8 +31,8 @@ class ResourceTab:
     n_ress_str = None
     ress_str = []
     ress = []
-    HeaderObjs = 2 #Objects / widgets that are part of the header and shouldn't be destroyed
-    HeaderSize = 1
+    n_header_objs = 2 #Objects / widgets that are part of the header and shouldn't be destroyed
+    header_row = 1
     xsize = None
     ysize = None
 
@@ -55,7 +55,7 @@ class ResourceTab:
         self.n_ress = int(mstr.get())
         # print("Update resources: "+ str(self.n_ress))        
         for i, item in enumerate(self.scrollw.mnf.winfo_children()):
-            if i >= self.HeaderObjs:
+            if i >= self.n_header_objs:
                 item.destroy()
         self.update()
 
@@ -98,10 +98,10 @@ class ResourceTab:
         # Draw new objects
         for i in range(0, self.n_ress):
             label = tk.Label(self.scrollw.mnf, text="Msg "+str(i)+": ")
-            label.grid(row=self.HeaderSize+i, column=0, sticky="w")
+            label.grid(row=self.header_row+i, column=0, sticky="w")
             entry = tk.Entry(self.scrollw.mnf, width=40, textvariable=self.ress_str[i])
             self.ress_str[i].set(self.ress[i])
-            entry.grid(row=self.HeaderSize+i, column=1)
+            entry.grid(row=self.header_row+i, column=1)
 
         # Set the self.cv scrolling region
         self.scrollw.scroll()

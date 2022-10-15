@@ -30,8 +30,8 @@ class MessageTab:
     n_msgs_str = None
     msgs_str = []
     msgs = []
-    HeaderObjs = 2 #Objects / widgets that are part of the header and shouldn't be destroyed
-    HeaderSize = 1
+    n_header_objs = 2 #Objects / widgets that are part of the header and shouldn't be destroyed
+    header_row = 1
     xsize = None
     ysize = None
 
@@ -54,7 +54,7 @@ class MessageTab:
         self.n_msgs = int(mstr.get())
         # print("Update messages: "+ str(self.n_msgs))        
         for i, item in enumerate(self.scrollw.mnf.winfo_children()):
-            if i >= self.HeaderObjs:
+            if i >= self.n_header_objs:
                 item.destroy()
         self.update()
 
@@ -96,10 +96,10 @@ class MessageTab:
         # Draw new objects
         for i in range(0, self.n_msgs):
             label = tk.Label(self.scrollw.mnf, text="Msg "+str(i)+": ")
-            label.grid(row=self.HeaderSize+i, column=0, sticky="w")
+            label.grid(row=self.header_row+i, column=0, sticky="w")
             entry = tk.Entry(self.scrollw.mnf, width=40, textvariable=self.msgs_str[i])
             self.msgs_str[i].set(self.msgs[i])
-            entry.grid(row=self.HeaderSize+i, column=1)
+            entry.grid(row=self.header_row+i, column=1)
 
         # Set the self.cv scrolling region
         self.scrollw.scroll()

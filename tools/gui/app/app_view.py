@@ -38,8 +38,8 @@ class AppInfo:
 AppView = None
 N_AppsStr = None
 N_Apps = 0
-HeaderObjs = 3   # Objects / widgets that are part of the header and shouldn't be destroyed
-HeaderSize = 2   # Number of rows in Header Area of view
+n_header_objs = 3   # Objects / widgets that are part of the header and shouldn't be destroyed
+header_row = 2   # Number of rows in Header Area of view
 MaxApps = 1024
 
 AppRepoStr_List = []
@@ -148,7 +148,7 @@ def restore_data_from_disk():
 
 
 def app_draw(view, xsize, ysize):
-    global Parent_Frame, Canvas_Frame, Child_Frame, N_Apps, N_AppsStr, HeaderObjs, MaxApps
+    global Parent_Frame, Canvas_Frame, Child_Frame, N_Apps, N_AppsStr, n_header_objs, MaxApps
     global Canvas
 
     Child_Frame = window.ScrollableWindow(view, xsize, ysize)
@@ -172,19 +172,19 @@ def app_draw(view, xsize, ysize):
 
 
 def update_apps(mstr, xsize):
-    global Parent_Frame, Canvas_Frame, Child_Frame, N_Apps, N_AppsStr, HeaderObjs, MaxApps
+    global Parent_Frame, Canvas_Frame, Child_Frame, N_Apps, N_AppsStr, n_header_objs, MaxApps
     
     N_Apps = int(mstr.get())
     # print("No of Apps: "+ str(N_Apps))        
     for i, item in enumerate(Child_Frame.mnf.winfo_children()):
-        if i >= HeaderObjs:
+        if i >= n_header_objs:
             item.destroy()
     app_update(xsize)
 
 
 
 def app_update(xsize):
-    global Parent_Frame, Canvas_Frame, Child_Frame, N_Apps, N_AppsStr, HeaderObjs, MaxApps
+    global Parent_Frame, Canvas_Frame, Child_Frame, N_Apps, N_AppsStr, n_header_objs, MaxApps
     global AppInfo_List, Canvas
 
     # Tune memory allocations based on number of rows or boxes
@@ -206,20 +206,20 @@ def app_update(xsize):
     for i in range(0, N_Apps):
         # Label
         label = tk.Label(Child_Frame.mnf, text="App "+str(i)+": ")
-        label.grid(row=HeaderSize+i, column=0, sticky="e")
+        label.grid(row=header_row+i, column=0, sticky="e")
 
         # Edit box
         entry = tk.Entry(Child_Frame.mnf, width=int(xsize/(2*5)), textvariable=AppRepoStr_List[i])
         AppRepoStr_List[i].set(AppInfo_List[i].git)
-        entry.grid(row=HeaderSize+i, column=1)
+        entry.grid(row=header_row+i, column=1)
 
         # Button - Update / Clone
         select = tk.Button(Child_Frame.mnf, width=10, text="Update", command=lambda id = i : update_or_clone_app(id))
-        select.grid(row=HeaderSize+i, column=2)
+        select.grid(row=header_row+i, column=2)
 
         # Button - Update / Clone
         select = tk.Button(Child_Frame.mnf, width=20, text="Select ARXML File", command=lambda id = i : select_arxml_file(id))
-        select.grid(row=HeaderSize+i, column=3)
+        select.grid(row=header_row+i, column=3)
 
     # Set the Canvas scrolling region
     # Canvas.config(scrollregion=Canvas.bbox("all"))

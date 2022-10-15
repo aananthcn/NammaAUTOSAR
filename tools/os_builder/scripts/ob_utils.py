@@ -29,12 +29,12 @@ def clear_old_excel_rows(book):
     sheetnames = book.sheetnames
     for sheetname in sheetnames:
         sheet = book[sheetname]
-        header_size = 2 # First row will hold disclaimer, title in 2nd row
+        header_row = 2 # First row will hold disclaimer, title in 2nd row
         active_rows = len(sheet['A'])
-        if active_rows < header_size:
+        if active_rows < header_row:
             print("Info: sheet \""+sheetname+"\" is new / fresh! So, not clearing old data!")
             return
-        sheet.delete_rows(header_size+1, active_rows)        
+        sheet.delete_rows(header_row+1, active_rows)        
 
 
 def open_excel_file(file):

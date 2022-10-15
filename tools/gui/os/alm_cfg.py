@@ -36,15 +36,16 @@ class AlarmTab:
     alarms_str = []
     # sg_alarms = None
     
-    HeaderObjs = 12 #Objects / widgets that are part of the header and shouldn't be destroyed
-    HeaderSize = 3
+    non_header_objs = []
+    n_header_objs = 12 #Objects / widgets that are part of the header and shouldn't be destroyed
+    header_row = 3
+
     xsize = None
     ysize = None
 
     active_dialog = None
     active_widget = None
 
-    non_header_objs = []
     scrollw = None
     configs = None # all UI configs (tkinter strings) are stored here.
     cfgkeys = ["Alarm Name", "COUNTER", "Action-Type", "arg1", "arg2", "IsAutostart", "ALARMTIME", "CYCLETIME", "APPMODE"]
@@ -97,35 +98,27 @@ class AlarmTab:
 
 
  
-    def delete_dappa_row(self):
-        objlist = self.non_header_objs[-self.dappas_per_row:]
-        for obj in objlist:
-            obj.destroy()
-        del self.non_header_objs[-self.dappas_per_row:]
-
-
-
     def draw_dappa_row(self, i):
-        dappa.label(self, "Alarm "+str(i)+": ", self.HeaderSize+i, 0, "e")
+        dappa.label(self, "Alarm "+str(i)+": ", self.header_row+i, 0, "e")
         
         # Alarm Name
-        dappa.entry(self, "Alarm Name", i, self.HeaderSize+i, 1, 30, "normal")
+        dappa.entry(self, "Alarm Name", i, self.header_row+i, 1, 30, "normal")
 
         # COUNTER
-        dappa.combo(self, "COUNTER", i, self.HeaderSize+i, 2, 17, self.extract_counter_names())
+        dappa.combo(self, "COUNTER", i, self.header_row+i, 2, 17, self.extract_counter_names())
 
         # Action-Type
         values = ("ACTIVATETASK", "SETEVENT", "ALARMCALLBACK")
-        atcb = dappa.combo(self, "Action-Type", i, self.HeaderSize+i, 3, 17, values)
-        atcb.bind("<<ComboboxSelected>>", self.action_type_selected)
+        atcb = dappa.combo(self, "Action-Type", i, self.header_row+i, 3, 17, values)
+        atcb.bind("<<ComboboxSelected>>", lambda evt, id=i : self.action_type_selected(evt, id))
 
         # arg1
         if self.configs[i].datavar["Action-Type"] == "ALARMCALLBACK":
             # Draw Entry box for ALARMCALLBACK
-            dappa.entry(self, "arg1", i, self.HeaderSize+i, 4, 30, "normal")
+            dappa.entry(self, "arg1", i, self.header_row+i, 4, 30, "normal")
         else: 
             # Draw Combobox for Task select
-            arg1 = dappa.combo(self, "arg1", i, self.HeaderSize+i, 4, 30-3, self.extract_task_names())
+            arg1 = dappa.combo(self, "arg1", i, self.header_row+i, 4, 30-3, self.extract_task_names())
             arg1.bind("<<ComboboxSelected>>", self.arg1_task_selected)
 
         # arg2
@@ -134,34 +127,34 @@ class AlarmTab:
             event_list = self.extract_task_events(i)
             if self.configs[i].datavar["arg2"] not in event_list:
                 self.configs[i].datavar["arg2"] = ""
-            dappa.combo(self, "arg2", i, self.HeaderSize+i, 5, 25-3, event_list)
+            dappa.combo(self, "arg2", i, self.header_row+i, 5, 25-3, event_list)
         else:
-            dappa.label(self, "", self.HeaderSize+i, 5, "e")
+            dappa.label(self, "", self.header_row+i, 5, "e")
 
 
         # IsAutoStart
-        isas = dappa.combo(self, "IsAutostart", i, self.HeaderSize+i, 6, 8, ("TRUE", "FALSE"))
+        isas = dappa.combo(self, "IsAutostart", i, self.header_row+i, 6, 8, ("TRUE", "FALSE"))
         isas.bind("<<ComboboxSelected>>", self.isautostart_changed)
 
         # ALARMTIME, CYCLETIME AND APPMODE are not required if IsAutostart is False
         if self.configs[i].datavar["IsAutostart"] == "FALSE":
-            dappa.label(self, "", self.HeaderSize+i, 7, "e")
-            dappa.label(self, "", self.HeaderSize+i, 8, "e")
-            dappa.label(self, "", self.HeaderSize+i, 9, "e")
+            dappa.label(self, "", self.header_row+i, 7, "e")
+            dappa.label(self, "", self.header_row+i, 8, "e")
+            dappa.label(self, "", self.header_row+i, 9, "e")
             return
 
         # ALARMTIME
-        dappa.entry(self, "ALARMTIME", i, self.HeaderSize+i, 7, 11, "normal")
+        dappa.entry(self, "ALARMTIME", i, self.header_row+i, 7, 11, "normal")
 
         # CYCLETIME
-        dappa.entry(self, "CYCLETIME", i, self.HeaderSize+i, 8, 11, "normal")
+        dappa.entry(self, "CYCLETIME", i, self.header_row+i, 8, 11, "normal")
 
         # APPMODE[]
         n_appmode = 0
         if self.configs[i].datavar["APPMODE"]:
             n_appmode = len(self.configs[i].datavar["APPMODE"])
         cb = lambda id = i: self.select_autostart_modes(id)
-        dappa.button(self, "APPMODE", i, self.HeaderSize+i, 9, 10, "SELECT["+str(n_appmode)+"]", cb)
+        dappa.button(self, "APPMODE", i, self.header_row+i, 9, 10, "SELECT["+str(n_appmode)+"]", cb)
 
 
 
@@ -181,7 +174,7 @@ class AlarmTab:
                 self.draw_dappa_row(n_dappa_rows+i)
         elif n_dappa_rows > self.n_alarms:
             for i in range(n_dappa_rows - self.n_alarms):
-                self.delete_dappa_row()
+                dappa.delete_dappa_row(self, (n_dappa_rows-1)+i)
                 del self.configs[-1]
 
         # Set the self.cv scrolling region
@@ -291,9 +284,12 @@ class AlarmTab:
         self.active_widget.pack()
 
 
-    def action_type_selected(self, event):
-        # this function needs a re-visit
-        self.update()
+    def action_type_selected(self, event, row):
+        print(event, row)
+        self.configs[row].get() # read from UI (backup last selection)
+        self.configs[row].datavar["arg1"] = self.configs[row].datavar["arg2"] = ""
+        dappa.delete_dappa_row(self, row)
+        self.draw_dappa_row(row)
 
 
     def arg1_task_selected(self, event):

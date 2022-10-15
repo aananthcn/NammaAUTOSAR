@@ -33,8 +33,8 @@ class TaskTab:
     max_tasks = 1024
     events = []
     
-    HeaderObjs = 12 #Objects / widgets that are part of the header and shouldn't be destroyed
-    HeaderSize = 3
+    n_header_objs = 12 #Objects / widgets that are part of the header and shouldn't be destroyed
+    header_row = 3
     xsize = None
     ysize = None
 
@@ -92,47 +92,39 @@ class TaskTab:
 
 
 
-    def delete_dappa_row(self):
-        objlist = self.non_header_objs[-self.dappas_per_row:]
-        for obj in objlist:
-            obj.destroy()
-        del self.non_header_objs[-self.dappas_per_row:]
-
-
-
     def draw_dappa_row(self, i):
         n_appmod = n_events = n_resources = 0
-        dappa.label(self, "Task ", self.HeaderSize+i, 0, "e")
+        dappa.label(self, "Task ", self.header_row+i, 0, "e")
         
         # Task Name
-        dappa.entry(self, "Task Name", i, self.HeaderSize+i, 1, 30, "normal")
+        dappa.entry(self, "Task Name", i, self.header_row+i, 1, 30, "normal")
 
         # PRIORITY
-        dappa.entry(self, "PRIORITY", i, self.HeaderSize+i, 2, 10, "normal")
+        dappa.entry(self, "PRIORITY", i, self.header_row+i, 2, 10, "normal")
 
         # SCHEDULE
-        dappa.combo(self, "SCHEDULE", i, self.HeaderSize+i, 3, 8, ("NON", "FULL"))
+        dappa.combo(self, "SCHEDULE", i, self.header_row+i, 3, 8, ("NON", "FULL"))
 
         # ACTIVATION
-        dappa.entry(self, "ACTIVATION", i, self.HeaderSize+i, 4, 11, "normal")
+        dappa.entry(self, "ACTIVATION", i, self.header_row+i, 4, 11, "normal")
 
         # AUTOSTART[]
         text = "AppModes["+str(dappa.button_selections(self, i, "AUTOSTART_APPMODE"))+"]"
         cb = lambda id = i: self.select_autostart_modes(id)
-        dappa.button(self, "AUTOSTART_APPMODE", i, self.HeaderSize+i, 5, 13, text, cb)
+        dappa.button(self, "AUTOSTART_APPMODE", i, self.header_row+i, 5, 13, text, cb)
 
         # EVENT[]
         text = "Events["+str(dappa.button_selections(self, i, "EVENT"))+"]"
         cb = lambda id = i: self.select_events(id)
-        dappa.button(self, "EVENT", i, self.HeaderSize+i, 6, 13, "Events["+str(n_events)+"]", cb)
+        dappa.button(self, "EVENT", i, self.header_row+i, 6, 13, "Events["+str(n_events)+"]", cb)
 
         # RESOURCE[]
         text = "Resources["+str(dappa.button_selections(self, i, "RESOURCE"))+"]"
         cb = lambda id = i: self.select_resources(id)
-        dappa.button(self, "RESOURCE", i, self.HeaderSize+i, 7, 13, text, cb)
+        dappa.button(self, "RESOURCE", i, self.header_row+i, 7, 13, text, cb)
 
         # # MESSAGE[]
-        dappa.entry(self, "STACK_SIZE", i, self.HeaderSize+i, 8, 11, "normal")
+        dappa.entry(self, "STACK_SIZE", i, self.header_row+i, 8, 11, "normal")
 
 
 
@@ -152,7 +144,7 @@ class TaskTab:
                 self.draw_dappa_row(n_dappa_rows+i)
         elif n_dappa_rows > self.n_tasks:
             for i in range(n_dappa_rows - self.n_tasks):
-                self.delete_dappa_row()
+                dappa.delete_dappa_row(self, (n_dappa_rows-1)+i)
                 del self.configs[-1]
 
         # Set the self.cv scrolling region

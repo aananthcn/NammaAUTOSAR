@@ -58,8 +58,8 @@ class IsrTab:
     isrs_str = []
     resources = []
     sg_isrs = None
-    HeaderObjs = 10 #Objects / widgets that are part of the header and shouldn't be destroyed
-    HeaderSize = 3
+    n_header_objs = 10 #Objects / widgets that are part of the header and shouldn't be destroyed
+    header_row = 3
     xsize = None
     ysize = None
 
@@ -151,7 +151,7 @@ class IsrTab:
         # destroy most old gui widgets
         self.n_isrs = int(self.n_isrs_str.get())
         for i, item in enumerate(self.scrollw.mnf.winfo_children()):
-            if i >= self.HeaderObjs:
+            if i >= self.n_header_objs:
                 item.destroy()
 
         # Tune memory allocations based on number of rows or boxes
@@ -169,41 +169,41 @@ class IsrTab:
         # Draw new objects
         for i in range(0, self.n_isrs):
             label = tk.Label(self.scrollw.mnf, text="ISR "+str(i)+": ")
-            label.grid(row=self.HeaderSize+i, column=0, sticky="e")
+            label.grid(row=self.header_row+i, column=0, sticky="e")
             
             # ISR Name
             entry = tk.Entry(self.scrollw.mnf, width=30, textvariable=self.isrs_str[i].name)
             self.isrs_str[i].name.set(self.sg_isrs[i]["ISR Name"])
-            entry.grid(row=self.HeaderSize+i, column=1)
+            entry.grid(row=self.header_row+i, column=1)
 
             # IRQn
             entry = tk.Entry(self.scrollw.mnf, width=10, textvariable=self.isrs_str[i].irqn, justify='center')
             self.isrs_str[i].irqn.set(self.sg_isrs[i]["IRQn"])
-            entry.grid(row=self.HeaderSize+i, column=2)
+            entry.grid(row=self.header_row+i, column=2)
 
             # CATEGORY
             cmbsel = ttk.Combobox(self.scrollw.mnf, width=8, textvariable=self.isrs_str[i].category, state="readonly", justify='center')
             cmbsel['values'] = ("1", "2")
             self.isrs_str[i].category.set(self.sg_isrs[i]["CATEGORY"])
             cmbsel.current()
-            cmbsel.grid(row=self.HeaderSize+i, column=3)
+            cmbsel.grid(row=self.header_row+i, column=3)
 
             # PRIORITY
             entry = tk.Entry(self.scrollw.mnf, width=10, textvariable=self.isrs_str[i].priority, justify='center')
             self.isrs_str[i].priority.set(self.sg_isrs[i]["OsIsrInterruptPriority"])
-            entry.grid(row=self.HeaderSize+i, column=4)
+            entry.grid(row=self.header_row+i, column=4)
 
             # RESOURCE[]
             if "RESOURCE" in self.sg_isrs[i]:
                 self.isrs_str[i].n_resources = len(self.sg_isrs[i]["RESOURCE"])
             text = "Resources["+str(self.isrs_str[i].n_resources)+"]"
             select = tk.Button(self.scrollw.mnf, width=12, text=text, command=lambda id = i: self.select_resources(id))
-            select.grid(row=self.HeaderSize+i, column=5)
+            select.grid(row=self.header_row+i, column=5)
 
             # PRIORITY
             entry = tk.Entry(self.scrollw.mnf, width=10, textvariable=self.isrs_str[i].stack_size, justify='center')
             self.isrs_str[i].stack_size.set(self.sg_isrs[i]["OsIsrStackSize"])
-            entry.grid(row=self.HeaderSize+i, column=6)
+            entry.grid(row=self.header_row+i, column=6)
             
         # Set the self.cv scrolling region
         self.scrollw.scroll()

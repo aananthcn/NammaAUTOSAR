@@ -36,8 +36,8 @@ class DioConfigTab:
 
     dio_ports = []  # copy of port info
 
-    header_objs = 12 #Objects / widgets that are part of the header and shouldn't be destroyed
-    header_size = 3
+    n_header_objs = 12 #Objects / widgets that are part of the header and shouldn't be destroyed
+    header_row = 3
     non_header_objs = []
     
     toplvl = None
@@ -100,22 +100,14 @@ class DioConfigTab:
 
 
 
-    def delete_dappa_row(self):
-        objlist = self.non_header_objs[-self.dappas_per_row:]
-        for obj in objlist:
-            obj.destroy()
-        del self.non_header_objs[-self.dappas_per_row:]
-
-
-
     def draw_dappa_row(self, i):
-        dappa.label(self, "Pin #", self.header_size+i, 0, "e")
+        dappa.label(self, "Pin #", self.header_row+i, 0, "e")
 
         # DioPortId
-        dappa.entry(self, "DioPortId", i, self.header_size+i, 1, 10, "readonly")
+        dappa.entry(self, "DioPortId", i, self.header_row+i, 1, 10, "readonly")
 
         # DioChannelId
-        dappa.entry(self, "DioChannelId", i, self.header_size+i, 2, 10, "normal")
+        dappa.entry(self, "DioChannelId", i, self.header_row+i, 2, 10, "normal")
 
 
 

@@ -53,8 +53,8 @@ class CounterTab:
     N_Counters = 1
     N_Counters_str = None
     MaxCounters = 16
-    HeaderSize = 2
-    HeaderObjs = 9 #Objects / widgets that are part of the header and shouldn't be destroyed
+    header_row = 2
+    n_header_objs = 9 #Objects / widgets that are part of the header and shouldn't be destroyed
 
     Counters = None
     Ctr_StrVar = []
@@ -86,7 +86,7 @@ class CounterTab:
     def update_ctrs(self, tab):
         self.N_Counters = self.N_Counters_str.get()
         for i, item in enumerate(tab.winfo_children()):
-            if i > self.HeaderObjs:
+            if i > self.n_header_objs:
                 item.destroy()
         self.update(tab)
         
@@ -138,29 +138,29 @@ class CounterTab:
         # Draw counter objects
         for i in range(0, int(self.N_Counters)):
             label = tk.Label(tab, text="Counter "+str(i)+" : ")
-            label.grid(row=self.HeaderSize+i+1, column=1, sticky="e")
+            label.grid(row=self.header_row+i+1, column=1, sticky="e")
             entry = tk.Entry(tab, width=30, textvariable=self.Ctr_StrVar[i].name) # Counter Name
             self.Ctr_StrVar[i].name.set(self.Counters[i]["Counter Name"])
-            entry.grid(row=self.HeaderSize+i+1, column=2)
+            entry.grid(row=self.header_row+i+1, column=2)
             entry = tk.Entry(tab, width=15, textvariable=self.Ctr_StrVar[i].mincycle) # MINCYCLE
             self.Ctr_StrVar[i].mincycle.set(self.Counters[i]["MINCYCLE"])
-            entry.grid(row=self.HeaderSize+i+1, column=3)
+            entry.grid(row=self.header_row+i+1, column=3)
             entry = tk.Entry(tab, width=20, textvariable=self.Ctr_StrVar[i].maxallowed) # MAXALLOWEDVALUE
             self.Ctr_StrVar[i].maxallowed.set(self.Counters[i]["MAXALLOWEDVALUE"])
-            entry.grid(row=self.HeaderSize+i+1, column=4)
+            entry.grid(row=self.header_row+i+1, column=4)
             entry = tk.Entry(tab, width=15, textvariable=self.Ctr_StrVar[i].ticksperbase) # TICKSPERBASE
             self.Ctr_StrVar[i].ticksperbase.set(self.Counters[i]["TICKSPERBASE"])
-            entry.grid(row=self.HeaderSize+i+1, column=5)
+            entry.grid(row=self.header_row+i+1, column=5)
 
             cmbsel = ttk.Combobox(tab, width=20, textvariable=self.Ctr_StrVar[i].cntr_type, state="readonly") # Hardware / Software
             cmbsel['values'] = ("HARDWARE", "SOFTWARE")
             self.Ctr_StrVar[i].cntr_type.set(self.Counters[i]["OsCounterType"])
             cmbsel.current()
-            cmbsel.grid(row=self.HeaderSize+i+1, column=6)
+            cmbsel.grid(row=self.header_row+i+1, column=6)
 
             entry = tk.Entry(tab, width=40, textvariable=self.Ctr_StrVar[i].comment) # Comments
             self.Ctr_StrVar[i].comment.set("") # comments not yet supported!
-            entry.grid(row=self.HeaderSize+i+1, column=7)
+            entry.grid(row=self.header_row+i+1, column=7)
 
 
     def backup_data(self):

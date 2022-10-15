@@ -38,8 +38,8 @@ class SpiChannelTab:
     cfgkeys = ["SpiChannelId", "SpiChannelType", "SpiDataWidth", "SpiDefaultData", "SpiEbMaxLength",
                "SpiIbNBuffers", "SpiTransferStart"]
 
-    header_objs = 12 #Objects / widgets that are part of the header and shouldn't be destroyed
-    header_size = 3
+    n_header_objs = 12 #Objects / widgets that are part of the header and shouldn't be destroyed
+    header_row = 3
     non_header_objs = []
     dappas_per_row = len(cfgkeys) + 1 # +1 for row labels
 
@@ -76,38 +76,30 @@ class SpiChannelTab:
 
 
     def draw_dappa_row(self, i):
-        dappa.label(self, "Spi Channel #", self.header_size+i, 0, "e")
+        dappa.label(self, "Spi Channel #", self.header_row+i, 0, "e")
 
         # SpiChannelId
-        dappa.entry(self, "SpiChannelId", i, self.header_size+i, 1, 10, "readonly")
+        dappa.entry(self, "SpiChannelId", i, self.header_row+i, 1, 10, "readonly")
 
         # SpiChannelType
         values = ("IB (Internal Buffer)", "EB (External Buffer)")
-        dappa.combo(self, "SpiChannelType", i, self.header_size+i, 2, 17, values)
+        dappa.combo(self, "SpiChannelType", i, self.header_row+i, 2, 17, values)
 
         # SpiDataWidth
-        dappa.spinb(self, "SpiDataWidth", i,self.header_size+i, 3, 13, tuple(range(1,33)))
+        dappa.spinb(self, "SpiDataWidth", i,self.header_row+i, 3, 13, tuple(range(1,33)))
 
         # SpiDefaultData
-        dappa.entry(self, "SpiDefaultData", i, self.header_size+i, 4, 17, "normal")
+        dappa.entry(self, "SpiDefaultData", i, self.header_row+i, 4, 17, "normal")
 
         # SpiEbMaxLength
-        dappa.spinb(self, "SpiEbMaxLength", i, self.header_size+i, 5, 13, tuple(range(0,65536)))
+        dappa.spinb(self, "SpiEbMaxLength", i, self.header_row+i, 5, 13, tuple(range(0,65536)))
 
         # SpiIbNBuffers
-        dappa.spinb(self, "SpiIbNBuffers", i, self.header_size+i, 6, 13, tuple(range(0,65536)))
+        dappa.spinb(self, "SpiIbNBuffers", i, self.header_row+i, 6, 13, tuple(range(0,65536)))
 
         # SpiTransferStart
         values = ("MSB", "LSB")
-        dappa.combo(self, "SpiTransferStart", i, self.header_size+i, 7, 10, values)
-
-
-
-    def delete_dappa_row(self):
-        objlist = self.non_header_objs[-self.dappas_per_row:]
-        for obj in objlist:
-            obj.destroy()
-        del self.non_header_objs[-self.dappas_per_row:]
+        dappa.combo(self, "SpiTransferStart", i, self.header_row+i, 7, 10, values)
 
 
 
@@ -123,7 +115,7 @@ class SpiChannelTab:
                 self.draw_dappa_row(n_dappa_rows+i)
         elif n_dappa_rows > self.n_spi_chans:
             for i in range(n_dappa_rows - self.n_spi_chans):
-                self.delete_dappa_row()
+                dappa.delete_dappa_row(self, (n_dappa_rows-1)+i)
                 del self.configs[-1]
 
         # Support scrollable view
