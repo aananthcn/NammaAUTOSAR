@@ -184,7 +184,6 @@ class TaskTab:
 
 
     def backup_data(self):
-        print("backup_data called in tsk_cfg")
         if sg.Tasks:
             del sg.Tasks[:]
         for cfg in self.configs:
