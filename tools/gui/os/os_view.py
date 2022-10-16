@@ -152,7 +152,7 @@ def show_os_config(gui):
     OsTab.draw(os_tab, gui)
 
     AmTab = gui_am_tab.AmTab(sg.AppModes)
-    AmTab.draw(am_tab)
+    AmTab.draw(am_tab, width, height)
     
     CtrTab = gui_cr_tab.CounterTab(sg.Counters)
     CtrTab.draw(cr_tab, width, height)
