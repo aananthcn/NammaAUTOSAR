@@ -119,13 +119,13 @@ class AlarmTab:
         else: 
             # Draw Combobox for Task select
             arg1 = dappa.combo(self, "arg1", i, self.header_row+i, 4, 30-3, self.extract_task_names())
-            arg1.bind("<<ComboboxSelected>>", self.arg1_task_selected)
+            arg1.bind("<<ComboboxSelected>>", lambda evt, id = i : self.arg1_task_selected(evt, id))
 
         # arg2
         if self.configs[i].datavar["Action-Type"] == "SETEVENT":
             # Draw Combobox for Event select
             event_list = self.extract_task_events(i)
-            if self.configs[i].datavar["arg2"] not in event_list:
+            if not self.configs[i].datavar["arg2"]:
                 self.configs[i].datavar["arg2"] = ""
             dappa.combo(self, "arg2", i, self.header_row+i, 5, 25-3, event_list)
         else:
@@ -134,7 +134,7 @@ class AlarmTab:
 
         # IsAutoStart
         isas = dappa.combo(self, "IsAutostart", i, self.header_row+i, 6, 8, ("TRUE", "FALSE"))
-        isas.bind("<<ComboboxSelected>>", self.isautostart_changed)
+        isas.bind("<<ComboboxSelected>>", lambda evt, id = i : self.isautostart_changed(evt, id))
 
         # ALARMTIME, CYCLETIME AND APPMODE are not required if IsAutostart is False
         if self.configs[i].datavar["IsAutostart"] == "FALSE":
@@ -144,10 +144,12 @@ class AlarmTab:
             return
 
         # ALARMTIME
-        dappa.entry(self, "ALARMTIME", i, self.header_row+i, 7, 11, "normal")
+        at = dappa.entry(self, "ALARMTIME", i, self.header_row+i, 7, 11, "normal")
+        at.bind("<FocusOut>", lambda evt, id = i : self.alarm_cycle_time_changed(evt, id))
 
         # CYCLETIME
-        dappa.entry(self, "CYCLETIME", i, self.header_row+i, 8, 11, "normal")
+        ct = dappa.entry(self, "CYCLETIME", i, self.header_row+i, 8, 11, "normal")
+        ct.bind("<FocusOut>", lambda evt, id = i : self.alarm_cycle_time_changed(evt, id))
 
         # APPMODE[]
         n_appmode = 0
@@ -243,17 +245,69 @@ class AlarmTab:
         print("alm_cfg.backup_data() called!")
 
 
-    def on_autostart_dialog_close(self, task_id):
+
+    def action_type_selected(self, event, row):
+        self.configs[row].get() # read from UI (backup last selection)
+        self.configs[row].datavar["arg1"] = self.configs[row].datavar["arg2"] = ""
+        # re-draw all boxes (dappas) of this row
+        dappa.delete_dappa_row(self, row)
+        self.draw_dappa_row(row)
+
+
+    def arg1_task_selected(self, event, row):
+        self.configs[row].get() # read from UI (backup last selection)
+        # re-draw all boxes (dappas) of this row
+        dappa.delete_dappa_row(self, row)
+        self.draw_dappa_row(row)
+
+
+    def isautostart_changed(self, event, row):
+        self.configs[row].get() # read from UI (backup last selection)
+        # re-draw all boxes (dappas) of this row
+        dappa.delete_dappa_row(self, row)
+        self.draw_dappa_row(row)
+
+
+    def alarm_cycle_time_changed(self, event, row):
+        # read from UI (backup last writes)
+        self.configs[row].datavar["ALARMTIME"] = self.configs[row].dispvar["ALARMTIME"].get()
+        self.configs[row].datavar["CYCLETIME"] = self.configs[row].dispvar["CYCLETIME"].get()
+
+
+
+    def select_autostart_modes(self, row):
+        self.configs[row].get() # read from UI (backup last selection)
+        if self.active_dialog != None:
+            return
+
+        # function to create dialog window
+        self.active_dialog = tk.Toplevel() # create an instance of toplevel
+        self.active_dialog.protocol("WM_DELETE_WINDOW", lambda : self.on_autostart_dialog_close(row))
+
+        # show all app modes
+        self.active_widget = tk.Listbox(self.active_dialog, selectmode=tk.MULTIPLE, width=40, height=15)
+        for i, obj in enumerate(self.amtab.AM_StrVar):
+            appmode = obj.get()
+            self.active_widget.insert(i, appmode)
+            if self.configs[row].datavar["APPMODE"]:
+                if appmode in self.configs[row].datavar["APPMODE"]:
+                    self.active_widget.selection_set(i)
+        self.active_widget.pack()
+
+
+    def on_autostart_dialog_close(self, row):
+        self.configs[row].get() # read from UI (backup last selection)
+        
         # remove old selections
-        if self.configs[task_id].datavar["APPMODE"]:
-            del self.configs[task_id].datavar["APPMODE"][:]
+        if self.configs[row].datavar["APPMODE"]:
+            del self.configs[row].datavar["APPMODE"][:]
 
         # update new selections
         if len(self.active_widget.curselection()):
             for i in self.active_widget.curselection():
-                if not self.configs[task_id].datavar["APPMODE"]:
-                    self.configs[task_id].datavar["APPMODE"] = []
-                self.configs[task_id].datavar["APPMODE"].append(self.active_widget.get(i))
+                if not self.configs[row].datavar["APPMODE"]:
+                    self.configs[row].datavar["APPMODE"] = []
+                self.configs[row].datavar["APPMODE"].append(self.active_widget.get(i))
         
         # dialog elements are no longer needed, destroy them. Else, new dialogs will not open!
         self.active_widget.destroy()
@@ -261,49 +315,8 @@ class AlarmTab:
         self.active_dialog.destroy()
         del self.active_dialog
 
-        # refresh screen
-        self.update()
-
-
-    def select_autostart_modes(self, id):
-        if self.active_dialog != None:
-            return
-
-        # function to create dialog window
-        self.active_dialog = tk.Toplevel() # create an instance of toplevel
-        self.active_dialog.protocol("WM_DELETE_WINDOW", lambda : self.on_autostart_dialog_close(id))
-
-        # show all app modes
-        self.active_widget = tk.Listbox(self.active_dialog, selectmode=tk.MULTIPLE, width=40, height=15)
-        for i, obj in enumerate(self.amtab.AM_StrVar):
-            appmode = obj.get()
-            self.active_widget.insert(i, appmode)
-            if self.configs[id].datavar["APPMODE"]:
-                if appmode in self.configs[id].datavar["APPMODE"]:
-                    self.active_widget.selection_set(i)
-        self.active_widget.pack()
-
-
-    def action_type_selected(self, event, row):
-        print(event, row)
-        self.configs[row].get() # read from UI (backup last selection)
-        self.configs[row].datavar["arg1"] = self.configs[row].datavar["arg2"] = ""
+        # # refresh screen
+        # self.update()
+        # re-draw all boxes (dappas) of this row
         dappa.delete_dappa_row(self, row)
         self.draw_dappa_row(row)
-
-
-    def arg1_task_selected(self, event):
-        # this function needs a re-visit
-        self.update()
-
-
-    def isautostart_changed(self, event):
-        # this function needs a re-visit
-        for i, alm in enumerate(self.configs):
-            if "ALARMTIME" not in alm.datavar:
-                alm.datavar["ALARMTIME"] = "50"
-            if "CYCLETIME" not in alm.datavar:
-                alm.datavar["CYCLETIME"] = "1000"
-            if "APPMODE[]" not in alm.datavar:
-                alm.datavar["APPMODE[]"] = []
-        self.update()
