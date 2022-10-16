@@ -288,8 +288,8 @@ class AlarmTab:
 
         # show all app modes
         self.active_widget = tk.Listbox(self.active_dialog, selectmode=tk.MULTIPLE, width=40, height=15)
-        for i, obj in enumerate(self.amtab.AM_StrVar):
-            appmode = obj.get()
+        for i, am_cfg in enumerate(self.amtab.configs):
+            appmode = am_cfg.datavar["OsAppMode"]
             self.active_widget.insert(i, appmode)
             if self.configs[row].datavar["APPMODE"]:
                 if appmode in self.configs[row].datavar["APPMODE"]:
@@ -317,8 +317,6 @@ class AlarmTab:
         self.active_dialog.destroy()
         del self.active_dialog
 
-        # # refresh screen
-        # self.update()
         # re-draw all boxes (dappas) of this row
         dappa.delete_dappa_row(self, row)
         self.draw_dappa_row(row)

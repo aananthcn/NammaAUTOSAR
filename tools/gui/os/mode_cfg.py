@@ -123,7 +123,6 @@ class AmTab:
 
     def appmode_changed(self, event, row):
         # read from UI (backup last writes)
-        # self.configs[row].datavar["ALARMTIME"] = self.configs[row].dispvar["ALARMTIME"].get()
         self.configs[row].get()
 
 

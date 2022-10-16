@@ -305,8 +305,8 @@ class TaskTab:
 
         # show all app modes
         self.active_widget = tk.Listbox(self.active_dialog, selectmode=tk.MULTIPLE, width=40, height=15)
-        for i, obj in enumerate(self.rstab.ress_str):
-            res = obj.get()
+        for i, r_cfg in enumerate(self.rstab.configs):
+            res = r_cfg.datavar["OsResource"]
             self.active_widget.insert(i, res)
             if row < len(self.configs) and self.configs[row].datavar["RESOURCE"]:
                 if res in self.configs[row].datavar["RESOURCE"]:
