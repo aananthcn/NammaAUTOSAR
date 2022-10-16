@@ -24,7 +24,7 @@ from tkinter import ttk
 import gui.lib.window as window
 import gui.lib.asr_widget as dappa # dappa in Tamil means box
 
-
+import os_builder.scripts.System_Generator as sg
 
 class CounterTab:
     n_counters = 1
@@ -76,8 +76,8 @@ class CounterTab:
         dappa.label(self, "Counter #", self.header_row+i, 0, "e")
         dappa.entry(self, "Counter Name", i, self.header_row+i, 1, 30, "normal")
         dappa.entry(self, "MINCYCLE", i, self.header_row+i, 2, 15, "normal")
-        dappa.entry(self, "MINCYCLE", i, self.header_row+i, 3, 20, "normal")
-        dappa.entry(self, "MINCYCLE", i, self.header_row+i, 4, 15, "normal")
+        dappa.entry(self, "MAXALLOWEDVALUE", i, self.header_row+i, 3, 20, "normal")
+        dappa.entry(self, "TICKSPERBASE", i, self.header_row+i, 4, 15, "normal")
         dappa.combo(self, "OsCounterType", i, self.header_row+i, 5, 20, ("HARDWARE", "SOFTWARE"))
 
 
@@ -130,4 +130,8 @@ class CounterTab:
 
 
     def backup_data(self):
-        print("backup_data called in cnt_cfg")
+        if sg.Counters:
+            del sg.Counters[:]
+        for cfg in self.configs:
+            cfg_dict = cfg.get()
+            sg.Counters.append(cfg_dict)

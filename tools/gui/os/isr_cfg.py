@@ -25,6 +25,14 @@ from .evt_cfg import EventWindow
 import gui.lib.window as window
 
 
+###############################################################################
+#  N O T I C E :                                                              #
+#  ------------                                                               #
+#  This file needs to re-design as per AUTOSAR spec, the current design is    #
+#  predominantly based on OSEK, and it is wrong too. Will be done later!      #
+#                                                                             #
+###############################################################################
+
 class IsrStr:
     id = 0
     name = None

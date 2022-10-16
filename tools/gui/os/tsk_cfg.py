@@ -26,6 +26,8 @@ from .evt_cfg import EventWindow
 import gui.lib.window as window
 import gui.lib.asr_widget as dappa # dappa in Tamil means box
 
+import os_builder.scripts.System_Generator as sg
+
 
 
 class TaskTab:
@@ -45,7 +47,8 @@ class TaskTab:
     non_header_objs = []
     scrollw = None
     configs = None # all UI configs (tkinter strings) are stored here.
-    cfgkeys = ["Task Name", "PRIORITY", "SCHEDULE", "ACTIVATION", "AUTOSTART_APPMODE", "EVENT", "RESOURCE", "STACK_SIZE"]
+    cfgkeys = ["Task Name", "PRIORITY", "SCHEDULE", "ACTIVATION", "AUTOSTART", "AUTOSTART_APPMODE",
+               "EVENT", "RESOURCE", "STACK_SIZE"]
     dappas_per_row = len(cfgkeys) + 1 # +1 for row labels
     init_view_done = False
 
@@ -109,23 +112,26 @@ class TaskTab:
         # ACTIVATION
         dappa.entry(self, "ACTIVATION", i, self.header_row+i, 4, 11, "normal")
 
-        # AUTOSTART[]
+        # AUTOSTART
+        dappa.combo(self, "AUTOSTART", i, self.header_row+i, 5, 10, ("FALSE", "TRUE"))
+
+        # AUTOSTART_APPMODE[]
         text = "AppModes["+str(dappa.button_selections(self, i, "AUTOSTART_APPMODE"))+"]"
         cb = lambda row = i: self.select_autostart_modes(row)
-        dappa.button(self, "AUTOSTART_APPMODE", i, self.header_row+i, 5, 13, text, cb)
+        dappa.button(self, "AUTOSTART_APPMODE", i, self.header_row+i, 6, 13, text, cb)
 
         # EVENT[]
         text = "Events["+str(dappa.button_selections(self, i, "EVENT"))+"]"
         cb = lambda row = i: self.select_events(row)
-        dappa.button(self, "EVENT", i, self.header_row+i, 6, 13, text, cb)
+        dappa.button(self, "EVENT", i, self.header_row+i, 7, 13, text, cb)
 
         # RESOURCE[]
         text = "Resources["+str(dappa.button_selections(self, i, "RESOURCE"))+"]"
         cb = lambda row = i: self.select_resources(row)
-        dappa.button(self, "RESOURCE", i, self.header_row+i, 7, 13, text, cb)
+        dappa.button(self, "RESOURCE", i, self.header_row+i, 8, 13, text, cb)
 
         # # MESSAGE[]
-        dappa.entry(self, "STACK_SIZE", i, self.header_row+i, 8, 11, "normal")
+        dappa.entry(self, "STACK_SIZE", i, self.header_row+i, 9, 11, "normal")
 
 
 
@@ -179,6 +185,11 @@ class TaskTab:
 
     def backup_data(self):
         print("backup_data called in tsk_cfg")
+        if sg.Tasks:
+            del sg.Tasks[:]
+        for cfg in self.configs:
+            cfg_dict = cfg.get()
+            sg.Tasks.append(cfg_dict)
 
 
 

@@ -27,6 +27,7 @@ import gui.lib.window as window
 import gui.lib.asr_widget as dappa # dappa in Tamil means box
 
 
+
 class EventWindow:
     n_events = 0
     n_events_str = None
@@ -127,4 +128,4 @@ class EventWindow:
 
 
     def backup_data(self):
-        print("backup_data called in mode_cfg")
+        print("backup_data called in evt_cfg")

@@ -63,7 +63,7 @@ def print_task_len_macros(hf, Tasks):
     hf.write("\n\n")
     for task in Tasks:
         # app_modes
-        if "AUTOSTART_APPMODE" in task:
+        if "AUTOSTART_APPMODE" in task and task["AUTOSTART_APPMODE"]:
             hf.write("#define "+task[TaskParams[TNMI]].upper()+"_APPMODE_MAX\t("+
                 str(len(task["AUTOSTART_APPMODE"]))+")\n")
         else:
@@ -71,7 +71,7 @@ def print_task_len_macros(hf, Tasks):
 
         # msg, res, evt
         for i in range(5, 8):
-            if TaskParams[i] in task:
+            if TaskParams[i] in task and task[TaskParams[i]]:
                 hf.write("#define "+task[TaskParams[TNMI]].upper()+"_"+TaskParams[i]+"_MAX\t("+
                     str(len(task[TaskParams[i]]))+")\n")
             else:
@@ -135,14 +135,14 @@ def generate_code(path, Tasks):
         cf.write("\t\t.autostart = "+task[TaskParams[ATSI]].lower()+",\n")
 
         # Init AppModes
-        if "AUTOSTART_APPMODE" in task:
+        if "AUTOSTART_APPMODE" in task and task["AUTOSTART_APPMODE"]:
             cf.write("\t\t.appmodes = (const AppModeType **) &"+task[TaskParams[TNMI]]+"_AppModes,\n")
         else:
              cf.write("\t\t.appmodes = NULL,\n")
         cf.write("\t\t.n_appmodes = "+task[TaskParams[TNMI]].upper()+"_APPMODE_MAX,\n")
 
         # Init _EventMasks
-        if TaskParams[EVTI] in task:
+        if TaskParams[EVTI] in task and task[TaskParams[EVTI]]:
             cf.write("\t\t.evtmsks = (const EventMaskType**) &"+task[TaskParams[TNMI]]+"_EventMasks,\n")
         else:
              cf.write("\t\t.evtmsks = NULL,\n")

@@ -42,7 +42,7 @@ CNME = 0
 
 # Column titles for Alarms
 AlarmParams = ["Alarm Name", "COUNTER", "Action-Type", "arg1", "arg2", "IsAutostart",
-	"ALARMTIME", "CYCLETIME", "APPMODE[]" ]
+	"ALARMTIME", "CYCLETIME", "APPMODE" ]
 ANME = 0
 ACNT = 1
 AAAT = 2

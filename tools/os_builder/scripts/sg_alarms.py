@@ -155,15 +155,15 @@ def generate_code(path, Alarms, Counters, Tasks):
     cf.write("\n\n/*   A P P M O D E S   F O R   A L A R M S   */\n")
     new_line_for_app_alarm = False
     for alarm in Alarms:
-        if "APPMODE[]" in alarm:
-            max_i = len(alarm["APPMODE[]"])
+        if "APPMODE" in alarm and alarm["APPMODE"]:
+            max_i = len(alarm["APPMODE"])
             # this block is added to beautify sg_alarms.h :-)
             if not new_line_for_app_alarm:
                 new_line_for_app_alarm = True
             cf.write("#define ALARM_"+alarm[AlarmParams[ANME]].upper()+"_APPMODES_MAX ("+str(max_i)+")\n")
             cf.write("const AppModeType Alarm_"+alarm[AlarmParams[ANME]]+"_AppModes[] = {\n")
             i = 0
-            for m in alarm["APPMODE[]"]:
+            for m in alarm["APPMODE"]:
                 i += 1
                 cf.write("\t"+m)
                 if i != max_i:
@@ -213,16 +213,16 @@ def generate_code(path, Alarms, Counters, Tasks):
             alarm_action_type_args(alarmActionType, alarm, cf, hf, Tasks)
 
             cf.write("\t\t.is_autostart = "+alarm[AlarmParams[AIAS]]+",\n")
-            if AlarmParams[ATIM] in alarm:
+            if AlarmParams[ATIM] in alarm and alarm[AlarmParams[ATIM]]:
                 cf.write("\t\t.alarmtime = "+str(alarm[AlarmParams[ATIM]])+",\n")
             else:
                 cf.write("\t\t.alarmtime = 0,\n")
-            if AlarmParams[ACYT] in alarm:
+            if AlarmParams[ACYT] in alarm and alarm[AlarmParams[ACYT]]:
                 cf.write("\t\t.cycletime = "+str(alarm[AlarmParams[ACYT]])+",\n")
             else:
                 cf.write("\t\t.cycletime = 0,\n")
 
-            if "APPMODE[]" in alarm:
+            if "APPMODE" in alarm and alarm["APPMODE"]:
                 cf.write("\t\t.n_appmodes = ALARM_"+alarm[AlarmParams[ANME]].upper()+"_APPMODES_MAX,\n")
                 cf.write("\t\t.appmodes = (const AppModeType *) &Alarm_"+alarm[AlarmParams[ANME]]+"_AppModes\n")
             else:

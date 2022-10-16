@@ -50,7 +50,7 @@ def generate_code(path, AppModes, Tasks):
     cf.write("#include \"sg_appmodes.h\"\n\n")
     cf.write("\n/*  Task AppModes */\n")
     for task in Tasks:
-        if "AUTOSTART_APPMODE" in task:
+        if "AUTOSTART_APPMODE" in task and task["AUTOSTART_APPMODE"]:
             cf.write("const AppModeType "+task[TaskParams[TNMI]]+"_AppModes[] = {\n")
             max_i = len(task["AUTOSTART_APPMODE"])
             i = 0

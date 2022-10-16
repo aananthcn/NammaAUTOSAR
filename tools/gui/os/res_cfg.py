@@ -130,7 +130,7 @@ class ResourceTab:
 
 
     def backup_data(self):
-        print("backup_data called in mode_cfg")
+        print("backup_data called in res_cfg")
 
 
 
@@ -141,7 +141,7 @@ class ResourceTab:
         # extract resources from tasks
         for task in tasks:
             if "RESOURCE" in task:
-                for res in task["RESOURCE"]:
+                for res in task["RESOURCE"] and task["RESOURCE"]:
                     if res not in resources:
                         resources.append(res)
 

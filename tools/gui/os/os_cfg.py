@@ -21,6 +21,8 @@
 import tkinter as tk
 from tkinter import ttk
 
+
+
 class OsTab:
     N_StrVar = 13
     OS_StrVar = []

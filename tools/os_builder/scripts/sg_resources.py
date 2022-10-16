@@ -59,7 +59,7 @@ def generate_code(path, Tasks):
     hf.write("\n\n\n#define RES(x)  RES_##x\n")
     hf.write("\ntypedef enum {\n")
     for task in Tasks:
-        if TaskParams[RESI] in task:
+        if TaskParams[RESI] in task and task[TaskParams[RESI]]:
             for r in task[TaskParams[RESI]]:
                 if r not in Resources:
                     Resources.append(r)
@@ -83,7 +83,7 @@ def generate_code(path, Tasks):
         ceil_prio = 0
         task_lst = []
         for task in Tasks:
-            if TaskParams[RESI] in task:
+            if TaskParams[RESI] in task and task[TaskParams[RESI]]:
                 for r in task[TaskParams[RESI]]:
                     if str(r) == str(res):
                         task_cnt += int(task[TaskParams[ACTI]])
