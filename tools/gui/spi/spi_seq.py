@@ -38,8 +38,8 @@ class SpiSequenceTab:
     configs = None # all UI configs (tkinter strings) are stored here.
     cfgkeys = ["SpiSequenceId", "SpiInterruptibleSequence", "SpiSeqEndNotification", "SpiJobAssignment"]
     
-    header_objs = 12 #Objects / widgets that are part of the header and shouldn't be destroyed
-    header_size = 3
+    n_header_objs = 12 #Objects / widgets that are part of the header and shouldn't be destroyed
+    header_row = 3
     non_header_objs = []
     dappas_per_row = len(cfgkeys) + 1 # +1 for row labels
 
@@ -73,28 +73,20 @@ class SpiSequenceTab:
 
 
 
-    def delete_dappa_row(self):
-        objlist = self.non_header_objs[-self.dappas_per_row:]
-        for obj in objlist:
-            obj.destroy()
-        del self.non_header_objs[-self.dappas_per_row:]
-
-
-
     def draw_dappa_row(self, i):
-        dappa.label(self, "Spi Sequence #", self.header_size+i, 0, "e")
+        dappa.label(self, "Spi Sequence #", self.header_row+i, 0, "e")
 
         # SpiSequenceId
-        dappa.entry(self, "SpiSequenceId", i, self.header_size+i, 1, 10, "readonly")
+        dappa.entry(self, "SpiSequenceId", i, self.header_row+i, 1, 10, "readonly")
 
         # Spi Sequence - SpiInterruptibleSequence
-        dappa.combo(self, "SpiInterruptibleSequence", i, self.header_size+i, 2, 15, ("FALSE", "TRUE"))
+        dappa.combo(self, "SpiInterruptibleSequence", i, self.header_row+i, 2, 15, ("FALSE", "TRUE"))
         
         # Spi Sequence - SpiSeqEndNotification
-        dappa.entry(self, "SpiSeqEndNotification", i, self.header_size+i, 3, 30, "normal")
+        dappa.entry(self, "SpiSeqEndNotification", i, self.header_row+i, 3, 30, "normal")
         
         # Spi Sequence - SpiJobAssignment
-        dappa.button(self, "SpiJobAssignment", i, self.header_size+i, 4, 13, "Job [#]", self.select_spi_jobs)
+        dappa.button(self, "SpiJobAssignment", i, self.header_row+i, 4, 13, "Job [#]", self.select_spi_jobs)
 
 
 
@@ -110,7 +102,7 @@ class SpiSequenceTab:
                 self.draw_dappa_row(n_dappa_rows+i)
         elif n_dappa_rows > self.n_spi_seqs:
             for i in range(n_dappa_rows - self.n_spi_seqs):
-                self.delete_dappa_row()
+                dappa.delete_dappa_row(self, (n_dappa_rows-1)+i)
                 del self.configs[-1]
 
         # Set the self.cv scrolling region

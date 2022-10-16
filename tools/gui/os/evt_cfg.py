@@ -31,10 +31,11 @@ class EventWindow:
     n_events_str = None
     events_str = []
     events = []
-    HeaderObjs = 2 #Objects / widgets that are part of the header and shouldn't be destroyed
-    HeaderSize = 1
+    n_header_objs = 2 #Objects / widgets that are part of the header and shouldn't be destroyed
+    header_row = 1
     xsize = None
     ysize = None
+    mnf = None
     
 
     def __init__(self, task):
@@ -50,19 +51,19 @@ class EventWindow:
         del self.n_events_str
         del self.events_str[:]
 
+
     def update_events(self, mstr):
         self.n_events = int(mstr.get())
         # print("Update events: "+ str(self.n_events))        
         for i, item in enumerate(self.mnf.winfo_children()):
-            if i >= self.HeaderObjs:
+            if i >= self.n_header_objs:
                 item.destroy()
         self.update()
 
-    def draw(self, tab):
-        self.xsize = xsize
-        self.ysize = ysize
-        self.scrollw = window.ScrollableWindow(tab, self.xsize, self.ysize)
 
+    def draw(self, tab):
+        self.mnf = tab
+        
         #Number of Events - Label + Spinbox
         label = tk.Label(self.mnf, text="No. of Events:")
         label.grid(row=0, column=0, sticky="w")
@@ -70,10 +71,6 @@ class EventWindow:
                     values=tuple(range(0,self.max_events)))
         self.n_events_str.set(self.n_events)
         spinb.grid(row=0, column=1, sticky="w")
-
-        # Update buttons frames idle tasks to let tkinter calculate buttons sizes
-        self.scrollw.update()
-
         self.update()
 
 
@@ -96,13 +93,10 @@ class EventWindow:
         # Draw new objects
         for i in range(0, self.n_events):
             label = tk.Label(self.mnf, text="Event "+str(i)+": ")
-            label.grid(row=self.HeaderSize+i, column=0, sticky="w")
+            label.grid(row=self.header_row+i, column=0, sticky="w")
             entry = tk.Entry(self.mnf, width=40, textvariable=self.events_str[i])
             self.events_str[i].set(self.events[i])
-            entry.grid(row=self.HeaderSize+i, column=1)
-
-        # Set the self.cv scrolling region
-        self.scrollw.scroll()
+            entry.grid(row=self.header_row+i, column=1)
 
 
     def backup_data(self):
@@ -112,8 +106,7 @@ class EventWindow:
 
 
     def extract_events(self, task):
-        if "EVENT" in task:
-            # print(task["EVENT"])
+        if task != None and "EVENT" in task and task["EVENT"]:
             self.events = copy(task["EVENT"])
         else:
             self.events = []

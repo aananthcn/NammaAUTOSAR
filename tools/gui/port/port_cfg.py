@@ -60,8 +60,8 @@ class PortConfigSetTab:
     dappas_per_row = len(cfgkeys) + 1 # +1 for row labels
     init_view_done = False
 
-    header_objs = 12 #Objects / widgets that are part of the header and shouldn't be destroyed
-    header_size = 3
+    n_header_objs = 12 #Objects / widgets that are part of the header and shouldn't be destroyed
+    header_row = 3
     non_header_objs = []
 
 
@@ -101,38 +101,30 @@ class PortConfigSetTab:
 
 
 
-    def delete_dappa_row(self):
-        objlist = self.non_header_objs[-self.dappas_per_row:]
-        for obj in objlist:
-            obj.destroy()
-        del self.non_header_objs[-self.dappas_per_row:]
-
-
-
     def draw_dappa_row(self, i):
-        dappa.label(self, "Pin #", self.header_size+i, 0, "e")
+        dappa.label(self, "Pin #", self.header_row+i, 0, "e")
 
         # PortPinId
-        dappa.entry(self, "PortPinId", i, self.header_size+i, 1, 10, "normal")
+        dappa.entry(self, "PortPinId", i, self.header_row+i, 1, 10, "normal")
 
         # PortPinDirection
-        dappa.combo(self, "PortPinDirection", i, self.header_size+i, 2, 18, ("PORT_PIN_IN", "PORT_PIN_OUT"))
+        dappa.combo(self, "PortPinDirection", i, self.header_row+i, 2, 18, ("PORT_PIN_IN", "PORT_PIN_OUT"))
 
         # PortPinDirectionChangeable
-        dappa.combo(self, "PortPinDirectionChangeable", i, self.header_size+i, 3, 20, ("FALSE", "TRUE"))
+        dappa.combo(self, "PortPinDirectionChangeable", i, self.header_row+i, 3, 20, ("FALSE", "TRUE"))
 
         # PortPinLevelValue
         values = ("PORT_PIN_LEVEL_LOW", "PORT_PIN_LEVEL_HIGH")
-        dappa.combo(self, "PortPinLevelValue", i, self.header_size+i, 4, 22, values)
+        dappa.combo(self, "PortPinLevelValue", i, self.header_row+i, 4, 22, values)
 
         # PortPinMode
-        dappa.combo(self, "PortPinMode", i, self.header_size+i, 5, 28, StdPinModes)
+        dappa.combo(self, "PortPinMode", i, self.header_row+i, 5, 28, StdPinModes)
 
         # PortPinInitialMode
-        dappa.combo(self, "PortPinInitialMode", i, self.header_size+i, 6, 28, StdPinModes)
+        dappa.combo(self, "PortPinInitialMode", i, self.header_row+i, 6, 28, StdPinModes)
 
         # PortPinModeChangeable
-        dappa.combo(self, "PortPinModeChangeable", i, self.header_size+i, 7, 18, StdPinModes)
+        dappa.combo(self, "PortPinModeChangeable", i, self.header_row+i, 7, 18, StdPinModes)
 
 
 
@@ -151,7 +143,7 @@ class PortConfigSetTab:
                 self.draw_dappa_row(n_dappa_rows+i)
         elif n_dappa_rows > self.n_pins:
             for i in range(n_dappa_rows - self.n_pins):
-                self.delete_dappa_row()
+                dappa.delete_dappa_row(self, (n_dappa_rows-1)+i)
                 del self.configs[-1]
 
         # Set the self.cv scrolling region

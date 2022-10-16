@@ -41,8 +41,8 @@ class DioChannelGroupTab:
     cfgkeys = ["DioPortId", "DioChannelGroupIdentification", "DioPortOffset", "DioPortMask"]
 
     port_pin_ids = []
-    header_objs = 12 #Objects / widgets that are part of the header and shouldn't be destroyed
-    header_size = 3
+    n_header_objs = 12 #Objects / widgets that are part of the header and shouldn't be destroyed
+    header_row = 3
     non_header_objs = []
     dappas_per_row = len(cfgkeys) + 1 # +1 for row labels
     init_view_done = False
@@ -88,28 +88,20 @@ class DioChannelGroupTab:
 
 
 
-    def delete_dappa_row(self):
-        objlist = self.non_header_objs[-self.dappas_per_row:]
-        for obj in objlist:
-            obj.destroy()
-        del self.non_header_objs[-self.dappas_per_row:]
-
-
-
     def draw_dappa_row(self, i):
-        dappa.label(self, "Channel Group #", self.header_size+i, 0, "e")
+        dappa.label(self, "Channel Group #", self.header_row+i, 0, "e")
 
         # DioPortId
-        dappa.combo(self, "DioPortId", i, self.header_size+i, 1, 14, self.port_pin_ids)
+        dappa.combo(self, "DioPortId", i, self.header_row+i, 1, 14, self.port_pin_ids)
 
         # DioChannelGroupIdentification
-        dappa.entry(self, "DioChannelGroupIdentification", i, self.header_size+i, 2, 30, "normal")
+        dappa.entry(self, "DioChannelGroupIdentification", i, self.header_row+i, 2, 30, "normal")
 
         # Channel Group - DioPortOffset
-        dappa.entry(self, "DioPortOffset", i, self.header_size+i, 3, 15, "normal")
+        dappa.entry(self, "DioPortOffset", i, self.header_row+i, 3, 15, "normal")
 
         # Channel Group - DioPortMask
-        dappa.entry(self, "DioPortMask", i, self.header_size+i, 4, 15, "normal")
+        dappa.entry(self, "DioPortMask", i, self.header_row+i, 4, 15, "normal")
 
 
 
@@ -129,7 +121,7 @@ class DioChannelGroupTab:
                 self.draw_dappa_row(n_dappa_rows+i)
         elif n_dappa_rows > self.n_chgrps:
             for i in range(n_dappa_rows - self.n_chgrps):
-                self.delete_dappa_row()
+                dappa.delete_dappa_row(self, (n_dappa_rows-1)+i)
                 del self.configs[-1]
 
         # Set the self.cv scrolling region
