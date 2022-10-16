@@ -30,6 +30,7 @@ import gui.lib.asr_widget as dappa # dappa in Tamil means box
 
 class TaskTab:
     n_tasks = 1
+    n_tasks_str = None
     max_tasks = 1024
     events = []
     
@@ -160,7 +161,7 @@ class TaskTab:
         #Number of modes - Label + Spinbox
         label = tk.Label(self.scrollw.mnf, text="No. of Tasks:")
         label.grid(row=0, column=0, sticky="w")
-        spinb = tk.Spinbox(self.scrollw.mnf, width=10, textvariable=self.n_tasks_str, command=lambda : self.update(),
+        spinb = tk.Spinbox(self.scrollw.mnf, width=10, textvariable=self.n_tasks_str, command=self.update,
                     values=tuple(range(1,self.max_tasks+1)))
         self.n_tasks_str.set(self.n_tasks)
         spinb.grid(row=0, column=1, sticky="w")

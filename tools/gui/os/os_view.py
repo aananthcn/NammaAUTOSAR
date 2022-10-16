@@ -106,10 +106,10 @@ def show_os_config(gui):
     global OsConfigViewActive
 
     # Create a child window (tabbed view)
-    width = gui.main_view.xsize * 90 / 100
-    height = gui.main_view.ysize * 90 / 100
+    width = gui.main_view.xsize * 80 / 100
+    height = gui.main_view.ysize * 80 / 100
     view = tk.Toplevel()
-    view.geometry("%dx%d+%d+%d" % (width, height, 10, 15))
+    view.geometry("%dx%d+%d+%d" % (width, height, width/10, 15))
     view.title("AUTOSAR OS Configuration Tool")
     OsConfigViewActive = True
     view.protocol("WM_DELETE_WINDOW", lambda: os_config_close_event(view))
@@ -155,7 +155,7 @@ def show_os_config(gui):
     AmTab.draw(am_tab)
     
     CtrTab = gui_cr_tab.CounterTab(sg.Counters)
-    CtrTab.draw(cr_tab)
+    CtrTab.draw(cr_tab, width, height)
 
     # MsgTab = gui_ms_tab.MessageTab(sg.Tasks)
     # MsgTab.draw(ms_tab, width, height)

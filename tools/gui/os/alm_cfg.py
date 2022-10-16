@@ -235,8 +235,10 @@ class AlarmTab:
 
     def extract_counter_names(self):
         del self.counter_names[:]
-        for cntr in self.crtab.Ctr_StrVar:
-            self.counter_names.append(cntr.name.get())
+        # for cntr in self.crtab.Ctr_StrVar:
+        #     self.counter_names.append(cntr.name.get())
+        for counter in self.crtab.configs:
+            self.counter_names.append(counter.datavar["Counter Name"])
         return self.counter_names
 
 
