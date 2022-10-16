@@ -75,6 +75,7 @@ class TaskTab:
         del self.configs[:]
 
 
+
     def create_empty_configs(self):
         task = {}
         
@@ -94,8 +95,7 @@ class TaskTab:
 
 
     def draw_dappa_row(self, i):
-        n_appmod = n_events = n_resources = 0
-        dappa.label(self, "Task ", self.header_row+i, 0, "e")
+        dappa.label(self, "Task "+str(i)+":", self.header_row+i, 0, "e")
         
         # Task Name
         dappa.entry(self, "Task Name", i, self.header_row+i, 1, 30, "normal")
@@ -117,7 +117,7 @@ class TaskTab:
         # EVENT[]
         text = "Events["+str(dappa.button_selections(self, i, "EVENT"))+"]"
         cb = lambda row = i: self.select_events(row)
-        dappa.button(self, "EVENT", i, self.header_row+i, 6, 13, "Events["+str(n_events)+"]", cb)
+        dappa.button(self, "EVENT", i, self.header_row+i, 6, 13, text, cb)
 
         # RESOURCE[]
         text = "Resources["+str(dappa.button_selections(self, i, "RESOURCE"))+"]"
@@ -237,11 +237,12 @@ class TaskTab:
         if self.configs[row].datavar["EVENT"]:
             del self.configs[row].datavar["EVENT"][:]
 
+
         # update new selections from last window session
-        for strvar in self.active_widget.events_str:
+        for evt_cfg in self.active_widget.configs:
             if not self.configs[row].datavar["EVENT"]:
                  self.configs[row].datavar["EVENT"] = []
-            self.configs[row].datavar["EVENT"].append(strvar.get())
+            self.configs[row].datavar["EVENT"].append(evt_cfg.dispvar["OsEvent"].get())
         
         # dialog elements are no longer needed, destroy them. Else, new dialogs will not open!
         del self.active_widget
@@ -265,7 +266,7 @@ class TaskTab:
         self.active_dialog.geometry("+%d+%d" % (0 + x/3, y/12))
 
         # show all events specific to task[row]
-        self.active_widget = EventWindow(self.configs[row].get())
+        self.active_widget = EventWindow(self.configs[row].datavar["EVENT"])
         self.active_widget.draw(self.active_dialog)
 
 

@@ -63,6 +63,7 @@ class ResourceTab:
         del self.configs[:]
 
 
+
     def create_empty_configs(self):
         def_res = {}
         def_res["OsResource"] = "RES_"
