@@ -26,6 +26,8 @@ from .evt_cfg import EventWindow
 import gui.lib.window as window
 import gui.lib.asr_widget as dappa # dappa in Tamil means box
 
+import os_builder.scripts.System_Generator as sg
+
 
 
 class TaskTab:
@@ -45,7 +47,8 @@ class TaskTab:
     non_header_objs = []
     scrollw = None
     configs = None # all UI configs (tkinter strings) are stored here.
-    cfgkeys = ["Task Name", "PRIORITY", "SCHEDULE", "ACTIVATION", "AUTOSTART_APPMODE", "EVENT", "RESOURCE", "STACK_SIZE"]
+    cfgkeys = ["Task Name", "PRIORITY", "SCHEDULE", "ACTIVATION", "AUTOSTART", "AUTOSTART_APPMODE",
+               "EVENT", "RESOURCE", "STACK_SIZE"]
     dappas_per_row = len(cfgkeys) + 1 # +1 for row labels
     init_view_done = False
 
@@ -75,6 +78,7 @@ class TaskTab:
         del self.configs[:]
 
 
+
     def create_empty_configs(self):
         task = {}
         
@@ -94,8 +98,7 @@ class TaskTab:
 
 
     def draw_dappa_row(self, i):
-        n_appmod = n_events = n_resources = 0
-        dappa.label(self, "Task ", self.header_row+i, 0, "e")
+        dappa.label(self, "Task "+str(i)+":", self.header_row+i, 0, "e")
         
         # Task Name
         dappa.entry(self, "Task Name", i, self.header_row+i, 1, 30, "normal")
@@ -109,23 +112,26 @@ class TaskTab:
         # ACTIVATION
         dappa.entry(self, "ACTIVATION", i, self.header_row+i, 4, 11, "normal")
 
-        # AUTOSTART[]
+        # AUTOSTART
+        dappa.combo(self, "AUTOSTART", i, self.header_row+i, 5, 10, ("FALSE", "TRUE"))
+
+        # AUTOSTART_APPMODE[]
         text = "AppModes["+str(dappa.button_selections(self, i, "AUTOSTART_APPMODE"))+"]"
-        cb = lambda id = i: self.select_autostart_modes(id)
-        dappa.button(self, "AUTOSTART_APPMODE", i, self.header_row+i, 5, 13, text, cb)
+        cb = lambda row = i: self.select_autostart_modes(row)
+        dappa.button(self, "AUTOSTART_APPMODE", i, self.header_row+i, 6, 13, text, cb)
 
         # EVENT[]
         text = "Events["+str(dappa.button_selections(self, i, "EVENT"))+"]"
-        cb = lambda id = i: self.select_events(id)
-        dappa.button(self, "EVENT", i, self.header_row+i, 6, 13, "Events["+str(n_events)+"]", cb)
+        cb = lambda row = i: self.select_events(row)
+        dappa.button(self, "EVENT", i, self.header_row+i, 7, 13, text, cb)
 
         # RESOURCE[]
         text = "Resources["+str(dappa.button_selections(self, i, "RESOURCE"))+"]"
-        cb = lambda id = i: self.select_resources(id)
-        dappa.button(self, "RESOURCE", i, self.header_row+i, 7, 13, text, cb)
+        cb = lambda row = i: self.select_resources(row)
+        dappa.button(self, "RESOURCE", i, self.header_row+i, 8, 13, text, cb)
 
         # # MESSAGE[]
-        dappa.entry(self, "STACK_SIZE", i, self.header_row+i, 8, 11, "normal")
+        dappa.entry(self, "STACK_SIZE", i, self.header_row+i, 9, 11, "normal")
 
 
 
@@ -178,24 +184,30 @@ class TaskTab:
 
 
     def backup_data(self):
-        print("backup_data called in tsk_cfg")
+        if sg.Tasks:
+            del sg.Tasks[:]
+        for cfg in self.configs:
+            cfg_dict = cfg.get()
+            sg.Tasks.append(cfg_dict)
 
 
 
-    def on_autostart_dialog_close(self, task_id):
+    def on_autostart_dialog_close(self, row):
         # remove old selections
-        if "AUTOSTART_APPMODE" in self.configs[task_id].datavar:
-            # del self.sg_tasks[task_id].datavar["AUTOSTART_APPMODE"][:]
-            if self.configs[task_id].datavar["AUTOSTART_APPMODE"]:
-                del self.configs[task_id].datavar["AUTOSTART_APPMODE"][:]
+        if "AUTOSTART_APPMODE" in self.configs[row].datavar:
+            # del self.sg_tasks[row].datavar["AUTOSTART_APPMODE"][:]
+            if self.configs[row].datavar["AUTOSTART_APPMODE"]:
+                del self.configs[row].datavar["AUTOSTART_APPMODE"][:]
     
         # update new selections
         if len(self.active_widget.curselection()) == 0:
-            self.configs[task_id].datavar["AUTOSTART"] = "FALSE"
+            self.configs[row].datavar["AUTOSTART"] = "FALSE"
         else:
-            self.configs[task_id].datavar["AUTOSTART"] = "TRUE"
+            self.configs[row].datavar["AUTOSTART"] = "TRUE"
             for i in self.active_widget.curselection():
-                self.configs[task_id].datavar["AUTOSTART_APPMODE"].append(self.active_widget.get(i))
+                if not self.configs[row].datavar["AUTOSTART_APPMODE"]:
+                    self.configs[row].datavar["AUTOSTART_APPMODE"] = []
+                self.configs[row].datavar["AUTOSTART_APPMODE"].append(self.active_widget.get(i))
         
         # dialog elements are no longer needed, destroy them. Else, new dialogs will not open!
         self.active_widget.destroy()
@@ -203,75 +215,82 @@ class TaskTab:
         self.active_dialog.destroy()
         del self.active_dialog
 
-        # refresh screen
-        self.update()
+        # re-draw all boxes (dappas) of this row
+        dappa.delete_dappa_row(self, row)
+        self.draw_dappa_row(row)
 
 
-    def select_autostart_modes(self, id):
+    def select_autostart_modes(self, row):
         if self.active_dialog != None:
             return
 
         # function to create dialog window
         self.active_dialog = tk.Toplevel() # create an instance of toplevel
-        self.active_dialog.protocol("WM_DELETE_WINDOW", lambda : self.on_autostart_dialog_close(id))
+        self.active_dialog.protocol("WM_DELETE_WINDOW", lambda : self.on_autostart_dialog_close(row))
         x = self.active_dialog.winfo_screenwidth()
         y = self.active_dialog.winfo_screenheight()
         self.active_dialog.geometry("+%d+%d" % (0 + x/3, y/16))
 
         # show all app modes
         self.active_widget = tk.Listbox(self.active_dialog, selectmode=tk.MULTIPLE, width=40, height=15)
-        for i, obj in enumerate(self.amtab.AM_StrVar):
-            appmode = obj.get()
+        for i, obj in enumerate(self.amtab.configs):
+            appmode = obj.datavar["OsAppMode"]
             self.active_widget.insert(i, appmode)
-            if id < len(self.configs) and self.configs[id].datavar["AUTOSTART_APPMODE"]:
-                    if appmode in self.configs[id].datavar["AUTOSTART_APPMODE"]:
+            if row < len(self.configs) and self.configs[row].datavar["AUTOSTART_APPMODE"]:
+                    if appmode in self.configs[row].datavar["AUTOSTART_APPMODE"]:
                         self.active_widget.selection_set(i)
         self.active_widget.pack()
 
 
-    def on_event_dialog_close(self, task_id):
+    def on_event_dialog_close(self, row):
         # remove old selections
-        if self.configs[task_id].datavar["EVENT"]:
-            del self.configs[task_id].datavar["EVENT"][:]
+        if self.configs[row].datavar["EVENT"]:
+            del self.configs[row].datavar["EVENT"][:]
+
 
         # update new selections from last window session
-        for strvar in self.active_widget.events_str:
-            self.configs[task_id].datavar["EVENT"].append(strvar.get())
+        for evt_cfg in self.active_widget.configs:
+            if not self.configs[row].datavar["EVENT"]:
+                 self.configs[row].datavar["EVENT"] = []
+            self.configs[row].datavar["EVENT"].append(evt_cfg.dispvar["OsEvent"].get())
         
         # dialog elements are no longer needed, destroy them. Else, new dialogs will not open!
         del self.active_widget
         self.active_dialog.destroy()
         del self.active_dialog
 
-        # refresh screen
-        self.update()
+        # re-draw all boxes (dappas) of this row
+        dappa.delete_dappa_row(self, row)
+        self.draw_dappa_row(row)
 
 
-    def select_events(self, id):
+    def select_events(self, row):
         if self.active_dialog != None:
             return
 
         # function to create dialog window
         self.active_dialog = tk.Toplevel() # create an instance of toplevel
-        self.active_dialog.protocol("WM_DELETE_WINDOW", lambda : self.on_event_dialog_close(id))
+        self.active_dialog.protocol("WM_DELETE_WINDOW", lambda : self.on_event_dialog_close(row))
         x = self.active_dialog.winfo_screenwidth()
         y = self.active_dialog.winfo_screenheight()
         self.active_dialog.geometry("+%d+%d" % (0 + x/3, y/12))
 
-        # show all events specific to task[id]
-        self.active_widget = EventWindow(self.configs[id].get())
+        # show all events specific to task[row]
+        self.active_widget = EventWindow(self.configs[row].datavar["EVENT"])
         self.active_widget.draw(self.active_dialog)
 
 
-    def on_resource_dialog_close(self, task_id):
+    def on_resource_dialog_close(self, row):
         # remove old selections
-        if self.configs[task_id].datavar["RESOURCE"]:
-            del self.configs[task_id].datavar["RESOURCE"][:]
+        if self.configs[row].datavar["RESOURCE"]:
+            del self.configs[row].datavar["RESOURCE"][:]
 
         # update new selections
         if len(self.active_widget.curselection()):
             for i in self.active_widget.curselection():
-                self.configs[task_id].datavar["RESOURCE"].append(self.active_widget.get(i))
+                if not self.configs[row].datavar["RESOURCE"]:
+                    self.configs[row].datavar["RESOURCE"] = []
+                self.configs[row].datavar["RESOURCE"].append(self.active_widget.get(i))
         
         # dialog elements are no longer needed, destroy them. Else, new dialogs will not open!
         self.active_widget.destroy()
@@ -279,27 +298,28 @@ class TaskTab:
         self.active_dialog.destroy()
         del self.active_dialog
 
-        # refresh screen
-        self.update()
+        # re-draw all boxes (dappas) of this row
+        dappa.delete_dappa_row(self, row)
+        self.draw_dappa_row(row)
 
 
-    def select_resources(self, id):
+    def select_resources(self, row):
         if self.active_dialog != None:
             return
 
         # function to create dialog window
         self.active_dialog = tk.Toplevel() # create an instance of toplevel
-        self.active_dialog.protocol("WM_DELETE_WINDOW", lambda : self.on_resource_dialog_close(id))
+        self.active_dialog.protocol("WM_DELETE_WINDOW", lambda : self.on_resource_dialog_close(row))
         x = self.active_dialog.winfo_screenwidth()
         y = self.active_dialog.winfo_screenheight()
         self.active_dialog.geometry("+%d+%d" % (0 + x/2, y/16))
 
         # show all app modes
         self.active_widget = tk.Listbox(self.active_dialog, selectmode=tk.MULTIPLE, width=40, height=15)
-        for i, obj in enumerate(self.rstab.ress_str):
-            res = obj.get()
+        for i, r_cfg in enumerate(self.rstab.configs):
+            res = r_cfg.datavar["OsResource"]
             self.active_widget.insert(i, res)
-            if id < len(self.configs) and self.configs[id].datavar["RESOURCE"]:
-                if res in self.configs[id].datavar["RESOURCE"]:
+            if row < len(self.configs) and self.configs[row].datavar["RESOURCE"]:
+                if res in self.configs[row].datavar["RESOURCE"]:
                     self.active_widget.selection_set(i)
         self.active_widget.pack()

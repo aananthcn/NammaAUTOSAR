@@ -249,7 +249,7 @@ def parse_alarm_autostart(ctnr, alarm):
          plist = lib.get_dref_list(item)
          for lst in plist:
             if lst["tag"] == "OsAlarmAppModeRef":
-               alarm["APPMODE[]"].append(lst["val"])
+               alarm["APPMODE"].append(lst["val"])
 
 
 
@@ -272,7 +272,7 @@ def parse_alarm(ctnr):
                      parse_alarm_action(l2c, alarm)
                   elif lib.get_tag(item) == "SHORT-NAME" and item.text == "OsAlarmAutostart":
                      alarm["IsAutostart"] = "TRUE"
-                     alarm["APPMODE[]"] = []
+                     alarm["APPMODE"] = []
                      parse_alarm_autostart(l2c, alarm)
 
    sg.Alarms.append(alarm)

@@ -66,15 +66,21 @@ def generate_code(path, Counters):
             cf.write("\n")
         else:
             cf.write(",\n")
+
+        maxallowed = 0
+        if "0x" in cntr[CntrParams[2]]:
+            maxallowed = int(cntr[CntrParams[2]], 16)
+        else:
+            maxallowed = int(cntr[CntrParams[2]], 10)
         
         # Find out if this Counter is optimal for OS Tick scheduling
-        if int(cntr[CntrParams[2]]) >= 1000000: #nano sec
+        if maxallowed >= 1000000: #nano sec
             if os_counter_duration == -1:
                 os_counter_duration = cntr[CntrParams[2]]
                 os_counter_index = i
-            elif int(cntr[CntrParams[4]]) < os_counter_duration: 
-                os_counter_duration = cntr[CntrParams[2]]
-                os_counter_index = i
+            # elif int(cntr[CntrParams[4]]) < os_counter_duration: 
+            #     os_counter_duration = cntr[CntrParams[2]]
+            #     os_counter_index = i
 
     cf.write("};\n")
     # close source file

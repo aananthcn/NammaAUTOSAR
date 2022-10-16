@@ -257,11 +257,11 @@ def export_alarms_to_container(root):
          lib_conf.insert_conf_param(params, refname, "numerical", "int", alm["CYCLETIME"])
          refname = "/AUTOSAR/EcucDefs/Os/OsAlarm/OsAlarmAutostart/OsAlarmAutostartType"
          lib_conf.insert_conf_param(params, refname, "numerical", "int", "NOT YET SUPPORTED") # Todo: add support for this in UI
-      if "APPMODE[]" in alm:
+      if "APPMODE" in alm:
          # References
          references = ET.SubElement(l2_ctnr, "REFERENCE-VALUES")
          dref = "/AUTOSAR/EcucDefs/Os/OsAlarm/OsAlarmAutostart/OsAlarmAppModeRef"
-         for am in alm["APPMODE[]"]:
+         for am in alm["APPMODE"]:
             lib_conf.insert_conf_reference(references, dref, "/EcucDefs/Os/"+am)
 
 

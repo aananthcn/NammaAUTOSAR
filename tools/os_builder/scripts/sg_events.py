@@ -38,7 +38,7 @@ def generate_code(path, Tasks):
     hf.write("\n#define OS_EVENT(task, event)   (EVENT_MASK_##task##_##event)\n\n")
     # print event masks macros
     for task in Tasks:
-        if TaskParams[EVTI] in task:
+        if TaskParams[EVTI] in task and task[TaskParams[EVTI]]:
             hf.write("\n/*  Event Masks for "+task[TaskParams[TNMI]]+"  */\n")
             for i, event in enumerate(task[TaskParams[EVTI]]):
                 hf.write("#define EVENT_MASK_"+task[TaskParams[TNMI]]+"_"+
@@ -51,7 +51,7 @@ def generate_code(path, Tasks):
     cf.write("#include <osek.h>\n")
     cf.write("#include \"sg_events.h\"\n\n")
     for task in Tasks:
-        if TaskParams[EVTI] in task:
+        if TaskParams[EVTI] in task and task[TaskParams[EVTI]]:
             hf.write("\n/*  Event array for "+task[TaskParams[TNMI]]+"  */\n")
             hf.write("extern const EventMaskType "+task[TaskParams[TNMI]]
                 +"_EventMasks[];\n")

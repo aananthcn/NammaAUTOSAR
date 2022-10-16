@@ -27,6 +27,8 @@ from copy import copy
 import gui.lib.window as window
 import gui.lib.asr_widget as dappa # dappa in Tamil means box
 
+import os_builder.scripts.System_Generator as sg
+
 
 
 class AlarmTab:
@@ -151,7 +153,7 @@ class AlarmTab:
         ct = dappa.entry(self, "CYCLETIME", i, self.header_row+i, 8, 11, "normal")
         ct.bind("<FocusOut>", lambda evt, id = i : self.alarm_cycle_time_changed(evt, id))
 
-        # APPMODE[]
+        # APPMODE
         n_appmode = 0
         if self.configs[i].datavar["APPMODE"]:
             n_appmode = len(self.configs[i].datavar["APPMODE"])
@@ -244,7 +246,11 @@ class AlarmTab:
 
 
     def backup_data(self):
-        print("alm_cfg.backup_data() called!")
+        if sg.Alarms:
+            del sg.Alarms[:]
+        for cfg in self.configs:
+            cfg_dict = cfg.get()
+            sg.Alarms.append(cfg_dict)
 
 
 
@@ -288,8 +294,8 @@ class AlarmTab:
 
         # show all app modes
         self.active_widget = tk.Listbox(self.active_dialog, selectmode=tk.MULTIPLE, width=40, height=15)
-        for i, obj in enumerate(self.amtab.AM_StrVar):
-            appmode = obj.get()
+        for i, am_cfg in enumerate(self.amtab.configs):
+            appmode = am_cfg.datavar["OsAppMode"]
             self.active_widget.insert(i, appmode)
             if self.configs[row].datavar["APPMODE"]:
                 if appmode in self.configs[row].datavar["APPMODE"]:
@@ -317,8 +323,6 @@ class AlarmTab:
         self.active_dialog.destroy()
         del self.active_dialog
 
-        # # refresh screen
-        # self.update()
         # re-draw all boxes (dappas) of this row
         dappa.delete_dappa_row(self, row)
         self.draw_dappa_row(row)

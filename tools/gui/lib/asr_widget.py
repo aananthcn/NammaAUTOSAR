@@ -146,10 +146,13 @@ def insert_widget_to_nh_objs(row, col, view, widget):
 def delete_dappa_row(view, row):
     beg = row * view.dappas_per_row
     end = beg+view.dappas_per_row
-    # print("dappas:",view.dappas_per_row, "row:", row, "beg:", beg, "end:", end)
-    for x in range(beg, end):
+    #print("dappas:",view.dappas_per_row, "row:", row, "beg:", beg, "end:", end, "total:", len(view.non_header_objs))
+
+    # go in reverse loop as you delete the entries, the index may go out of range
+    for x in reversed(range(beg, end)):
+        #print("index:", x, "total:", len(view.non_header_objs))
         view.non_header_objs[x].destroy()
-        view.non_header_objs[x]
+        del view.non_header_objs[x]
 
 
 def button_selections(view, idx, cfg_label):
