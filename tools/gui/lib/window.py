@@ -44,7 +44,7 @@ class ScrollableWindow:
         self.cvf.grid(row=0, column=0, pady=(5, 0), sticky='nw')
 
         # Set grid_propagate to False to allow canvas frame resizing later
-        self.cvf.grid_propagate(False)
+        self.cvf.grid_propagate(True) # changed to True to fix EventWindow invalid size issue.
 
         # Add a canvas in that frame
         self.cv = tk.Canvas(self.cvf, scrollregion=(0, 0, self.xsize-10, self.ysize))
@@ -60,7 +60,7 @@ class ScrollableWindow:
         self.cv.grid(row=0, column=0, sticky="news")
 
         # Create a frame to draw task table
-        self.mnf = tk.Frame(self.cv)
+        self.mnf = tk.Frame(self.cv, width=self.xsize-10, height=self.ysize)
         self.cv.create_window((0, 0), window=self.mnf, anchor='nw')
 
         

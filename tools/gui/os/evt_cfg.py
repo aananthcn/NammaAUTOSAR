@@ -65,7 +65,6 @@ class EventWindow:
         del self.n_events_str
         del self.non_header_objs[:]
         del self.configs[:]
-        # del self.events_str[:]
 
 
 
@@ -75,20 +74,12 @@ class EventWindow:
         return def_event
 
 
-    # Event Window doesn't support scrollable view due to an unusual UI behavior
     def draw_dappa_row(self, i):
-        label = tk.Label(self.mnf, text="Event "+str(i)+": ")
-        label.grid(row=self.header_row+i, column=0, sticky="w")
-        dappa.insert_widget_to_nh_objs(self.header_row+i, 0, self, label)
-
-        entry = tk.Entry(self.mnf, width=40, textvariable=self.configs[i].dispvar["OsEvent"])
-        self.configs[i].dispvar["OsEvent"].set(self.configs[i].datavar["OsEvent"])
-        entry.grid(row=self.header_row+i, column=1)
-        dappa.insert_widget_to_nh_objs(self.header_row+i, 1, self, entry)
+        dappa.label(self, "Event "+str(i)+": ", self.header_row+i, 0, "e")
+        dappa.entry(self, "OsEvent", i, self.header_row+i, 1, 40, "normal")
 
 
 
-    # Event Window doesn't support scrollable view due to an unusual UI behavior
     def update(self):
         # get dappas to be added or removed
         self.n_events = int(self.n_events_str.get())
@@ -108,21 +99,27 @@ class EventWindow:
                 dappa.delete_dappa_row(self, (n_dappa_rows-1)+i)
                 del self.configs[-1]
 
-        # No scrolling support for Event View, due to unusual behavior
+        # Set the self.cv scrolling region
+        self.scrollw.scroll()
 
 
-    def draw(self, tab):
-        self.mnf = tab
+
+    def draw(self, tab, xsize, ysize):
+        self.xsize = xsize
+        self.ysize = ysize
+        self.scrollw = window.ScrollableWindow(tab, self.xsize, self.ysize)
         
         #Number of Events - Label + Spinbox
-        label = tk.Label(self.mnf, text="No. of Events:")
+        label = tk.Label(self.scrollw.mnf, text="No. of Events:")
         label.grid(row=0, column=0, sticky="w")
-        spinb = tk.Spinbox(self.mnf, width=10, textvariable=self.n_events_str, command=self.update,
+        spinb = tk.Spinbox(self.scrollw.mnf, width=10, textvariable=self.n_events_str, command=self.update,
                     values=tuple(range(0,self.max_events)))
         self.n_events_str.set(self.n_events)
         spinb.grid(row=0, column=1, sticky="w")
 
-        # No scrolling support for Event View, due to unusual behavior
+        # Update buttons frames idle tasks to let tkinter calculate buttons sizes
+        self.scrollw.update()
+
         self.update()
 
 

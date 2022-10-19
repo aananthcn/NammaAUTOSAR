@@ -109,6 +109,7 @@ class SpiSequenceTab:
         self.scrollw.scroll()
 
 
+
     def draw(self, tab):
         self.tab_struct = tab
         self.scrollw = window.ScrollableWindow(tab.frame, tab.xsize, tab.ysize)
@@ -134,8 +135,10 @@ class SpiSequenceTab:
         self.update()
 
 
+
     def select_spi_jobs(self, id):
         print("select_spi_jobs() called with ",id, " as argument!")
+
 
 
     def save_data(self):

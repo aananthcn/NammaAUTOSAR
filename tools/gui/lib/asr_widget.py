@@ -133,11 +133,12 @@ def insert_widget_to_nh_objs(row, col, view, widget):
     instp = (row - view.header_row) * view.dappas_per_row + col
     
     # warn if the user trying to insert beyond the append point (i.e., max_row = 4, but ins_row = 6 or 5)
-    if instp > lastp:
+    if instp > lastp and view.header_orientation == "h":
         print("Error: view with following config keys, trying to insert beyond limit")
         print("\t", view.cfgkeys)
         print("insert point:", instp)
         print("last point:", lastp)
+        print("row = ", row, "col = ", col)
         instp = lastp
     
     view.non_header_objs.insert(instp, widget)
@@ -174,6 +175,7 @@ def place_heading(view, row, col):
     # store the number of widgets including the header labels
     view.n_header_objs = len(view.scrollw.mnf.winfo_children())
     view.header_row = row+1
+    view.header_orientation = "h"  # horizontal
 
 
 def place_column_heading(view, row, col):
@@ -186,3 +188,4 @@ def place_column_heading(view, row, col):
     view.n_header_objs = 0
     view.header_row = 0
     view.dappas_per_row = 0
+    view.header_orientation = "v"  # vertical

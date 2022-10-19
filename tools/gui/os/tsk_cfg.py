@@ -269,7 +269,9 @@ class TaskTab:
             return
 
         # function to create dialog window
-        self.active_dialog = tk.Toplevel() # create an instance of toplevel
+        xsize = 400
+        ysize = 400
+        self.active_dialog = tk.Toplevel(width=xsize, height=ysize) # create an instance of toplevel
         self.active_dialog.protocol("WM_DELETE_WINDOW", lambda : self.on_event_dialog_close(row))
         x = self.active_dialog.winfo_screenwidth()
         y = self.active_dialog.winfo_screenheight()
@@ -277,7 +279,7 @@ class TaskTab:
 
         # show all events specific to task[row]
         self.active_widget = EventWindow(self.configs[row].datavar["EVENT"])
-        self.active_widget.draw(self.active_dialog)
+        self.active_widget.draw(self.active_dialog, xsize, ysize)
 
 
     def on_resource_dialog_close(self, row):

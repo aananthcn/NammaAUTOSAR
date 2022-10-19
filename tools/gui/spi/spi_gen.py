@@ -38,6 +38,7 @@ class SpiGeneralTab:
     non_header_objs = []
     dappas_per_col = len(cfgkeys)
 
+
     def __init__(self, gui):
         self.gui = gui
         self.configs = []
@@ -47,8 +48,10 @@ class SpiGeneralTab:
         if gen_dict == None:
             return
 
+
     def __del__(self):
         del self.configs[:]
+
 
 
     def create_empty_configs(self):
@@ -63,6 +66,7 @@ class SpiGeneralTab:
         gen_dict["SpiSupportConcurrentSyncTransmit"]   = "FALSE"
         gen_dict["SpiMainFunctionPeriod"]              = "0.01" # secs = 100 ms
         return gen_dict
+
 
 
     def draw(self, tab):
