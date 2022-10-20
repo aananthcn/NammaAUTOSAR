@@ -25,6 +25,9 @@ from tkinter import ttk
 import gui.spi.spi_gen as spi_gen
 import gui.spi.spi_seq as spi_seq
 import gui.spi.spi_chan as spi_chn
+import gui.spi.spi_chan_list as spi_chlist
+import gui.spi.spi_jobs as spi_job
+import gui.spi.spi_ext_dev as spi_exd
 
 
 TabList = []
@@ -79,11 +82,12 @@ def show_spi_tabs(gui):
         return
 
     # Create a child window (tabbed view)
-    width = gui.main_view.xsize * 55 / 100
+    width = gui.main_view.xsize * 95 / 100
     height = gui.main_view.ysize * 80 / 100
     view = tk.Toplevel()
     gui.main_view.child_window = view
-    view.geometry("%dx%d+%d+%d" % (width, height, gui.main_view.xsize/3, 15))
+    xoff = (gui.main_view.xsize - width)/2
+    view.geometry("%dx%d+%d+%d" % (width, height, xoff, xoff))
     view.title("AUTOSAR Spi Configuration Tool")
     PortConfigViewActive = True
     view.protocol("WM_DELETE_WINDOW", lambda: spi_config_close_event(gui, view))
@@ -125,32 +129,34 @@ def show_spi_tabs(gui):
     dtab.name = "SpiSequence"
     TabList.append(dtab)
     dtab.tab.draw(dtab)
-    
-    dtab = SpiTab(chn_frame, width, height)
-    dtab.tab = spi_chn.SpiChannelTab(gui)
-    dtab.name = "SpiChannel"
-    TabList.append(dtab)
-    dtab.tab.draw(dtab)
 
-    return
-    dtab = SpiTab(clst_frame, width, height)
-    dtab.tab = spi_clst.xxxxxx(gui)
-    dtab.name = "SpiChannelList"
-    TabList.append(dtab)
-    dtab.tab.draw(dtab)
+    # SpiChannel Tab and SpiChannelList Tab are inter dependent
+    spichntab = SpiTab(chn_frame, width, height)
+    spichnlsttab = SpiTab(clst_frame, width, height)
+    
+    spichntab.tab = spi_chn.SpiChannelTab(gui, spichnlsttab)
+    spichntab.name = "SpiChannel"
+    TabList.append(spichntab)
+    spichntab.tab.draw(spichntab)
+
+    spichnlsttab.tab = spi_chlist.SpiChannelListTab(gui)
+    spichnlsttab.name = "SpiChannelList"
+    TabList.append(spichnlsttab)
+    spichnlsttab.tab.draw(spichnlsttab)
 
     dtab = SpiTab(job_frame, width, height)
-    dtab.tab = spi_job.xxxxxx(gui)
+    dtab.tab = spi_job.SpiJobTab(gui)
     dtab.name = "SpiJob"
     TabList.append(dtab)
     dtab.tab.draw(dtab)
 
     dtab = SpiTab(exd_frame, width, height)
-    dtab.tab = spi_exd.xxxxxx(gui)
+    dtab.tab = spi_exd.SpiExternalDeviceTab(gui)
     dtab.name = "SpiExternalDevice"
     TabList.append(dtab)
     dtab.tab.draw(dtab)
 
+    return
     dtab = SpiTab(drv_frame, width, height)
     dtab.tab = spi_drv.xxxxxx(gui)
     dtab.name = "SpiDriver"

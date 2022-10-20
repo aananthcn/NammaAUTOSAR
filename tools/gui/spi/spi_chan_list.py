@@ -1,5 +1,5 @@
 #
-# Created on Wed Oct 05 2022 9:51:55 PM
+# Created on Wed Oct 19 2022 10:48:15 PM
 #
 # The MIT License (MIT)
 # Copyright (c) 2022 Aananth C N
@@ -21,22 +21,24 @@
 import tkinter as tk
 from tkinter import ttk
 
+import gui.spi.spi_chan as spi_chan
+
 import gui.lib.window as window
 import gui.lib.asr_widget as dappa # dappa in Tamil means box
 
 
 
 
-class SpiSequenceTab:
-    n_spi_seqs = 0
-    max_spi_seqs = 255
-    n_spi_seqs_str = None
+class SpiChannelListTab:
+    n_spi_chan_list = 0
+    max_spi_chan_list = 255
+    n_spi_chan_list_str = None
 
     gui = None
     tab_struct = None # passed from *_view.py file
     scrollw = None
     configs = None # all UI configs (tkinter strings) are stored here.
-    cfgkeys = ["SpiSequenceId", "SpiInterruptibleSequence", "SpiSeqEndNotification", "SpiJobAssignment"]
+    cfgkeys = ["SpiChannelIndex", "SpiChannelAssignment"]
     
     n_header_objs = 0 #Objects / widgets that are part of the header and shouldn't be destroyed
     header_row = 3
@@ -47,17 +49,18 @@ class SpiSequenceTab:
     def __init__(self, gui):
         self.gui = gui
         self.configs = []
-        self.n_spi_seqs = 0
-        self.n_spi_seqs_str = tk.StringVar()
+        self.n_spi_chan_list = 0
+        self.n_spi_chan_list_str = tk.StringVar()
+        self.spichnvalues = []
 
-        #spi_sequence = arxml_spi.parse_arxml(gui.arxml_file)
-        spi_sequence = None
-        if spi_sequence == None:
+        #spi_chan_lists = arxml_spi.parse_arxml(gui.arxml_file)
+        spi_chan_lists = None
+        if spi_chan_lists == None:
             return 
 
 
     def __del__(self):
-        del self.n_spi_seqs_str
+        del self.n_spi_chan_list_str
         del self.non_header_objs[:]
         del self.configs[:]
 
@@ -65,43 +68,31 @@ class SpiSequenceTab:
 
     def create_empty_configs(self):
         spi_seq = {}
-        spi_seq["SpiSequenceId"] = str(self.n_spi_seqs-1)
-        spi_seq["SpiInterruptibleSequence"] = "FALSE"
-        spi_seq["SpiSeqEndNotification"] = "e.g: SeqEndNotificationFunc"
-        spi_seq["SpiJobAssignment"] = "SELECT"
+        spi_seq["SpiChannelIndex"] = str(len(self.configs))
+        spi_seq["SpiChannelAssignment"] = "0"
         return spi_seq
 
 
 
     def draw_dappa_row(self, i):
-        dappa.label(self, "Spi Sequence #", self.header_row+i, 0, "e")
-
-        # SpiSequenceId
-        dappa.entry(self, "SpiSequenceId", i, self.header_row+i, 1, 10, "readonly")
-
-        # Spi Sequence - SpiInterruptibleSequence
-        dappa.combo(self, "SpiInterruptibleSequence", i, self.header_row+i, 2, 15, ("FALSE", "TRUE"))
+        dappa.label(self, "Spi Chan List #", self.header_row+i, 0, "e")
+        dappa.entry(self, "SpiChannelIndex", i, self.header_row+i, 1, 10, "readonly")
+        dappa.combo(self, "SpiChannelAssignment", i, self.header_row+i, 2, 15, self.spichnvalues)
         
-        # Spi Sequence - SpiSeqEndNotification
-        dappa.entry(self, "SpiSeqEndNotification", i, self.header_row+i, 3, 30, "normal")
-        
-        # Spi Sequence - SpiJobAssignment
-        dappa.button(self, "SpiJobAssignment", i, self.header_row+i, 4, 13, "Job [#]", self.select_spi_jobs)
-
 
 
     def update(self):
         # get dappas to be added or removed
-        self.n_spi_seqs = int(self.n_spi_seqs_str.get())
+        self.n_spi_chan_list = int(self.n_spi_chan_list_str.get())
 
         # Tune memory allocations based on number of rows or boxes
         n_dappa_rows = len(self.configs)
-        if self.n_spi_seqs > n_dappa_rows:
-            for i in range(self.n_spi_seqs - n_dappa_rows):
+        if self.n_spi_chan_list > n_dappa_rows:
+            for i in range(self.n_spi_chan_list - n_dappa_rows):
                 self.configs.insert(len(self.configs), dappa.AsrCfgStr(self.cfgkeys, self.create_empty_configs()))
                 self.draw_dappa_row(n_dappa_rows+i)
-        elif n_dappa_rows > self.n_spi_seqs:
-            for i in range(n_dappa_rows - self.n_spi_seqs):
+        elif n_dappa_rows > self.n_spi_chan_list:
+            for i in range(n_dappa_rows - self.n_spi_chan_list):
                 dappa.delete_dappa_row(self, (n_dappa_rows-1)+i)
                 del self.configs[-1]
 
@@ -115,11 +106,11 @@ class SpiSequenceTab:
         self.scrollw = window.ScrollableWindow(tab.frame, tab.xsize, tab.ysize)
         
         #Number of modes - Label + Spinbox
-        label = tk.Label(self.scrollw.mnf, text="No. of Spi Sequence:")
+        label = tk.Label(self.scrollw.mnf, text="No. of Spi Chan List:")
         label.grid(row=0, column=0, sticky="w")
-        spinb = tk.Spinbox(self.scrollw.mnf, width=10, textvariable=self.n_spi_seqs_str, command=lambda : self.update(),
-                    values=tuple(range(0,self.max_spi_seqs+1)))
-        self.n_spi_seqs_str.set(self.n_spi_seqs)
+        spinb = tk.Spinbox(self.scrollw.mnf, width=10, textvariable=self.n_spi_chan_list_str, command=lambda : self.update(),
+                    values=tuple(range(0,self.max_spi_chan_list+1)))
+        self.n_spi_chan_list_str.set(self.n_spi_chan_list)
         spinb.grid(row=0, column=1, sticky="w")
 
         # Save Button
@@ -143,3 +134,21 @@ class SpiSequenceTab:
 
     def save_data(self):
         self.tab_struct.save_cb(self.gui)
+
+
+    def spi_chan_list_changed(self, chn_configs):
+        # recompute spi_channel_values
+        for chan in chn_configs:
+            chan_str = "CHAN_"+chan.datavar["SpiChannelId"]
+            if not chan_str in self.spichnvalues:
+                self.spichnvalues.append(chan_str)
+        
+        # channel list changed, hence re-draw this view completely
+        for obj in self.non_header_objs:
+            obj.destroy()
+            del obj
+
+        # redraw all dappas
+        n_dappa_rows = len(self.configs)
+        for i in range(n_dappa_rows):
+            self.draw_dappa_row(i)

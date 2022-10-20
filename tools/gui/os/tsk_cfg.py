@@ -36,7 +36,7 @@ class TaskTab:
     max_tasks = 1024
     events = []
     
-    n_header_objs = 12 #Objects / widgets that are part of the header and shouldn't be destroyed
+    n_header_objs = 0 #Objects / widgets that are part of the header and shouldn't be destroyed
     header_row = 3
     xsize = None
     ysize = None

@@ -44,11 +44,12 @@ class SpiChannelTab:
     dappas_per_row = len(cfgkeys) + 1 # +1 for row labels
 
 
-    def __init__(self, gui):
+    def __init__(self, gui, spichnlsttab):
         self.gui = gui
         self.configs = []
         self.n_spi_chans = 0
         self.n_spi_chans_str = tk.StringVar()
+        self.spichnlsttab = spichnlsttab
 
         #spi_channel = arxml_spi.parse_arxml(gui.arxml_file)
         spi_channel = None
@@ -100,6 +101,9 @@ class SpiChannelTab:
         # SpiTransferStart
         values = ("MSB", "LSB")
         dappa.combo(self, "SpiTransferStart", i, self.header_row+i, 7, 10, values)
+        
+        # Channel list changed hence ask SpiChannelList to redraw
+        self.spichnlsttab.tab.spi_chan_list_changed(self.configs)
 
 
 

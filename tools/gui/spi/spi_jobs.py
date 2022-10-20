@@ -1,5 +1,5 @@
 #
-# Created on Wed Oct 05 2022 9:51:55 PM
+# Created on Wed Oct 20 2022 9:51:55 PM
 #
 # The MIT License (MIT)
 # Copyright (c) 2022 Aananth C N
@@ -27,16 +27,16 @@ import gui.lib.asr_widget as dappa # dappa in Tamil means box
 
 
 
-class SpiSequenceTab:
-    n_spi_seqs = 0
-    max_spi_seqs = 255
-    n_spi_seqs_str = None
+class SpiJobTab:
+    n_spi_job = 0
+    max_spi_job = 255
+    n_spi_job_str = None
 
     gui = None
     tab_struct = None # passed from *_view.py file
     scrollw = None
     configs = None # all UI configs (tkinter strings) are stored here.
-    cfgkeys = ["SpiSequenceId", "SpiInterruptibleSequence", "SpiSeqEndNotification", "SpiJobAssignment"]
+    cfgkeys = ["SpiJobId", "SpiJobPriority", "SpiJobEndNotification", "SpiDeviceAssignment"]
     
     n_header_objs = 0 #Objects / widgets that are part of the header and shouldn't be destroyed
     header_row = 3
@@ -47,8 +47,8 @@ class SpiSequenceTab:
     def __init__(self, gui):
         self.gui = gui
         self.configs = []
-        self.n_spi_seqs = 0
-        self.n_spi_seqs_str = tk.StringVar()
+        self.n_spi_job = 0
+        self.n_spi_job_str = tk.StringVar()
 
         #spi_sequence = arxml_spi.parse_arxml(gui.arxml_file)
         spi_sequence = None
@@ -57,7 +57,7 @@ class SpiSequenceTab:
 
 
     def __del__(self):
-        del self.n_spi_seqs_str
+        del self.n_spi_job_str
         del self.non_header_objs[:]
         del self.configs[:]
 
@@ -65,43 +65,35 @@ class SpiSequenceTab:
 
     def create_empty_configs(self):
         spi_seq = {}
-        spi_seq["SpiSequenceId"] = str(self.n_spi_seqs-1)
-        spi_seq["SpiInterruptibleSequence"] = "FALSE"
-        spi_seq["SpiSeqEndNotification"] = "e.g: SeqEndNotificationFunc"
-        spi_seq["SpiJobAssignment"] = "SELECT"
+        spi_seq["SpiJobId"] = str(self.n_spi_job-1)
+        spi_seq["SpiJobPriority"] = "0"
+        spi_seq["SpiJobEndNotification"] = "e.g: JobEndNotificationFunc"
+        spi_seq["SpiDeviceAssignment"] = ""
         return spi_seq
 
 
 
     def draw_dappa_row(self, i):
-        dappa.label(self, "Spi Sequence #", self.header_row+i, 0, "e")
-
-        # SpiSequenceId
-        dappa.entry(self, "SpiSequenceId", i, self.header_row+i, 1, 10, "readonly")
-
-        # Spi Sequence - SpiInterruptibleSequence
-        dappa.combo(self, "SpiInterruptibleSequence", i, self.header_row+i, 2, 15, ("FALSE", "TRUE"))
-        
-        # Spi Sequence - SpiSeqEndNotification
-        dappa.entry(self, "SpiSeqEndNotification", i, self.header_row+i, 3, 30, "normal")
-        
-        # Spi Sequence - SpiJobAssignment
-        dappa.button(self, "SpiJobAssignment", i, self.header_row+i, 4, 13, "Job [#]", self.select_spi_jobs)
+        dappa.label(self, "Spi Job #", self.header_row+i, 0, "e")
+        dappa.entry(self, "SpiJobId", i, self.header_row+i, 1, 10, "readonly")
+        dappa.entry(self, "SpiJobPriority", i, self.header_row+i, 2, 15, "normal")
+        dappa.entry(self, "SpiJobEndNotification", i, self.header_row+i, 3, 30, "normal")
+        dappa.combo(self, "SpiDeviceAssignment", i, self.header_row+i, 4, 13, ("Dev1", "Dev1", "Dev2"))
 
 
 
     def update(self):
         # get dappas to be added or removed
-        self.n_spi_seqs = int(self.n_spi_seqs_str.get())
+        self.n_spi_job = int(self.n_spi_job_str.get())
 
         # Tune memory allocations based on number of rows or boxes
         n_dappa_rows = len(self.configs)
-        if self.n_spi_seqs > n_dappa_rows:
-            for i in range(self.n_spi_seqs - n_dappa_rows):
+        if self.n_spi_job > n_dappa_rows:
+            for i in range(self.n_spi_job - n_dappa_rows):
                 self.configs.insert(len(self.configs), dappa.AsrCfgStr(self.cfgkeys, self.create_empty_configs()))
                 self.draw_dappa_row(n_dappa_rows+i)
-        elif n_dappa_rows > self.n_spi_seqs:
-            for i in range(n_dappa_rows - self.n_spi_seqs):
+        elif n_dappa_rows > self.n_spi_job:
+            for i in range(n_dappa_rows - self.n_spi_job):
                 dappa.delete_dappa_row(self, (n_dappa_rows-1)+i)
                 del self.configs[-1]
 
@@ -117,9 +109,9 @@ class SpiSequenceTab:
         #Number of modes - Label + Spinbox
         label = tk.Label(self.scrollw.mnf, text="No. of Spi Sequence:")
         label.grid(row=0, column=0, sticky="w")
-        spinb = tk.Spinbox(self.scrollw.mnf, width=10, textvariable=self.n_spi_seqs_str, command=lambda : self.update(),
-                    values=tuple(range(0,self.max_spi_seqs+1)))
-        self.n_spi_seqs_str.set(self.n_spi_seqs)
+        spinb = tk.Spinbox(self.scrollw.mnf, width=10, textvariable=self.n_spi_job_str, command=lambda : self.update(),
+                    values=tuple(range(0,self.max_spi_job+1)))
+        self.n_spi_job_str.set(self.n_spi_job)
         spinb.grid(row=0, column=1, sticky="w")
 
         # Save Button
@@ -133,11 +125,6 @@ class SpiSequenceTab:
         dappa.place_heading(self, 2, 1)
 
         self.update()
-
-
-
-    def select_spi_jobs(self, id):
-        print("select_spi_jobs() called with ",id, " as argument!")
 
 
 
