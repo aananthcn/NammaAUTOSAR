@@ -24,6 +24,9 @@ from tkinter import ttk
 import gui.lib.window as window
 import gui.lib.asr_widget as dappa # dappa in Tamil means box
 
+import gui.spi.spi_chan_list as spi_chlist
+import gui.spi.spi_view as spi_view
+
 
 
 
@@ -36,19 +39,27 @@ class SpiJobTab:
     tab_struct = None # passed from *_view.py file
     scrollw = None
     configs = None # all UI configs (tkinter strings) are stored here.
-    cfgkeys = ["SpiJobId", "SpiJobPriority", "SpiJobEndNotification", "SpiDeviceAssignment"]
+    cfgkeys = ["SpiJobId", "SpiJobPriority", "SpiJobEndNotification", "SpiDeviceAssignment", "SpiChannelList"]
     
     n_header_objs = 0 #Objects / widgets that are part of the header and shouldn't be destroyed
     header_row = 3
     non_header_objs = []
     dappas_per_row = len(cfgkeys) + 1 # +1 for row labels
 
+    active_dialog = None
+    active_widget = None
 
-    def __init__(self, gui):
+
+    def __init__(self, gui, spidrvtab, spidevtab, spichtab):
         self.gui = gui
         self.configs = []
         self.n_spi_job = 0
         self.n_spi_job_str = tk.StringVar()
+        self.spidrvtab = spidrvtab
+        self.spichtab = spichtab
+        self.spidev_lst = []
+        for dev in spidevtab.tab.configs:
+            print(dev.datavar)
 
         #spi_sequence = arxml_spi.parse_arxml(gui.arxml_file)
         spi_sequence = None
@@ -60,6 +71,7 @@ class SpiJobTab:
         del self.n_spi_job_str
         del self.non_header_objs[:]
         del self.configs[:]
+        del self.spidev_lst[:]
 
 
 
@@ -69,6 +81,7 @@ class SpiJobTab:
         spi_seq["SpiJobPriority"] = "0"
         spi_seq["SpiJobEndNotification"] = "e.g: JobEndNotificationFunc"
         spi_seq["SpiDeviceAssignment"] = ""
+        spi_seq["SpiChannelList"] = ""
         return spi_seq
 
 
@@ -78,8 +91,11 @@ class SpiJobTab:
         dappa.entry(self, "SpiJobId", i, self.header_row+i, 1, 10, "readonly")
         dappa.entry(self, "SpiJobPriority", i, self.header_row+i, 2, 15, "normal")
         dappa.entry(self, "SpiJobEndNotification", i, self.header_row+i, 3, 30, "normal")
-        dappa.combo(self, "SpiDeviceAssignment", i, self.header_row+i, 4, 13, ("Dev1", "Dev1", "Dev2"))
-
+        dappa.combo(self, "SpiDeviceAssignment", i, self.header_row+i, 4, 13, self.spidev_lst)
+        cb = lambda id = i : self.channel_list_select(id)
+        dappa.button(self, "SpiChannelList", i, self.header_row+i, 5, 20,"SpiChannelList[xxx]", cb)
+        # Channel list changed hence ask SpiDriver to redraw
+        self.spidrvtab.tab.spi_job_list_changed(self.configs)
 
 
     def update(self):
@@ -130,3 +146,69 @@ class SpiJobTab:
 
     def save_data(self):
         self.tab_struct.save_cb(self.gui)
+
+
+    def spi_extdrv_list_changed(self, exd_configs):
+        del self.spidev_lst[:]
+        for cfg in exd_configs:
+            self.spidev_lst.append(cfg.datavar["SpiHwUnit"])
+            
+        # channel list changed, hence re-draw this view completely
+        for obj in self.non_header_objs:
+            obj.destroy()
+            del obj
+
+        # redraw all dappas
+        n_dappa_rows = len(self.configs)
+        for i in range(n_dappa_rows):
+            self.draw_dappa_row(i)
+
+
+
+    def channel_list_select_close(self, row):
+        # remove old selections
+        if self.configs[row].datavar["SpiChannelList"]:
+            del self.configs[row].datavar["SpiChannelList"][:]
+
+
+        # update new selections from last window session
+        for chlist_cfg in self.active_widget.configs:
+            if not self.configs[row].datavar["SpiChannelList"]:
+                 self.configs[row].datavar["SpiChannelList"] = []
+            self.configs[row].datavar["SpiChannelList"].append(chlist_cfg.dispvar["SpiChannelIndex"].get())
+        
+        # dialog elements are no longer needed, destroy them. Else, new dialogs will not open!
+        del self.active_widget
+        self.active_dialog.destroy()
+        del self.active_dialog
+
+        # re-draw all boxes (dappas) of this row
+        dappa.delete_dappa_row(self, row)
+        self.draw_dappa_row(row)
+
+
+    def channel_list_select(self, row):
+        if self.active_dialog != None:
+            return
+
+        # function to create dialog window
+        xsize = 400
+        ysize = 400
+        self.active_dialog = tk.Toplevel(width=xsize, height=ysize) # create an instance of toplevel
+        self.active_dialog.protocol("WM_DELETE_WINDOW", lambda : self.channel_list_select_close(row))
+        x = self.active_dialog.winfo_screenwidth()
+        y = self.active_dialog.winfo_screenheight()
+        self.active_dialog.geometry("+%d+%d" % (0 + x/3, y/12))
+        
+        # prepare channel list and device list
+        spi_chids = []
+        for cfg in self.spichtab.tab.configs:
+            spi_chids.append(cfg.datavar["SpiChannelId"])
+
+        # show channel list dialog box to select channels
+        spichnlsttab = spi_view.SpiTab(self.active_dialog, xsize, ysize)
+        self.active_widget = spi_chlist.SpiChannelListTab(self.gui, spi_chids)
+        spichnlsttab.tab = self.active_widget
+        spichnlsttab.name = "SpiChannelList"
+        spichnlsttab.tab.draw(spichnlsttab, row)
+

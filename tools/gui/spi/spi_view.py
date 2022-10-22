@@ -28,6 +28,9 @@ import gui.spi.spi_chan as spi_chn
 import gui.spi.spi_chan_list as spi_chlist
 import gui.spi.spi_jobs as spi_job
 import gui.spi.spi_ext_dev as spi_exd
+import gui.spi.spi_drv as spi_drv
+
+import arxml.spi.arxml_spi as arxml_spi
 
 
 TabList = []
@@ -49,6 +52,7 @@ class SpiTab:
         self.ysize = h
 
 
+
 def spi_config_close_event(gui, view):
     global PortConfigViewActive
 
@@ -56,23 +60,15 @@ def spi_config_close_event(gui, view):
     view.destroy()
 
 
-def spi_save_callback(gui):
-    spi_chn = None
-    spi_seq = None
-    spi_gen = None
-    for tab in TabList:
-        if tab.name == "SpiChannel":
-            spi_chn = tab.tab
-            continue
-        if tab.name == "SpiSequence":
-            spi_seq = tab.tab
-            continue
-        if tab.name == "SpiGeneral":
-            spi_gen = tab.tab
-            continue
 
-    arxml_spi.update_arxml(gui.arxml_file, spi_chn, spi_seq, spi_gen)
-    spi_cgen.generate_code(gui)
+def spi_save_callback(gui):
+    spi_configs = {}
+    for tab in TabList:
+        spi_configs[tab.name] = tab.tab.configs
+    
+    arxml_spi.update_arxml(gui.arxml_file, spi_configs)
+    # spi_cgen.generate_code(gui)
+
 
     
 def show_spi_tabs(gui):
@@ -82,7 +78,7 @@ def show_spi_tabs(gui):
         return
 
     # Create a child window (tabbed view)
-    width = gui.main_view.xsize * 95 / 100
+    width = gui.main_view.xsize * 90 / 100
     height = gui.main_view.ysize * 80 / 100
     view = tk.Toplevel()
     gui.main_view.child_window = view
@@ -104,11 +100,11 @@ def show_spi_tabs(gui):
     
     # Add tabs to configure Spi
     notebook.add(gen_frame, text ='SpiGeneral')
-    notebook.add(seq_frame, text ='SpiSequence')
-    notebook.add(chn_frame, text ='SpiChannel')
-    notebook.add(clst_frame, text ='SpiChannelList')
-    notebook.add(job_frame, text ='SpiJob')
     notebook.add(exd_frame, text ='SpiExternalDevice')
+    notebook.add(chn_frame, text ='SpiChannel')
+    # notebook.add(clst_frame, text ='SpiChannelList')
+    notebook.add(job_frame, text ='SpiJob')
+    notebook.add(seq_frame, text ='SpiSequence')
     notebook.add(drv_frame, text ='SpiDriver')
     notebook.pack(expand = 1, fill ="both")
 
@@ -116,55 +112,49 @@ def show_spi_tabs(gui):
     for obj in TabList:
         del obj
 
-
     # create new GUI objects
     dtab = SpiTab(gen_frame, width, height)
     dtab.tab = spi_gen.SpiGeneralTab(gui)
     dtab.name = "SpiGeneral"
     TabList.append(dtab)
     dtab.tab.draw(dtab)
+
+    # SpiChannel Tab and few Tabs are inter dependent, hence creating it early, draw later
+    spidrv_tab   = SpiTab(drv_frame, width, height)
+    spijob_tab = SpiTab(job_frame, width, height)
     
+    spidev_tab = SpiTab(exd_frame, width, height)
+    spidev_tab.tab = spi_exd.SpiExternalDeviceTab(gui, spidrv_tab, spijob_tab)
+    spidev_tab.name = "SpiExternalDevice"
+    TabList.append(spidev_tab)
+    spidev_tab.tab.draw(spidev_tab)
+
+    spichn_tab    = SpiTab(chn_frame, width, height)
+    # spichn_tab.tab = spi_chn.SpiChannelTab(gui, spichnlsttab, spidrv_tab)
+    spichn_tab.tab = spi_chn.SpiChannelTab(gui, spidrv_tab)
+    spichn_tab.name = "SpiChannel"
+    TabList.append(spichn_tab)
+    spichn_tab.tab.draw(spichn_tab)
+
+    spijob_tab.tab = spi_job.SpiJobTab(gui, spidrv_tab, spidev_tab, spichn_tab)
+    spijob_tab.name = "SpiJob"
+    TabList.append(spijob_tab)
+    spijob_tab.tab.draw(spijob_tab)
+
     dtab = SpiTab(seq_frame, width, height)
-    dtab.tab = spi_seq.SpiSequenceTab(gui)
+    dtab.tab = spi_seq.SpiSequenceTab(gui, spidrv_tab)
     dtab.name = "SpiSequence"
     TabList.append(dtab)
     dtab.tab.draw(dtab)
 
-    # SpiChannel Tab and SpiChannelList Tab are inter dependent
-    spichntab = SpiTab(chn_frame, width, height)
-    spichnlsttab = SpiTab(clst_frame, width, height)
-    
-    spichntab.tab = spi_chn.SpiChannelTab(gui, spichnlsttab)
-    spichntab.name = "SpiChannel"
-    TabList.append(spichntab)
-    spichntab.tab.draw(spichntab)
-
-    spichnlsttab.tab = spi_chlist.SpiChannelListTab(gui)
-    spichnlsttab.name = "SpiChannelList"
-    TabList.append(spichnlsttab)
-    spichnlsttab.tab.draw(spichnlsttab)
-
-    dtab = SpiTab(job_frame, width, height)
-    dtab.tab = spi_job.SpiJobTab(gui)
-    dtab.name = "SpiJob"
-    TabList.append(dtab)
-    dtab.tab.draw(dtab)
-
-    dtab = SpiTab(exd_frame, width, height)
-    dtab.tab = spi_exd.SpiExternalDeviceTab(gui)
-    dtab.name = "SpiExternalDevice"
-    TabList.append(dtab)
-    dtab.tab.draw(dtab)
-
-    return
-    dtab = SpiTab(drv_frame, width, height)
-    dtab.tab = spi_drv.xxxxxx(gui)
-    dtab.name = "SpiDriver"
-    TabList.append(dtab)
-    dtab.tab.draw(dtab)
+    spidrv_tab.tab = spi_drv.SpiDriverTab(gui)
+    spidrv_tab.name = "SpiDriver"
+    TabList.append(spidrv_tab)
+    spidrv_tab.tab.draw(spidrv_tab)
 
     # gui.main_view.window.bind("<<NotebookTabChanged>>", show_os_tab_switch)
-    
+
+
 
 # Main Entry Point
 def spi_block_click_handler(gui):

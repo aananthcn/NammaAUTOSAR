@@ -55,6 +55,7 @@ class AsrCfgStr:
         del view.dispvar
         del view.datavar
 
+
     def set(view, values):
         # if values == None or len(view.dispvar) > len(values):
         if values == None:
@@ -63,6 +64,12 @@ class AsrCfgStr:
 
         for key in view.dispvar:
             view.dispvar[key].set(values[key])
+
+
+    def set_var(view, key, value):
+        view.datavar[key] = value
+        view.dispvar[key].set(value)
+
 
     def get(view):
         for key in view.dispvar:

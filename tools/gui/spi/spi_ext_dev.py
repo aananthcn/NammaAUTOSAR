@@ -45,11 +45,13 @@ class SpiExternalDeviceTab:
     dappas_per_row = len(cfgkeys) + 1 # +1 for row labels
 
 
-    def __init__(self, gui):
+    def __init__(self, gui, spidrvtab, spijobtab):
         self.gui = gui
         self.configs = []
         self.n_spi_extdev = 0
         self.n_spi_extdev_str = tk.StringVar()
+        self.spidrvtab = spidrvtab
+        self.spijobtab = spijobtab
 
         #spi_ext_dev = arxml_spi.parse_arxml(gui.arxml_file)
         spi_ext_dev = None
@@ -88,15 +90,16 @@ class SpiExternalDeviceTab:
         dappa.combo(self, "SpiDataShiftEdge", i, self.header_row+i, 3, 18, ("LEADING", "TRAILING"))
         dappa.combo(self, "SpiShiftClockIdleLevel", i, self.header_row+i, 4, 13, ("LOW", "HIGH"))
         dappa.combo(self, "SpiEnableCs", i, self.header_row+i, 5, 13, ("FALSE", "TRUE"))
-        dappa.entry(self, "SpiCsIdentifier", i, self.header_row+i, 6, 15, "normal")
-        dappa.combo(self, "SpiCsSelection", i, self.header_row+i, 7, 25, ("CS_VIA_PERIPHERAL_ENGINE", "CS_VIA_GPIO"))
+        dappa.entry(self, "SpiCsIdentifier", i, self.header_row+i, 6, 23, "normal")
+        dappa.combo(self, "SpiCsSelection", i, self.header_row+i, 7, 26, ("CS_VIA_PERIPHERAL_ENGINE", "CS_VIA_GPIO"))
         dappa.combo(self, "SpiCsPolarity", i, self.header_row+i, 8, 13, ("LOW", "HIGH"))
-        # dappa.spinb(self, "SpiTimeClk2Cs", i, self.header_row+i, 9, 15, tuple(frange(0, 0.0001, 0.000001)))
-        dappa.entry(self, "SpiTimeClk2Cs", i, self.header_row+i, 9, 15, "normal")
-        # dappa.spinb(self, "SpiTimeCs2Clk", i, self.header_row+i, 10, 20, tuple(frange(0.00000001, 0.01, 0.0000001)))
-        dappa.entry(self, "SpiTimeCs2Clk", i, self.header_row+i, 10, 20, "normal")
-        # dappa.spinb(self, "SpiTimeCs2Cs", i, self.header_row+i, 11, 20, tuple(frange(0.00000001, 0.01, 0.0000001)))
-        dappa.entry(self, "SpiTimeCs2Cs", i, self.header_row+i, 11, 20, "normal")
+        dappa.entry(self, "SpiTimeClk2Cs", i, self.header_row+i, 9, 13, "normal")
+        dappa.entry(self, "SpiTimeCs2Clk", i, self.header_row+i, 10, 15, "normal")
+        dappa.entry(self, "SpiTimeCs2Cs", i, self.header_row+i, 11, 15, "normal")
+        
+        # Channel list changed hence ask SpiDriver to redraw
+        self.spidrvtab.tab.spi_extdrv_list_changed(self.configs)
+        self.spijobtab.tab.spi_extdrv_list_changed(self.configs)
 
 
 

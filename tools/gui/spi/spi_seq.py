@@ -44,11 +44,12 @@ class SpiSequenceTab:
     dappas_per_row = len(cfgkeys) + 1 # +1 for row labels
 
 
-    def __init__(self, gui):
+    def __init__(self, gui, spidrvtab):
         self.gui = gui
         self.configs = []
         self.n_spi_seqs = 0
         self.n_spi_seqs_str = tk.StringVar()
+        self.spidrvtab = spidrvtab
 
         #spi_sequence = arxml_spi.parse_arxml(gui.arxml_file)
         spi_sequence = None
@@ -87,6 +88,9 @@ class SpiSequenceTab:
         
         # Spi Sequence - SpiJobAssignment
         dappa.button(self, "SpiJobAssignment", i, self.header_row+i, 4, 13, "Job [#]", self.select_spi_jobs)
+
+        # Channel list changed hence ask SpiDriver to redraw
+        self.spidrvtab.tab.spi_seq_list_changed(self.configs)
 
 
 

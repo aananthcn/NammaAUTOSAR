@@ -44,12 +44,12 @@ class SpiChannelTab:
     dappas_per_row = len(cfgkeys) + 1 # +1 for row labels
 
 
-    def __init__(self, gui, spichnlsttab):
+    def __init__(self, gui, spidrvtab):
         self.gui = gui
         self.configs = []
         self.n_spi_chans = 0
         self.n_spi_chans_str = tk.StringVar()
-        self.spichnlsttab = spichnlsttab
+        self.spidrvtab = spidrvtab
 
         #spi_channel = arxml_spi.parse_arxml(gui.arxml_file)
         spi_channel = None
@@ -84,7 +84,8 @@ class SpiChannelTab:
 
         # SpiChannelType
         values = ("IB (Internal Buffer)", "EB (External Buffer)")
-        dappa.combo(self, "SpiChannelType", i, self.header_row+i, 2, 17, values)
+        chtype = dappa.combo(self, "SpiChannelType", i, self.header_row+i, 2, 17, values)
+        chtype.bind("<<ComboboxSelected>>", lambda evt, id = i : self.chan_type_selected(evt, id))
 
         # SpiDataWidth
         dappa.spinb(self, "SpiDataWidth", i,self.header_row+i, 3, 13, tuple(range(1,33)))
@@ -93,17 +94,24 @@ class SpiChannelTab:
         dappa.entry(self, "SpiDefaultData", i, self.header_row+i, 4, 17, "normal")
 
         # SpiEbMaxLength
-        dappa.spinb(self, "SpiEbMaxLength", i, self.header_row+i, 5, 13, tuple(range(0,65536)))
+        if "EB" in self.configs[i].datavar["SpiChannelType"]:
+            dappa.spinb(self, "SpiEbMaxLength", i, self.header_row+i, 5, 13, tuple(range(0,65536)))
+        else:
+            dappa.label(self, "", self.header_row+i, 5, "e")
 
         # SpiIbNBuffers
-        dappa.spinb(self, "SpiIbNBuffers", i, self.header_row+i, 6, 13, tuple(range(0,65536)))
+        if "IB" in self.configs[i].datavar["SpiChannelType"]:
+            dappa.spinb(self, "SpiIbNBuffers", i, self.header_row+i, 6, 13, tuple(range(0,65536)))
+        else:
+            dappa.label(self, "", self.header_row+i, 6, "e")
 
         # SpiTransferStart
         values = ("MSB", "LSB")
         dappa.combo(self, "SpiTransferStart", i, self.header_row+i, 7, 10, values)
         
-        # Channel list changed hence ask SpiChannelList to redraw
-        self.spichnlsttab.tab.spi_chan_list_changed(self.configs)
+        # Channel list changed hence ask SpiDriver to redraw
+        self.spidrvtab.tab.spi_chan_list_changed(self.configs)
+        # self.spichnlsttab.tab.spi_chan_list_changed(self.configs)
 
 
 
@@ -156,3 +164,11 @@ class SpiChannelTab:
     def save_data(self):
         # self.backup_data()
         self.tab_struct.save_cb(self.gui)
+
+
+
+    def chan_type_selected(self, event, row):
+        self.configs[row].get() # read from UI (backup last selection)
+        # re-draw all boxes (dappas) of this row
+        dappa.delete_dappa_row(self, row)
+        self.draw_dappa_row(row)

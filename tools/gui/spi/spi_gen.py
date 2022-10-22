@@ -43,6 +43,9 @@ class SpiGeneralTab:
         self.gui = gui
         self.configs = []
 
+        # Create config string for AUTOSAR configs on this tab
+        self.configs.append(dappa.AsrCfgStr(self.cfgkeys, self.create_empty_configs()))
+
         #gen_dict = arxml_spi.parse_arxml(gui.arxml_file)
         gen_dict = None
         if gen_dict == None:
@@ -69,16 +72,8 @@ class SpiGeneralTab:
 
 
 
-    def draw(self, tab):
-        self.tab_struct = tab
-        self.scrollw = window.ScrollableWindow(tab.frame, tab.xsize, tab.ysize)
+    def draw_dappas(self):
         spi_cmbsel = ("FALSE", "TRUE")
-
-        # Create config string for AUTOSAR configs on this tab
-        self.configs.append(dappa.AsrCfgStr(self.cfgkeys, self.create_empty_configs()))
-
-        # Table heading @0th row, 0th column
-        dappa.place_column_heading(self, row=0, col=0)
 
         # SpiLevelDelivered
         dappa.combo(self, "SpiLevelDelivered", 0, 0, 1, 20, ('0', '1', '2'))
@@ -107,6 +102,16 @@ class SpiGeneralTab:
 
         # SpiMainFunctionPeriod
         dappa.entry(self, "SpiMainFunctionPeriod", 0, 8, 1, 23, "normal")
+
+
+
+    def draw(self, tab):
+        self.tab_struct = tab
+        self.scrollw = window.ScrollableWindow(tab.frame, tab.xsize, tab.ysize)
+
+        # Table heading @0th row, 0th column
+        dappa.place_column_heading(self, row=0, col=0)
+        self.draw_dappas()
 
         # Place save button
         space = tk.Label(self.scrollw.mnf)

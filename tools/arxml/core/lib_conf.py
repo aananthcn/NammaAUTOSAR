@@ -90,6 +90,10 @@ def insert_conf_param(root, refname, paramtype, subtype, value):
       def_ref = ET.SubElement(param_blk, "DEFINITION-REF", DEST="ECUC-FUNCTION-NAME-DEF")
    elif subtype == "enum":
       def_ref = ET.SubElement(param_blk, "DEFINITION-REF", DEST="ECUC-ENUMERATION-PARAM-DEF")
+   elif subtype == "float":
+      def_ref = ET.SubElement(param_blk, "DEFINITION-REF", DEST="ECUC-FLOAT-PARAM-DEF")
+   elif subtype == "string":
+      def_ref = ET.SubElement(param_blk, "DEFINITION-REF", DEST="ECUC-STRING-PARAM-DEF")
    else:
       def_ref = ET.SubElement(param_blk, "DEFINITION-REF", DEST="ECUC-ERROR_UNDEFINED-PARAM-DEF")
    def_ref.text = refname

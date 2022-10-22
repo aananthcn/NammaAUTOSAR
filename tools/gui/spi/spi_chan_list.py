@@ -46,12 +46,12 @@ class SpiChannelListTab:
     dappas_per_row = len(cfgkeys) + 1 # +1 for row labels
 
 
-    def __init__(self, gui):
+    def __init__(self, gui, chids):
         self.gui = gui
         self.configs = []
         self.n_spi_chan_list = 0
         self.n_spi_chan_list_str = tk.StringVar()
-        self.spichnvalues = []
+        self.chids = chids
 
         #spi_chan_lists = arxml_spi.parse_arxml(gui.arxml_file)
         spi_chan_lists = None
@@ -68,7 +68,7 @@ class SpiChannelListTab:
 
     def create_empty_configs(self):
         spi_seq = {}
-        spi_seq["SpiChannelIndex"] = str(len(self.configs))
+        spi_seq["SpiChannelIndex"] = "0"
         spi_seq["SpiChannelAssignment"] = "0"
         return spi_seq
 
@@ -76,8 +76,10 @@ class SpiChannelListTab:
 
     def draw_dappa_row(self, i):
         dappa.label(self, "Spi Chan List #", self.header_row+i, 0, "e")
-        dappa.entry(self, "SpiChannelIndex", i, self.header_row+i, 1, 10, "readonly")
-        dappa.combo(self, "SpiChannelAssignment", i, self.header_row+i, 2, 15, self.spichnvalues)
+        dappa.combo(self, "SpiChannelIndex", i, self.header_row+i, 1, 15, self.chids)
+
+        self.configs[i].datavar["SpiChannelAssignment"] = "Job no: "+str(self.jobid)
+        dappa.entry(self, "SpiChannelAssignment", i, self.header_row+i, 2, 15, "readonly")
         
 
 
@@ -101,9 +103,10 @@ class SpiChannelListTab:
 
 
 
-    def draw(self, tab):
+    def draw(self, tab, jobid):
         self.tab_struct = tab
         self.scrollw = window.ScrollableWindow(tab.frame, tab.xsize, tab.ysize)
+        self.jobid = jobid
         
         #Number of modes - Label + Spinbox
         label = tk.Label(self.scrollw.mnf, text="No. of Spi Chan List:")
@@ -134,21 +137,3 @@ class SpiChannelListTab:
 
     def save_data(self):
         self.tab_struct.save_cb(self.gui)
-
-
-    def spi_chan_list_changed(self, chn_configs):
-        # recompute spi_channel_values
-        for chan in chn_configs:
-            chan_str = "CHAN_"+chan.datavar["SpiChannelId"]
-            if not chan_str in self.spichnvalues:
-                self.spichnvalues.append(chan_str)
-        
-        # channel list changed, hence re-draw this view completely
-        for obj in self.non_header_objs:
-            obj.destroy()
-            del obj
-
-        # redraw all dappas
-        n_dappa_rows = len(self.configs)
-        for i in range(n_dappa_rows):
-            self.draw_dappa_row(i)
