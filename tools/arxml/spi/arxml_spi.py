@@ -81,6 +81,15 @@ def add_spi_job_parameters_to_container(ctnr, cdref, job_cfg):
     refname = cdref+"/SpiJobPriority"
     lib_conf.insert_conf_param(params, refname, "numerical", "int", str(job_cfg.datavar["SpiJobPriority"]))
 
+    # sub-container 2
+    subctnr2 = ET.SubElement(ctnr, "SUB-CONTAINERS")
+    subctnr2_name = "SpiChannelList"
+    dref2 = cdref+"/"+subctnr2_name
+    cctnrblk2 = lib_conf.insert_conf_container(subctnr2, subctnr2_name, "conf", dref2)
+    params = ET.SubElement(cctnrblk2, "PARAMETER-VALUES")
+    refname = dref2+"/SpiChannelIndex"
+    for chan in job_cfg.datavar["SpiChannelList"]:
+        lib_conf.insert_conf_param(params, refname, "numerical", "int", str(chan))
 
 
 def add_spi_seq_parameters_to_container(ctnr, cdref, seq_cfg):
@@ -92,6 +101,15 @@ def add_spi_seq_parameters_to_container(ctnr, cdref, seq_cfg):
     refname = cdref+"/SpiSequenceId"
     lib_conf.insert_conf_param(params, refname, "numerical", "int", str(seq_cfg.datavar["SpiSequenceId"]))
 
+    # sub-container 2
+    subctnr2 = ET.SubElement(ctnr, "SUB-CONTAINERS")
+    subctnr2_name = "SpiJobAssignment"
+    dref2 = cdref+"/"+subctnr2_name
+    cctnrblk2 = lib_conf.insert_conf_container(subctnr2, subctnr2_name, "conf", dref2)
+    params = ET.SubElement(cctnrblk2, "PARAMETER-VALUES")
+    refname = dref2+"/SpiJob"
+    for job in seq_cfg.datavar["SpiJobAssignment"]:
+        lib_conf.insert_conf_param(params, refname, "numerical", "int", str(job))
 
 
 def add_spi_chanlist_parameters_to_container(ctnr, cdref, chlst_cfg):
@@ -155,15 +173,7 @@ def update_spi_info_to_container(root, spi_configs):
         dref1 = dref+"/"+subctnr1_name
         cctnrblk1 = lib_conf.insert_conf_container(subctnr1, subctnr1_name, "conf", dref1)
         add_spi_job_parameters_to_container(cctnrblk1, dref1, job)
-        # sub-container 2
-        subctnr2 = ET.SubElement(cctnrblk1, "SUB-CONTAINERS")
-        subctnr2_name = "SpiChannelList"
-        dref2 = dref1+"/"+subctnr2_name
-        cctnrblk2 = lib_conf.insert_conf_container(subctnr2, subctnr2_name, "conf", dref2)
-        params = ET.SubElement(cctnrblk2, "PARAMETER-VALUES")
-        refname = dref2+"/SpiChannelIndex"
-        for chan in job.datavar["SpiChannelList"]:
-            lib_conf.insert_conf_param(params, refname, "numerical", "int", str(chan))
+
 
     for seq in spi_configs["SpiSequence"]:
         subctnr1_name = "SpiSequence"
