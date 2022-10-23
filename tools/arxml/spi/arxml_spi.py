@@ -155,10 +155,15 @@ def update_spi_info_to_container(root, spi_configs):
         dref1 = dref+"/"+subctnr1_name
         cctnrblk1 = lib_conf.insert_conf_container(subctnr1, subctnr1_name, "conf", dref1)
         add_spi_job_parameters_to_container(cctnrblk1, dref1, job)
+        # sub-container 2
+        subctnr2 = ET.SubElement(cctnrblk1, "SUB-CONTAINERS")
         subctnr2_name = "SpiChannelList"
         dref2 = dref1+"/"+subctnr2_name
-        cctnrblk2 = lib_conf.insert_conf_container(cctnrblk1, subctnr2_name, "conf", dref2)
-        # sub-container to be added
+        cctnrblk2 = lib_conf.insert_conf_container(subctnr2, subctnr2_name, "conf", dref2)
+        params = ET.SubElement(cctnrblk2, "PARAMETER-VALUES")
+        refname = dref2+"/SpiChannelIndex"
+        for chan in job.datavar["SpiChannelList"]:
+            lib_conf.insert_conf_param(params, refname, "numerical", "int", str(chan))
 
     for seq in spi_configs["SpiSequence"]:
         subctnr1_name = "SpiSequence"

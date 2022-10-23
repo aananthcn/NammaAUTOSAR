@@ -43,13 +43,17 @@ class SpiSequenceTab:
     non_header_objs = []
     dappas_per_row = len(cfgkeys) + 1 # +1 for row labels
 
+    active_dialog = None
+    active_widget = None
 
-    def __init__(self, gui, spidrvtab):
+
+    def __init__(self, gui, spidrvtab, spijobtab):
         self.gui = gui
         self.configs = []
         self.n_spi_seqs = 0
         self.n_spi_seqs_str = tk.StringVar()
         self.spidrvtab = spidrvtab
+        self.spijobtab = spijobtab
 
         #spi_sequence = arxml_spi.parse_arxml(gui.arxml_file)
         spi_sequence = None
@@ -69,7 +73,7 @@ class SpiSequenceTab:
         spi_seq["SpiSequenceId"] = str(self.n_spi_seqs-1)
         spi_seq["SpiInterruptibleSequence"] = "FALSE"
         spi_seq["SpiSeqEndNotification"] = "e.g: SeqEndNotificationFunc"
-        spi_seq["SpiJobAssignment"] = "SELECT"
+        spi_seq["SpiJobAssignment"] = []
         return spi_seq
 
 
@@ -87,7 +91,9 @@ class SpiSequenceTab:
         dappa.entry(self, "SpiSeqEndNotification", i, self.header_row+i, 3, 30, "normal")
         
         # Spi Sequence - SpiJobAssignment
-        dappa.button(self, "SpiJobAssignment", i, self.header_row+i, 4, 13, "Job [#]", self.select_spi_jobs)
+        cb = lambda id = i : self.select_spi_jobs(id)
+        text = "SpiJobAssignment["+str(len(self.configs[i].datavar["SpiJobAssignment"]))+"]"
+        dappa.button(self, "SpiJobAssignment", i, self.header_row+i, 4, 20, text, cb)
 
         # Channel list changed hence ask SpiDriver to redraw
         self.spidrvtab.tab.spi_seq_list_changed(self.configs)
@@ -139,9 +145,50 @@ class SpiSequenceTab:
         self.update()
 
 
+    def on_select_spi_jobs_close(self, row):
+        # remove old selections
+        if self.configs[row].datavar["SpiJobAssignment"]:
+            del self.configs[row].datavar["SpiJobAssignment"][:]
 
-    def select_spi_jobs(self, id):
-        print("select_spi_jobs() called with ",id, " as argument!")
+        # update new selections
+        if len(self.active_widget.curselection()):
+            for i in self.active_widget.curselection():
+                if not self.configs[row].datavar["SpiJobAssignment"]:
+                    self.configs[row].datavar["SpiJobAssignment"] = []
+                self.configs[row].datavar["SpiJobAssignment"].append(self.active_widget.get(i).split()[-1])
+
+        # dialog elements are no longer needed, destroy them. Else, new dialogs will not open!
+        self.active_widget.destroy()
+        del self.active_widget
+        self.active_dialog.destroy()
+        del self.active_dialog
+
+        # re-draw all boxes (dappas) of this row
+        dappa.delete_dappa_row(self, row)
+        self.draw_dappa_row(row)
+
+
+    def select_spi_jobs(self, row):
+        if self.active_dialog != None:
+            return
+
+        # function to create dialog window
+        self.active_dialog = tk.Toplevel() # create an instance of toplevel
+        self.active_dialog.protocol("WM_DELETE_WINDOW", lambda : self.on_select_spi_jobs_close(row))
+        x = self.active_dialog.winfo_screenwidth()
+        y = self.active_dialog.winfo_screenheight()
+        self.active_dialog.geometry("+%d+%d" % (0 + x/2, y/16))
+
+        # show all SpiJobs
+        self.active_widget = tk.Listbox(self.active_dialog, selectmode=tk.MULTIPLE, width=40, height=15)
+        for i, j_cfg in enumerate(self.spijobtab.tab.configs):
+            job = j_cfg.datavar["SpiJobId"]
+            job_str = "SpiJob: "+str(job)
+            self.active_widget.insert(i, job_str)
+            if row < len(self.configs) and self.configs[row].datavar["SpiJobAssignment"]:
+                if job in self.configs[row].datavar["SpiJobAssignment"]:
+                    self.active_widget.selection_set(i)
+        self.active_widget.pack()
 
 
 

@@ -142,7 +142,7 @@ def show_spi_tabs(gui):
     spijob_tab.tab.draw(spijob_tab)
 
     dtab = SpiTab(seq_frame, width, height)
-    dtab.tab = spi_seq.SpiSequenceTab(gui, spidrv_tab)
+    dtab.tab = spi_seq.SpiSequenceTab(gui, spidrv_tab, spijob_tab)
     dtab.name = "SpiSequence"
     TabList.append(dtab)
     dtab.tab.draw(dtab)

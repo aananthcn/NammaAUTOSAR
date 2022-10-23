@@ -93,7 +93,8 @@ class SpiJobTab:
         dappa.entry(self, "SpiJobEndNotification", i, self.header_row+i, 3, 30, "normal")
         dappa.combo(self, "SpiDeviceAssignment", i, self.header_row+i, 4, 13, self.spidev_lst)
         cb = lambda id = i : self.channel_list_select(id)
-        dappa.button(self, "SpiChannelList", i, self.header_row+i, 5, 20,"SpiChannelList[xxx]", cb)
+        text = "SpiChannelList["+str(len(self.configs[i].datavar["SpiChannelList"]))+"]"
+        dappa.button(self, "SpiChannelList", i, self.header_row+i, 5, 20, text, cb)
         # Channel list changed hence ask SpiDriver to redraw
         self.spidrvtab.tab.spi_job_list_changed(self.configs)
 
