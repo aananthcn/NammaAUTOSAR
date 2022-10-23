@@ -45,12 +45,13 @@ class SpiJobTab:
     header_row = 3
     non_header_objs = []
     dappas_per_row = len(cfgkeys) + 1 # +1 for row labels
+    init_view_done = False
 
     active_dialog = None
     active_widget = None
 
 
-    def __init__(self, gui, spidrvtab, spidevtab, spichtab):
+    def __init__(self, gui, spidrvtab, spidevtab, spichtab, ar_cfg):
         self.gui = gui
         self.configs = []
         self.n_spi_job = 0
@@ -61,10 +62,12 @@ class SpiJobTab:
         for dev in spidevtab.tab.configs:
             print(dev.datavar)
 
-        #spi_sequence = arxml_spi.parse_arxml(gui.arxml_file)
-        spi_sequence = None
-        if spi_sequence == None:
-            return 
+        if ar_cfg["SpiJob"] == None:
+            return
+        for job in ar_cfg["SpiJob"]:
+            self.configs.insert(len(self.configs), dappa.AsrCfgStr(self.cfgkeys, job))
+            self.n_spi_job += 1
+        self.n_spi_job_str.set(self.n_spi_job)
 
 
     def __del__(self):
@@ -81,7 +84,7 @@ class SpiJobTab:
         spi_seq["SpiJobPriority"] = "0"
         spi_seq["SpiJobEndNotification"] = "e.g: JobEndNotificationFunc"
         spi_seq["SpiDeviceAssignment"] = ""
-        spi_seq["SpiChannelList"] = ""
+        spi_seq["SpiChannelList"] = []
         return spi_seq
 
 
@@ -105,7 +108,11 @@ class SpiJobTab:
 
         # Tune memory allocations based on number of rows or boxes
         n_dappa_rows = len(self.configs)
-        if self.n_spi_job > n_dappa_rows:
+        if not self.init_view_done:
+            for i in range(n_dappa_rows):
+                self.draw_dappa_row(i)
+            self.init_view_done = True
+        elif self.n_spi_job > n_dappa_rows:
             for i in range(self.n_spi_job - n_dappa_rows):
                 self.configs.insert(len(self.configs), dappa.AsrCfgStr(self.cfgkeys, self.create_empty_configs()))
                 self.draw_dappa_row(n_dappa_rows+i)
@@ -149,7 +156,11 @@ class SpiJobTab:
         self.tab_struct.save_cb(self.gui)
 
 
+
     def spi_extdrv_list_changed(self, exd_configs):
+        if not self.init_view_done:
+            return
+
         del self.spidev_lst[:]
         for cfg in exd_configs:
             self.spidev_lst.append(cfg.datavar["SpiHwUnit"])
@@ -208,7 +219,10 @@ class SpiJobTab:
 
         # show channel list dialog box to select channels
         spichnlsttab = spi_view.SpiTab(self.active_dialog, xsize, ysize)
-        self.active_widget = spi_chlist.SpiChannelListTab(self.gui, spi_chids)
+        chan_list = self.configs[row].datavar["SpiChannelList"]
+        for chan in chan_list:
+            chan["SpiChannelAssignment"] = row
+        self.active_widget = spi_chlist.SpiChannelListTab(self.gui, spi_chids, chan_list)
         spichnlsttab.tab = self.active_widget
         spichnlsttab.name = "SpiChannelList"
         spichnlsttab.tab.draw(spichnlsttab, row)

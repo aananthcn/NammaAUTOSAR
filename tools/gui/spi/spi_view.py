@@ -117,7 +117,7 @@ def show_spi_tabs(gui):
     
     # create new GUI objects
     spigen_tab = SpiTab(gen_frame, width, height)
-    spigen_tab.tab = spi_gen.SpiGeneralTab(gui)
+    spigen_tab.tab = spi_gen.SpiGeneralTab(gui, spi_configs)
     spigen_tab.name = "SpiGeneral"
     TabList.append(spigen_tab)
 
@@ -126,25 +126,25 @@ def show_spi_tabs(gui):
     spijob_tab = SpiTab(job_frame, width, height)
     
     spidev_tab = SpiTab(exd_frame, width, height)
-    spidev_tab.tab = spi_exd.SpiExternalDeviceTab(gui, spidrv_tab, spijob_tab)
+    spidev_tab.tab = spi_exd.SpiExternalDeviceTab(gui, spidrv_tab, spijob_tab, spi_configs)
     spidev_tab.name = "SpiExternalDevice"
     TabList.append(spidev_tab)
 
     spichn_tab    = SpiTab(chn_frame, width, height)
-    spichn_tab.tab = spi_chn.SpiChannelTab(gui, spidrv_tab)
+    spichn_tab.tab = spi_chn.SpiChannelTab(gui, spidrv_tab, spi_configs)
     spichn_tab.name = "SpiChannel"
     TabList.append(spichn_tab)
 
-    spijob_tab.tab = spi_job.SpiJobTab(gui, spidrv_tab, spidev_tab, spichn_tab)
+    spijob_tab.tab = spi_job.SpiJobTab(gui, spidrv_tab, spidev_tab, spichn_tab, spi_configs)
     spijob_tab.name = "SpiJob"
     TabList.append(spijob_tab)
 
     spiseq_tab = SpiTab(seq_frame, width, height)
-    spiseq_tab.tab = spi_seq.SpiSequenceTab(gui, spidrv_tab, spijob_tab)
+    spiseq_tab.tab = spi_seq.SpiSequenceTab(gui, spidrv_tab, spijob_tab, spi_configs)
     spiseq_tab.name = "SpiSequence"
     TabList.append(spiseq_tab)
 
-    spidrv_tab.tab = spi_drv.SpiDriverTab(gui)
+    spidrv_tab.tab = spi_drv.SpiDriverTab(gui, spi_configs)
     spidrv_tab.name = "SpiDriver"
     TabList.append(spidrv_tab)
 

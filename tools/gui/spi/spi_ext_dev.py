@@ -43,9 +43,10 @@ class SpiExternalDeviceTab:
     header_row = 3
     non_header_objs = []
     dappas_per_row = len(cfgkeys) + 1 # +1 for row labels
+    init_view_done = False
 
 
-    def __init__(self, gui, spidrvtab, spijobtab):
+    def __init__(self, gui, spidrvtab, spijobtab, ar_cfg):
         self.gui = gui
         self.configs = []
         self.n_spi_extdev = 0
@@ -53,10 +54,12 @@ class SpiExternalDeviceTab:
         self.spidrvtab = spidrvtab
         self.spijobtab = spijobtab
 
-        #spi_ext_dev = arxml_spi.parse_arxml(gui.arxml_file)
-        spi_ext_dev = None
-        if spi_ext_dev == None:
-            return 
+        if ar_cfg["SpiExternalDevice"] == None:
+            return
+        for dev in ar_cfg["SpiExternalDevice"]:
+            self.configs.insert(len(self.configs), dappa.AsrCfgStr(self.cfgkeys, dev))
+            self.n_spi_extdev += 1
+        self.n_spi_extdev_str.set(self.n_spi_extdev)
 
 
     def __del__(self):
@@ -109,7 +112,11 @@ class SpiExternalDeviceTab:
 
         # Tune memory allocations based on number of rows or boxes
         n_dappa_rows = len(self.configs)
-        if self.n_spi_extdev > n_dappa_rows:
+        if not self.init_view_done:
+            for i in range(n_dappa_rows):
+                self.draw_dappa_row(i)
+            self.init_view_done = True
+        elif self.n_spi_extdev > n_dappa_rows:
             for i in range(self.n_spi_extdev - n_dappa_rows):
                 self.configs.insert(len(self.configs), dappa.AsrCfgStr(self.cfgkeys, self.create_empty_configs()))
                 self.draw_dappa_row(n_dappa_rows+i)

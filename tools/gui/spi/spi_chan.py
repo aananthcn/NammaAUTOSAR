@@ -42,25 +42,29 @@ class SpiChannelTab:
     header_row = 3
     non_header_objs = []
     dappas_per_row = len(cfgkeys) + 1 # +1 for row labels
+    init_view_done = False
 
 
-    def __init__(self, gui, spidrvtab):
+    def __init__(self, gui, spidrvtab, ar_cfg):
         self.gui = gui
         self.configs = []
         self.n_spi_chans = 0
         self.n_spi_chans_str = tk.StringVar()
         self.spidrvtab = spidrvtab
 
-        #spi_channel = arxml_spi.parse_arxml(gui.arxml_file)
-        spi_channel = None
-        if spi_channel == None:
-            return 
+        if ar_cfg["SpiChannel"] == None:
+            return
+        for chan in ar_cfg["SpiChannel"]:
+            self.configs.insert(len(self.configs), dappa.AsrCfgStr(self.cfgkeys, chan))
+            self.n_spi_chans += 1
+        self.n_spi_chans_str.set(self.n_spi_chans)
 
 
     def __del__(self):
         del self.n_spi_chans_str
         del self.non_header_objs[:]
         del self.configs[:]
+
 
 
     def create_empty_configs(self):
@@ -111,7 +115,6 @@ class SpiChannelTab:
         
         # Channel list changed hence ask SpiDriver to redraw
         self.spidrvtab.tab.spi_chan_list_changed(self.configs)
-        # self.spichnlsttab.tab.spi_chan_list_changed(self.configs)
 
 
 
@@ -121,7 +124,11 @@ class SpiChannelTab:
 
         # Tune memory allocations based on number of rows or boxes
         n_dappa_rows = len(self.configs)
-        if self.n_spi_chans > n_dappa_rows:
+        if not self.init_view_done:
+            for i in range(n_dappa_rows):
+                self.draw_dappa_row(i)
+            self.init_view_done = True
+        elif self.n_spi_chans > n_dappa_rows:
             for i in range(self.n_spi_chans - n_dappa_rows):
                 self.configs.insert(len(self.configs), dappa.AsrCfgStr(self.cfgkeys, self.create_empty_configs()))
                 self.draw_dappa_row(n_dappa_rows+i)

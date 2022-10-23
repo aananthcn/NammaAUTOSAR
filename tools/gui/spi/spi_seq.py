@@ -42,12 +42,13 @@ class SpiSequenceTab:
     header_row = 3
     non_header_objs = []
     dappas_per_row = len(cfgkeys) + 1 # +1 for row labels
+    init_view_done = False
 
     active_dialog = None
     active_widget = None
 
 
-    def __init__(self, gui, spidrvtab, spijobtab):
+    def __init__(self, gui, spidrvtab, spijobtab, ar_cfg):
         self.gui = gui
         self.configs = []
         self.n_spi_seqs = 0
@@ -55,10 +56,18 @@ class SpiSequenceTab:
         self.spidrvtab = spidrvtab
         self.spijobtab = spijobtab
 
-        #spi_sequence = arxml_spi.parse_arxml(gui.arxml_file)
-        spi_sequence = None
-        if spi_sequence == None:
-            return 
+        if ar_cfg["SpiSequence"] == None:
+            return
+        for seq in ar_cfg["SpiSequence"]:
+            # let us do some correction between how UI and ARXML stores job assignment
+            job_list = seq["SpiJobAssignment"]
+            seq["SpiJobAssignment"] = []
+            for job in job_list:
+                seq["SpiJobAssignment"].append(job['SpiJob'])
+            self.configs.insert(len(self.configs), dappa.AsrCfgStr(self.cfgkeys, seq))
+            self.n_spi_seqs += 1
+        self.n_spi_seqs_str.set(self.n_spi_seqs)
+
 
 
     def __del__(self):
@@ -106,7 +115,11 @@ class SpiSequenceTab:
 
         # Tune memory allocations based on number of rows or boxes
         n_dappa_rows = len(self.configs)
-        if self.n_spi_seqs > n_dappa_rows:
+        if not self.init_view_done:
+            for i in range(n_dappa_rows):
+                self.draw_dappa_row(i)
+            self.init_view_done = True
+        elif self.n_spi_seqs > n_dappa_rows:
             for i in range(self.n_spi_seqs - n_dappa_rows):
                 self.configs.insert(len(self.configs), dappa.AsrCfgStr(self.cfgkeys, self.create_empty_configs()))
                 self.draw_dappa_row(n_dappa_rows+i)

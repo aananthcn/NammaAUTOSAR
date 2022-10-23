@@ -39,7 +39,7 @@ class SpiGeneralTab:
     dappas_per_col = len(cfgkeys)
 
 
-    def __init__(self, gui):
+    def __init__(self, gui, ar_cfg):
         self.gui = gui
         self.configs = []
 
