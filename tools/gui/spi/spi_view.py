@@ -112,12 +112,14 @@ def show_spi_tabs(gui):
     for obj in TabList:
         del obj
 
+    # read Spi content from ARXML file
+    spi_configs = arxml_spi.parse_arxml(gui.arxml_file)
+    
     # create new GUI objects
-    dtab = SpiTab(gen_frame, width, height)
-    dtab.tab = spi_gen.SpiGeneralTab(gui)
-    dtab.name = "SpiGeneral"
-    TabList.append(dtab)
-    dtab.tab.draw(dtab)
+    spigen_tab = SpiTab(gen_frame, width, height)
+    spigen_tab.tab = spi_gen.SpiGeneralTab(gui)
+    spigen_tab.name = "SpiGeneral"
+    TabList.append(spigen_tab)
 
     # SpiChannel Tab and few Tabs are inter dependent, hence creating it early, draw later
     spidrv_tab   = SpiTab(drv_frame, width, height)
@@ -127,31 +129,32 @@ def show_spi_tabs(gui):
     spidev_tab.tab = spi_exd.SpiExternalDeviceTab(gui, spidrv_tab, spijob_tab)
     spidev_tab.name = "SpiExternalDevice"
     TabList.append(spidev_tab)
-    spidev_tab.tab.draw(spidev_tab)
 
     spichn_tab    = SpiTab(chn_frame, width, height)
-    # spichn_tab.tab = spi_chn.SpiChannelTab(gui, spichnlsttab, spidrv_tab)
     spichn_tab.tab = spi_chn.SpiChannelTab(gui, spidrv_tab)
     spichn_tab.name = "SpiChannel"
     TabList.append(spichn_tab)
-    spichn_tab.tab.draw(spichn_tab)
 
     spijob_tab.tab = spi_job.SpiJobTab(gui, spidrv_tab, spidev_tab, spichn_tab)
     spijob_tab.name = "SpiJob"
     TabList.append(spijob_tab)
-    spijob_tab.tab.draw(spijob_tab)
 
-    dtab = SpiTab(seq_frame, width, height)
-    dtab.tab = spi_seq.SpiSequenceTab(gui, spidrv_tab, spijob_tab)
-    dtab.name = "SpiSequence"
-    TabList.append(dtab)
-    dtab.tab.draw(dtab)
+    spiseq_tab = SpiTab(seq_frame, width, height)
+    spiseq_tab.tab = spi_seq.SpiSequenceTab(gui, spidrv_tab, spijob_tab)
+    spiseq_tab.name = "SpiSequence"
+    TabList.append(spiseq_tab)
 
     spidrv_tab.tab = spi_drv.SpiDriverTab(gui)
     spidrv_tab.name = "SpiDriver"
     TabList.append(spidrv_tab)
-    spidrv_tab.tab.draw(spidrv_tab)
 
+    # Draw all tabs
+    spigen_tab.tab.draw(spigen_tab)
+    spidev_tab.tab.draw(spidev_tab)
+    spichn_tab.tab.draw(spichn_tab)
+    spijob_tab.tab.draw(spijob_tab)
+    spiseq_tab.tab.draw(spiseq_tab)
+    spidrv_tab.tab.draw(spidrv_tab)
     # gui.main_view.window.bind("<<NotebookTabChanged>>", show_os_tab_switch)
 
 

@@ -120,19 +120,7 @@ def add_spi_chanlist_parameters_to_container(ctnr, cdref, chlst_cfg):
 
 
 
-# This function updates NammaAUTOSAR Spi parameters into its container
-def update_spi_info_to_container(root, spi_configs):
-    for key in spi_configs:
-        print("#################### ", key, " ############################")
-        print("## datavar")
-        for item in spi_configs[key]:
-            print("\t", item.datavar)
-        print("## dispvar")
-        for item in spi_configs[key]:
-            print("\t", item.get())
-
-    # SpiDriver 
-    ctnrname = "SpiDriver"
+def update_spi_driver_to_container(ctnrname, root, spi_configs):
     rctnrblk = lib_conf.find_ecuc_container_block(ctnrname, root)
     
     # Delete node to rewrite new values
@@ -146,11 +134,11 @@ def update_spi_info_to_container(root, spi_configs):
     # Parameters
     params = ET.SubElement(ctnrblk, "PARAMETER-VALUES")
     refname = dref+"/SpiMaxChannel"
-    lib_conf.insert_conf_param(params, refname, "numerical", "int", str(spi_configs["SpiDriver"][0].datavar["SpiMaxChannel"]))
+    lib_conf.insert_conf_param(params, refname, "numerical", "int", str(spi_configs[ctnrname][0].datavar["SpiMaxChannel"]))
     refname = dref+"/SpiMaxJob"
-    lib_conf.insert_conf_param(params, refname, "numerical", "int", str(spi_configs["SpiDriver"][0].datavar["SpiMaxJob"]))
+    lib_conf.insert_conf_param(params, refname, "numerical", "int", str(spi_configs[ctnrname][0].datavar["SpiMaxJob"]))
     refname = dref+"/SpiMaxSequence"
-    lib_conf.insert_conf_param(params, refname, "numerical", "int", str(spi_configs["SpiDriver"][0].datavar["SpiMaxSequence"]))
+    lib_conf.insert_conf_param(params, refname, "numerical", "int", str(spi_configs[ctnrname][0].datavar["SpiMaxSequence"]))
 
     # Create a sub-container    
     subctnr1 = ET.SubElement(ctnrblk, "SUB-CONTAINERS")
@@ -183,6 +171,72 @@ def update_spi_info_to_container(root, spi_configs):
 
 
 
+
+def update_spi_general_to_container(ctnrname, root, spi_configs):
+    rctnrblk = lib_conf.find_ecuc_container_block(ctnrname, root)
+
+    # Delete node to rewrite new values
+    if None != rctnrblk:
+        root.remove(rctnrblk)
+
+    # Create a new container - SpiDriver
+    dref = "/AUTOSAR/EcucDefs/Spi/"+ctnrname
+    ctnrblk = lib_conf.insert_conf_container(root, ctnrname, "conf", dref)
+
+    # Parameters
+    params = ET.SubElement(ctnrblk, "PARAMETER-VALUES")
+    refname = dref+"/SpiCancelApi"
+    lib_conf.insert_conf_param(params, refname, "numerical", "int", str(spi_configs[ctnrname][0].datavar["SpiCancelApi"]))
+    refname = dref+"/SpiChannelBuffersAllowed"
+    lib_conf.insert_conf_param(params, refname, "numerical", "int", str(spi_configs[ctnrname][0].datavar["SpiChannelBuffersAllowed"]))
+    refname = dref+"/SpiDevErrorDetect"
+    lib_conf.insert_conf_param(params, refname, "numerical", "int", str(spi_configs[ctnrname][0].datavar["SpiDevErrorDetect"]))
+    refname = dref+"/SpiHwStatusApi"
+    lib_conf.insert_conf_param(params, refname, "numerical", "int", str(spi_configs[ctnrname][0].datavar["SpiHwStatusApi"]))
+    refname = dref+"/SpiInterruptibleSeqAllowed"
+    lib_conf.insert_conf_param(params, refname, "numerical", "int", str(spi_configs[ctnrname][0].datavar["SpiInterruptibleSeqAllowed"]))
+    refname = dref+"/SpiLevelDelivered"
+    lib_conf.insert_conf_param(params, refname, "numerical", "int", str(spi_configs[ctnrname][0].datavar["SpiLevelDelivered"]))
+    refname = dref+"/SpiMainFunctionPeriod"
+    lib_conf.insert_conf_param(params, refname, "numerical", "int", str(spi_configs[ctnrname][0].datavar["SpiMainFunctionPeriod"]))
+    refname = dref+"/SpiSupportConcurrentSyncTransmit"
+    lib_conf.insert_conf_param(params, refname, "numerical", "int", str(spi_configs[ctnrname][0].datavar["SpiSupportConcurrentSyncTransmit"]))
+    refname = dref+"/SpiVersionInfoApi"
+    lib_conf.insert_conf_param(params, refname, "numerical", "int", str(spi_configs[ctnrname][0].datavar["SpiVersionInfoApi"]))
+
+
+
+def update_spi_pubinfo_to_container(ctnrname, root, spi_configs):
+    rctnrblk = lib_conf.find_ecuc_container_block(ctnrname, root)
+
+    # Delete node to rewrite new values
+    if None != rctnrblk:
+        root.remove(rctnrblk)
+
+    # Create a new container - SpiDriver
+    dref = "/AUTOSAR/EcucDefs/Spi/"+ctnrname
+    ctnrblk = lib_conf.insert_conf_container(root, ctnrname, "conf", dref)
+
+    # Parameters
+    params = ET.SubElement(ctnrblk, "PARAMETER-VALUES")
+    refname = dref+"/SpiMaxHwUnit"
+    lib_conf.insert_conf_param(params, refname, "numerical", "int", str(spi_configs["SpiDriver"][0].datavar["SpiMaxHwUnit"]))
+
+
+
+# # This function updates NammaAUTOSAR Spi parameters into its container
+# def update_spi_info_to_container(root, spi_configs):
+#     # for key in spi_configs:
+#     #     print("#################### ", key, " ############################")
+#     #     print("## datavar")
+#     #     for item in spi_configs[key]:
+#     #         print("\t", item.datavar)
+#     #     print("## dispvar")
+#     #     for item in spi_configs[key]:
+#     #         print("\t", item.get())
+
+
+
 # Write ARXML with dio info
 def update_arxml(ar_file, spi_configs):
     # Following line is added to avoid ns0 prefix added
@@ -210,7 +264,9 @@ def update_arxml(ar_file, spi_configs):
         return
 
     # Add Spi Tab contents to CONTAINER
-    update_spi_info_to_container(containers, spi_configs)
+    update_spi_driver_to_container("SpiDriver", containers, spi_configs)
+    update_spi_general_to_container("SpiGeneral", containers, spi_configs)
+    update_spi_pubinfo_to_container("SpiPublishedInformation", containers, spi_configs)
 
     # Save ARXML contents to file
     ET.indent(tree, space="\t", level=0)
@@ -220,78 +276,91 @@ def update_arxml(ar_file, spi_configs):
 
 
 
-def parse_arxml_dioconfig(containers):
-    spi_n_pins = None
-    spi_configs = []
-    spi_groups = []
+# def parse_arxml_dioconfig(containers):
+#     spi_n_pins = None
+#     spi_configs = []
+#     spi_groups = []
     
-    # locate SpiConfig
-    ctnrname = "SpiConfig"
-    ctnrblk = lib_conf.find_ecuc_container_block(ctnrname, containers)
-    if lib_conf.get_tag(ctnrblk) != "ECUC-CONTAINER-VALUE":
+#     # locate SpiConfig
+#     ctnrname = "SpiConfig"
+#     ctnrblk = lib_conf.find_ecuc_container_block(ctnrname, containers)
+#     if lib_conf.get_tag(ctnrblk) != "ECUC-CONTAINER-VALUE":
+#         return None
+    
+#     # now locate SpiPort
+#     spi_cfg_ctnr = ctnrblk
+#     spi_sub_ctnr = None
+#     dioport_ctnr = None
+#     for ecuc_ctnr in ctnrblk:
+#         if lib_conf.get_tag(ecuc_ctnr) == "SUB-CONTAINERS":
+#             spi_sub_ctnr = ecuc_ctnr
+#             for ecuc_ctnr in spi_sub_ctnr:
+#                 if lib_conf.get_tag(ecuc_ctnr) == "ECUC-CONTAINER-VALUE":
+#                     ctnrblk = ecuc_ctnr
+#                     for item in ctnrblk:
+#                         if lib_conf.get_tag(item) == "SHORT-NAME":
+#                             if item.text == "SpiPort":
+#                                 spi_n_pins = len(spi_sub_ctnr) # we have found the right SUB-CONTAINER!!
+#                                 dioport_ctnr = ctnrblk
+#                                 # Note: breaking based on assumption that there will be only one port ;-)
+#                                 break
+#                                 # this will be extended as dioport_ctnr[] list later, as I don't know if the
+#                                 # current ARXML format that I understand is correct.
+
+#     # get the 'SpiPortId' of this SpiPort
+#     spi_port_id_cfg = {}
+#     params = lib_conf.get_param_list(dioport_ctnr)
+#     for par in params:
+#         spi_port_id_cfg[par["tag"]] = par["val"]
+    
+#     # parse dio config from subcontainer
+#     nodes = lib_conf.findall_subcontainers_with_name("SpiChannel", dioport_ctnr)
+#     if nodes != None:
+#         for node in nodes:
+#             params = lib_conf.get_param_list(node)
+#             cfg = {}
+#             for par in params:
+#                 cfg[par["tag"]] = par["val"]
+#             cfg["SpiPortId"] = spi_port_id_cfg["SpiPortId"]
+#             spi_configs.append(cfg)
+    
+#     # parse dio group from subcontainer
+#     nodes = lib_conf.findall_subcontainers_with_name("SpiChannelGroup", dioport_ctnr)
+#     if nodes != None:
+#         for node in nodes:
+#             params = lib_conf.get_param_list(node)
+#             cfg = {}
+#             for par in params:
+#                 cfg[par["tag"]] = par["val"]
+#             cfg["SpiPortId"] = spi_port_id_cfg["SpiPortId"]
+#             spi_groups.append(cfg)
+    
+
+#     return spi_n_pins, spi_configs, spi_groups
+
+
+
+def parse_spi_general(cname, containers):
+    spi_general = {}
+    ctnrblk = lib_conf.find_ecuc_container_block(cname, containers)
+    if not ctnrblk or lib_conf.get_tag(ctnrblk) != "ECUC-CONTAINER-VALUE":
         return None
-    
-    # now locate SpiPort
-    spi_cfg_ctnr = ctnrblk
-    spi_sub_ctnr = None
-    dioport_ctnr = None
-    for ecuc_ctnr in ctnrblk:
-        if lib_conf.get_tag(ecuc_ctnr) == "SUB-CONTAINERS":
-            spi_sub_ctnr = ecuc_ctnr
-            for ecuc_ctnr in spi_sub_ctnr:
-                if lib_conf.get_tag(ecuc_ctnr) == "ECUC-CONTAINER-VALUE":
-                    ctnrblk = ecuc_ctnr
-                    for item in ctnrblk:
-                        if lib_conf.get_tag(item) == "SHORT-NAME":
-                            if item.text == "SpiPort":
-                                spi_n_pins = len(spi_sub_ctnr) # we have found the right SUB-CONTAINER!!
-                                dioport_ctnr = ctnrblk
-                                # Note: breaking based on assumption that there will be only one port ;-)
-                                break
-                                # this will be extended as dioport_ctnr[] list later, as I don't know if the
-                                # current ARXML format that I understand is correct.
-
-    # get the 'SpiPortId' of this SpiPort
-    spi_port_id_cfg = {}
-    params = lib_conf.get_param_list(dioport_ctnr)
+    params = lib_conf.get_param_list(ctnrblk)
     for par in params:
-        spi_port_id_cfg[par["tag"]] = par["val"]
+        spi_general[par["tag"]] = par["val"]
     
-    # parse dio config from subcontainer
-    nodes = lib_conf.findall_subcontainers_with_name("SpiChannel", dioport_ctnr)
-    if nodes != None:
-        for node in nodes:
-            params = lib_conf.get_param_list(node)
-            cfg = {}
-            for par in params:
-                cfg[par["tag"]] = par["val"]
-            cfg["SpiPortId"] = spi_port_id_cfg["SpiPortId"]
-            spi_configs.append(cfg)
-    
-    # parse dio group from subcontainer
-    nodes = lib_conf.findall_subcontainers_with_name("SpiChannelGroup", dioport_ctnr)
-    if nodes != None:
-        for node in nodes:
-            params = lib_conf.get_param_list(node)
-            cfg = {}
-            for par in params:
-                cfg[par["tag"]] = par["val"]
-            cfg["SpiPortId"] = spi_port_id_cfg["SpiPortId"]
-            spi_groups.append(cfg)
-    
-
-    return spi_n_pins, spi_configs, spi_groups
-
+    return spi_general
 
 
 # This function parses ARXML and extract the Spi information
 # Returns: No of spi_configs, Spi pin dictionary
 def parse_arxml(ar_file):
     if ar_file == None:
-        return None, None, None
-    spi_n_pins = None
-    spi_configs = []
-    spi_general = {}
+        return None
+
+    # empty dictionary
+    spi_configs = {}
+
     # Read ARXML File
     tree = ET.parse(ar_file)
     root = tree.getroot()
@@ -308,17 +377,9 @@ def parse_arxml(ar_file):
     containers = lib_conf.find_containers_in_modconf(modconf)
     if containers == None:
         return
-    
-    spi_n_pins, spi_configs, spi_groups = parse_arxml_dioconfig(containers)
 
-    # locate & parse SpiGeneral
-    ctnrname = "SpiGeneral"
-    ctnrblk = lib_conf.find_ecuc_container_block(ctnrname, containers)
-    if lib_conf.get_tag(ctnrblk) != "ECUC-CONTAINER-VALUE":
-        return None
-    params = lib_conf.get_param_list(ctnrblk)
-    for par in params:
-        spi_general[par["tag"]] = par["val"]
+    spi_general = parse_spi_general("SpiGeneral", containers)
+    print("parse_arxml->SpiGeneral", spi_general)
     
-    return spi_n_pins, spi_configs, spi_groups, spi_general
+    # return spi_n_pins, spi_configs, spi_groups, spi_general
 
