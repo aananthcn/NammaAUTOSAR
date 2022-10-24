@@ -30,7 +30,8 @@ import gui.spi.spi_jobs as spi_job
 import gui.spi.spi_ext_dev as spi_exd
 import gui.spi.spi_drv as spi_drv
 
-import arxml.spi.arxml_spi as arxml_spi
+import arxml.spi.arxml_spi_parse as arxml_spi_r
+import arxml.spi.arxml_spi_write as arxml_spi_w
 
 
 TabList = []
@@ -66,7 +67,7 @@ def spi_save_callback(gui):
     for tab in TabList:
         spi_configs[tab.name] = tab.tab.configs
     
-    arxml_spi.update_arxml(gui.arxml_file, spi_configs)
+    arxml_spi_w.update_arxml(gui.arxml_file, spi_configs)
     # spi_cgen.generate_code(gui)
 
 
@@ -93,7 +94,6 @@ def show_spi_tabs(gui):
     gen_frame  = ttk.Frame(notebook)
     seq_frame  = ttk.Frame(notebook)
     chn_frame  = ttk.Frame(notebook)
-    clst_frame = ttk.Frame(notebook)
     job_frame  = ttk.Frame(notebook)
     exd_frame  = ttk.Frame(notebook)
     drv_frame  = ttk.Frame(notebook)
@@ -102,7 +102,6 @@ def show_spi_tabs(gui):
     notebook.add(gen_frame, text ='SpiGeneral')
     notebook.add(exd_frame, text ='SpiExternalDevice')
     notebook.add(chn_frame, text ='SpiChannel')
-    # notebook.add(clst_frame, text ='SpiChannelList')
     notebook.add(job_frame, text ='SpiJob')
     notebook.add(seq_frame, text ='SpiSequence')
     notebook.add(drv_frame, text ='SpiDriver')
@@ -113,7 +112,7 @@ def show_spi_tabs(gui):
         del obj
 
     # read Spi content from ARXML file
-    spi_configs = arxml_spi.parse_arxml(gui.arxml_file)
+    spi_configs = arxml_spi_r.parse_arxml(gui.arxml_file)
     
     # create new GUI objects
     spigen_tab = SpiTab(gen_frame, width, height)

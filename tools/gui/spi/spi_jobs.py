@@ -59,8 +59,6 @@ class SpiJobTab:
         self.spidrvtab = spidrvtab
         self.spichtab = spichtab
         self.spidev_lst = []
-        for dev in spidevtab.tab.configs:
-            print(dev.datavar)
 
         if ar_cfg["SpiJob"] == None:
             return
@@ -131,7 +129,7 @@ class SpiJobTab:
         self.scrollw = window.ScrollableWindow(tab.frame, tab.xsize, tab.ysize)
         
         #Number of modes - Label + Spinbox
-        label = tk.Label(self.scrollw.mnf, text="No. of Spi Sequence:")
+        label = tk.Label(self.scrollw.mnf, text="No. of Spi Jobs:")
         label.grid(row=0, column=0, sticky="w")
         spinb = tk.Spinbox(self.scrollw.mnf, width=10, textvariable=self.n_spi_job_str, command=lambda : self.update(),
                     values=tuple(range(0,self.max_spi_job+1)))
@@ -158,13 +156,13 @@ class SpiJobTab:
 
 
     def spi_extdrv_list_changed(self, exd_configs):
-        if not self.init_view_done:
-            return
-
         del self.spidev_lst[:]
         for cfg in exd_configs:
             self.spidev_lst.append(cfg.datavar["SpiHwUnit"])
             
+        if not self.init_view_done:
+            return
+
         # channel list changed, hence re-draw this view completely
         for obj in self.non_header_objs:
             obj.destroy()
@@ -185,9 +183,11 @@ class SpiJobTab:
 
         # update new selections from last window session
         for chlist_cfg in self.active_widget.configs:
-            if not self.configs[row].datavar["SpiChannelList"]:
-                 self.configs[row].datavar["SpiChannelList"] = []
-            self.configs[row].datavar["SpiChannelList"].append(chlist_cfg.dispvar["SpiChannelIndex"].get())
+            chlist_cfg.get() # pull from UI
+            ch_dict = {}
+            ch_dict['SpiChannelIndex'] = chlist_cfg.datavar['SpiChannelIndex']
+            ch_dict['SpiChannelAssignment'] = chlist_cfg.datavar['SpiChannelAssignment']
+            self.configs[row].datavar["SpiChannelList"].append(ch_dict)
         
         # dialog elements are no longer needed, destroy them. Else, new dialogs will not open!
         del self.active_widget
@@ -197,6 +197,7 @@ class SpiJobTab:
         # re-draw all boxes (dappas) of this row
         dappa.delete_dappa_row(self, row)
         self.draw_dappa_row(row)
+
 
 
     def channel_list_select(self, row):

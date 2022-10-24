@@ -45,11 +45,6 @@ class SpiDriverTab:
         # Create config string for AUTOSAR configs on this tab
         self.configs.append(dappa.AsrCfgStr(self.cfgkeys, self.create_empty_configs()))
 
-        #spi_drv_dict = arxml_spi.parse_arxml(gui.arxml_file)
-        spi_drv_dict = None
-        if spi_drv_dict == None:
-            return
-
 
     def __del__(self):
         del self.configs[:]

@@ -46,11 +46,6 @@ class SpiGeneralTab:
         # Create config string for AUTOSAR configs on this tab
         self.configs.append(dappa.AsrCfgStr(self.cfgkeys, self.create_empty_configs()))
 
-        #gen_dict = arxml_spi.parse_arxml(gui.arxml_file)
-        gen_dict = None
-        if gen_dict == None:
-            return
-
 
     def __del__(self):
         del self.configs[:]
@@ -125,5 +120,4 @@ class SpiGeneralTab:
 
 
     def save_data(self):
-        # self.backup_data()
         self.tab_struct.save_cb(self.gui)

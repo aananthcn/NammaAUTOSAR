@@ -27,6 +27,7 @@ import arxml.core.lib_defs as lib_defs
 
 
 def add_spi_chan_parameters_to_container(ctnr, cdref, chan_cfg):
+    chan_cfg.get() # pull data from UI
     params = ET.SubElement(ctnr, "PARAMETER-VALUES")
     refname = cdref+"/SpiChannelId"
     lib_conf.insert_conf_param(params, refname, "numerical", "int", str(chan_cfg.datavar["SpiChannelId"]))
@@ -46,6 +47,7 @@ def add_spi_chan_parameters_to_container(ctnr, cdref, chan_cfg):
 
 
 def add_spi_exd_parameters_to_container(ctnr, cdref, exd_cfg):
+    exd_cfg.get() # pull data from UI
     params = ET.SubElement(ctnr, "PARAMETER-VALUES")
     refname = cdref+"/SpiBaudrate"
     lib_conf.insert_conf_param(params, refname, "numerical", "float", str(exd_cfg.datavar["SpiBaudrate"]))
@@ -73,6 +75,7 @@ def add_spi_exd_parameters_to_container(ctnr, cdref, exd_cfg):
 
 
 def add_spi_job_parameters_to_container(ctnr, cdref, job_cfg):
+    job_cfg.get() # pull data from UI
     params = ET.SubElement(ctnr, "PARAMETER-VALUES")
     refname = cdref+"/SpiJobEndNotification"
     lib_conf.insert_conf_param(params, refname, "text", "func", str(job_cfg.datavar["SpiJobEndNotification"]))
@@ -80,6 +83,8 @@ def add_spi_job_parameters_to_container(ctnr, cdref, job_cfg):
     lib_conf.insert_conf_param(params, refname, "numerical", "int", str(job_cfg.datavar["SpiJobId"]))
     refname = cdref+"/SpiJobPriority"
     lib_conf.insert_conf_param(params, refname, "numerical", "int", str(job_cfg.datavar["SpiJobPriority"]))
+    refname = cdref+"/SpiDeviceAssignment"
+    lib_conf.insert_conf_param(params, refname, "numerical", "enum", str(job_cfg.datavar["SpiDeviceAssignment"]))
 
     # sub-container 2
     subctnr2 = ET.SubElement(ctnr, "SUB-CONTAINERS")
@@ -88,11 +93,15 @@ def add_spi_job_parameters_to_container(ctnr, cdref, job_cfg):
     for chan in job_cfg.datavar["SpiChannelList"]:
         cctnrblk2 = lib_conf.insert_conf_container(subctnr2, subctnr2_name, "conf", dref2)
         params = ET.SubElement(cctnrblk2, "PARAMETER-VALUES")
+        # print("add_spi_job_parameters_to_container()", chan)
         refname = dref2+"/SpiChannelIndex"
-        lib_conf.insert_conf_param(params, refname, "numerical", "int", str(chan))
+        lib_conf.insert_conf_param(params, refname, "numerical", "int", str(chan["SpiChannelIndex"]))
+        refname = dref2+"/SpiChannelAssignment"
+        lib_conf.insert_conf_param(params, refname, "numerical", "int", str(chan["SpiChannelAssignment"]))
 
 
 def add_spi_seq_parameters_to_container(ctnr, cdref, seq_cfg):
+    seq_cfg.get() # pull data from UI
     params = ET.SubElement(ctnr, "PARAMETER-VALUES")
     refname = cdref+"/SpiInterruptibleSequence"
     lib_conf.insert_conf_param(params, refname, "numerical", "bool", str(seq_cfg.datavar["SpiInterruptibleSequence"]))
@@ -113,6 +122,7 @@ def add_spi_seq_parameters_to_container(ctnr, cdref, seq_cfg):
 
 
 def add_spi_chanlist_parameters_to_container(ctnr, cdref, chlst_cfg):
+    chlst_cfg.get() # pull data from UI
     params = ET.SubElement(ctnr, "PARAMETER-VALUES")
     refname = cdref+"/SpiInterruptibleSequence"
     lib_conf.insert_conf_param(params, refname, "numerical", "bool", str(chlst_cfg.datavar["SpiInterruptibleSequence"]))
@@ -127,6 +137,9 @@ def update_spi_driver_to_container(ctnrname, root, spi_configs):
     if None != rctnrblk:
         root.remove(rctnrblk)
     
+    # pull data from UI
+    spi_configs[ctnrname][0].get()
+
     # Create a new container - SpiDriver
     dref = "/AUTOSAR/EcucDefs/Spi/"+ctnrname
     ctnrblk = lib_conf.insert_conf_container(root, ctnrname, "conf", dref)
@@ -179,6 +192,9 @@ def update_spi_general_to_container(ctnrname, root, spi_configs):
     if None != rctnrblk:
         root.remove(rctnrblk)
 
+    # pull data from UI
+    spi_configs[ctnrname][0].get()
+
     # Create a new container - SpiDriver
     dref = "/AUTOSAR/EcucDefs/Spi/"+ctnrname
     ctnrblk = lib_conf.insert_conf_container(root, ctnrname, "conf", dref)
@@ -213,6 +229,9 @@ def update_spi_pubinfo_to_container(ctnrname, root, spi_configs):
     if None != rctnrblk:
         root.remove(rctnrblk)
 
+    # pull data from UI
+    spi_configs["SpiDriver"][0].get()
+
     # Create a new container - SpiDriver
     dref = "/AUTOSAR/EcucDefs/Spi/"+ctnrname
     ctnrblk = lib_conf.insert_conf_container(root, ctnrname, "conf", dref)
@@ -224,24 +243,25 @@ def update_spi_pubinfo_to_container(ctnrname, root, spi_configs):
 
 
 
+def print_spi_configs(spi_configs):
+    for key in spi_configs:
+        print("#################### ", key, " ############################")
+        print("## datavar")
+        for item in spi_configs[key]:
+            print("\t", item.datavar)
+        print("## dispvar")
+        for item in spi_configs[key]:
+            print("\t", item.get())
+
+
+
 # # This function updates NammaAUTOSAR Spi parameters into its container
-# def update_spi_info_to_container(root, spi_configs):
-#     # for key in spi_configs:
-#     #     print("#################### ", key, " ############################")
-#     #     print("## datavar")
-#     #     for item in spi_configs[key]:
-#     #         print("\t", item.datavar)
-#     #     print("## dispvar")
-#     #     for item in spi_configs[key]:
-#     #         print("\t", item.get())
-
-
-
-# Write ARXML with dio info
 def update_arxml(ar_file, spi_configs):
     # Following line is added to avoid ns0 prefix added
     ET.register_namespace('', "http://autosar.org/schema/r4.0")
     ET.register_namespace('xsi', "http://www.w3.org/2001/XMLSchema-instance")
+    
+    # print_spi_configs(spi_configs)
     
     # Read ARXML File
     tree = ET.parse(ar_file)
@@ -275,127 +295,4 @@ def update_arxml(ar_file, spi_configs):
     print("Info: Spi Configs are saved to " + ar_file)    
 
 
-
-def parse_spi_general(cname, containers):
-    spi_general = {}
-    ctnrblk = lib_conf.find_ecuc_container_block(cname, containers)
-    if not ctnrblk or lib_conf.get_tag(ctnrblk) != "ECUC-CONTAINER-VALUE":
-        return None
-    params = lib_conf.get_param_list(ctnrblk)
-    for par in params:
-        spi_general[par["tag"]] = par["val"]
-    
-    return spi_general
-
-
-
-def parse_spi_pubinfo(cname, containers):
-    spi_pubinfo = {}
-    ctnrblk = lib_conf.find_ecuc_container_block(cname, containers)
-    if not ctnrblk or lib_conf.get_tag(ctnrblk) != "ECUC-CONTAINER-VALUE":
-        return None
-    params = lib_conf.get_param_list(ctnrblk)
-    for par in params:
-        spi_pubinfo[par["tag"]] = par["val"]
-
-    return spi_pubinfo
-
-
-
-def getall_spidriver_2nd_subcontainer(sub_ctnr_name, item, par_dict):
-    chan_list = lib_conf.findall_subcontainers_with_name(sub_ctnr_name, item)
-    par_dict[sub_ctnr_name] = []
-    for ch in chan_list:
-        ch_params = lib_conf.get_param_list(ch)
-        ch_dict = {}
-        for chpar in ch_params:
-            ch_dict[chpar["tag"]] = chpar["val"]
-        par_dict[sub_ctnr_name].append(ch_dict)
-    return par_dict
-
-
-def getall_spidriver_subcontainer(sub_ctnr_name, ctnr):
-    param_list = []
-    ctnr_list = lib_conf.findall_subcontainers_with_name(sub_ctnr_name, ctnr)
-    for item in ctnr_list:
-        params = lib_conf.get_param_list(item)
-        par_dict = {}
-        for par in params:
-            par_dict[par["tag"]] = par["val"]
-
-        if sub_ctnr_name == "SpiJob":
-            par_dict = getall_spidriver_2nd_subcontainer("SpiChannelList", item, par_dict)
-        elif sub_ctnr_name == "SpiSequence":
-            par_dict = getall_spidriver_2nd_subcontainer("SpiJobAssignment", item, par_dict)
-        param_list.append(par_dict)
-    return param_list
-
-
-
-def parse_spi_driver(cname, containers):
-    spi_driver = {}
-    ctnrblk = lib_conf.find_ecuc_container_block(cname, containers)
-    if not ctnrblk or lib_conf.get_tag(ctnrblk) != "ECUC-CONTAINER-VALUE":
-        return None
-    params = lib_conf.get_param_list(ctnrblk)
-    for par in params:
-        spi_driver[par["tag"]] = par["val"]
-
-    # Let us parse the sub-containers
-    spichn = getall_spidriver_subcontainer("SpiChannel", ctnrblk)
-    spiexd = getall_spidriver_subcontainer("SpiExternalDevice", ctnrblk)
-    spijob = getall_spidriver_subcontainer("SpiJob", ctnrblk)
-    spiseq = getall_spidriver_subcontainer("SpiSequence", ctnrblk)
-    
-    spi_config = {}
-    spi_config["SpiDriver"] = spi_driver
-    spi_config["SpiChannel"] = spichn
-    spi_config["SpiExternalDevice"] = spiexd
-    spi_config["SpiJob"] = spijob
-    spi_config["SpiSequence"] = spiseq
-
-    return spi_config
-
-
-
-
-# This function parses ARXML and extract the Spi information
-# Returns: No of spi_configs, Spi pin dictionary
-def parse_arxml(ar_file):
-    if ar_file == None:
-        return None
-
-    # empty dictionary
-    spi_configs = {}
-
-    # Read ARXML File
-    tree = ET.parse(ar_file)
-    root = tree.getroot()
-
-    # locate ELEMENTS block
-    elems = lib_conf.find_ecuc_elements_block(root)
-    if elems == None:
-        return
-
-    # locate Mcu module configuration under ELEMENTS
-    modconf = lib_conf.find_module_conf_values("Spi", elems)
-
-    # locate container
-    containers = lib_conf.find_containers_in_modconf(modconf)
-    if containers == None:
-        return
-
-    spi_general = parse_spi_general("SpiGeneral", containers)
-    spi_pubinfo = parse_spi_general("SpiPublishedInformation", containers)
-    spi_driver  = parse_spi_driver("SpiDriver", containers)
-
-    # consolidate all parsed output to one nested-dict
-    spi_configs = spi_driver
-    spi_configs["SpiDriver"]["SpiMaxHwUnit"] = spi_pubinfo["SpiMaxHwUnit"]
-    spi_configs["SpiGeneral"] = spi_general
-
-    print("parse_arxml->spi_configs", spi_configs)
-    
-    # return spi_n_pins, spi_configs, spi_groups, spi_general
-    return spi_configs
 

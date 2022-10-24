@@ -73,7 +73,7 @@ class AsrCfgStr:
 
     def get(view):
         for key in view.dispvar:
-            if isinstance(view.datavar[key], str):
+            if isinstance(view.datavar[key], str) or view.datavar[key] is None:
 	            view.datavar[key] = view.dispvar[key].get()
         return view.datavar
 
