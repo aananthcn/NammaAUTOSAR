@@ -27,7 +27,7 @@ import arxml.dio.arxml_dio as arxml_dio
 import gui.dio.dio_cfg as dio_cfg
 import gui.dio.dio_gen as dio_gen
 import gui.dio.dio_grp as dio_grp
-import gui.dio.dio_cgen as dio_cgen
+import gui.dio.dio_code_gen as dio_code_gen
 
 
 TabList = []
@@ -80,7 +80,7 @@ def dio_save_callback(gui):
             dio_gen = tab.tab.configs[0].get()
             continue
     arxml_dio.update_arxml(gui.arxml_file, dio_cfg, dio_grp, dio_gen)
-    dio_cgen.generate_code(gui)
+    dio_code_gen.generate_code(gui)
 
 
 

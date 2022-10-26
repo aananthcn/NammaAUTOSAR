@@ -12,3 +12,23 @@ What is Namma? Namma means our in Tamil and Kannada. We used to say "Avan namma 
 
 **Start date: 27 June 2021, Sunday**<br>
 Motivation to create an OS came from Ashokkumar Narayanan (one of my best buddies in Visteon Chennai).
+
+
+<br>
+
+Getting Started
+===
+
+Prerequisites
+----
+* Ubuntu 20.04 OS (either on Linux or on WSL2 inside Windows)
+  * Install following packages inside Ubuntu
+    * `apt install gcc-arm-none-eabi qemu-system-arm gdb-multiarch python3`
+* Windows 10 + MSYS2
+  * Follow the instructions given in "Installation" section in https://www.msys2.org/
+  * Install following packages:
+    * `pacman -S mingw-w64-x86_64-python mingw-w64-x86_64-tk mingw-w64-x86_64-python-pip`
+    * `pip install colorama`
+    * `pacman -S mingw-w64-x86_64-arm-none-eabi-gcc mingw-w64-x86_64-qemu`
+<br>
+
