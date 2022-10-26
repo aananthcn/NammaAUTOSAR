@@ -88,8 +88,8 @@ class FreeAutosarConfTool:
         self.main_view.tk.title(self.title + " [uninitialized]")
         recentfiles = get_recent_files()
         add_menus(self.main_view.tk, recentfiles)
-        # self.main_view.tk.state("zoomed")
-        self.main_view.tk.wm_state("normal")
+        self.main_view.tk.state("zoomed")
+        # self.main_view.tk.wm_state("normal")
 
     def init_view_setup(self, fpath, ftype):
         if ftype == None or fpath == None:
@@ -314,6 +314,11 @@ def textBox():
 
 
 def update_recent_files(filepath):
+    if not os.path.exists(RecentFiles):
+        # create empty file
+        wfile = open(RecentFiles, 'w')
+        wfile.close()
+
     with open(RecentFiles) as rfile:
         raw_list = rfile.readlines()
         rfile.close()
