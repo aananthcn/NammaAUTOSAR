@@ -78,7 +78,7 @@ class AsrBlock:
             self.widget.destroy()
 
         border = 2
-        self.widget = tk.Canvas(view, height=height, width=width, background="SystemButtonFace", borderwidth=border,
+        self.widget = tk.Canvas(view, height=height, width=width, background="gray40", borderwidth=border,
                         relief="raised", bg=self.bg_color)
 
         angle = "0"
