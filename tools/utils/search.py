@@ -46,3 +46,6 @@ def find_dir(name, path):
         if name in dirs:
             return os.path.join(root, name)
 
+    print("Error: couldn't find "+name+" in path: "+ path)
+    return None
+
