@@ -1,21 +1,24 @@
 [submodule "submodules/MCAL/Mcu"]
 	path = submodules/MCAL/Mcu
-	url = git@github.com:aananthcn/NammaMcu.git
+	url = https://github.com/aananthcn/NammaMcu.git
 	branch = main
 [submodule "submodules/SL/Os"]
 	path = submodules/SL/Os
-	url = git@github.com:aananthcn/NammaOSEK.git
+	url = https://github.com/aananthcn/NammaOSEK.git
 	branch = main
 [submodule "submodules/SL/EcuM"]
 	path = submodules/SL/EcuM
-	url = git@github.com:aananthcn/NammaEcuM.git
+	url = https://github.com/aananthcn/NammaEcuM.git
 	branch = main
 [submodule "submodules/MCAL/Port"]
 	path = submodules/MCAL/Port
-	url = git@github.com:aananthcn/NammaPort.git
+	url = https://github.com/aananthcn/NammaPort.git
+	branch = main
 [submodule "submodules/MCAL/Dio"]
 	path = submodules/MCAL/Dio
-	url = git@github.com:aananthcn/NammaDio.git
+	url = https://github.com/aananthcn/NammaDio.git
+	branch = main
 [submodule "submodules/MCAL/Spi"]
 	path = submodules/MCAL/Spi
-	url = git@github.com:aananthcn/NammaSpi.git
+	url = https://github.com/aananthcn/NammaSpi.git
+	branch = main

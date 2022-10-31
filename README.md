@@ -32,3 +32,7 @@ Prerequisites
     * `pacman -S mingw-w64-x86_64-arm-none-eabi-gcc mingw-w64-x86_64-qemu`
 <br>
 
+Cloning the Repo
+----
+As NammaAUTOSAR uses git submodules, please use the following command to clone the main and submodules
+* `git clone --recurse-submodules -j4 https://github.com/aananthcn/NammaAUTOSAR.git`
