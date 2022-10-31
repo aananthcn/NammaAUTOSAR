@@ -42,6 +42,10 @@ import gui.lib.asr_view as av
 
 import arxml.core.lib as lib
 
+# Temporary work-around -- for non OS modules, the code is generated from Mcu Code Generator
+import gui.mcu.uc_cgen as uc_cgen
+import gui.app.app_gen as app_gen
+
 #
 #   CLASSES
 #
@@ -211,8 +215,36 @@ def save_project():
 
 
 def generate_code():
+    # root window
+    root = tk.Toplevel()
+    root.geometry('400x120')
+    root.title('Code Generation Progress')
+    root.grid()
+    # progressbar
+    pb = ttk.Progressbar(root, orient='horizontal', length=380)
+    # place the progressbar
+    pb.grid(column=0, row=0, columnspan=2, padx=10, pady=20)
+    pb.update()
+
+    # Generate code for OS Module
     srcpath = ToolsPath+"\os_builder\src"
-    if 0 == sg.generate_code(srcpath):
+    os_rc = sg.generate_code(srcpath)
+    pb["value"] = 33
+    root.update_idletasks()
+    
+    # Generate code for other BSW Modules
+    bsw_rc = uc_cgen.create_source(Gui)
+    pb["value"] = 66
+    root.update_idletasks()
+
+    # Generate code for Application
+    app_rc = app_gen.sync_n_create_source()
+    pb["value"] = 100
+    root.update_idletasks()
+
+    pb.stop()
+    root.destroy()
+    if os_rc == 0 and bsw_rc == 0 and app_rc == 0:
         messagebox.showinfo(Gui.title, "Code Generated Successfully!")
     else:
         messagebox.showinfo(Gui.title, "Code Generation Failed!")

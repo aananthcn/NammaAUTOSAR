@@ -20,6 +20,16 @@
 #
 import utils.search as search
 import os
+import gui.app.app_view as app_view
+
+
+# returns non-zero in case of error
+def sync_n_create_source():
+    for i in range(app_view.N_Apps):
+        app_view.update_or_clone_app(i)
+    
+    return 0
+
 
 
 def create_source(app_name):

@@ -39,6 +39,7 @@ def generate_platform_header(gui):
 
 
 
+# returns non-zero in case of error
 def create_source(gui):
     cwd = os.getcwd()
     makefile = open(cwd+"/Makefile", "w")
@@ -114,3 +115,5 @@ def create_source(gui):
     arxml_mcu.update_arxml(gui.arxml_file, gui.uc_info)
     
     makefile.close()
+    
+    return 0
