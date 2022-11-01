@@ -27,9 +27,12 @@ Prerequisites
 * Windows 10 + MSYS2
   * Follow the instructions given in "Installation" section in https://www.msys2.org/
   * Install following packages:
+    * `pacman -Suy` 
     * `pacman -S mingw-w64-x86_64-python mingw-w64-x86_64-tk mingw-w64-x86_64-python-pip`
     * `pip install colorama`
     * `pacman -S mingw-w64-x86_64-arm-none-eabi-gcc mingw-w64-x86_64-qemu`
+  * Create envirnomental variable with VARIABLE NAME as "MINGW_ROOT" and VARIABLE VALUE as "installation path"
+
 <br>
 
 Cloning the Repo
