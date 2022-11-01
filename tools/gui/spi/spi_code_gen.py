@@ -69,7 +69,7 @@ SpiCsSelection_str = "\ntypedef enum {\n\
 \n"
 
 SpiExternalDevice_str = "\ntypedef struct {\n\
-    SpiExtDevID_Type spi_hw_unit;\n\
+    SpiExtDevID_Type spi_hw_unit_id;\n\
     uint32 spi_baudrate;\n\
     SpiDataShiftEdgeType spi_data_shift_edge;\n\
     SpiLevelType spi_shftclk_idle_level;\n\
@@ -122,6 +122,15 @@ SpiSequence_str = "\ntypedef struct {\n\
 \n\n"
 
 
+Spi_ConfigType_str = "\ntypedef struct {\n\
+    SpiGeneralCfgType general;\n\
+    SpiExternalDeviceType devices[SPI_DRIVER_MAX_HW_UNIT];\n\
+    SpiChannelCfgType channels[SPI_DRIVER_MAX_CHANNEL];\n\
+    SpiJobCfgType jobs[SPI_DRIVER_MAX_JOB];\n\
+    SpiSequenceCfgType sequences[SPI_DRIVER_MAX_SEQUENCE];\n\
+} Spi_ConfigType;\n\
+"
+
 
 def generate_headerfile(spi_src_path, spi_info):
     hf = open(spi_src_path+"/cfg/Spi_cfg.h", "w")
@@ -145,10 +154,11 @@ def generate_headerfile(spi_src_path, spi_info):
     hf.write(SpiJob_str)
     hf.write(SpiSequence_str)
     
-    hf.write("#define SPI_DRIVER_MAX_CHANNEL   ("+str(spi_info["SpiDriver"][0].datavar["SpiMaxChannel"])+")\n")
+    hf.write("\n#define SPI_DRIVER_MAX_CHANNEL   ("+str(spi_info["SpiDriver"][0].datavar["SpiMaxChannel"])+")\n")
     hf.write("#define SPI_DRIVER_MAX_JOB       ("+str(spi_info["SpiDriver"][0].datavar["SpiMaxJob"])+")\n")
     hf.write("#define SPI_DRIVER_MAX_SEQUENCE  ("+str(spi_info["SpiDriver"][0].datavar["SpiMaxSequence"])+")\n")
     hf.write("#define SPI_DRIVER_MAX_HW_UNIT   ("+str(spi_info["SpiDriver"][0].datavar["SpiMaxHwUnit"])+")\n")
+    hf.write(Spi_ConfigType_str)
     
     hf.write("\n\n#endif\n")
     hf.close()
@@ -167,20 +177,25 @@ def print_spi_configs(spi_configs):
 
 
 
+def get_chan_type(spi_chan_str):
+    spi_chan_type = ""
+    if "IB" in spi_chan_str and "EB" in spi_chan_str:
+        spi_chan_type = "SPI_CHAN_TYPE_IB_EB"
+    elif "IB" in spi_chan_str:
+        spi_chan_type = "SPI_CHAN_TYPE_IB"
+    elif "EB" in spi_chan_str:
+        spi_chan_type = "SPI_CHAN_TYPE_EB"
+    else:
+        spi_chan_type = "ERROR_CHAN_TYPE"
+    return spi_chan_type
+
+
+
 def gen_spi_general_configs(cf, gen_cfg):
     cf.write("\nSpiGeneralCfgType SpiGeneralCfg = {\n")
     cf.write("\t.spi_level_delivered     = "+str(gen_cfg["SpiLevelDelivered"])+",\n")
 
-    spi_chan_type = ""
-    if "IB" in gen_cfg["SpiChannelBuffersAllowed"] and "EB" in gen_cfg["SpiChannelBuffersAllowed"]:
-        spi_chan_type = "SPI_CHAN_TYPE_IB_EB"
-    elif "IB" in gen_cfg["SpiChannelBuffersAllowed"]:
-        spi_chan_type = "SPI_CHAN_TYPE_IB"
-    elif "EB" in gen_cfg["SpiChannelBuffersAllowed"]:
-        spi_chan_type = "SPI_CHAN_TYPE_EB"
-    else:
-        spi_chan_type = "ERROR_CHAN_TYPE"
-    cf.write("\t.spi_chan_buff_allowed   = "+spi_chan_type+",\n")
+    cf.write("\t.spi_chan_buff_allowed   = "+get_chan_type(gen_cfg["SpiChannelBuffersAllowed"])+",\n")
     cf.write("\t.spi_intr_seq_allowed    = "+str(gen_cfg["SpiInterruptibleSeqAllowed"])+",\n")
     cf.write("\t.spi_hw_status_api       = "+str(gen_cfg["SpiHwStatusApi"])+",\n")
     cf.write("\t.spi_cancel_api          = "+str(gen_cfg["SpiCancelApi"])+",\n")
@@ -192,6 +207,71 @@ def gen_spi_general_configs(cf, gen_cfg):
 
 
 
+def gen_spi_device_configs(cf, dev_cfg):
+    cf.write("\nSpiExternalDeviceType SpiExternalDeviceCfg[] = {\n")
+    for i, dev in enumerate(dev_cfg):
+        # start of device
+        cf.write("\t{\n")
+
+        cf.write("\t\t.spi_hw_unit_id = SPI_EXT_DEV_"+dev.datavar['SpiHwUnit']+",\n")
+        cf.write("\t\t.spi_baudrate = "+str(int(float(dev.datavar['SpiBaudrate'])))+", /* bps or Hz */\n")
+        cf.write("\t\t.spi_data_shift_edge = SPI_EDGE_"+dev.datavar['SpiDataShiftEdge']+",\n")
+        cf.write("\t\t.spi_shftclk_idle_level = SPI_LEVEL_"+dev.datavar['SpiShiftClockIdleLevel']+",\n")
+        cf.write("\t\t.spi_enable_cs = "+dev.datavar['SpiEnableCs']+",\n")
+        cf.write("\t\t.spi_cs_id = \""+dev.datavar['SpiCsIdentifier']+"\",\n")
+        cf.write("\t\t.spi_cs_selection = "+dev.datavar['SpiCsSelection']+",\n")
+        cf.write("\t\t.spi_cs_polarity = SPI_LEVEL_"+dev.datavar['SpiCsPolarity']+",\n")
+        cf.write("\t\t.spi_usec_clk_2_cs = "+str(int(1000000.0*float(dev.datavar['SpiTimeClk2Cs'])))+",\n")
+        cf.write("\t\t.spi_usec_cs_2_clk = "+str(int(1000000.0*float(dev.datavar['SpiTimeCs2Clk'])))+",\n")
+        cf.write("\t\t.spi_usec_cs_2_cs = "+str(int(1000000.0*float(dev.datavar['SpiTimeCs2Cs'])))+"\n")
+
+        # end of device
+        if i+1 == len(dev_cfg):
+            cf.write("\t}\n")
+        else:
+            cf.write("\t},\n")
+    cf.write("};\n\n")
+
+
+
+def gen_spi_channel_configs(cf, chn_cfg):
+    for chn in chn_cfg:
+        cf.write("\nuint8 SpiDefaultData_"+chn.datavar['SpiChannelId']+"[] = {\n\t")
+        def_data = chn.datavar['SpiDefaultData']
+        prefix = ""
+        start = 0
+        if "0x" == def_data[:2] or "0X" == def_data[:2]:
+            prefix = "0x"
+            start = 2
+        for i in range(start, len(def_data), 2):
+            num = prefix+def_data[i]+def_data[i+1]
+            cf.write(num+", ")
+        cf.write("\n};\n")
+
+
+    cf.write("\nSpiChannelCfgType SpiChannelCfg[] = {\n")
+    for i, chn in enumerate(chn_cfg):
+        # start of device
+        cf.write("\t{\n")
+
+        cf.write("\t\t.spi_chan_id = "+chn.datavar['SpiChannelId']+",\n")
+        cf.write("\t\t.spi_chan_type = "+get_chan_type(chn.datavar['SpiChannelType'])+",\n")
+        cf.write("\t\t.spi_data_width = "+chn.datavar['SpiDataWidth']+",\n")
+        # cf.write("\t\t.spi_default_data = "+chn.datavar['SpiDefaultData']+",\n")
+        cf.write("\t\t.spi_default_data = SpiDefaultData_"+chn.datavar['SpiChannelId']+",\n")
+        cf.write("\t\t.spi_eb_max_len = "+str(int(chn.datavar['SpiEbMaxLength'] or 0))+",\n")
+        cf.write("\t\t.spi_ib_num_buf = "+str(int(chn.datavar['SpiIbNBuffers'] or 0))+",\n")
+        cf.write("\t\t.spi_tx_start = SPI_TX_START_"+chn.datavar['SpiTransferStart']+"\n")
+
+        # end of device
+        if i+1 == len(chn_cfg):
+            cf.write("\t}\n")
+        else:
+            cf.write("\t},\n")
+    cf.write("};\n\n")
+
+
+
 def generate_sourcefile(spi_src_path, spi_info):
     cf = open(spi_src_path+"/cfg/Spi_cfg.c", "w")
     cf.write("#include <Spi_cfg.h>\n\n\n")
@@ -199,6 +279,8 @@ def generate_sourcefile(spi_src_path, spi_info):
     
     print_spi_configs(spi_info)
     gen_spi_general_configs(cf, spi_info["SpiGeneral"][0].datavar)
+    gen_spi_device_configs(cf, spi_info["SpiExternalDevice"])
+    gen_spi_channel_configs(cf, spi_info["SpiChannel"])
 
     cf.close()
 
