@@ -114,10 +114,10 @@ def add_spi_seq_parameters_to_container(ctnr, cdref, seq_cfg):
     subctnr2 = ET.SubElement(ctnr, "SUB-CONTAINERS")
     subctnr2_name = "SpiJobAssignment"
     dref2 = cdref+"/"+subctnr2_name
-    cctnrblk2 = lib_conf.insert_conf_container(subctnr2, subctnr2_name, "conf", dref2)
-    params = ET.SubElement(cctnrblk2, "PARAMETER-VALUES")
-    refname = dref2+"/SpiJob"
     for job in seq_cfg.datavar["SpiJobAssignment"]:
+        cctnrblk2 = lib_conf.insert_conf_container(subctnr2, subctnr2_name, "conf", dref2)
+        params = ET.SubElement(cctnrblk2, "PARAMETER-VALUES")
+        refname = dref2+"/SpiJob"
         lib_conf.insert_conf_param(params, refname, "numerical", "int", str(job))
 
 
