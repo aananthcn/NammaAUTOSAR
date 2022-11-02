@@ -94,7 +94,7 @@ SpiChannel_str = "\ntypedef struct {\n\
     uint16 spi_chan_id;\n\
     uint8 spi_chan_type;\n\
     uint16 spi_data_width;\n\
-    uint8* spi_default_data;\n\
+    const uint8* spi_default_data;\n\
     uint16 spi_eb_max_len;\n\
     uint16 spi_ib_num_buf;\n\
     SpiTransferStartType spi_tx_start;\n\
@@ -107,7 +107,7 @@ SpiJob_str = "\ntypedef struct {\n\
     void (*job_end_notification_fn)(void);\n\
     SpiExtDevID_Type spi_dev_assignment;\n\
     uint16 spi_chan_list_size;\n\
-    uint16* spi_chan_list;\n\
+    const uint16* spi_chan_list;\n\
 } SpiJobCfgType;\n\
 \n"
 
@@ -117,17 +117,17 @@ SpiSequence_str = "\ntypedef struct {\n\
     boolean spi_seq_interruptible;\n\
     void (*seq_end_notification_fn)(void);\n\
     uint16 spi_job_list_size;\n\
-    uint16* spi_job_list;\n\
+    const uint16* spi_job_list;\n\
 } SpiSequenceCfgType;\n\
 \n\n"
 
 
 Spi_ConfigType_str = "\ntypedef struct {\n\
-    SpiGeneralCfgType general;\n\
-    SpiExternalDeviceType devices[SPI_DRIVER_MAX_HW_UNIT];\n\
-    SpiChannelCfgType channels[SPI_DRIVER_MAX_CHANNEL];\n\
-    SpiJobCfgType jobs[SPI_DRIVER_MAX_JOB];\n\
-    SpiSequenceCfgType sequences[SPI_DRIVER_MAX_SEQUENCE];\n\
+    const SpiGeneralCfgType general;\n\
+    const SpiExternalDeviceType* devices[SPI_DRIVER_MAX_HW_UNIT];\n\
+    const SpiChannelCfgType* channels[SPI_DRIVER_MAX_CHANNEL];\n\
+    const SpiJobCfgType* jobs[SPI_DRIVER_MAX_JOB];\n\
+    const SpiSequenceCfgType* sequences[SPI_DRIVER_MAX_SEQUENCE];\n\
 } Spi_ConfigType;\n\
 "
 
@@ -180,7 +180,7 @@ def get_chan_type(spi_chan_str):
 
 
 def gen_spi_general_configs(cf, gen_cfg):
-    cf.write("\nSpiGeneralCfgType SpiGeneralCfg = {\n")
+    cf.write("\nconst SpiGeneralCfgType SpiGeneralCfg = {\n")
     cf.write("\t.spi_level_delivered     = "+str(gen_cfg["SpiLevelDelivered"])+",\n")
 
     cf.write("\t.spi_chan_buff_allowed   = "+get_chan_type(gen_cfg["SpiChannelBuffersAllowed"])+",\n")
@@ -196,7 +196,7 @@ def gen_spi_general_configs(cf, gen_cfg):
 
 
 def gen_spi_device_configs(cf, dev_cfg):
-    cf.write("\nSpiExternalDeviceType SpiExternalDeviceCfg[] = {\n")
+    cf.write("\nconst SpiExternalDeviceType SpiExternalDeviceCfg[] = {\n")
     for i, dev in enumerate(dev_cfg):
         # start of device
         cf.write("\t{\n")
@@ -224,7 +224,7 @@ def gen_spi_device_configs(cf, dev_cfg):
 
 def gen_spi_channel_configs(cf, chn_cfg):
     for chn in chn_cfg:
-        cf.write("\nuint8 SpiDefaultData_"+chn.datavar['SpiChannelId']+"[] = {\n\t")
+        cf.write("\nconst uint8 SpiDefaultData_"+chn.datavar['SpiChannelId']+"[] = {\n\t")
         def_data = chn.datavar['SpiDefaultData']
         prefix = ""
         start = 0
@@ -237,7 +237,7 @@ def gen_spi_channel_configs(cf, chn_cfg):
         cf.write("\n};\n")
 
 
-    cf.write("\nSpiChannelCfgType SpiChannelCfg[] = {\n")
+    cf.write("\nconst SpiChannelCfgType SpiChannelCfg[] = {\n")
     for i, chn in enumerate(chn_cfg):
         # start of device
         cf.write("\t{\n")
@@ -261,14 +261,14 @@ def gen_spi_channel_configs(cf, chn_cfg):
 
 def gen_spi_job_configs(cf, job_cfg):
     for job in job_cfg:
-        cf.write("\nuint16 SpiChannelList_"+job.datavar['SpiJobId']+"[] = {\n\t")
+        cf.write("\nconst uint16 SpiChannelList_"+job.datavar['SpiJobId']+"[] = {\n\t")
         ch_list = job.datavar['SpiChannelList']
         for ch in ch_list:
             cf.write(ch["SpiChannelIndex"]+", ")
         cf.write("\n};\n")
 
 
-    cf.write("\nSpiJobCfgType SpiJobCfg[] = {\n")
+    cf.write("\nconst SpiJobCfgType SpiJobCfg[] = {\n")
     for i, job in enumerate(job_cfg):
         # start of device
         cf.write("\t{\n")
@@ -290,14 +290,14 @@ def gen_spi_job_configs(cf, job_cfg):
 
 def gen_spi_seq_configs(cf, seq_cfg):
     for seq in seq_cfg:
-        cf.write("\nuint16 SpiJobAssignment_"+seq.datavar['SpiSequenceId']+"[] = {\n\t")
+        cf.write("\nconst uint16 SpiJobAssignment_"+seq.datavar['SpiSequenceId']+"[] = {\n\t")
         job_list = seq.datavar['SpiJobAssignment']
         for job in job_list:
             cf.write(job+", ")
         cf.write("\n};\n")
 
 
-    cf.write("\nSpiSequenceCfgType SpiSequenceCfg[] = {\n")
+    cf.write("\nconst SpiSequenceCfgType SpiSequenceCfg[] = {\n")
     for i, seq in enumerate(seq_cfg):
         # start of device
         cf.write("\t{\n")
@@ -317,6 +317,17 @@ def gen_spi_seq_configs(cf, seq_cfg):
 
 
 
+def gen_spi_cfg_configs(cf):
+    cf.write("\nconst Spi_ConfigType SpiCfg = {\n")
+    cf.write("\t.general   = SpiGeneralCfg,\n")
+    cf.write("\t.devices   = SpiExternalDeviceCfg,\n")
+    cf.write("\t.channels  = SpiChannelCfg,\n")
+    cf.write("\t.jobs      = SpiJobCfg,\n")
+    cf.write("\t.sequences = SpiSequenceCfg\n")
+    cf.write("};\n\n")
+
+
+
 def generate_sourcefile(spi_src_path, spi_info):
     cf = open(spi_src_path+"/cfg/Spi_cfg.c", "w")
     cf.write("#include <stddef.h>\n")
@@ -328,6 +339,7 @@ def generate_sourcefile(spi_src_path, spi_info):
     gen_spi_channel_configs(cf, spi_info["SpiChannel"])
     gen_spi_job_configs(cf, spi_info["SpiJob"])
     gen_spi_seq_configs(cf, spi_info["SpiSequence"])
+    gen_spi_cfg_configs(cf)
 
     cf.close()
 
