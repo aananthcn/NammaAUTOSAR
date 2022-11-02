@@ -95,7 +95,7 @@ class SpiChannelTab:
         dappa.spinb(self, "SpiDataWidth", i,self.header_row+i, 3, 13, tuple(range(1,33)))
 
         # SpiDefaultData
-        dappa.entry(self, "SpiDefaultData", i, self.header_row+i, 4, 17, "normal")
+        dappa.entry(self, "SpiDefaultData", i, self.header_row+i, 4, 30, "normal")
 
         # SpiEbMaxLength
         if "EB" in self.configs[i].datavar["SpiChannelType"]:
