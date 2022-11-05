@@ -96,10 +96,12 @@ SpiChannel_str = "\ntypedef struct {\n\
     uint16 spi_data_width;\n\
     const uint8* spi_default_data;\n\
     uint16 spi_default_data_len;\n\
-    uint16 spi_eb_max_len;\n\
     uint16 spi_ib_num_buf;\n\
-    uint32 spi_ch_buf_len; /* in bytes, either EB or IB */\n\
+    uint32 spi_ib_buf_len;\n\
     uint8* spi_ib_buf_ptr;\n\
+    uint16 spi_eb_max_len;\n\
+    uint16* spi_eb_buf_l_ptr;\n\
+    uint8* spi_eb_buf_d_ptr;\n\
     SpiTransferStartType spi_tx_start;\n\
 } SpiChannelCfgType;\n\
 \n"
@@ -252,21 +254,31 @@ def get_def_data(chn):
         def_data = "SpiDefaultData_"+chn.datavar['SpiChannelId']
     return def_data
 
-def get_buffer_len(chn):
+def get_ib_buffer_len(chn):
     ib_buf_len = str(int(chn.datavar['SpiDataWidth'])*int(chn.datavar['SpiIbNBuffers'] or 0))
-    eb_buf_len = str(int(chn.datavar['SpiEbMaxLength'] or 0))
-    if int(ib_buf_len or 0) > 0:
-        return ib_buf_len
-    return eb_buf_len
+    return ib_buf_len
 
 def get_ib_buffer_name(chn):
     buf_name = "NULL"
-    if chn.datavar['SpiIbNBuffers']:
+    if "IB" in chn.datavar['SpiChannelType']:
         buf_name = "SpiIB_BufferChn_"+chn.datavar['SpiChannelId']
     return buf_name
 
+def get_eb_buffer_len_p(chn):
+    eb_buf_len_ptr = "NULL"
+    if "EB" in chn.datavar['SpiChannelType']:
+        eb_buf_len_ptr = "&SpiEB_BufferLen_Chn_"+chn.datavar['SpiChannelId']
+    return eb_buf_len_ptr
+
+def get_eb_buffer_dat_p(chn):
+    eb_buf_len_ptr = "NULL"
+    if "EB" in chn.datavar['SpiChannelType']:
+        eb_buf_len_ptr = "&SpiEB_BufferData_Chn_"+chn.datavar['SpiChannelId']
+    return eb_buf_len_ptr
+
 def gen_spi_channel_configs(cf, chn_cfg):
     for chn in chn_cfg:
+        chn.get()
         def_data = chn.datavar['SpiDefaultData']
         if def_data == "NULL":
             continue
@@ -286,9 +298,15 @@ def gen_spi_channel_configs(cf, chn_cfg):
     cf.write("\n")
 
     for chn in chn_cfg:
-        buf_name = get_ib_buffer_name(chn)
-        if not buf_name == "NULL":
-            cf.write("static uint8 "+buf_name+"["+get_buffer_len(chn)+"];\n")
+        ib_buf_name = get_ib_buffer_name(chn)
+        eb_buf_length = get_eb_buffer_len_p(chn).split("&")[-1]
+        eb_buf_data_p = get_eb_buffer_dat_p(chn).split("&")[-1]
+        if not ib_buf_name == "NULL":
+            cf.write("static uint8 "+ib_buf_name+"["+get_ib_buffer_len(chn)+"];\n")
+        if not eb_buf_length == "NULL":
+            cf.write("static uint16 "+eb_buf_length+";\n")
+        if not eb_buf_data_p == "NULL":
+            cf.write("static uint8* "+eb_buf_data_p+";\n")
 
     cf.write("\nconst SpiChannelCfgType SpiChannelCfg[] = {\n")
     for i, chn in enumerate(chn_cfg):
@@ -302,8 +320,10 @@ def gen_spi_channel_configs(cf, chn_cfg):
         cf.write("\t\t.spi_default_data_len = "+str(get_def_data_len(chn))+",\n")
         cf.write("\t\t.spi_eb_max_len = "+str(int(chn.datavar['SpiEbMaxLength'] or 0))+",\n")
         cf.write("\t\t.spi_ib_num_buf = "+str(int(chn.datavar['SpiIbNBuffers'] or 0))+",\n")
-        cf.write("\t\t.spi_ch_buf_len = "+get_buffer_len(chn)+", /* in bytes, either EB or IB */\n")
+        cf.write("\t\t.spi_ib_buf_len = "+get_ib_buffer_len(chn)+",\n")
         cf.write("\t\t.spi_ib_buf_ptr = "+get_ib_buffer_name(chn)+",\n")
+        cf.write("\t\t.spi_eb_buf_l_ptr = "+get_eb_buffer_len_p(chn)+",\n")
+        cf.write("\t\t.spi_eb_buf_d_ptr = "+get_eb_buffer_dat_p(chn)+",\n")
         cf.write("\t\t.spi_tx_start = SPI_TX_START_"+chn.datavar['SpiTransferStart']+"\n")
 
         # end of device
