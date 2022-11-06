@@ -96,8 +96,7 @@ class SpiJobTab:
         cb = lambda id = i : self.channel_list_select(id)
         text = "SpiChannelList["+str(len(self.configs[i].datavar["SpiChannelList"]))+"]"
         dappa.button(self, "SpiChannelList", i, self.header_row+i, 5, 20, text, cb)
-        # Channel list changed hence ask SpiDriver to redraw
-        self.spidrvtab.tab.spi_job_list_changed(self.configs)
+
 
 
     def update(self):
@@ -118,6 +117,9 @@ class SpiJobTab:
             for i in range(n_dappa_rows - self.n_spi_job):
                 dappa.delete_dappa_row(self, (n_dappa_rows-1)+i)
                 del self.configs[-1]
+
+        # Channel list changed hence ask SpiDriver to redraw
+        self.spidrvtab.tab.spi_job_list_changed(self.configs)
 
         # Set the self.cv scrolling region
         self.scrollw.scroll()

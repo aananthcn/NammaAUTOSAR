@@ -100,10 +100,6 @@ class SpiExternalDeviceTab:
         dappa.entry(self, "SpiTimeCs2Clk", i, self.header_row+i, 10, 15, "normal")
         dappa.entry(self, "SpiTimeCs2Cs", i, self.header_row+i, 11, 15, "normal")
         
-        # Channel list changed hence ask SpiDriver to redraw
-        self.spidrvtab.tab.spi_extdrv_list_changed(self.configs)
-        self.spijobtab.tab.spi_extdrv_list_changed(self.configs)
-
 
 
     def update(self):
@@ -124,6 +120,10 @@ class SpiExternalDeviceTab:
             for i in range(n_dappa_rows - self.n_spi_extdev):
                 dappa.delete_dappa_row(self, (n_dappa_rows-1)+i)
                 del self.configs[-1]
+
+        # Channel list changed hence ask SpiDriver to redraw
+        self.spidrvtab.tab.spi_extdrv_list_changed(self.configs)
+        self.spijobtab.tab.spi_extdrv_list_changed(self.configs)
 
         # Set the self.cv scrolling region
         self.scrollw.scroll()

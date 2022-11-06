@@ -104,9 +104,6 @@ class SpiSequenceTab:
         text = "SpiJobAssignment["+str(len(self.configs[i].datavar["SpiJobAssignment"]))+"]"
         dappa.button(self, "SpiJobAssignment", i, self.header_row+i, 4, 20, text, cb)
 
-        # Channel list changed hence ask SpiDriver to redraw
-        self.spidrvtab.tab.spi_seq_list_changed(self.configs)
-
 
 
     def update(self):
@@ -127,6 +124,9 @@ class SpiSequenceTab:
             for i in range(n_dappa_rows - self.n_spi_seqs):
                 dappa.delete_dappa_row(self, (n_dappa_rows-1)+i)
                 del self.configs[-1]
+
+        # Sequence list changed hence ask SpiDriver to redraw
+        self.spidrvtab.tab.spi_seq_list_changed(self.configs)
 
         # Set the self.cv scrolling region
         self.scrollw.scroll()
@@ -156,6 +156,7 @@ class SpiSequenceTab:
         dappa.place_heading(self, 2, 1)
 
         self.update()
+
 
 
     def on_select_spi_jobs_close(self, row):

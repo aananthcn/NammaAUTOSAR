@@ -115,8 +115,6 @@ class SpiChannelTab:
         values = ("MSB", "LSB")
         dappa.combo(self, "SpiTransferStart", i, self.header_row+i, 7, 10, values)
         
-        # Channel list changed hence ask SpiDriver to redraw
-        self.spidrvtab.tab.spi_chan_list_changed(self.configs)
 
 
 
@@ -138,6 +136,9 @@ class SpiChannelTab:
             for i in range(n_dappa_rows - self.n_spi_chans):
                 dappa.delete_dappa_row(self, (n_dappa_rows-1)+i)
                 del self.configs[-1]
+
+        # Channel list changed hence ask SpiDriver to redraw
+        self.spidrvtab.tab.spi_chan_list_changed(self.configs)
 
         # Support scrollable view
         self.scrollw.scroll()
