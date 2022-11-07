@@ -172,6 +172,7 @@ def generate_headerfile(spi_src_path, spi_info):
     hf.write("extern const SpiChannelCfgType SpiChannelCfg[SPI_DRIVER_MAX_CHANNEL];\n")
     hf.write("extern const SpiJobCfgType SpiJobCfg[SPI_DRIVER_MAX_JOB];\n")
     hf.write("extern const SpiSequenceCfgType SpiSequenceCfg[SPI_DRIVER_MAX_SEQUENCE];\n")
+    hf.write("extern const Spi_ConfigType SpiConfigs;\n")
     
     hf.write("\n\n#endif\n")
     hf.close()
@@ -402,7 +403,7 @@ def gen_spi_seq_configs(cf, seq_cfg):
 
 
 def gen_spi_cfg_configs(cf):
-    cf.write("\nconst Spi_ConfigType SpiCfg = {\n")
+    cf.write("\nconst Spi_ConfigType SpiConfigs = {\n")
     cf.write("\t.general   = SpiGeneralCfg,\n")
     cf.write("\t.devices   = SpiExternalDeviceCfg,\n")
     cf.write("\t.channels  = SpiChannelCfg,\n")
