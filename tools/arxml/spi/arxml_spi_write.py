@@ -109,6 +109,8 @@ def add_spi_seq_parameters_to_container(ctnr, cdref, seq_cfg):
     lib_conf.insert_conf_param(params, refname, "text", "func", str(seq_cfg.datavar["SpiSeqEndNotification"]))
     refname = cdref+"/SpiSequenceId"
     lib_conf.insert_conf_param(params, refname, "numerical", "int", str(seq_cfg.datavar["SpiSequenceId"]))
+    refname = cdref+"/Custom/SpiSequenceEnumText"
+    lib_conf.insert_conf_param(params, refname, "text", "enum", str(seq_cfg.datavar["SpiSequenceEnumText"]))
 
     # sub-container 2
     subctnr2 = ET.SubElement(ctnr, "SUB-CONTAINERS")
