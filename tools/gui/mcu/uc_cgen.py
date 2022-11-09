@@ -27,7 +27,7 @@ import utils.search as search
 
 def generate_platform_header(gui):
     cwd = os.getcwd()
-    board_path = search.find_dir("board", cwd+"/submodules/MCAL/Mcu")
+    board_path = search.find_dir("bsp", cwd+"/submodules/MCAL/Mcu")
     platform_h = open(board_path+"/platform.h", "w")
     platform_h.write("#ifndef NAMMA_AUTOSAR_PLATFORM_H\n")
     platform_h.write("#define NAMMA_AUTOSAR_PLATFORM_H\n\n")
@@ -49,7 +49,7 @@ def create_source(gui):
     makefile.write("CWD := "+cwd+"\n")
     makefile.write("ROOT_PATH := "+cwd+"\n")
 
-    mcu_board_path = search.find_dir("board", cwd+"/submodules/MCAL/Mcu")
+    mcu_board_path = search.find_dir("bsp", cwd+"/submodules/MCAL/Mcu")
     mcu_micro_path = mcu_board_path+"/"+gui.uc_info.micro
     makefile.write("MCU_BOARD_PATH := "+mcu_board_path+"\n")
     makefile.write("MCU_MICRO_PATH := "+mcu_micro_path+"\n")
