@@ -296,15 +296,15 @@ def get_def_data(chn):
     return def_data
 
 def get_ib_buffer_len(chn):
-    ib_buf_len = str(int(chn.datavar['SpiDataWidth'])*int(chn.datavar['SpiIbNBuffers'] or 0))
+    ib_buf_len = str(int(int(chn.datavar['SpiDataWidth'])*int(chn.datavar['SpiIbNBuffers'] or 0)/8))
     return ib_buf_len
 
 def get_ib_buffer_name(chn):
     s_buf_name = "NULL"
     d_buf_name = "NULL"
     if "IB" in chn.datavar['SpiChannelType']:
-        s_buf_name = "SpiIB_BufferSrc_Chn_"+chn.datavar['SpiChannelId']
-        d_buf_name = "SpiIB_BufferDst_Chn_"+chn.datavar['SpiChannelId']
+        s_buf_name = "SpiIB_BufferTx_Chn_"+chn.datavar['SpiChannelId']
+        d_buf_name = "SpiIB_BufferRx_Chn_"+chn.datavar['SpiChannelId']
     return s_buf_name, d_buf_name
 
 def get_eb_buffer_len_p(chn):
@@ -317,8 +317,8 @@ def get_eb_buffer_p(chn):
     eb_buf_ptr_s = "NULL"
     eb_buf_ptr_d = "NULL"
     if "EB" in chn.datavar['SpiChannelType']:
-        eb_buf_ptr_s = "&SpiEB_BufferSrc_Chn_"+chn.datavar['SpiChannelId']
-        eb_buf_ptr_d = "&SpiEB_BufferDst_Chn_"+chn.datavar['SpiChannelId']
+        eb_buf_ptr_s = "&SpiEB_BufferTx_Chn_"+chn.datavar['SpiChannelId']
+        eb_buf_ptr_d = "&SpiEB_BufferRx_Chn_"+chn.datavar['SpiChannelId']
     return eb_buf_ptr_s, eb_buf_ptr_d
 
 def gen_spi_channel_configs(cf, chn_cfg):
