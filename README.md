@@ -52,8 +52,9 @@ Starting the NammaAUTOSAR Builder
 Importing ARXML
 ----
 * To import ARXML, go to File --> Import ARXML File. It will give 3 different ARXML like below
+
 ![image](https://user-images.githubusercontent.com/61110156/201695803-adf3e135-035e-4a83-ad0b-58f7b60012d9.png)
-<img src="https://user-images.githubusercontent.com/61110156/201695803-adf3e135-035e-4a83-ad0b-58f7b60012d9.png" width="1280" height="720">
+
 * **NOTE:** It is advised to go with RaspberryPi-Pico.arxml for now, as it is tested and working well
 * Select RaspberryPi-Pico.arxml and click on Open. AUTOSAR Layered Architecture view will open
 * **NOTE:** Since this project in initial phase, only few modules are presented in the layered view
@@ -71,8 +72,9 @@ Importing NammaTestApp
 * Click on **Applications** (1)
 * Mention how many number of applications you want to import. In this case, I have given as 1
 * Provide the **NammaTestApp** repository path in the App 0 - `https://github.com/aananthcn/NammaTestApp.git`
+
 ![image](https://user-images.githubusercontent.com/61110156/201701405-ca438c64-213a-4328-83c3-a1bc4ccc4ead.png)
-<img src="https://user-images.githubusercontent.com/61110156/201701405-ca438c64-213a-4328-83c3-a1bc4ccc4ead.png" width="1280" height="720">
+
 * This will automatically import the NammaTestApp into respective folder
 
 
@@ -80,8 +82,9 @@ Code Generation
 ----
 * Once all the configuration is done, click on the **Generate --> Generate Source**
 * If all the changes are proper, then a popup with this message will be shown **Code Generated Successfully!**
+
 ![image](https://user-images.githubusercontent.com/61110156/201702795-53388e7c-2f6d-419f-aefd-8f6f7f6b61b2.png)
-<img src="https://user-images.githubusercontent.com/61110156/201702795-53388e7c-2f6d-419f-aefd-8f6f7f6b61b2.png" width="300" height="150">
+
 * Close the NammaAUTOSAR Builder GUI
 
 
@@ -89,3 +92,9 @@ Generate the ELF File
 ----
 * In the MSYS2 MINGW64 terminal, type **make**
 * This process will take sometime as it needs to compile all the source files and link them to generate the ELF file
+
+
+Test it on Real Hardware
+----
+* If you have real hardware *Raspberry Pi Pico*, then flash the generated *\*.elf* file and test it
+
