@@ -71,6 +71,10 @@ def add_spi_exd_parameters_to_container(ctnr, cdref, exd_cfg):
     lib_conf.insert_conf_param(params, refname, "numerical", "float", str(exd_cfg.datavar["SpiTimeCs2Clk"]))
     refname = cdref+"/SpiTimeCs2Cs"
     lib_conf.insert_conf_param(params, refname, "numerical", "float", str(exd_cfg.datavar["SpiTimeCs2Cs"]))
+    refname = cdref+"/Custom/DIO"
+    lib_conf.insert_conf_param(params, refname, "numerical", "enum", str(exd_cfg.datavar["DIO"]))
+    refname = cdref+"/Custom/SpiFrameFormat"
+    lib_conf.insert_conf_param(params, refname, "numerical", "enum", str(exd_cfg.datavar["SpiFrameFormat"]))
 
 
 

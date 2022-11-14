@@ -68,6 +68,19 @@ SpiCsSelection_str = "\ntypedef enum {\n\
 } SpiCsSelectionType;\n\
 \n"
 
+SpiTransferStart_str = "\ntypedef enum {\n\
+    SPI_TX_START_MSB,\n\
+    SPI_TX_START_LSB\n\
+} SpiTransferStartType;\n\
+\n"
+
+SpiFrameFormat_str = "\ntypedef enum {\n\
+    MOTOROLA_SPI,\n\
+    TI_SSI,\n\
+    NS_MICROWIRE\n\
+} SpiFrameFormatType;\n\
+\n"
+
 SpiExternalDevice_str = "\ntypedef struct {\n\
     SpiExtDevID_Type spi_hw_unit_id;\n\
     uint32 spi_baudrate;\n\
@@ -76,21 +89,17 @@ SpiExternalDevice_str = "\ntypedef struct {\n\
     boolean spi_enable_cs;\n\
     char spi_cs_id[128];\n\
     SpiCsSelectionType spi_cs_selection;\n\
+    sint16 spi_cs_dio;\n\
     SpiLevelType spi_cs_polarity;\n\
     uint32 spi_usec_clk_2_cs;\n\
     uint32 spi_usec_cs_2_clk;\n\
     uint32 spi_usec_cs_2_cs;\n\
     uint8 spi_databits;\n\
-    uint8 spi_tfr_type;\n\
+    SpiTransferStartType spi_tfr_type;\n\
+    SpiFrameFormatType spi_frame_fmt;\n\
 } SpiExternalDeviceType;\n\
 \n"
 
-
-SpiTransferStart_str = "\ntypedef enum {\n\
-    SPI_TX_START_MSB,\n\
-    SPI_TX_START_LSB\n\
-} SpiTransferStartType;\n\
-\n"
 
 SpiChannel_str = "\ntypedef struct {\n\
     uint16 spi_chan_id;\n\
@@ -167,8 +176,9 @@ def generate_headerfile(spi_src_path, spi_info):
     hf.write(SpiDataShiftEdge_str)
     hf.write(SpiLevel_str)
     hf.write(SpiCsSelection_str)
-    hf.write(SpiExternalDevice_str)
     hf.write(SpiTransferStart_str)
+    hf.write(SpiFrameFormat_str)
+    hf.write(SpiExternalDevice_str)
     hf.write(SpiChannel_str)
     hf.write(SpiJob_str)
     hf.write(SpiSequence_str)
@@ -258,13 +268,18 @@ def gen_spi_device_configs(cf, spi_info):
         cf.write("\t\t.spi_enable_cs = "+dev.datavar['SpiEnableCs']+",\n")
         cf.write("\t\t.spi_cs_id = \""+dev.datavar['SpiCsIdentifier']+"\",\n")
         cf.write("\t\t.spi_cs_selection = "+dev.datavar['SpiCsSelection']+",\n")
+        if "GPIO" in dev.datavar['SpiCsSelection']:
+	        cf.write("\t\t.spi_cs_dio = "+dev.datavar['DIO']+",\n")
+        else:
+	        cf.write("\t\t.spi_cs_dio = -1,\n")
         cf.write("\t\t.spi_cs_polarity = SPI_LEVEL_"+dev.datavar['SpiCsPolarity']+",\n")
         cf.write("\t\t.spi_usec_clk_2_cs = "+str(int(1000000.0*float(dev.datavar['SpiTimeClk2Cs'])))+",\n")
         cf.write("\t\t.spi_usec_cs_2_clk = "+str(int(1000000.0*float(dev.datavar['SpiTimeCs2Clk'])))+",\n")
         cf.write("\t\t.spi_usec_cs_2_cs = "+str(int(1000000.0*float(dev.datavar['SpiTimeCs2Cs'])))+",\n")
         databits, tfrstart = databits_tfrtype_for_spi_device(dev, spi_info)
         cf.write("\t\t.spi_databits = "+str(databits)+",\n")
-        cf.write("\t\t.spi_tfr_type = "+tfrstart+"\n")
+        cf.write("\t\t.spi_tfr_type = "+tfrstart+",\n")
+        cf.write("\t\t.spi_frame_fmt = "+dev.datavar['SpiFrameFormat']+"\n")
 
         # end of device
         if i+1 == len(dev_cfg):
