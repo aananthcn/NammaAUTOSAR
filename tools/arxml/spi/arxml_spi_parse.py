@@ -55,14 +55,14 @@ def parse_spi_pubinfo(cname, containers):
 
 
 def getall_spidriver_2nd_subcontainer(sub_ctnr_name, item, par_dict):
-    chan_list = lib_conf.findall_subcontainers_with_name(sub_ctnr_name, item)
+    item_list = lib_conf.findall_subcontainers_with_name(sub_ctnr_name, item)
     par_dict[sub_ctnr_name] = []
-    for ch in chan_list:
-        ch_params = lib_conf.get_param_list(ch)
-        ch_dict = {}
-        for chpar in ch_params:
-            ch_dict[chpar["tag"]] = chpar["val"]
-        par_dict[sub_ctnr_name].append(ch_dict)
+    for item in item_list:
+        item_params = lib_conf.get_param_list(item)
+        item_dict = {}
+        for par in item_params:
+            item_dict[par["tag"]] = par["val"]
+        par_dict[sub_ctnr_name].append(item_dict)
     return par_dict
 
 

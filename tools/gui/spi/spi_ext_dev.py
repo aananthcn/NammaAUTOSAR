@@ -21,6 +21,8 @@
 import tkinter as tk
 from tkinter import ttk
 
+import arxml.dio.arxml_dio_parse as arxml_dio
+
 import gui.lib.window as window
 import gui.lib.asr_widget as dappa # dappa in Tamil means box
 
@@ -36,14 +38,18 @@ class SpiExternalDeviceTab:
     tab_struct = None # passed from *_view.py file
     scrollw = None
     configs = None # all UI configs (tkinter strings) are stored here.
-    cfgkeys = ["SpiHwUnit", "SpiBaudrate", "SpiDataShiftEdge", "SpiShiftClockIdleLevel", "SpiEnableCs", "SpiCsIdentifier",
-               "SpiCsSelection", "SpiCsPolarity", "SpiTimeClk2Cs", "SpiTimeCs2Clk", "SpiTimeCs2Cs"]
+    cfgkeys = ["SpiHwUnit", "SpiBaudrate", "SpiDataShiftEdge", "SpiShiftClockIdleLevel", "SpiEnableCs",
+               "SpiCsIdentifier", "SpiCsSelection", "DIO", "SpiCsPolarity", "SpiTimeClk2Cs",
+               "SpiTimeCs2Clk", "SpiTimeCs2Cs", "SpiFrameFormat"]
     
     n_header_objs = 0 #Objects / widgets that are part of the header and shouldn't be destroyed
     header_row = 3
     non_header_objs = []
     dappas_per_row = len(cfgkeys) + 1 # +1 for row labels
     init_view_done = False
+    
+    spi_ff = ("MOTOROLA_SPI", "TI_SSI", "NS_MICROWIRE")
+    dio_ch = None
 
 
     def __init__(self, gui, spidrvtab, spijobtab, ar_cfg):
@@ -53,6 +59,11 @@ class SpiExternalDeviceTab:
         self.n_spi_extdev_str = tk.StringVar()
         self.spidrvtab = spidrvtab
         self.spijobtab = spijobtab
+
+        self.dio_ch = []
+        dpins, dio_cfg, dgrps, dgen = arxml_dio.parse_arxml(gui.arxml_file)
+        for dio in dio_cfg:
+            self.dio_ch.append(dio["DioChannelId"])
 
         if ar_cfg["SpiExternalDevice"] == None:
             return
@@ -78,10 +89,12 @@ class SpiExternalDeviceTab:
         spi_extdev["SpiEnableCs"] = "FALSE"
         spi_extdev["SpiCsIdentifier"] = "CS_"
         spi_extdev["SpiCsSelection"] = "CS_VIA_PERIPHERAL_ENGINE"
+        spi_extdev["DIO"] = ""
         spi_extdev["SpiCsPolarity"] = "LOW"
         spi_extdev["SpiTimeClk2Cs"] = "0.0"
         spi_extdev["SpiTimeCs2Clk"] = "0.000001" # 1usec
         spi_extdev["SpiTimeCs2Cs"]  = "0.000001" # 1usec
+        spi_extdev["SpiFrameFormat"]  = "MOTOROLA_SPI"
         return spi_extdev
 
 
@@ -89,21 +102,26 @@ class SpiExternalDeviceTab:
     def draw_dappa_row(self, i):
         dappa.label(self, "Spi Dev. #", self.header_row+i, 0, "e")
         dappa.entry(self, "SpiHwUnit", i, self.header_row+i, 1, 10, "normal")
-        dappa.entry(self, "SpiBaudrate", i, self.header_row+i, 2, 15, "normal")
-        dappa.combo(self, "SpiDataShiftEdge", i, self.header_row+i, 3, 18, ("LEADING", "TRAILING"))
+        dappa.entry(self, "SpiBaudrate", i, self.header_row+i, 2, 12, "normal")
+        dappa.combo(self, "SpiDataShiftEdge", i, self.header_row+i, 3, 12, ("LEADING", "TRAILING"))
         dappa.combo(self, "SpiShiftClockIdleLevel", i, self.header_row+i, 4, 13, ("LOW", "HIGH"))
-        dappa.combo(self, "SpiEnableCs", i, self.header_row+i, 5, 13, ("FALSE", "TRUE"))
-        dappa.entry(self, "SpiCsIdentifier", i, self.header_row+i, 6, 23, "normal")
-        dappa.combo(self, "SpiCsSelection", i, self.header_row+i, 7, 26, ("CS_VIA_PERIPHERAL_ENGINE", "CS_VIA_GPIO"))
-        dappa.combo(self, "SpiCsPolarity", i, self.header_row+i, 8, 13, ("LOW", "HIGH"))
-        dappa.entry(self, "SpiTimeClk2Cs", i, self.header_row+i, 9, 13, "normal")
-        dappa.entry(self, "SpiTimeCs2Clk", i, self.header_row+i, 10, 15, "normal")
-        dappa.entry(self, "SpiTimeCs2Cs", i, self.header_row+i, 11, 15, "normal")
-        
-        # Channel list changed hence ask SpiDriver to redraw
-        self.spidrvtab.tab.spi_extdrv_list_changed(self.configs)
-        self.spijobtab.tab.spi_extdrv_list_changed(self.configs)
+        dappa.combo(self, "SpiEnableCs", i, self.header_row+i, 5, 8, ("FALSE", "TRUE"))
+        dappa.entry(self, "SpiCsIdentifier", i, self.header_row+i, 6, 20, "normal")
 
+        cssel_tuple = ("CS_VIA_PERIPHERAL_ENGINE", "CS_VIA_GPIO")
+        cssel = dappa.combo(self, "SpiCsSelection", i, self.header_row+i, 7, 26, cssel_tuple)
+        cssel.bind("<<ComboboxSelected>>", lambda evt, id = i : self.cs_selection_changed(evt, id))
+        if "GPIO" in self.configs[i].dispvar["SpiCsSelection"].get():
+            dappa.combo(self, "DIO", i, self.header_row+i, 8, 6, tuple(self.dio_ch))
+        else:
+	        dappa.label(self, "", self.header_row+i, 8, "e")
+
+        dappa.combo(self, "SpiCsPolarity", i, self.header_row+i, 9, 10, ("LOW", "HIGH"))
+        dappa.entry(self, "SpiTimeClk2Cs", i, self.header_row+i, 10, 13, "normal")
+        dappa.entry(self, "SpiTimeCs2Clk", i, self.header_row+i, 11, 13, "normal")
+        dappa.entry(self, "SpiTimeCs2Cs", i, self.header_row+i, 12, 13, "normal")
+        dappa.combo(self, "SpiFrameFormat", i, self.header_row+i, 13, 15, self.spi_ff)
+        
 
 
     def update(self):
@@ -125,6 +143,10 @@ class SpiExternalDeviceTab:
                 dappa.delete_dappa_row(self, (n_dappa_rows-1)+i)
                 del self.configs[-1]
 
+        # Channel list changed hence ask SpiDriver to redraw
+        self.spidrvtab.tab.spi_extdrv_list_changed(self.configs)
+        self.spijobtab.tab.spi_extdrv_list_changed(self.configs)
+
         # Set the self.cv scrolling region
         self.scrollw.scroll()
 
@@ -135,7 +157,7 @@ class SpiExternalDeviceTab:
         self.scrollw = window.ScrollableWindow(tab.frame, tab.xsize, tab.ysize)
         
         #Number of modes - Label + Spinbox
-        label = tk.Label(self.scrollw.mnf, text="No. of Spi Sequence:")
+        label = tk.Label(self.scrollw.mnf, text="Ext. Devices:")
         label.grid(row=0, column=0, sticky="w")
         spinb = tk.Spinbox(self.scrollw.mnf, width=10, textvariable=self.n_spi_extdev_str, command=lambda : self.update(),
                     values=tuple(range(0,self.max_spi_extdev+1)))
@@ -162,3 +184,10 @@ class SpiExternalDeviceTab:
 
     def frange(self, start, stop, step):
         return map(lambda x: x/100000000.0, range(start, stop, step))
+
+
+    def cs_selection_changed(self, event, row):
+        self.configs[row].get() # read from UI (backup last selection)
+        # re-draw all boxes (dappas) of this row
+        dappa.delete_dappa_row(self, row)
+        self.draw_dappa_row(row)

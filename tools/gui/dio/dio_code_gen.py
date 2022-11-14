@@ -20,7 +20,7 @@
 #
 import os
 
-import arxml.dio.arxml_dio as arxml_dio
+import arxml.dio.arxml_dio_parse as arxml_dio
 import utils.search as search
 
 # Temporary work-around

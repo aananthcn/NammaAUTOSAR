@@ -36,7 +36,7 @@ class SpiSequenceTab:
     tab_struct = None # passed from *_view.py file
     scrollw = None
     configs = None # all UI configs (tkinter strings) are stored here.
-    cfgkeys = ["SpiSequenceId", "SpiInterruptibleSequence", "SpiSeqEndNotification", "SpiJobAssignment"]
+    cfgkeys = ["SpiSequenceId", "SpiSequenceEnumText","SpiInterruptibleSequence", "SpiSeqEndNotification", "SpiJobAssignment"]
     
     n_header_objs = 0 #Objects / widgets that are part of the header and shouldn't be destroyed
     header_row = 3
@@ -80,6 +80,7 @@ class SpiSequenceTab:
     def create_empty_configs(self):
         spi_seq = {}
         spi_seq["SpiSequenceId"] = str(self.n_spi_seqs-1)
+        spi_seq["SpiSequenceEnumText"] = "SEQ_ENUM_"+str(self.n_spi_seqs-1)
         spi_seq["SpiInterruptibleSequence"] = "FALSE"
         spi_seq["SpiSeqEndNotification"] = "e.g: SeqEndNotificationFunc"
         spi_seq["SpiJobAssignment"] = []
@@ -92,20 +93,18 @@ class SpiSequenceTab:
 
         # SpiSequenceId
         dappa.entry(self, "SpiSequenceId", i, self.header_row+i, 1, 10, "readonly")
+        dappa.entry(self, "SpiSequenceEnumText", i, self.header_row+i, 2, 30, "normal")
 
         # Spi Sequence - SpiInterruptibleSequence
-        dappa.combo(self, "SpiInterruptibleSequence", i, self.header_row+i, 2, 15, ("FALSE", "TRUE"))
+        dappa.combo(self, "SpiInterruptibleSequence", i, self.header_row+i, 3, 15, ("FALSE", "TRUE"))
         
         # Spi Sequence - SpiSeqEndNotification
-        dappa.entry(self, "SpiSeqEndNotification", i, self.header_row+i, 3, 30, "normal")
+        dappa.entry(self, "SpiSeqEndNotification", i, self.header_row+i, 4, 30, "normal")
         
         # Spi Sequence - SpiJobAssignment
         cb = lambda id = i : self.select_spi_jobs(id)
         text = "SpiJobAssignment["+str(len(self.configs[i].datavar["SpiJobAssignment"]))+"]"
-        dappa.button(self, "SpiJobAssignment", i, self.header_row+i, 4, 20, text, cb)
-
-        # Channel list changed hence ask SpiDriver to redraw
-        self.spidrvtab.tab.spi_seq_list_changed(self.configs)
+        dappa.button(self, "SpiJobAssignment", i, self.header_row+i, 5, 20, text, cb)
 
 
 
@@ -127,6 +126,9 @@ class SpiSequenceTab:
             for i in range(n_dappa_rows - self.n_spi_seqs):
                 dappa.delete_dappa_row(self, (n_dappa_rows-1)+i)
                 del self.configs[-1]
+
+        # Sequence list changed hence ask SpiDriver to redraw
+        self.spidrvtab.tab.spi_seq_list_changed(self.configs)
 
         # Set the self.cv scrolling region
         self.scrollw.scroll()
@@ -156,6 +158,7 @@ class SpiSequenceTab:
         dappa.place_heading(self, 2, 1)
 
         self.update()
+
 
 
     def on_select_spi_jobs_close(self, row):

@@ -33,6 +33,8 @@ import gui.spi.spi_drv as spi_drv
 import arxml.spi.arxml_spi_parse as arxml_spi_r
 import arxml.spi.arxml_spi_write as arxml_spi_w
 
+import gui.spi.spi_code_gen as spi_cgen
+
 
 TabList = []
 PortConfigViewActive = False
@@ -68,7 +70,7 @@ def spi_save_callback(gui):
         spi_configs[tab.name] = tab.tab.configs
     
     arxml_spi_w.update_arxml(gui.arxml_file, spi_configs)
-    # spi_cgen.generate_code(gui)
+    spi_cgen.generate_code(gui, spi_configs)
 
 
     

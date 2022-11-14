@@ -22,7 +22,7 @@ import tkinter as tk
 from tkinter import ttk
 
 import arxml.port.arxml_port as arxml_port
-import arxml.dio.arxml_dio as arxml_dio
+import arxml.dio.arxml_dio_parse as arxml_dio
 
 import gui.lib.window as window
 import gui.lib.asr_widget as dappa # dappa in Tamil means box
@@ -34,11 +34,12 @@ class DioConfigTab:
     max_pins = 65535
     n_pins_str = None
 
-    dio_ports = []  # copy of port info
+    # dio_ports = []  # copy of port info
 
     n_header_objs = 12 #Objects / widgets that are part of the header and shouldn't be destroyed
     header_row = 3
     non_header_objs = []
+    init_view_done = False
     
     toplvl = None
 
@@ -49,36 +50,25 @@ class DioConfigTab:
     cfgkeys = ["DioPortId", "DioChannelId"]
     dappas_per_row = len(cfgkeys) + 1 # +1 for row labels
 
+
     def __init__(self, gui):
         self.gui = gui
         self.configs = []
         self.toplvl = gui.main_view.child_window
         self.n_pins_str = tk.StringVar()
-        pins, ports, general = arxml_port.parse_arxml(gui.arxml_file) # Temporary
-        dio_pins, dio_ports, dio_grps, dio_gen = arxml_dio.parse_arxml(gui.arxml_file)
-        if pins == None or dio_pins == None:
+
+        dio_pins, dio_cfg, dio_grps, dio_gen = arxml_dio.parse_arxml(gui.arxml_file)
+        if dio_pins == None:
             return
-        if pins != dio_pins:
-            print("Error: dio_cfg -- Pins as per Dio ARXML = ", dio_pins, ". But as per Port ARXML = ", pins)
 
-        # scan all Dorts and add them to self.configs list for display
-        for port in ports:
-            if port['PortPinMode'] == "PORT_PIN_MODE_DIO":
-                self.n_pins += 1
-
-                # add the port info from Port module to a local port list
-                self.dio_ports.append(port)
-                diopin = self.create_empty_configs()
-                diopin["DioPortId"] = port["PortPinId"]
-                diopin["DioChannelId"] = self.get_chan_id(port["PortPinId"], dio_ports)
-
-                # create new dio pin GUI str and dio pin info
-                self.configs.insert(len(self.configs), dappa.AsrCfgStr(self.cfgkeys, diopin))
-
+        for cfg in dio_cfg:
+            self.configs.insert(len(self.configs), dappa.AsrCfgStr(self.cfgkeys, cfg))
+            self.n_pins += 1
+        self.n_pins_str.set(self.n_pins)
+        
 
     def __del__(self):
         del self.n_pins_str
-        del self.dio_ports[:]
         del self.non_header_objs[:]
         del self.configs[:]
 
@@ -112,9 +102,23 @@ class DioConfigTab:
 
 
     def update(self):
-        # Draw new objects
-        for i in range(0, self.n_pins):
-            self.draw_dappa_row(i)
+        # get dappas to be added or removed
+        self.n_pins = int(self.n_pins_str.get())
+
+        # Tune memory allocations based on number of rows or boxes
+        n_dappa_rows = len(self.configs)
+        if not self.init_view_done:
+            for i in range(n_dappa_rows):
+                self.draw_dappa_row(i)
+            self.init_view_done = True
+        elif self.n_pins > n_dappa_rows:
+            for i in range(self.n_pins - n_dappa_rows):
+                self.configs.insert(len(self.configs), dappa.AsrCfgStr(self.cfgkeys, self.create_empty_configs()))
+                self.draw_dappa_row(n_dappa_rows+i)
+        elif n_dappa_rows > self.n_pins:
+            for i in range(n_dappa_rows - self.n_pins):
+                dappa.delete_dappa_row(self, (n_dappa_rows-1)+i)
+                del self.configs[-1]
 
         # Set the self.cv scrolling region
         self.scrollw.scroll()

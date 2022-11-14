@@ -25,7 +25,7 @@ import gui.lib.window as window
 import gui.lib.asr_widget as dappa # dappa in Tamil means box
 
 import arxml.port.arxml_port as arxml_port
-import arxml.dio.arxml_dio as arxml_dio
+import arxml.dio.arxml_dio_parse as arxml_dio
 
 import gui.port.port_cgen as port_cgen
 

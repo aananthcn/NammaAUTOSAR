@@ -22,7 +22,7 @@ import tkinter as tk
 from tkinter import ttk
 
 import arxml.port.arxml_port as arxml_port
-import arxml.dio.arxml_dio as arxml_dio
+import arxml.dio.arxml_dio_write as arxml_dio
 
 import gui.dio.dio_cfg as dio_cfg
 import gui.dio.dio_gen as dio_gen

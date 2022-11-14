@@ -95,26 +95,26 @@ class SpiChannelTab:
         dappa.spinb(self, "SpiDataWidth", i,self.header_row+i, 3, 13, tuple(range(1,33)))
 
         # SpiDefaultData
-        dappa.entry(self, "SpiDefaultData", i, self.header_row+i, 4, 17, "normal")
+        dappa.entry(self, "SpiDefaultData", i, self.header_row+i, 4, 30, "normal")
 
         # SpiEbMaxLength
-        if "EB" in self.configs[i].datavar["SpiChannelType"]:
+        if "EB" in self.configs[i].dispvar["SpiChannelType"].get():
             dappa.spinb(self, "SpiEbMaxLength", i, self.header_row+i, 5, 13, tuple(range(0,65536)))
         else:
             dappa.label(self, "", self.header_row+i, 5, "e")
+            self.configs[i].datavar["SpiEbMaxLength"] = 0
 
         # SpiIbNBuffers
-        if "IB" in self.configs[i].datavar["SpiChannelType"]:
+        if "IB" in self.configs[i].dispvar["SpiChannelType"].get():
             dappa.spinb(self, "SpiIbNBuffers", i, self.header_row+i, 6, 13, tuple(range(0,65536)))
         else:
             dappa.label(self, "", self.header_row+i, 6, "e")
+            self.configs[i].datavar["SpiIbNBuffers"] = 0
 
         # SpiTransferStart
         values = ("MSB", "LSB")
         dappa.combo(self, "SpiTransferStart", i, self.header_row+i, 7, 10, values)
         
-        # Channel list changed hence ask SpiDriver to redraw
-        self.spidrvtab.tab.spi_chan_list_changed(self.configs)
 
 
 
@@ -136,6 +136,9 @@ class SpiChannelTab:
             for i in range(n_dappa_rows - self.n_spi_chans):
                 dappa.delete_dappa_row(self, (n_dappa_rows-1)+i)
                 del self.configs[-1]
+
+        # Channel list changed hence ask SpiDriver to redraw
+        self.spidrvtab.tab.spi_chan_list_changed(self.configs)
 
         # Support scrollable view
         self.scrollw.scroll()

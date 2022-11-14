@@ -123,10 +123,6 @@ class SpiChannelListTab:
         self.n_spi_chan_list_str.set(self.n_spi_chan_list)
         spinb.grid(row=0, column=1, sticky="w")
 
-        # # Save Button
-        # genm = tk.Button(self.scrollw.mnf, width=10, text="Save Configs", command=self.save_data, bg="#206020", fg='white')
-        # genm.grid(row=0, column=2)
-
         # Update buttons frames idle tasks to let tkinter calculate buttons sizes
         self.scrollw.update()
 

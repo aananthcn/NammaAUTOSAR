@@ -71,6 +71,10 @@ def add_spi_exd_parameters_to_container(ctnr, cdref, exd_cfg):
     lib_conf.insert_conf_param(params, refname, "numerical", "float", str(exd_cfg.datavar["SpiTimeCs2Clk"]))
     refname = cdref+"/SpiTimeCs2Cs"
     lib_conf.insert_conf_param(params, refname, "numerical", "float", str(exd_cfg.datavar["SpiTimeCs2Cs"]))
+    refname = cdref+"/Custom/DIO"
+    lib_conf.insert_conf_param(params, refname, "numerical", "enum", str(exd_cfg.datavar["DIO"]))
+    refname = cdref+"/Custom/SpiFrameFormat"
+    lib_conf.insert_conf_param(params, refname, "numerical", "enum", str(exd_cfg.datavar["SpiFrameFormat"]))
 
 
 
@@ -109,15 +113,17 @@ def add_spi_seq_parameters_to_container(ctnr, cdref, seq_cfg):
     lib_conf.insert_conf_param(params, refname, "text", "func", str(seq_cfg.datavar["SpiSeqEndNotification"]))
     refname = cdref+"/SpiSequenceId"
     lib_conf.insert_conf_param(params, refname, "numerical", "int", str(seq_cfg.datavar["SpiSequenceId"]))
+    refname = cdref+"/Custom/SpiSequenceEnumText"
+    lib_conf.insert_conf_param(params, refname, "text", "enum", str(seq_cfg.datavar["SpiSequenceEnumText"]))
 
     # sub-container 2
     subctnr2 = ET.SubElement(ctnr, "SUB-CONTAINERS")
     subctnr2_name = "SpiJobAssignment"
     dref2 = cdref+"/"+subctnr2_name
-    cctnrblk2 = lib_conf.insert_conf_container(subctnr2, subctnr2_name, "conf", dref2)
-    params = ET.SubElement(cctnrblk2, "PARAMETER-VALUES")
-    refname = dref2+"/SpiJob"
     for job in seq_cfg.datavar["SpiJobAssignment"]:
+        cctnrblk2 = lib_conf.insert_conf_container(subctnr2, subctnr2_name, "conf", dref2)
+        params = ET.SubElement(cctnrblk2, "PARAMETER-VALUES")
+        refname = dref2+"/SpiJob"
         lib_conf.insert_conf_param(params, refname, "numerical", "int", str(job))
 
 
