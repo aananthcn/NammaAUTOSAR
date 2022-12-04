@@ -33,6 +33,7 @@ import gui.app.app_view as app_view
 import gui.port.port_view as port_view
 import gui.dio.dio_view as dio_view
 import gui.spi.spi_view as spi_view
+import gui.eth.eth_view as eth_view
 
 
 
@@ -98,9 +99,18 @@ AsrBlocksConfigList = [
         # Spi
         "name": "Spi", "text": "Spi", "txta": "center", "ori": "V",
         # Position (offset % of screen size), size (% of screen size) & colors
-        "x": 50, "y": 4.06, "w": 2.5, "h": 18, "bgc": '#FF7C80', "fgc": 'black',
+        "x": 40, "y": 4.06, "w": 2.5, "h": 18, "bgc": '#FF7C80', "fgc": 'black',
         # click callback & constructor
         "cb": spi_view.spi_block_click_handler, "cons": None,
+        "postdraw": None
+    },
+    {
+        # Eth
+        "name": "Eth", "text": "Eth", "txta": "center", "ori": "V",
+        # Position (offset % of screen size), size (% of screen size) & colors
+        "x": 50, "y": 4.06, "w": 2.5, "h": 18, "bgc": '#FF7C80', "fgc": 'black',
+        # click callback & constructor
+        "cb": eth_view.eth_block_click_handler, "cons": None,
         "postdraw": None
     },
     {
