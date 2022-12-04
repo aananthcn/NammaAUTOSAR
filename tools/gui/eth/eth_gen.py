@@ -66,7 +66,7 @@ class EthGeneralTab:
         gen_dict["EthGetTxStatsApi"]                = "FALSE"
         gen_dict["EthGlobalTimeSupport"]            = "FALSE"
         gen_dict["EthMaxCtrlsSupported"]            = str(index)
-        gen_dict["EthVersionInfoApi"]               = ""
+        gen_dict["EthVersionInfoApi"]               = "FALSE"
         gen_dict["EthCtrlOffloading"]               = {}
         return gen_dict
 
@@ -108,6 +108,10 @@ class EthGeneralTab:
     def save_data(self):
         self.tab_struct.save_cb(self.gui)
 
+
+
+    def update_ethernet_config(self, max_ctrlr):
+        self.configs[0].dispvar["EthMaxCtrlsSupported"].set(max_ctrlr)
 
 
     def eth_offloading_select(self):

@@ -101,6 +101,7 @@ def draw_eth_tab(name, eth_configs, idx):
 
     # Draw eth tab
     ethtab_gui.tab.draw(ethtab_gui)
+    EthNoteBook.select(tab_frame)
 
 
 
@@ -130,6 +131,9 @@ def update_eth_tab():
             del TabList[-1]
             cur_tabs -= 1
 
+    # update common data
+    for tab in TabList:
+        tab.tab.update_ethernet_config(EthCtrlStr.get())
 
 
 def show_eth_tabs(gui):
