@@ -38,6 +38,7 @@ class EthGeneralTab:
 
     non_header_objs = []
     dappas_per_col = len(cfgkeys)
+    active_dialog = None
     ctrlr_idx = 0
 
 
@@ -67,15 +68,22 @@ class EthGeneralTab:
         gen_dict["EthGlobalTimeSupport"]            = "FALSE"
         gen_dict["EthMaxCtrlsSupported"]            = str(index)
         gen_dict["EthVersionInfoApi"]               = "FALSE"
+        
+        # Checksum OffLoad
         gen_dict["EthCtrlOffloading"]               = {}
+        gen_dict["EthCtrlOffloading"]["IPv4"]       = tk.StringVar()
+        gen_dict["EthCtrlOffloading"]["ICMP"]       = tk.StringVar()
+        gen_dict["EthCtrlOffloading"]["TCP"]        = tk.StringVar()
+        gen_dict["EthCtrlOffloading"]["UDP"]        = tk.StringVar()
+        
         return gen_dict
 
 
 
-    def draw_dappas(self):
+    def draw_dappas(self, i):
         bool_cmbsel = ("FALSE", "TRUE")
 
-        dappa.entry(self, "EthIndex",               0, 0, 1, 23, "readonly")
+        dappa.entry(self, "EthIndex",               i, 0, 1, 23, "readonly")
         dappa.entry(self, "EthMainFunctionPeriod",  0, 1, 1, 23, "normal")
         dappa.combo(self, "EthDevErrorDetect",      0, 2, 1, 20, bool_cmbsel)
         dappa.combo(self, "EthGetCounterValuesApi", 0, 3, 1, 20, bool_cmbsel)
@@ -90,15 +98,13 @@ class EthGeneralTab:
 
 
 
-
-
     def draw(self, tab):
         self.tab_struct = tab
         self.scrollw = window.ScrollableWindow(tab.frame, tab.xsize, tab.ysize)
 
         # Table heading @0th row, 0th column
         dappa.place_column_heading(self, row=0, col=0)
-        self.draw_dappas()
+        self.draw_dappas(0)
 
         # Support scrollable view
         self.scrollw.scroll()
@@ -109,10 +115,86 @@ class EthGeneralTab:
         self.tab_struct.save_cb(self.gui)
 
 
+    # idx: Controller Index
+    # max_ctrlr: Total controllers configured
+    def update_ethernet_config(self, idx, max_ctrlr):
+        self.configs[idx].dispvar["EthMaxCtrlsSupported"].set(max_ctrlr)
 
-    def update_ethernet_config(self, max_ctrlr):
-        self.configs[0].dispvar["EthMaxCtrlsSupported"].set(max_ctrlr)
+
+    def eth_offloading_close(self):
+        # # remove old selections
+        # if self.configs[0].datavar["SpiChannelList"]:
+        #     del self.configs[0].datavar["SpiChannelList"][:]
 
 
-    def eth_offloading_select(self):
+        # # update new selections from last window session
+        # for chlist_cfg in self.active_widget.configs:
+        #     chlist_cfg.get() # pull from UI
+        #     ch_dict = {}
+        #     ch_dict['SpiChannelIndex'] = chlist_cfg.datavar['SpiChannelIndex']
+        #     ch_dict['SpiChannelAssignment'] = chlist_cfg.datavar['SpiChannelAssignment']
+        #     self.configs[0].datavar["SpiChannelList"].append(ch_dict)
+        
+        # dialog elements are no longer needed, destroy them. Else, new dialogs will not open!
+        # del self.active_widget
+        self.active_dialog.destroy()
+        del self.active_dialog
+
+        # # re-draw all boxes (dappas) of this row
+        # dappa.delete_dappa_row(self, 0)
+        # self.draw_dappa_row(0)
+
+
+
+    def eth_offloading_select(self, ctrlr_idx):
         print("clicked eth_offloading_select")
+        if self.active_dialog != None:
+            return
+
+        # function to create dialog window
+        xsize = 350
+        ysize = 100
+        self.active_dialog = tk.Toplevel(width=xsize, height=ysize) # create an instance of toplevel
+        self.active_dialog.protocol("WM_DELETE_WINDOW", lambda : self.eth_offloading_close())
+        x = self.active_dialog.winfo_screenwidth()
+        y = self.active_dialog.winfo_screenheight()
+        # self.active_dialog.geometry("+%d+%d" % (0 + x/4, 4*y/10))
+        self.active_dialog.geometry("%dx%d+%d+%d" % (xsize, ysize, x/4, 4*y/10))
+
+        cmbsel_bool = ("FALSE", "TRUE")
+        
+        # row 1
+        label = tk.Label(self.active_dialog, text="EthCtrlEnableOffloadChecksumIPv4")
+        label.grid(row=0, column=0, sticky="e")
+        cmbsel = ttk.Combobox(self.active_dialog, width=20, 
+                    textvariable=self.configs[ctrlr_idx].datavar["EthCtrlOffloading"]["IPv4"])
+        cmbsel['values'] = cmbsel_bool
+        cmbsel.current()
+        cmbsel.grid(row=0, column=1)
+
+        # row 2
+        label = tk.Label(self.active_dialog, text="EthCtrlEnableOffloadChecksumICMP")
+        label.grid(row=1, column=0, sticky="e")
+        cmbsel = ttk.Combobox(self.active_dialog, width=20, 
+                    textvariable=self.configs[ctrlr_idx].datavar["EthCtrlOffloading"]["ICMP"])
+        cmbsel['values'] = cmbsel_bool
+        cmbsel.current()
+        cmbsel.grid(row=1, column=1)
+
+        # row 3
+        label = tk.Label(self.active_dialog, text="EthCtrlEnableOffloadChecksumTCP")
+        label.grid(row=2, column=0, sticky="e")
+        cmbsel = ttk.Combobox(self.active_dialog, width=20, 
+                    textvariable=self.configs[ctrlr_idx].datavar["EthCtrlOffloading"]["TCP"])
+        cmbsel['values'] = cmbsel_bool
+        cmbsel.current()
+        cmbsel.grid(row=2, column=1)
+
+        # row 4
+        label = tk.Label(self.active_dialog, text="EthCtrlEnableOffloadChecksumUDP")
+        label.grid(row=3, column=0, sticky="e")
+        cmbsel = ttk.Combobox(self.active_dialog, width=20, 
+                    textvariable=self.configs[ctrlr_idx].datavar["EthCtrlOffloading"]["UDP"])
+        cmbsel['values'] = cmbsel_bool
+        cmbsel.current()
+        cmbsel.grid(row=3, column=1)
