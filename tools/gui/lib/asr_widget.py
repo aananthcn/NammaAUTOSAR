@@ -84,7 +84,7 @@ class AsrCfgStr:
 ###############################################################################
 def group(view, label, row, col):
     group = tk.LabelFrame(view.scrollw.mnf, text=label, fg='blue')
-    group.grid(row=row, column=col, padx=5, ipadx=5, ipady=5)
+    group.grid(row=row, column=col, padx=5, ipadx=5, ipady=5, sticky="nw")
     insert_widget_to_nh_objs(row, col, view, group)
     return group
 
@@ -138,21 +138,38 @@ def buttonf(frame, view, key, index, row, col, width, text, cb):
 def label(view, label, row, col, align):
     return labelf(view.scrollw.mnf, view, label, row, col, align)
 
-
 def entry(view, key, index, row, col, width, state):
     return entryf(view.scrollw.mnf, view, key, index, row, col, width, state)
-
 
 def combo(view, key, index, row, col, width, values):
     return combof(view.scrollw.mnf, view, key, index, row, col, width, values)
 
-
 def spinb(view, key, index, row, col, width, values):
     return spinbf(view.scrollw.mnf, view, key, index, row, col, width, values)
 
-
 def button(view, key, index, row, col, width, text, cb):
     return buttonf(view.scrollw.mnf, view, key, index, row, col, width, text, cb)
+
+
+
+###############################################################################
+# Scrollable Widgets on scrollable given frame, with label on side
+###############################################################################
+def entryg(frame, view, key, index, row, col, width, state):
+    labelf(frame, view, key, row, col-1, "e")
+    return entryf(frame, view, key, index, row, col, width, state)
+
+def combog(frame, view, key, index, row, col, width, values):
+    labelf(frame, view, key, row, col-1, "e")
+    return combof(frame, view, key, index, row, col, width, values)
+
+def spinbg(frame, view, key, index, row, col, width, values):
+    labelf(frame, view, key, row, col-1, "e")
+    return spinbf(frame, view, key, index, row, col, width, values)
+
+def buttong(frame, view, key, index, row, col, width, text, cb):
+    labelf(frame, view, key, row, col-1, "e")
+    return buttonf(frame, view, key, index, row, col, width, text, cb)
 
 
 

@@ -34,7 +34,8 @@ class EthGeneralTab:
     cfgkeys = ["EthIndex", "EthDevErrorDetect", "EthGetCounterValuesApi", "EthGetRxStatsApi",
                "EthGetTxErrorCounterValuesApi", "EthGetTxStatsApi", "EthGlobalTimeSupport", 
                "EthMainFunctionPeriod", "EthMaxCtrlsSupported", "EthVersionInfoApi",
-               "EthCtrlOffloading"]
+               "EthCtrlOffloading", 
+               "EthCtrlConfigSwBufferHandling", "EthCtrlEnableMii", "EthCtrlEnableRxInterrupt"]
 
     non_header_objs = []
     dappas_per_col = len(cfgkeys)
@@ -85,25 +86,30 @@ class EthGeneralTab:
     def draw_dappas(self, i):
         bool_cmbsel = ("FALSE", "TRUE")
 
-        group = dappa.group(self, "EthGeneral", 0, 0)
+        group = dappa.group(self, "EthGeneral", row=0, col=0)
 
         # Table heading @0th row, 0th column
-        dappa.place_column_heading_f(group, self, row=1, col=0)
+        # dappa.place_column_heading_f(group, self, row=1, col=0)
 
-        # Table 2nd column
-        dappa.entryf(group, self, "EthIndex",               i, 1, 1, 23, "readonly")
-        dappa.entryf(group, self, "EthMainFunctionPeriod",  i, 2, 1, 23, "normal")
-        dappa.combof(group, self, "EthDevErrorDetect",      i, 3, 1, 20, bool_cmbsel)
-        dappa.combof(group, self, "EthGetCounterValuesApi", i, 4, 1, 20, bool_cmbsel)
-        dappa.combof(group, self, "EthGetRxStatsApi",       i, 5, 1, 20, bool_cmbsel)
-        dappa.combof(group, self, "EthGetTxErrorCounterValuesApi", i, 6, 1, 20, bool_cmbsel)
-        dappa.combof(group, self, "EthGetTxStatsApi",       i, 7, 1, 20, bool_cmbsel)
-        dappa.combof(group, self, "EthGlobalTimeSupport",   i, 8, 1, 20, bool_cmbsel)
-        dappa.entryf(group, self, "EthMaxCtrlsSupported",   i, 9, 1, 23, "readonly")
-        dappa.combof(group, self, "EthVersionInfoApi",      i, 10, 1, 20, bool_cmbsel)
+        # EthGeneral group
+        dappa.entryg(group, self, "EthIndex",               i, 1, 1, 23, "readonly")
+        dappa.entryg(group, self, "EthMainFunctionPeriod",  i, 2, 1, 23, "normal")
+        dappa.combog(group, self, "EthDevErrorDetect",      i, 3, 1, 20, bool_cmbsel)
+        dappa.combog(group, self, "EthGetCounterValuesApi", i, 4, 1, 20, bool_cmbsel)
+        dappa.combog(group, self, "EthGetRxStatsApi",       i, 5, 1, 20, bool_cmbsel)
+        dappa.combog(group, self, "EthGetTxErrorCounterValuesApi", i, 6, 1, 20, bool_cmbsel)
+        dappa.combog(group, self, "EthGetTxStatsApi",       i, 7, 1, 20, bool_cmbsel)
+        dappa.combog(group, self, "EthGlobalTimeSupport",   i, 8, 1, 20, bool_cmbsel)
+        dappa.entryg(group, self, "EthMaxCtrlsSupported",   i, 9, 1, 23, "readonly")
+        dappa.combog(group, self, "EthVersionInfoApi",      i, 10, 1, 20, bool_cmbsel)
         cb = lambda id = self.ctrlr_idx : self.eth_offloading_select(id)
-        dappa.buttonf(group, self, "EthCtrlOffloading",     i, 11, 1, 19, "SELECT", cb)
+        dappa.buttong(group, self, "EthCtrlOffloading",     i, 11, 1, 19, "SELECT", cb)
 
+        # EthCtrlConfig group
+        group = dappa.group(self, "EthCtrlConfig", row=0, col=1)
+        dappa.combog(group, self, "EthCtrlConfigSwBufferHandling",  i, 1, 2, 20, bool_cmbsel)
+        dappa.combog(group, self, "EthCtrlEnableMii",               i, 2, 2, 20, bool_cmbsel)
+        dappa.combog(group, self, "EthCtrlEnableRxInterrupt",       i, 3, 2, 20, bool_cmbsel)
 
 
     def draw(self, tab):
