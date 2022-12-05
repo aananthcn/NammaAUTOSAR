@@ -133,7 +133,7 @@ def update_eth_tab():
 
     # update common data
     for i, tab in enumerate(TabList):
-        tab.tab.update_ethernet_config(i, EthCtrlStr.get())
+        tab.tab.update_ethernet_config(0, EthCtrlStr.get())
 
 
 def show_eth_tabs(gui):

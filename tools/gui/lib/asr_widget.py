@@ -79,54 +79,80 @@ class AsrCfgStr:
 
 
 
+###############################################################################
+# Scrollable Widgets on scrollable a given frame
+###############################################################################
+def group(view, label, row, col):
+    group = tk.LabelFrame(view.scrollw.mnf, text=label, fg='blue')
+    group.grid(row=row, column=col, padx=5, ipadx=5, ipady=5)
+    insert_widget_to_nh_objs(row, col, view, group)
+    return group
 
-###############################################################################
-# Scrollable Widgets
-###############################################################################
-def label(view, label, row, col, align):
-    label = tk.Label(view.scrollw.mnf, text=label)
+
+def labelf(frame, view, label, row, col, align):
+    label = tk.Label(frame, text=label)
     label.grid(row=row, column=col, sticky=align)
-    # view.non_header_objs.append(label)
     insert_widget_to_nh_objs(row, col, view, label)
     return label
 
 
-def entry(view, key, index, row, col, width, state):
-    entry = tk.Entry(view.scrollw.mnf, width=width, textvariable=view.configs[index].dispvar[key], state=state)
+def entryf(frame, view, key, index, row, col, width, state):
+    entry = tk.Entry(frame, width=width, textvariable=view.configs[index].dispvar[key], state=state)
     view.configs[index].dispvar[key].set(view.configs[index].datavar[key])
     entry.grid(row=row, column=col)
-    # view.non_header_objs.append(entry)
     insert_widget_to_nh_objs(row, col, view, entry)
     return entry
 
 
-def combo(view, key, index, row, col, width, values):
-    cmbsel = ttk.Combobox(view.scrollw.mnf, width=width, textvariable=view.configs[index].dispvar[key], state="readonly")
+def combof(frame, view, key, index, row, col, width, values):
+    cmbsel = ttk.Combobox(frame, width=width, textvariable=view.configs[index].dispvar[key], state="readonly")
     cmbsel['values'] = values
     view.configs[index].dispvar[key].set(view.configs[index].datavar[key])
     cmbsel.current()
     cmbsel.grid(row=row, column=col)
-    # view.non_header_objs.append(cmbsel)
     insert_widget_to_nh_objs(row, col, view, cmbsel)
     return cmbsel
 
 
-def spinb(view, key, index, row, col, width, values):
-    spinb = tk.Spinbox(view.scrollw.mnf, width=width, textvariable=view.configs[index].dispvar[key], values=values)
+def spinbf(frame, view, key, index, row, col, width, values):
+    spinb = tk.Spinbox(frame, width=width, textvariable=view.configs[index].dispvar[key], values=values)
     view.configs[index].dispvar[key].set(view.configs[index].datavar[key])
     spinb.grid(row=row, column=col)
-    # view.non_header_objs.append(spinb)
     insert_widget_to_nh_objs(row, col, view, spinb)
     return spinb
 
 
-def button(view, key, index, row, col, width, text, cb):
-    select = tk.Button(view.scrollw.mnf, width=width, text=text, command=lambda id = index : cb(id))
+def buttonf(frame, view, key, index, row, col, width, text, cb):
+    select = tk.Button(frame, width=width, text=text, command=lambda id = index : cb(id))
     view.configs[index].dispvar[key].set(view.configs[index].datavar[key])
     select.grid(row=row, column=col)
-    # view.non_header_objs.append(select)
     insert_widget_to_nh_objs(row, col, view, select)
     return select
+
+
+
+
+###############################################################################
+# Scrollable Widgets on scrollable main frame
+###############################################################################
+def label(view, label, row, col, align):
+    return labelf(view.scrollw.mnf, view, label, row, col, align)
+
+
+def entry(view, key, index, row, col, width, state):
+    return entryf(view.scrollw.mnf, view, key, index, row, col, width, state)
+
+
+def combo(view, key, index, row, col, width, values):
+    return combof(view.scrollw.mnf, view, key, index, row, col, width, values)
+
+
+def spinb(view, key, index, row, col, width, values):
+    return spinbf(view.scrollw.mnf, view, key, index, row, col, width, values)
+
+
+def button(view, key, index, row, col, width, text, cb):
+    return buttonf(view.scrollw.mnf, view, key, index, row, col, width, text, cb)
 
 
 
@@ -185,10 +211,10 @@ def place_heading(view, row, col):
     view.header_orientation = "h"  # horizontal
 
 
-def place_column_heading(view, row, col):
+def place_column_heading_f(frame, view, row, col):
     # place all the keys as column @row & @col
     for i, label in enumerate(view.cfgkeys):
-        label = tk.Label(view.scrollw.mnf, text=label)
+        label = tk.Label(frame, text=label)
         label.grid(row=row+i, column=col, sticky="e")
 
     # for column heading, the concept of header or row is invalid, hence 0
@@ -196,3 +222,7 @@ def place_column_heading(view, row, col):
     view.header_row = 0
     view.dappas_per_row = 0
     view.header_orientation = "v"  # vertical
+
+
+def place_column_heading(view, row, col):
+    place_column_heading_f(view.scrollw.mnf, view, row, col)

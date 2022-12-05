@@ -40,6 +40,8 @@ class EthGeneralTab:
     dappas_per_col = len(cfgkeys)
     active_dialog = None
     ctrlr_idx = 0
+    header_row = 0
+    dappas_per_row = 0
 
 
     def __init__(self, gui, ar_cfg, idx):
@@ -83,18 +85,24 @@ class EthGeneralTab:
     def draw_dappas(self, i):
         bool_cmbsel = ("FALSE", "TRUE")
 
-        dappa.entry(self, "EthIndex",               i, 0, 1, 23, "readonly")
-        dappa.entry(self, "EthMainFunctionPeriod",  0, 1, 1, 23, "normal")
-        dappa.combo(self, "EthDevErrorDetect",      0, 2, 1, 20, bool_cmbsel)
-        dappa.combo(self, "EthGetCounterValuesApi", 0, 3, 1, 20, bool_cmbsel)
-        dappa.combo(self, "EthGetRxStatsApi",       0, 4, 1, 20, bool_cmbsel)
-        dappa.combo(self, "EthGetTxErrorCounterValuesApi", 0, 5, 1, 20, bool_cmbsel)
-        dappa.combo(self, "EthGetTxStatsApi",       0, 6, 1, 20, bool_cmbsel)
-        dappa.combo(self, "EthGlobalTimeSupport",   0, 7, 1, 20, bool_cmbsel)
-        dappa.entry(self, "EthMaxCtrlsSupported",   0, 8, 1, 23, "readonly")
-        dappa.combo(self, "EthVersionInfoApi",      0, 9, 1, 20, bool_cmbsel)
+        group = dappa.group(self, "EthGeneral", 0, 0)
+
+        # Table heading @0th row, 0th column
+        dappa.place_column_heading_f(group, self, row=1, col=0)
+
+        # Table 2nd column
+        dappa.entryf(group, self, "EthIndex",               i, 1, 1, 23, "readonly")
+        dappa.entryf(group, self, "EthMainFunctionPeriod",  i, 2, 1, 23, "normal")
+        dappa.combof(group, self, "EthDevErrorDetect",      i, 3, 1, 20, bool_cmbsel)
+        dappa.combof(group, self, "EthGetCounterValuesApi", i, 4, 1, 20, bool_cmbsel)
+        dappa.combof(group, self, "EthGetRxStatsApi",       i, 5, 1, 20, bool_cmbsel)
+        dappa.combof(group, self, "EthGetTxErrorCounterValuesApi", i, 6, 1, 20, bool_cmbsel)
+        dappa.combof(group, self, "EthGetTxStatsApi",       i, 7, 1, 20, bool_cmbsel)
+        dappa.combof(group, self, "EthGlobalTimeSupport",   i, 8, 1, 20, bool_cmbsel)
+        dappa.entryf(group, self, "EthMaxCtrlsSupported",   i, 9, 1, 23, "readonly")
+        dappa.combof(group, self, "EthVersionInfoApi",      i, 10, 1, 20, bool_cmbsel)
         cb = lambda id = self.ctrlr_idx : self.eth_offloading_select(id)
-        dappa.button(self, "EthCtrlOffloading",     0, 10, 1, 19, "SELECT", cb)
+        dappa.buttonf(group, self, "EthCtrlOffloading",     i, 11, 1, 19, "SELECT", cb)
 
 
 
@@ -102,8 +110,6 @@ class EthGeneralTab:
         self.tab_struct = tab
         self.scrollw = window.ScrollableWindow(tab.frame, tab.xsize, tab.ysize)
 
-        # Table heading @0th row, 0th column
-        dappa.place_column_heading(self, row=0, col=0)
         self.draw_dappas(0)
 
         # Support scrollable view
@@ -158,7 +164,6 @@ class EthGeneralTab:
         self.active_dialog.protocol("WM_DELETE_WINDOW", lambda : self.eth_offloading_close())
         x = self.active_dialog.winfo_screenwidth()
         y = self.active_dialog.winfo_screenheight()
-        # self.active_dialog.geometry("+%d+%d" % (0 + x/4, 4*y/10))
         self.active_dialog.geometry("%dx%d+%d+%d" % (xsize, ysize, x/4, 4*y/10))
 
         cmbsel_bool = ("FALSE", "TRUE")
