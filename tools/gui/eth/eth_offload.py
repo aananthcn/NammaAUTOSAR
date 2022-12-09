@@ -1,5 +1,5 @@
 #
-# Created on Mon Nov 28 2022 10:04:37 PM
+# Created on Fri Dec 09 2022 7:04:11 PM
 #
 # The MIT License (MIT)
 # Copyright (c) 2022 Aananth C N
@@ -26,28 +26,27 @@ import gui.lib.asr_widget as dappa # dappa in Tamil means box
 
 
 
-class EthGeneralChildView:
+class EthChecksumOffloadChildView:
     gui = None
     scrollw = None
     tab_struct = None # passed from *_view.py file
     configs = None # all UI configs (tkinter strings) are stored here.
-    cfgkeys = ["EthIndex", "EthDevErrorDetect", "EthMainFunctionPeriod", "EthGetCounterValuesApi",
-               "EthGetRxStatsApi", "EthGetTxErrorCounterValuesApi", "EthGetTxStatsApi",
-               "EthGlobalTimeSupport", "EthMaxCtrlsSupported", "EthVersionInfoApi"]
+    cfgkeys = ["EthCtrlEnableOffloadChecksumIPv4", "EthCtrlEnableOffloadChecksumICMP",
+               "EthCtrlEnableOffloadChecksumTCP", "EthCtrlEnableOffloadChecksumUDP"]
 
     non_header_objs = []
     dappas_per_col = len(cfgkeys)
 
 
-    def __init__(self, gui, index, gen_cfg):
+    def __init__(self, gui, index, ofl_cfg):
         self.gui = gui
         self.configs = []
 
         # Create config string for AUTOSAR configs on this tab
-        if not gen_cfg:
-            self.configs.append(dappa.AsrCfgStr(self.cfgkeys, self.create_empty_configs(index)))
+        if not ofl_cfg:
+            self.configs.append(dappa.AsrCfgStr(self.cfgkeys, self.create_empty_configs()))
         else:
-            self.configs.append(dappa.AsrCfgStr(self.cfgkeys, gen_cfg))
+            self.configs.append(dappa.AsrCfgStr(self.cfgkeys, ofl_cfg))
 
 
     def __del__(self):
@@ -55,19 +54,13 @@ class EthGeneralChildView:
 
 
 
-    def create_empty_configs(self, index):
+    def create_empty_configs(self):
         gen_dict = {}
         
-        gen_dict["EthIndex"]                      = str(index)
-        gen_dict["EthDevErrorDetect"]             = "FALSE"
-        gen_dict["EthMainFunctionPeriod"]         = "0.01" # time in seconds
-        gen_dict["EthGetCounterValuesApi"]        = "FALSE"
-        gen_dict["EthGetRxStatsApi"]              = "FALSE"
-        gen_dict["EthGetTxErrorCounterValuesApi"] = "FALSE"
-        gen_dict["EthGetTxStatsApi"]              = "FALSE"
-        gen_dict["EthGlobalTimeSupport"]          = "FALSE"
-        gen_dict["EthMaxCtrlsSupported"]          = str(index)
-        gen_dict["EthVersionInfoApi"]             = "FALSE"
+        gen_dict["EthCtrlEnableOffloadChecksumIPv4"] = "FALSE"
+        gen_dict["EthCtrlEnableOffloadChecksumICMP"] = "FALSE"
+        gen_dict["EthCtrlEnableOffloadChecksumTCP"]  = "FALSE"
+        gen_dict["EthCtrlEnableOffloadChecksumUDP"]  = "FALSE"
         
         return gen_dict
 
@@ -76,16 +69,10 @@ class EthGeneralChildView:
     def draw_dappas(self):
         bool_cmbsel = ("FALSE", "TRUE")
 
-        dappa.entry(self, "EthIndex", 0, 0, 1, 23, "readonly")
-        dappa.combo(self, "EthDevErrorDetect", 0, 1, 1, 20, bool_cmbsel)
-        dappa.entry(self, "EthMainFunctionPeriod", 0, 2, 1, 23, "normal")
-        dappa.combo(self, "EthGetCounterValuesApi", 0, 3, 1, 20, bool_cmbsel)
-        dappa.combo(self, "EthGetRxStatsApi", 0, 4, 1, 20, bool_cmbsel)
-        dappa.combo(self, "EthGetTxErrorCounterValuesApi", 0, 5, 1, 20, bool_cmbsel)
-        dappa.combo(self, "EthGetTxStatsApi", 0, 6, 1, 20, bool_cmbsel)
-        dappa.combo(self, "EthGlobalTimeSupport", 0, 7, 1, 20, bool_cmbsel)
-        dappa.entry(self, "EthMaxCtrlsSupported", 0, 8, 1, 23, "readonly")
-        dappa.combo(self, "EthVersionInfoApi", 0, 9, 1, 20, bool_cmbsel)
+        dappa.combo(self, "EthCtrlEnableOffloadChecksumIPv4", 0, 0, 1, 20, bool_cmbsel)
+        dappa.combo(self, "EthCtrlEnableOffloadChecksumICMP", 0, 1, 1, 20, bool_cmbsel)
+        dappa.combo(self, "EthCtrlEnableOffloadChecksumTCP", 0, 2, 1, 20, bool_cmbsel)
+        dappa.combo(self, "EthCtrlEnableOffloadChecksumUDP", 0, 3, 1, 20, bool_cmbsel)
 
 
 

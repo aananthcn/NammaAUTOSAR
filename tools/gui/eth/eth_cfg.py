@@ -25,6 +25,7 @@ import gui.lib.window as window
 import gui.lib.asr_widget as dappa # dappa in Tamil means box
 
 import gui.eth.eth_gen as eth_gen
+import gui.eth.eth_offload as eth_offload
 
 
 class EthChildView:
@@ -70,9 +71,6 @@ class EthernetConfigMainView:
     active_dialog = None
     active_view = None
     
-    # child view configs
-    gen_cfgs = None
-    
 
 
     def __init__(self, gui, eth_cfgs):
@@ -95,15 +93,16 @@ class EthernetConfigMainView:
     def create_empty_configs(self):
         eth_dev = {}
 
+        # child view configs
         eth_dev["EthIndex"] = str(self.n_eth_dev-1)
-        eth_dev["EthGeneral"] = {}
-        eth_dev["EthCtrlOffloading"] = {}
-        eth_dev["EthCtrlConfig"] = {}
-        eth_dev["EthCtrlConfigEgressFifo"] = {}
-        eth_dev["EthCtrlConfigIngressFifo"] = {}
-        eth_dev["EthCtrlConfigSchedulerPredecessor"] = {}
-        eth_dev["EthCtrlConfigShaper"] = {}
-        eth_dev["EthCtrlConfigSpiConfiguration"] = {}
+        eth_dev["EthGeneral"] = []
+        eth_dev["EthCtrlOffloading"] = []
+        eth_dev["EthCtrlConfig"] = []
+        eth_dev["EthCtrlConfigEgressFifo"] = []
+        eth_dev["EthCtrlConfigIngressFifo"] = []
+        eth_dev["EthCtrlConfigSchedulerPredecessor"] = []
+        eth_dev["EthCtrlConfigShaper"] = []
+        eth_dev["EthCtrlConfigSpiConfiguration"] = []
 
         return eth_dev
 
@@ -204,8 +203,8 @@ class EthernetConfigMainView:
 
     def on_eth_general_select_close(self, row):
         # backup data
-        self.gen_cfgs = self.active_view.view.configs[0].get()
-        
+        self.configs[row].datavar["EthGeneral"] = self.active_view.view.configs[0].get()
+
         # destroy view
         del self.active_view
         self.active_dialog.destroy()
@@ -216,7 +215,6 @@ class EthernetConfigMainView:
         self.draw_dappa_row(row)
 
 
-
     def eth_general_select(self, row):
         if self.active_dialog != None:
             return
@@ -224,7 +222,7 @@ class EthernetConfigMainView:
         # function to create dialog window
         self.active_dialog = tk.Toplevel() # create an instance of toplevel
         self.active_dialog.protocol("WM_DELETE_WINDOW", lambda : self.on_eth_general_select_close(row))
-        
+
         # set the geometry
         x = self.active_dialog.winfo_screenwidth()
         y = self.active_dialog.winfo_screenheight()
@@ -234,7 +232,45 @@ class EthernetConfigMainView:
 
         # create views and draw
         gen_view = EthChildView(self.active_dialog, width, height)
-        gen_view.view = eth_gen.EthGeneralChildView(self.gui, row, self.gen_cfgs)
+        gen_view.view = eth_gen.EthGeneralChildView(self.gui, row, self.configs[row].datavar["EthGeneral"] )
         gen_view.name = "EthGeneral"
+        self.active_view = gen_view
+        gen_view.view.draw(gen_view)
+
+
+
+    def on_eth_ctrl_offloading_select_close(self, row):
+        # backup data
+        self.configs[row].datavar["EthCtrlOffloading"]  = self.active_view.view.configs[0].get()
+
+        # destroy view
+        del self.active_view
+        self.active_dialog.destroy()
+        del self.active_dialog
+
+        # re-draw all boxes (dappas) of this row
+        dappa.delete_dappa_row(self, row)
+        self.draw_dappa_row(row)
+
+
+    def eth_ctrl_offloading_select(self, row):
+        if self.active_dialog != None:
+            return
+
+        # function to create dialog window
+        self.active_dialog = tk.Toplevel() # create an instance of toplevel
+        self.active_dialog.protocol("WM_DELETE_WINDOW", lambda : self.on_eth_ctrl_offloading_select_close(row))
+
+        # set the geometry
+        x = self.active_dialog.winfo_screenwidth()
+        y = self.active_dialog.winfo_screenheight()
+        width = 360
+        height = 170
+        self.active_dialog.geometry("%dx%d+%d+%d" % (width, height, x/4, y/10))
+
+        # create views and draw
+        gen_view = EthChildView(self.active_dialog, width, height)
+        gen_view.view = eth_offload.EthChecksumOffloadChildView(self.gui, row, self.configs[row].datavar["EthCtrlOffloading"] )
+        gen_view.name = "EthCtrlOffloading"
         self.active_view = gen_view
         gen_view.view.draw(gen_view)
