@@ -26,6 +26,7 @@ import gui.lib.asr_widget as dappa # dappa in Tamil means box
 
 import gui.eth.eth_gen as eth_gen
 import gui.eth.eth_offload as eth_offload
+import gui.eth.eth_ctrlcfg as eth_ctrlcfg
 
 
 class EthChildView:
@@ -121,7 +122,7 @@ class EthernetConfigMainView:
         dappa.button(self, "EthCtrlOffloading", i, self.header_row+i, 3, 16, text, cb)
 
         text = "EthCtrlConfig["+str(i)+"]"
-        cb = lambda id = i : self.eth_ctrl_offloading_select(id)
+        cb = lambda id = i : self.eth_ctrl_config_select(id)
         dappa.button(self, "EthCtrlConfig", i, self.header_row+i, 4, 14, text, cb)
 
         text = "ConfigEgressFifo["+str(i)+"]"
@@ -272,5 +273,43 @@ class EthernetConfigMainView:
         gen_view = EthChildView(self.active_dialog, width, height)
         gen_view.view = eth_offload.EthChecksumOffloadChildView(self.gui, row, self.configs[row].datavar["EthCtrlOffloading"] )
         gen_view.name = "EthCtrlOffloading"
+        self.active_view = gen_view
+        gen_view.view.draw(gen_view)
+
+
+
+    def on_eth_ctrl_config_select_close(self, row):
+        # backup data
+        self.configs[row].datavar["EthCtrlConfig"]  = self.active_view.view.configs[0].get()
+
+        # destroy view
+        del self.active_view
+        self.active_dialog.destroy()
+        del self.active_dialog
+
+        # re-draw all boxes (dappas) of this row
+        dappa.delete_dappa_row(self, row)
+        self.draw_dappa_row(row)
+
+
+    def eth_ctrl_config_select(self, row):
+        if self.active_dialog != None:
+            return
+
+        # function to create dialog window
+        self.active_dialog = tk.Toplevel() # create an instance of toplevel
+        self.active_dialog.protocol("WM_DELETE_WINDOW", lambda : self.on_eth_ctrl_config_select_close(row))
+
+        # set the geometry
+        x = self.active_dialog.winfo_screenwidth()
+        y = self.active_dialog.winfo_screenheight()
+        width = 400
+        height = 290
+        self.active_dialog.geometry("%dx%d+%d+%d" % (width, height, x/4, y/10))
+
+        # create views and draw
+        gen_view = EthChildView(self.active_dialog, width, height)
+        gen_view.view = eth_ctrlcfg.EthCtrlConfigChildView(self.gui, row, self.configs[row].datavar["EthCtrlConfig"] )
+        gen_view.name = "EthCtrlConfig"
         self.active_view = gen_view
         gen_view.view.draw(gen_view)
