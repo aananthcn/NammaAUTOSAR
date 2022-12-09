@@ -155,7 +155,7 @@ def define_custom_spi_seq_enums(hf, spi_seqs):
     hf.write("\n\n/* NammaAUTOSAR's custom enum, which will make code more readable */\n")
     hf.write("typedef enum {\n")
     for seq in spi_seqs:
-        hf.write("\t"+str(seq.datavar["SpiSequenceEnumText"]).upper()+",\n")
+        hf.write("\t"+str(seq.datavar["SpiSequenceName"]).upper()+",\n")
     hf.write("\tSEQ_ENUM_MAX\n")
     hf.write("} Spi_SequenceEnumType;\n")
 

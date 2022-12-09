@@ -1,5 +1,5 @@
 #
-# Created on Mon Nov 28 2022 6:57:24 PM
+# Created on Fri Dec 09 2022 5:40:07 AM
 #
 # The MIT License (MIT)
 # Copyright (c) 2022 Aananth C N
@@ -21,7 +21,7 @@
 import tkinter as tk
 from tkinter import ttk
 
-import gui.eth.eth_gen as eth_gen
+import gui.eth.eth_cfg as eth_cfg
 # import gui.eth.eth_seq as eth_seq
 # import gui.eth.eth_chan as eth_chn
 # import gui.eth.eth_chan_list as eth_chlist
@@ -36,15 +36,7 @@ import gui.eth.eth_gen as eth_gen
 
 
 TabList = []
-PortConfigViewActive = False
-
-EthNoteBook = None
-EthCtrlStr = None
-EthView_InitDone = False
-EthConfigs = None
-Eth_X = None
-Eth_Y = None
-Gui = None
+EthConfigViewActive = False
 
 
 class EthTab:
@@ -64,16 +56,14 @@ class EthTab:
 
 
 def eth_config_close_event(gui, view):
-    global PortConfigViewActive
+    global EthConfigViewActive
 
-    PortConfigViewActive = False
+    EthConfigViewActive = False
     view.destroy()
 
 
 
 def eth_save_callback(gui):
-    print("Ethernet Save Callback called!")
-    return
     eth_configs = {}
     for tab in TabList:
         eth_configs[tab.name] = tab.tab.configs
@@ -82,99 +72,41 @@ def eth_save_callback(gui):
     eth_cgen.generate_code(gui, eth_configs)
 
 
-
-def draw_eth_tab(name, eth_configs, idx):
-    global TabList, EthNoteBook, Eth_X, Eth_Y, Gui
     
-    # Create tab Frame to configure Eth
-    tab_frame  = ttk.Frame(EthNoteBook)
-    
-    # Add tabs to configure Eth
-    EthNoteBook.add(tab_frame, text=name)
-    EthNoteBook.pack(expand = 1, fill ="both")
-
-    # create new GUI objects
-    ethtab_gui = EthTab(tab_frame, Eth_X, Eth_Y)
-    ethtab_gui.tab = eth_gen.EthGeneralTab(Gui, eth_configs, idx)
-    ethtab_gui.name = name
-    TabList.append(ethtab_gui)
-
-    # Draw eth tab
-    ethtab_gui.tab.draw(ethtab_gui)
-    EthNoteBook.select(tab_frame)
-
-
-
-def update_eth_tab():
-    global EthView_InitDone, TabList, EthCtrlStr, EthConfigs, EthNoteBook
-    
-    # get tabs to be added or removed
-    req_tabs = int(EthCtrlStr.get())
-
-    # Tune memory allocations based on number of rows or boxes
-    cur_tabs = len(TabList)
-    name = "EthCtrl-"
-    if not EthView_InitDone:
-        for i in range(cur_tabs):
-            draw_eth_tab(name+str(i+cur_tabs), EthConfigs, i+cur_tabs)
-            cur_tabs += 1
-        EthView_InitDone = True
-    elif req_tabs > cur_tabs:
-        for i in range(req_tabs - cur_tabs):
-            draw_eth_tab(name+str(i+cur_tabs), EthConfigs, i+cur_tabs)
-            cur_tabs += 1
-    elif cur_tabs > req_tabs:
-        for i in range(cur_tabs - req_tabs):
-            EthNoteBook.forget(TabList[-1].frame)
-            del TabList[-1].tab
-            del TabList[-1].frame
-            del TabList[-1]
-            cur_tabs -= 1
-
-    # update common data
-    for i, tab in enumerate(TabList):
-        tab.tab.update_ethernet_config(0, EthCtrlStr.get())
-
-
 def show_eth_tabs(gui):
-    global PortConfigViewActive, TabList, EthCtrlStr, EthConfigs, EthNoteBook, Eth_X, Eth_Y, Gui
+    global EthConfigViewActive, TabList
     
-    if PortConfigViewActive:
+    if EthConfigViewActive:
         return
 
     # Create a child window (tabbed view)
-    Eth_X = gui.main_view.xsize * 90 / 100
-    Eth_Y = gui.main_view.ysize * 80 / 100
-    Gui = gui
+    width = gui.main_view.xsize * 90 / 100
+    height = gui.main_view.ysize * 80 / 100
     view = tk.Toplevel()
     gui.main_view.child_window = view
-    xoff = (gui.main_view.xsize - Eth_X)/2
-    view.geometry("%dx%d+%d+%d" % (Eth_X, Eth_Y, xoff, xoff))
+    xoff = (gui.main_view.xsize - width)/2
+    view.geometry("%dx%d+%d+%d" % (width, height, xoff, xoff))
     view.title("AUTOSAR Ethernet Driver (MAC) Configuration Tool")
-    PortConfigViewActive = True
+    EthConfigViewActive = True
     view.protocol("WM_DELETE_WINDOW", lambda: eth_config_close_event(gui, view))
 
-    #Number of modes - Label + Spinbox
-    top_frame = tk.Frame(view)
-    label = tk.Label(top_frame, text="No. Ethernet Controllers:")
-    label.grid(row=0, column=0, sticky="w")
-    EthCtrlStr = tk.StringVar()
-    spinb = tk.Spinbox(top_frame, width=10, textvariable=EthCtrlStr, command=lambda : update_eth_tab(), values=tuple(range(0,256)))
-    EthCtrlStr.set(0)
-    spinb.grid(row=0, column=1, sticky="w")
-    saveb = tk.Button(top_frame, width=10, text="Save Configs", command=lambda : eth_save_callback(gui), bg="#206020", fg='white')
-    saveb.grid(row=0, column=2)
-    top_frame.pack(side=tk.TOP)
-    
-    # Tabbed views for Ethernet Controllers
-    EthNoteBook = ttk.Notebook(view)
-    EthNoteBook.pack(side=tk.BOTTOM)
-    
-    # read Eth content from ARXML file
-    # EthConfigs = arxml_eth_r.parse_arxml(gui.arxml_file)
-    EthConfigs = None
+    # destroy old GUI objects
+    for obj in TabList:
+        del obj
 
-    update_eth_tab()
+    # read Eth content from ARXML file
+    # eth_configs = arxml_eth_r.parse_arxml(gui.arxml_file)
+    eth_configs = None
+    
+    # create new GUI objects
+    ethcfg_view = EthTab(view, width, height)
+    ethcfg_view.tab = eth_cfg.EthernetConfigMainView(gui, eth_configs)
+    ethcfg_view.name = "EthExternalDevice"
+    TabList.append(ethcfg_view)
+
+    # Draw all tabs
+    ethcfg_view.tab.draw(ethcfg_view)
+    # gui.main_view.window.bind("<<NotebookTabChanged>>", show_os_tab_switch)
 
 
 

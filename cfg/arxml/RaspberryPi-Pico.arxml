@@ -1235,7 +1235,7 @@
 											<VALUE>0</VALUE>
 										</ECUC-NUMERICAL-PARAM-VALUE>
 										<ECUC-TEXTUAL-PARAM-VALUE>
-											<DEFINITION-REF DEST="ECUC-ENUMERATION-PARAM-DEF">/AUTOSAR/EcucDefs/Spi/SpiDriver/SpiSequence/Custom/SpiSequenceEnumText</DEFINITION-REF>
+											<DEFINITION-REF DEST="ECUC-ENUMERATION-PARAM-DEF">/AUTOSAR/EcucDefs/Spi/SpiDriver/SpiSequence/Custom/SpiSequenceName</DEFINITION-REF>
 											<VALUE>SEQ_ETH_2_BYTE</VALUE>
 										</ECUC-TEXTUAL-PARAM-VALUE>
 									</PARAMETER-VALUES>
@@ -1269,7 +1269,7 @@
 											<VALUE>1</VALUE>
 										</ECUC-NUMERICAL-PARAM-VALUE>
 										<ECUC-TEXTUAL-PARAM-VALUE>
-											<DEFINITION-REF DEST="ECUC-ENUMERATION-PARAM-DEF">/AUTOSAR/EcucDefs/Spi/SpiDriver/SpiSequence/Custom/SpiSequenceEnumText</DEFINITION-REF>
+											<DEFINITION-REF DEST="ECUC-ENUMERATION-PARAM-DEF">/AUTOSAR/EcucDefs/Spi/SpiDriver/SpiSequence/Custom/SpiSequenceName</DEFINITION-REF>
 											<VALUE>SEQ_ETH_3_BYTE</VALUE>
 										</ECUC-TEXTUAL-PARAM-VALUE>
 									</PARAMETER-VALUES>

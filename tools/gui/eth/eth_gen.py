@@ -26,36 +26,28 @@ import gui.lib.asr_widget as dappa # dappa in Tamil means box
 
 
 
-class EthGeneralTab:
+class EthGeneralChildView:
     gui = None
     scrollw = None
     tab_struct = None # passed from *_view.py file
     configs = None # all UI configs (tkinter strings) are stored here.
-    cfgkeys = ["EthIndex", "EthDevErrorDetect", "EthGetCounterValuesApi", "EthGetRxStatsApi",
-               "EthGetTxErrorCounterValuesApi", "EthGetTxStatsApi", "EthGlobalTimeSupport", 
-               "EthMainFunctionPeriod", "EthMaxCtrlsSupported", "EthVersionInfoApi",
-               "EthCtrlEnableOffloadChecksumIPv4", "EthCtrlEnableOffloadChecksumICMP",
-               "EthCtrlEnableOffloadChecksumTCP", "EthCtrlEnableOffloadChecksumUDP",
-               "EthCtrlConfigSwBufferHandling", "EthCtrlEnableMii", "EthCtrlEnableRxInterrupt",
-               "EthCtrlEnableSpiInterface", "EthCtrlEnableTxInterrupt", "EthCtrlIdx",
-               "EthCtrlMacLayerSpeed", "EthCtrlMacLayerType", "EthCtrlMacLayerSubType",
-               "EthCtrlPhyAddress"]
+    cfgkeys = ["EthIndex", "EthDevErrorDetect", "EthMainFunctionPeriod", "EthGetCounterValuesApi",
+               "EthGetRxStatsApi", "EthGetTxErrorCounterValuesApi", "EthGetTxStatsApi",
+               "EthGlobalTimeSupport", "EthMaxCtrlsSupported", "EthVersionInfoApi"]
 
     non_header_objs = []
     dappas_per_col = len(cfgkeys)
-    active_dialog = None
-    ctrlr_idx = 0
-    header_row = 0
-    dappas_per_row = 0
 
 
-    def __init__(self, gui, ar_cfg, idx):
+    def __init__(self, gui, index, gen_cfg):
         self.gui = gui
         self.configs = []
-        self.ctrlr_idx = idx
 
         # Create config string for AUTOSAR configs on this tab
-        self.configs.append(dappa.AsrCfgStr(self.cfgkeys, self.create_empty_configs(idx)))
+        if gen_cfg == None:
+            self.configs.append(dappa.AsrCfgStr(self.cfgkeys, self.create_empty_configs(index)))
+        else:
+            self.configs.append(dappa.AsrCfgStr(self.cfgkeys, gen_cfg))
 
 
     def __del__(self):
@@ -65,86 +57,51 @@ class EthGeneralTab:
 
     def create_empty_configs(self, index):
         gen_dict = {}
-
-        # EthCtrlConfig group
-        gen_dict["EthIndex"]                        = str(index)
-        gen_dict["EthDevErrorDetect"]               = "FALSE"
-        gen_dict["EthMainFunctionPeriod"]           = "FALSE"
-        gen_dict["EthGetCounterValuesApi"]          = "FALSE"
-        gen_dict["EthGetRxStatsApi"]                = "FALSE"
-        gen_dict["EthGetTxErrorCounterValuesApi"]   = "FALSE"
-        gen_dict["EthGetTxStatsApi"]                = "FALSE"
-        gen_dict["EthGlobalTimeSupport"]            = "FALSE"
-        gen_dict["EthMaxCtrlsSupported"]            = str(index)
-        gen_dict["EthVersionInfoApi"]               = "FALSE"
         
-        # Checksum OffLoad
-        gen_dict["EthCtrlEnableOffloadChecksumIPv4"]   = "FALSE"
-        gen_dict["EthCtrlEnableOffloadChecksumICMP"]   = "FALSE"
-        gen_dict["EthCtrlEnableOffloadChecksumTCP"]    = "FALSE"
-        gen_dict["EthCtrlEnableOffloadChecksumUDP"]    = "FALSE"
-
-        # EthCtrlConfig group
-        gen_dict["EthCtrlConfigSwBufferHandling"]   = "FALSE"
-        gen_dict["EthCtrlEnableMii"]                = "FALSE"
-        gen_dict["EthCtrlEnableRxInterrupt"]        = "FALSE"
-        gen_dict["EthCtrlEnableSpiInterface"]       = "FALSE"
-        gen_dict["EthCtrlEnableTxInterrupt"]        = "FALSE"
-        gen_dict["EthCtrlIdx"]                      = str(index)
-        gen_dict["EthCtrlMacLayerSpeed"]            = "ETH_MAC_LAYER_SPEED_10M"
-        gen_dict["EthCtrlMacLayerType"]             = "ETH_MAC_LAYER_TYPE_XMII"
-        gen_dict["EthCtrlMacLayerSubType"]          = "STANDARD"
-        gen_dict["EthCtrlPhyAddress"]               = "00:00:5e:00:53:af"
+        gen_dict["EthIndex"]                      = str(index)
+        gen_dict["EthDevErrorDetect"]             = "FALSE"
+        gen_dict["EthMainFunctionPeriod"]         = "0.01" # time in seconds
+        gen_dict["EthGetCounterValuesApi"]        = "FALSE"
+        gen_dict["EthGetRxStatsApi"]              = "FALSE"
+        gen_dict["EthGetTxErrorCounterValuesApi"] = "FALSE"
+        gen_dict["EthGetTxStatsApi"]              = "FALSE"
+        gen_dict["EthGlobalTimeSupport"]          = "FALSE"
+        gen_dict["EthMaxCtrlsSupported"]          = str(index)
+        gen_dict["EthVersionInfoApi"]             = "FALSE"
         
         return gen_dict
 
 
 
-    def draw_dappas(self, i):
+    def draw_dappas(self):
         bool_cmbsel = ("FALSE", "TRUE")
 
-        # EthGeneral group
-        group = dappa.group(self, "EthGeneral", row=0, col=0)
-        dappa.entryg(group, self, "EthIndex",               i, 1, 1, 23, "readonly")
-        dappa.entryg(group, self, "EthMainFunctionPeriod",  i, 2, 1, 23, "normal")
-        dappa.combog(group, self, "EthDevErrorDetect",      i, 3, 1, 20, bool_cmbsel)
-        dappa.combog(group, self, "EthGetCounterValuesApi", i, 4, 1, 20, bool_cmbsel)
-        dappa.combog(group, self, "EthGetRxStatsApi",       i, 5, 1, 20, bool_cmbsel)
-        dappa.combog(group, self, "EthGetTxErrorCounterValuesApi", i, 6, 1, 20, bool_cmbsel)
-        dappa.combog(group, self, "EthGetTxStatsApi",       i, 7, 1, 20, bool_cmbsel)
-        dappa.combog(group, self, "EthGlobalTimeSupport",   i, 8, 1, 20, bool_cmbsel)
-        dappa.entryg(group, self, "EthMaxCtrlsSupported",   i, 9, 1, 23, "readonly")
-        dappa.combog(group, self, "EthVersionInfoApi",      i, 10, 1, 20, bool_cmbsel)
-
-        # EthCtrlOffloading group
-        group = dappa.group(self, "EthCtrlOffloading", row=1, col=0)
-        dappa.combog(group, self, "EthCtrlEnableOffloadChecksumIPv4",  i, 1, 1, 15, bool_cmbsel)
-        dappa.combog(group, self, "EthCtrlEnableOffloadChecksumICMP",  i, 2, 1, 15, bool_cmbsel)
-        dappa.combog(group, self, "EthCtrlEnableOffloadChecksumTCP",   i, 3, 1, 15, bool_cmbsel)
-        dappa.combog(group, self, "EthCtrlEnableOffloadChecksumUDP",   i, 4, 1, 15, bool_cmbsel)
-
-        # EthCtrlConfig group
-        group = dappa.group(self, "EthCtrlConfig", row=0, col=1)
-        dappa.combog(group, self, "EthCtrlConfigSwBufferHandling",  i, 1, 2, 30, bool_cmbsel)
-        dappa.combog(group, self, "EthCtrlEnableMii",               i, 2, 2, 30, bool_cmbsel)
-        dappa.combog(group, self, "EthCtrlEnableRxInterrupt",       i, 3, 2, 30, bool_cmbsel)
-        dappa.combog(group, self, "EthCtrlEnableSpiInterface",      i, 4, 2, 30, bool_cmbsel)
-        dappa.combog(group, self, "EthCtrlEnableTxInterrupt",       i, 5, 2, 30, bool_cmbsel)
-        dappa.entryg(group, self, "EthCtrlIdx",                     i, 6, 2, 33, "readonly")
-        speed_cmbsel = ("ETH_MAC_LAYER_SPEED_10M", "ETH_MAC_LAYER_SPEED_100M", "ETH_MAC_LAYER_SPEED_1G", "ETH_MAC_LAYER_SPEED_2500M", "ETH_MAC_LAYER_SPEED_10G")
-        dappa.combog(group, self, "EthCtrlMacLayerSpeed",           i, 7, 2, 30, speed_cmbsel)
-        mactype_cmbsel = ("ETH_MAC_LAYER_TYPE_XMII", "ETH_MAC_LAYER_TYPE_XGMII", "ETH_MAC_LAYER_TYPE_XXGMII")
-        dappa.combog(group, self, "EthCtrlMacLayerType",            i, 8, 2, 30, mactype_cmbsel)
-        macsubtype_cmbsel = ("REDUCED", "REVERSED", "SERIAL", "STANDARD", "UNIVERSAL_SERIAL")
-        dappa.combog(group, self, "EthCtrlMacLayerSubType",         i, 9, 2, 30, macsubtype_cmbsel)
-        dappa.entryg(group, self, "EthCtrlPhyAddress",              i, 10, 2, 33, "normal")
+        dappa.entry(self, "EthIndex", 0, 0, 1, 23, "readonly")
+        dappa.combo(self, "EthDevErrorDetect", 0, 1, 1, 20, bool_cmbsel)
+        dappa.entry(self, "EthMainFunctionPeriod", 0, 2, 1, 23, "normal")
+        dappa.combo(self, "EthGetCounterValuesApi", 0, 3, 1, 20, bool_cmbsel)
+        dappa.combo(self, "EthGetRxStatsApi", 0, 4, 1, 20, bool_cmbsel)
+        dappa.combo(self, "EthGetTxErrorCounterValuesApi", 0, 5, 1, 20, bool_cmbsel)
+        dappa.combo(self, "EthGetTxStatsApi", 0, 6, 1, 20, bool_cmbsel)
+        dappa.combo(self, "EthGlobalTimeSupport", 0, 7, 1, 20, bool_cmbsel)
+        dappa.entry(self, "EthMaxCtrlsSupported", 0, 8, 1, 23, "readonly")
+        dappa.combo(self, "EthVersionInfoApi", 0, 9, 1, 20, bool_cmbsel)
 
 
-    def draw(self, tab):
-        self.tab_struct = tab
-        self.scrollw = window.ScrollableWindow(tab.frame, tab.xsize, tab.ysize)
 
-        self.draw_dappas(0)
+    def draw(self, view):
+        self.tab_struct = view
+        self.scrollw = window.ScrollableWindow(view.frame, view.xsize, view.ysize)
+
+        # Table heading @0th row, 0th column
+        dappa.place_column_heading(self, row=0, col=0)
+        self.draw_dappas()
+
+        # Place save button
+        space = tk.Label(self.scrollw.mnf)
+        space.grid(row=10, column=1)
+        saveb = tk.Button(self.scrollw.mnf, width=10, text="Save Configs", command=self.save_data, bg="#206020", fg='white')
+        saveb.grid(row=11, column=1)
 
         # Support scrollable view
         self.scrollw.scroll()
@@ -153,10 +110,3 @@ class EthGeneralTab:
 
     def save_data(self):
         self.tab_struct.save_cb(self.gui)
-
-
-    # idx: Controller Index
-    # max_ctrlr: Total controllers configured
-    def update_ethernet_config(self, idx, max_ctrlr):
-        self.configs[idx].dispvar["EthMaxCtrlsSupported"].set(max_ctrlr)
-

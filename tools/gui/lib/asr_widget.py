@@ -85,7 +85,7 @@ class AsrCfgStr:
 def group(view, label, row, col):
     group = tk.LabelFrame(view.scrollw.mnf, text=label, fg='blue')
     group.grid(row=row, column=col, padx=5, ipadx=3, ipady=5, sticky="nw")
-    insert_widget_to_nh_objs(row, col, view, group)
+    view.group_objs.append(group)
     return group
 
 

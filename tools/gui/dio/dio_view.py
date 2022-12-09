@@ -31,7 +31,7 @@ import gui.dio.dio_code_gen as dio_code_gen
 
 
 TabList = []
-PortConfigViewActive = False
+DioConfigViewActive = False
 
 
 class DioTab:
@@ -54,9 +54,9 @@ class DioTab:
 
 
 def dio_config_close_event(gui, view):
-    global PortConfigViewActive, TabList
+    global DioConfigViewActive, TabList
 
-    PortConfigViewActive = False
+    DioConfigViewActive = False
     view.destroy()
 
 
@@ -85,9 +85,9 @@ def dio_save_callback(gui):
 
 
 def show_dio_tabs(gui):
-    global PortConfigViewActive, TabList
+    global DioConfigViewActive, TabList
     
-    if PortConfigViewActive:
+    if DioConfigViewActive:
         return
 
     # Create a child window (tabbed view)
@@ -97,7 +97,7 @@ def show_dio_tabs(gui):
     gui.main_view.child_window = view
     view.geometry("%dx%d+%d+%d" % (width, height, gui.main_view.xsize/3, 15))
     view.title("AUTOSAR Dio Configuration Tool")
-    PortConfigViewActive = True
+    DioConfigViewActive = True
     view.protocol("WM_DELETE_WINDOW", lambda: dio_config_close_event(gui, view))
     notebook = ttk.Notebook(view)
     

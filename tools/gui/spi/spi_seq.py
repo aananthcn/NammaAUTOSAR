@@ -36,7 +36,7 @@ class SpiSequenceTab:
     tab_struct = None # passed from *_view.py file
     scrollw = None
     configs = None # all UI configs (tkinter strings) are stored here.
-    cfgkeys = ["SpiSequenceId", "SpiSequenceEnumText","SpiInterruptibleSequence", "SpiSeqEndNotification", "SpiJobAssignment"]
+    cfgkeys = ["SpiSequenceId", "SpiSequenceName","SpiInterruptibleSequence", "SpiSeqEndNotification", "SpiJobAssignment"]
     
     n_header_objs = 0 #Objects / widgets that are part of the header and shouldn't be destroyed
     header_row = 3
@@ -80,7 +80,7 @@ class SpiSequenceTab:
     def create_empty_configs(self):
         spi_seq = {}
         spi_seq["SpiSequenceId"] = str(self.n_spi_seqs-1)
-        spi_seq["SpiSequenceEnumText"] = "SEQ_ENUM_"+str(self.n_spi_seqs-1)
+        spi_seq["SpiSequenceName"] = "SEQ_NAME_"+str(self.n_spi_seqs-1)
         spi_seq["SpiInterruptibleSequence"] = "FALSE"
         spi_seq["SpiSeqEndNotification"] = "e.g: SeqEndNotificationFunc"
         spi_seq["SpiJobAssignment"] = []
@@ -93,7 +93,7 @@ class SpiSequenceTab:
 
         # SpiSequenceId
         dappa.entry(self, "SpiSequenceId", i, self.header_row+i, 1, 10, "readonly")
-        dappa.entry(self, "SpiSequenceEnumText", i, self.header_row+i, 2, 30, "normal")
+        dappa.entry(self, "SpiSequenceName", i, self.header_row+i, 2, 30, "normal")
 
         # Spi Sequence - SpiInterruptibleSequence
         dappa.combo(self, "SpiInterruptibleSequence", i, self.header_row+i, 3, 15, ("FALSE", "TRUE"))

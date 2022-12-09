@@ -37,7 +37,7 @@ import gui.spi.spi_code_gen as spi_cgen
 
 
 TabList = []
-PortConfigViewActive = False
+SpiConfigViewActive = False
 
 
 class SpiTab:
@@ -57,9 +57,9 @@ class SpiTab:
 
 
 def spi_config_close_event(gui, view):
-    global PortConfigViewActive
+    global SpiConfigViewActive
 
-    PortConfigViewActive = False
+    SpiConfigViewActive = False
     view.destroy()
 
 
@@ -75,9 +75,9 @@ def spi_save_callback(gui):
 
     
 def show_spi_tabs(gui):
-    global PortConfigViewActive, TabList
+    global SpiConfigViewActive, TabList
     
-    if PortConfigViewActive:
+    if SpiConfigViewActive:
         return
 
     # Create a child window (tabbed view)
@@ -88,7 +88,7 @@ def show_spi_tabs(gui):
     xoff = (gui.main_view.xsize - width)/2
     view.geometry("%dx%d+%d+%d" % (width, height, xoff, xoff))
     view.title("AUTOSAR Spi Configuration Tool")
-    PortConfigViewActive = True
+    SpiConfigViewActive = True
     view.protocol("WM_DELETE_WINDOW", lambda: spi_config_close_event(gui, view))
     notebook = ttk.Notebook(view)
     
