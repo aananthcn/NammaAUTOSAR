@@ -21,10 +21,10 @@
 import tkinter as tk
 from tkinter import ttk
 
-import gui.eth.eth_cfg as eth_cfg
+import gui.eth.eth_maincfg as eth_cfg
 
-# import arxml.eth.arxml_eth_parse as arxml_eth_r
-# import arxml.eth.arxml_eth_write as arxml_eth_w
+import arxml.eth.arxml_eth_parse as arxml_eth_r
+import arxml.eth.arxml_eth_write as arxml_eth_w
 
 # import gui.eth.eth_code_gen as eth_cgen
 
@@ -57,13 +57,9 @@ def eth_config_close_event(gui, view):
 
 
 
-def eth_save_callback(gui):
-    eth_configs = {}
-    for tab in TabList:
-        eth_configs[tab.name] = tab.tab.configs
-    
+def eth_save_callback(gui, eth_configs):
     arxml_eth_w.update_arxml(gui.arxml_file, eth_configs)
-    eth_cgen.generate_code(gui, eth_configs)
+    # eth_cgen.generate_code(gui, eth_configs)
 
 
     
@@ -94,7 +90,7 @@ def show_eth_tabs(gui):
     
     # create new GUI objects
     ethcfg_view = EthTab(view, width, height)
-    ethcfg_view.tab = eth_cfg.EthernetConfigMainView(gui, eth_configs)
+    ethcfg_view.tab = eth_cfg.EthernetConfigMainView(gui, eth_configs, ethcfg_view.save_cb)
     ethcfg_view.name = "EthernetConfigs"
     TabList.append(ethcfg_view)
 

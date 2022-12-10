@@ -43,16 +43,11 @@ class EthChildView:
     frame = None
     save_cb = None
     
-    def __init__(self, f, w, h):
-        self.save_cb = eth_save_callback
+    def __init__(self, f, w, h, cb):
+        self.save_cb = cb
         self.frame = f
         self.xsize = w
         self.ysize = h
-
-
-
-def eth_save_callback():
-    print("eth_save_callback() is called!")
 
 
 
@@ -77,14 +72,16 @@ class EthernetConfigMainView:
     
     active_dialog = None
     active_view = None
+    save_cb = None
     
 
 
-    def __init__(self, gui, eth_cfgs):
+    def __init__(self, gui, eth_cfgs, save_cb):
         self.gui = gui
         self.configs = []
         self.n_eth_dev = 0
         self.n_eth_dev_str = tk.StringVar()
+        self.save_cb = save_cb
 
         # read child view configs from ARXML
         #gen_cfgs = ARXML read
@@ -199,7 +196,7 @@ class EthernetConfigMainView:
 
 
     def save_data(self):
-        self.tab_struct.save_cb(self.gui)
+        self.tab_struct.save_cb(self.gui, self.configs)
 
 
 
@@ -233,7 +230,7 @@ class EthernetConfigMainView:
         self.active_dialog.geometry("%dx%d+%d+%d" % (width, height, x/10, y/5))
 
         # create views and draw
-        gen_view = EthChildView(self.active_dialog, width, height)
+        gen_view = EthChildView(self.active_dialog, width, height, self.save_data)
         gen_view.view = eth_gen.EthGeneralChildView(self.gui, row, self.configs[row].datavar["EthGeneral"] )
         gen_view.name = "EthGeneral"
         self.active_view = gen_view
@@ -271,7 +268,7 @@ class EthernetConfigMainView:
         self.active_dialog.geometry("%dx%d+%d+%d" % (width, height, x/8, y/5))
 
         # create views and draw
-        gen_view = EthChildView(self.active_dialog, width, height)
+        gen_view = EthChildView(self.active_dialog, width, height, self.save_data)
         gen_view.view = eth_offload.EthChecksumOffloadChildView(self.gui, row, self.configs[row].datavar["EthCtrlOffloading"] )
         gen_view.name = "EthCtrlOffloading"
         self.active_view = gen_view
@@ -309,7 +306,7 @@ class EthernetConfigMainView:
         self.active_dialog.geometry("%dx%d+%d+%d" % (width, height, x/4, y/5))
 
         # create views and draw
-        gen_view = EthChildView(self.active_dialog, width, height)
+        gen_view = EthChildView(self.active_dialog, width, height, self.save_data)
         gen_view.view = eth_ctrlcfg.EthCtrlConfigChildView(self.gui, row, self.configs[row].datavar["EthCtrlConfig"] )
         gen_view.name = "EthCtrlConfig"
         self.active_view = gen_view
@@ -347,7 +344,7 @@ class EthernetConfigMainView:
         self.active_dialog.geometry("%dx%d+%d+%d" % (width, height, x/4, y/5))
 
         # create views and draw
-        gen_view = EthChildView(self.active_dialog, width, height)
+        gen_view = EthChildView(self.active_dialog, width, height, self.save_data)
         gen_view.view = eth_xgress.EthConfigXgressFifoChildView(self.gui, row, self.configs[row].datavar["EthCtrlConfigXgressFifo"] )
         gen_view.name = "EthCtrlConfigXgressFifo"
         self.active_view = gen_view
@@ -385,7 +382,7 @@ class EthernetConfigMainView:
         self.active_dialog.geometry("%dx%d+%d+%d" % (width, height, 2*x/5, y/5))
 
         # create views and draw
-        gen_view = EthChildView(self.active_dialog, width, height)
+        gen_view = EthChildView(self.active_dialog, width, height, self.save_data)
         gen_view.view = eth_sch.EthConfigSchedulerChildView(self.gui, row, self.configs[row].datavar["EthCtrlConfigScheduler"] )
         gen_view.name = "EthCtrlConfigScheduler"
         self.active_view = gen_view
@@ -423,7 +420,7 @@ class EthernetConfigMainView:
         self.active_dialog.geometry("%dx%d+%d+%d" % (width, height, x/2, y/5))
 
         # create views and draw
-        gen_view = EthChildView(self.active_dialog, width, height)
+        gen_view = EthChildView(self.active_dialog, width, height, self.save_data)
         gen_view.view = eth_shaper.EthConfigShaperChildView(self.gui, row, self.configs[row].datavar["EthCtrlConfigShaper"] )
         gen_view.name = "EthCtrlConfigShaper"
         self.active_view = gen_view
@@ -464,7 +461,7 @@ class EthernetConfigMainView:
         spi_configs = arxml_spi_r.parse_arxml(self.gui.arxml_file)
 
         # create views and draw
-        gen_view = EthChildView(self.active_dialog, width, height)
+        gen_view = EthChildView(self.active_dialog, width, height, self.save_data)
         gen_view.view = eth_spicfg.EthConfigSpiConfigChildView(self.gui, row, spi_configs["SpiSequence"],
                             self.configs[row].datavar["EthCtrlConfigSpiConfiguration"] )
         gen_view.name = "EthCtrlConfigSpiConfiguration"

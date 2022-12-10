@@ -109,4 +109,4 @@ class EthGeneralChildView:
 
 
     def save_data(self):
-        self.tab_struct.save_cb(self.gui)
+        self.tab_struct.save_cb()
