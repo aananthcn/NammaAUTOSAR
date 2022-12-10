@@ -22,12 +22,6 @@ import tkinter as tk
 from tkinter import ttk
 
 import gui.eth.eth_cfg as eth_cfg
-# import gui.eth.eth_seq as eth_seq
-# import gui.eth.eth_chan as eth_chn
-# import gui.eth.eth_chan_list as eth_chlist
-# import gui.eth.eth_jobs as eth_job
-# import gui.eth.eth_ext_dev as eth_exd
-# import gui.eth.eth_drv as eth_drv
 
 # import arxml.eth.arxml_eth_parse as arxml_eth_r
 # import arxml.eth.arxml_eth_write as arxml_eth_w

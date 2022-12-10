@@ -1,5 +1,5 @@
 #
-# Created on Fri Dec 09 2022 7:51:11 PM
+# Created on Sat Dec 10 2022 7:13:24 AM
 #
 # The MIT License (MIT)
 # Copyright (c) 2022 Aananth C N
@@ -26,14 +26,15 @@ import gui.lib.asr_widget as dappa # dappa in Tamil means box
 
 
 
-class EthCtrlConfigChildView:
+class EthConfigXgressFifoChildView:
     gui = None
     scrollw = None
     tab_struct = None # passed from *_view.py file
     configs = None # all UI configs (tkinter strings) are stored here.
-    cfgkeys = ["EthCtrlConfigSwBufferHandling", "EthCtrlEnableMii", "EthCtrlEnableRxInterrupt", 
-               "EthCtrlEnableSpiInterface", "EthCtrlEnableTxInterrupt", "EthCtrlIdx", "EthCtrlMacLayerSpeed",
-               "EthCtrlMacLayerType", "EthCtrlMacLayerSubType", "EthCtrlPhyAddress"]
+    cfgkeys = ["EthCtrlConfigEgressFifoBufLenByte", "EthCtrlConfigEgressFifoBufTotal",
+               "EthCtrlConfigEgressFifoIdx", "EthCtrlConfigEgressFifoPriorityAssignment",
+               "EthCtrlConfigIngressFifoBufLenByte", "EthCtrlConfigIngressFifoBufTotal",
+               "EthCtrlConfigIngressFifoIdx", "EthCtrlConfigIngressFifoPriorityAssignment"]
 
     non_header_objs = []
     dappas_per_col = len(cfgkeys)
@@ -58,16 +59,14 @@ class EthCtrlConfigChildView:
     def create_empty_configs(self, index):
         gen_dict = {}
         
-        gen_dict["EthCtrlConfigSwBufferHandling"]   = "FALSE"
-        gen_dict["EthCtrlEnableMii"]                = "FALSE"
-        gen_dict["EthCtrlEnableRxInterrupt"]        = "FALSE"
-        gen_dict["EthCtrlEnableSpiInterface"]       = "FALSE"
-        gen_dict["EthCtrlEnableTxInterrupt"]        = "FALSE"
-        gen_dict["EthCtrlIdx"]                      = str(index)
-        gen_dict["EthCtrlMacLayerSpeed"]            = "ETH_MAC_LAYER_SPEED_10M"
-        gen_dict["EthCtrlMacLayerType"]             = "ETH_MAC_LAYER_TYPE_XMII"
-        gen_dict["EthCtrlMacLayerSubType"]          = "STANDARD"
-        gen_dict["EthCtrlPhyAddress"]               = "00:00:5e:00:53:a"+str(index)
+        gen_dict["EthCtrlConfigEgressFifoBufLenByte"]          = "128"
+        gen_dict["EthCtrlConfigEgressFifoBufTotal"]            = "100"
+        gen_dict["EthCtrlConfigEgressFifoIdx"]                 = str(index)
+        gen_dict["EthCtrlConfigEgressFifoPriorityAssignment"]  = "7"
+        gen_dict["EthCtrlConfigIngressFifoBufLenByte"]         = "128"
+        gen_dict["EthCtrlConfigIngressFifoBufTotal"]           = "100"
+        gen_dict["EthCtrlConfigIngressFifoIdx"]                = str(index)
+        gen_dict["EthCtrlConfigIngressFifoPriorityAssignment"] = "7"
         
         return gen_dict
 
@@ -76,19 +75,14 @@ class EthCtrlConfigChildView:
     def draw_dappas(self):
         bool_cmbsel = ("FALSE", "TRUE")
 
-        dappa.combo(self, "EthCtrlConfigSwBufferHandling",  0, 0, 1, 30, bool_cmbsel)
-        dappa.combo(self, "EthCtrlEnableMii",               0, 1, 1, 30, bool_cmbsel)
-        dappa.combo(self, "EthCtrlEnableRxInterrupt",       0, 2, 1, 30, bool_cmbsel)
-        dappa.combo(self, "EthCtrlEnableSpiInterface",      0, 3, 1, 30, bool_cmbsel)
-        dappa.combo(self, "EthCtrlEnableTxInterrupt",       0, 4, 1, 30, bool_cmbsel)
-        dappa.entry(self, "EthCtrlIdx",                     0, 5, 1, 33, "readonly")
-        speed_cmbsel = ("ETH_MAC_LAYER_SPEED_10M", "ETH_MAC_LAYER_SPEED_100M", "ETH_MAC_LAYER_SPEED_1G", "ETH_MAC_LAYER_SPEED_2500M", "ETH_MAC_LAYER_SPEED_10G")
-        dappa.combo(self, "EthCtrlMacLayerSpeed",           0, 6, 1, 30, speed_cmbsel)
-        mactype_cmbsel = ("ETH_MAC_LAYER_TYPE_XMII", "ETH_MAC_LAYER_TYPE_XGMII", "ETH_MAC_LAYER_TYPE_XXGMII")
-        dappa.combo(self, "EthCtrlMacLayerType",            0, 7, 1, 30, mactype_cmbsel)
-        macsubtype_cmbsel = ("REDUCED", "REVERSED", "SERIAL", "STANDARD", "UNIVERSAL_SERIAL")
-        dappa.combo(self, "EthCtrlMacLayerSubType",         0, 8, 1, 30, macsubtype_cmbsel)
-        dappa.entry(self, "EthCtrlPhyAddress",              0, 9, 1, 28, "larger")
+        dappa.spinb(self, "EthCtrlConfigEgressFifoBufLenByte",  0, 0, 1, 20, tuple(range(0,65536)))
+        dappa.spinb(self, "EthCtrlConfigEgressFifoBufTotal",    0, 1, 1, 20, tuple(range(0,65536)))
+        dappa.entry(self, "EthCtrlConfigEgressFifoIdx",         0, 2, 1, 22, "readonly")
+        dappa.spinb(self, "EthCtrlConfigEgressFifoPriorityAssignment", 0, 3, 1, 20, tuple(range(0,256)))
+        dappa.spinb(self, "EthCtrlConfigIngressFifoBufLenByte", 0, 4, 1, 20, tuple(range(0,65536)))
+        dappa.spinb(self, "EthCtrlConfigIngressFifoBufTotal",   0, 5, 1, 20, tuple(range(0,65536)))
+        dappa.entry(self, "EthCtrlConfigIngressFifoIdx",        0, 6, 1, 22, "readonly")
+        dappa.spinb(self, "EthCtrlConfigIngressFifoPriorityAssignment", 0, 7, 1, 20, tuple(range(0,256)))
 
 
 

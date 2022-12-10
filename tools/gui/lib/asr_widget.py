@@ -97,7 +97,11 @@ def labelf(frame, view, label, row, col, align):
 
 
 def entryf(frame, view, key, index, row, col, width, state):
-    entry = tk.Entry(frame, width=width, textvariable=view.configs[index].dispvar[key], state=state)
+    font = None
+    if state == "larger":
+        font = ("TkDefaultFont", 10)
+        state = "normal"
+    entry = tk.Entry(frame, width=width, textvariable=view.configs[index].dispvar[key], state=state, font=font)
     view.configs[index].dispvar[key].set(view.configs[index].datavar[key])
     entry.grid(row=row, column=col)
     insert_widget_to_nh_objs(row, col, view, entry)
