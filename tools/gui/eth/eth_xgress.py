@@ -40,15 +40,15 @@ class EthConfigXgressFifoChildView:
     dappas_per_col = len(cfgkeys)
 
 
-    def __init__(self, gui, index, ecc_cfg):
+    def __init__(self, gui, index, ethxgress_cfg):
         self.gui = gui
         self.configs = []
 
         # Create config string for AUTOSAR configs on this tab
-        if not ecc_cfg:
+        if not ethxgress_cfg:
             self.configs.append(dappa.AsrCfgStr(self.cfgkeys, self.create_empty_configs(index)))
         else:
-            self.configs.append(dappa.AsrCfgStr(self.cfgkeys, ecc_cfg))
+            self.configs.append(dappa.AsrCfgStr(self.cfgkeys, ethxgress_cfg))
 
 
     def __del__(self):

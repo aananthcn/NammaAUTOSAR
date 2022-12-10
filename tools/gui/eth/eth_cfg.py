@@ -30,6 +30,9 @@ import gui.eth.eth_ctrlcfg as eth_ctrlcfg
 import gui.eth.eth_xgress as eth_xgress
 import gui.eth.eth_sch as eth_sch
 import gui.eth.eth_shaper as eth_shaper
+import gui.eth.eth_spicfg as eth_spicfg
+
+import arxml.spi.arxml_spi_parse as arxml_spi_r
 
 
 class EthChildView:
@@ -140,7 +143,7 @@ class EthernetConfigMainView:
         dappa.button(self, "EthCtrlConfigShaper", i, self.header_row+i, 7, 20, text, cb)
 
         text = "EthCtrlConfigSpiConfiguration["+str(i)+"]"
-        cb = lambda id = i : self.eth_ctrl_offloading_select(id)
+        cb = lambda id = i : self.eth_config_spicfg_select(id)
         dappa.button(self, "EthCtrlConfigSpiConfiguration", i, self.header_row+i, 8, 27, text, cb)
 
 
@@ -227,7 +230,7 @@ class EthernetConfigMainView:
         y = self.active_dialog.winfo_screenheight()
         width = 350
         height = 300
-        self.active_dialog.geometry("%dx%d+%d+%d" % (width, height, x/4, y/10))
+        self.active_dialog.geometry("%dx%d+%d+%d" % (width, height, x/10, y/5))
 
         # create views and draw
         gen_view = EthChildView(self.active_dialog, width, height)
@@ -263,9 +266,9 @@ class EthernetConfigMainView:
         # set the geometry
         x = self.active_dialog.winfo_screenwidth()
         y = self.active_dialog.winfo_screenheight()
-        width = 360
+        width = 370
         height = 170
-        self.active_dialog.geometry("%dx%d+%d+%d" % (width, height, x/4, y/10))
+        self.active_dialog.geometry("%dx%d+%d+%d" % (width, height, x/8, y/5))
 
         # create views and draw
         gen_view = EthChildView(self.active_dialog, width, height)
@@ -303,7 +306,7 @@ class EthernetConfigMainView:
         y = self.active_dialog.winfo_screenheight()
         width = 400
         height = 290
-        self.active_dialog.geometry("%dx%d+%d+%d" % (width, height, x/4, y/10))
+        self.active_dialog.geometry("%dx%d+%d+%d" % (width, height, x/4, y/5))
 
         # create views and draw
         gen_view = EthChildView(self.active_dialog, width, height)
@@ -316,7 +319,7 @@ class EthernetConfigMainView:
 
     def on_eth_config_xgress_fifo_select_close(self, row):
         # backup data
-        self.configs[row].datavar["EthCtrlConfig"]  = self.active_view.view.configs[0].get()
+        self.configs[row].datavar["EthCtrlConfigXgressFifo"]  = self.active_view.view.configs[0].get()
 
         # destroy view
         del self.active_view
@@ -341,7 +344,7 @@ class EthernetConfigMainView:
         y = self.active_dialog.winfo_screenheight()
         width = 400
         height = 240
-        self.active_dialog.geometry("%dx%d+%d+%d" % (width, height, x/4, y/10))
+        self.active_dialog.geometry("%dx%d+%d+%d" % (width, height, x/4, y/5))
 
         # create views and draw
         gen_view = EthChildView(self.active_dialog, width, height)
@@ -354,7 +357,7 @@ class EthernetConfigMainView:
 
     def on_eth_config_scheduler_close(self, row):
         # backup data
-        self.configs[row].datavar["EthCtrlConfig"]  = self.active_view.view.configs[0].get()
+        self.configs[row].datavar["EthCtrlConfigScheduler"]  = self.active_view.view.configs[0].get()
 
         # destroy view
         del self.active_view
@@ -377,9 +380,9 @@ class EthernetConfigMainView:
         # set the geometry
         x = self.active_dialog.winfo_screenwidth()
         y = self.active_dialog.winfo_screenheight()
-        width = 360
+        width = 370
         height = 90
-        self.active_dialog.geometry("%dx%d+%d+%d" % (width, height, 2*x/5, y/6))
+        self.active_dialog.geometry("%dx%d+%d+%d" % (width, height, 2*x/5, y/5))
 
         # create views and draw
         gen_view = EthChildView(self.active_dialog, width, height)
@@ -392,7 +395,7 @@ class EthernetConfigMainView:
 
     def on_eth_config_shaper_close(self, row):
         # backup data
-        self.configs[row].datavar["EthCtrlConfig"]  = self.active_view.view.configs[0].get()
+        self.configs[row].datavar["EthCtrlConfigShaper"]  = self.active_view.view.configs[0].get()
 
         # destroy view
         del self.active_view
@@ -415,13 +418,55 @@ class EthernetConfigMainView:
         # set the geometry
         x = self.active_dialog.winfo_screenwidth()
         y = self.active_dialog.winfo_screenheight()
-        width = 320
+        width = 330
         height = 130
-        self.active_dialog.geometry("%dx%d+%d+%d" % (width, height, x/2, y/6))
+        self.active_dialog.geometry("%dx%d+%d+%d" % (width, height, x/2, y/5))
 
         # create views and draw
         gen_view = EthChildView(self.active_dialog, width, height)
         gen_view.view = eth_shaper.EthConfigShaperChildView(self.gui, row, self.configs[row].datavar["EthCtrlConfigShaper"] )
         gen_view.name = "EthCtrlConfigShaper"
+        self.active_view = gen_view
+        gen_view.view.draw(gen_view)
+
+
+
+    def on_eth_config_spicfg_close(self, row):
+        # backup data
+        self.configs[row].datavar["EthCtrlConfigSpiConfiguration"]  = self.active_view.view.configs[0].get()
+
+        # destroy view
+        del self.active_view
+        self.active_dialog.destroy()
+        del self.active_dialog
+
+        # re-draw all boxes (dappas) of this row
+        dappa.delete_dappa_row(self, row)
+        self.draw_dappa_row(row)
+
+
+    def eth_config_spicfg_select(self, row):
+        if self.active_dialog != None:
+            return
+
+        # function to create dialog window
+        self.active_dialog = tk.Toplevel() # create an instance of toplevel
+        self.active_dialog.protocol("WM_DELETE_WINDOW", lambda : self.on_eth_config_spicfg_close(row))
+
+        # set the geometry
+        x = self.active_dialog.winfo_screenwidth()
+        y = self.active_dialog.winfo_screenheight()
+        width = 470
+        height = 370
+        self.active_dialog.geometry("%dx%d+%d+%d" % (width, height, x/2, y/5))
+
+        # parse ARXML for SPI sequence
+        spi_configs = arxml_spi_r.parse_arxml(self.gui.arxml_file)
+
+        # create views and draw
+        gen_view = EthChildView(self.active_dialog, width, height)
+        gen_view.view = eth_spicfg.EthConfigSpiConfigChildView(self.gui, row, spi_configs["SpiSequence"],
+                            self.configs[row].datavar["EthCtrlConfigSpiConfiguration"] )
+        gen_view.name = "EthCtrlConfigSpiConfiguration"
         self.active_view = gen_view
         gen_view.view.draw(gen_view)

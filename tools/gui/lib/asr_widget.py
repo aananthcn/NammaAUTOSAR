@@ -224,7 +224,7 @@ def place_heading(view, row, col):
     # place all the keys as column @row & @col
     for i, label in enumerate(view.cfgkeys):
         label = tk.Label(view.scrollw.mnf, text=label)
-        label.grid(row=row, column=col+i, sticky="w")
+        label.grid(row=row, column=col+i, sticky="w", padx=1)
     
     # store the number of widgets including the header labels
     view.n_header_objs = len(view.scrollw.mnf.winfo_children())
@@ -236,7 +236,7 @@ def place_column_heading_f(frame, view, row, col):
     # place all the keys as column @row & @col
     for i, label in enumerate(view.cfgkeys):
         label = tk.Label(frame, text=label)
-        label.grid(row=row+i, column=col, sticky="e")
+        label.grid(row=row+i, column=col, sticky="e", padx=4)
 
     # for column heading, the concept of header or row is invalid, hence 0
     view.n_header_objs = 0

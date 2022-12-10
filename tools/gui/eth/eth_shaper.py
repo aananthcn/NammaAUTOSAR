@@ -38,15 +38,15 @@ class EthConfigShaperChildView:
     dappas_per_col = len(cfgkeys)
 
 
-    def __init__(self, gui, index, ofl_cfg):
+    def __init__(self, gui, index, ethshp_cfg):
         self.gui = gui
         self.configs = []
 
         # Create config string for AUTOSAR configs on this tab
-        if not ofl_cfg:
+        if not ethshp_cfg:
             self.configs.append(dappa.AsrCfgStr(self.cfgkeys, self.create_empty_configs()))
         else:
-            self.configs.append(dappa.AsrCfgStr(self.cfgkeys, ofl_cfg))
+            self.configs.append(dappa.AsrCfgStr(self.cfgkeys, ethshp_cfg))
 
 
     def __del__(self):
