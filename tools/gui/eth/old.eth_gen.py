@@ -75,48 +75,48 @@ class EthGeneralChildView:
     def create_empty_configs(self, index):
         gen_dict = {}
 
-        # EthCtrlConfig group
-        gen_dict["EthIndex"]                        = str(index)
-        gen_dict["EthDevErrorDetect"]               = "FALSE"
-        gen_dict["EthMainFunctionPeriod"]           = "FALSE"
-        gen_dict["EthGetCounterValuesApi"]          = "FALSE"
-        gen_dict["EthGetRxStatsApi"]                = "FALSE"
-        gen_dict["EthGetTxErrorCounterValuesApi"]   = "FALSE"
-        gen_dict["EthGetTxStatsApi"]                = "FALSE"
-        gen_dict["EthGlobalTimeSupport"]            = "FALSE"
-        gen_dict["EthMaxCtrlsSupported"]            = str(index)
-        gen_dict["EthVersionInfoApi"]               = "FALSE"
+        # # EthCtrlConfig group
+        # gen_dict["EthIndex"]                        = str(index)
+        # gen_dict["EthDevErrorDetect"]               = "FALSE"
+        # gen_dict["EthMainFunctionPeriod"]           = "FALSE"
+        # gen_dict["EthGetCounterValuesApi"]          = "FALSE"
+        # gen_dict["EthGetRxStatsApi"]                = "FALSE"
+        # gen_dict["EthGetTxErrorCounterValuesApi"]   = "FALSE"
+        # gen_dict["EthGetTxStatsApi"]                = "FALSE"
+        # gen_dict["EthGlobalTimeSupport"]            = "FALSE"
+        # gen_dict["EthMaxCtrlsSupported"]            = str(index)
+        # gen_dict["EthVersionInfoApi"]               = "FALSE"
         
-        # Checksum OffLoad
-        gen_dict["EthCtrlEnableOffloadChecksumIPv4"]   = "FALSE"
-        gen_dict["EthCtrlEnableOffloadChecksumICMP"]   = "FALSE"
-        gen_dict["EthCtrlEnableOffloadChecksumTCP"]    = "FALSE"
-        gen_dict["EthCtrlEnableOffloadChecksumUDP"]    = "FALSE"
+        # # Checksum OffLoad
+        # gen_dict["EthCtrlEnableOffloadChecksumIPv4"]   = "FALSE"
+        # gen_dict["EthCtrlEnableOffloadChecksumICMP"]   = "FALSE"
+        # gen_dict["EthCtrlEnableOffloadChecksumTCP"]    = "FALSE"
+        # gen_dict["EthCtrlEnableOffloadChecksumUDP"]    = "FALSE"
 
-        # EthCtrlConfig group
-        gen_dict["EthCtrlConfigSwBufferHandling"]   = "FALSE"
-        gen_dict["EthCtrlEnableMii"]                = "FALSE"
-        gen_dict["EthCtrlEnableRxInterrupt"]        = "FALSE"
-        gen_dict["EthCtrlEnableSpiInterface"]       = "FALSE"
-        gen_dict["EthCtrlEnableTxInterrupt"]        = "FALSE"
-        gen_dict["EthCtrlIdx"]                      = str(index)
-        gen_dict["EthCtrlMacLayerSpeed"]            = "ETH_MAC_LAYER_SPEED_10M"
-        gen_dict["EthCtrlMacLayerType"]             = "ETH_MAC_LAYER_TYPE_XMII"
-        gen_dict["EthCtrlMacLayerSubType"]          = "STANDARD"
-        gen_dict["EthCtrlPhyAddress"]               = "00:00:5e:00:53:af"
+        # # EthCtrlConfig group
+        # gen_dict["EthCtrlConfigSwBufferHandling"]   = "FALSE"
+        # gen_dict["EthCtrlEnableMii"]                = "FALSE"
+        # gen_dict["EthCtrlEnableRxInterrupt"]        = "FALSE"
+        # gen_dict["EthCtrlEnableSpiInterface"]       = "FALSE"
+        # gen_dict["EthCtrlEnableTxInterrupt"]        = "FALSE"
+        # gen_dict["EthCtrlIdx"]                      = str(index)
+        # gen_dict["EthCtrlMacLayerSpeed"]            = "ETH_MAC_LAYER_SPEED_10M"
+        # gen_dict["EthCtrlMacLayerType"]             = "ETH_MAC_LAYER_TYPE_XMII"
+        # gen_dict["EthCtrlMacLayerSubType"]          = "STANDARD"
+        # gen_dict["EthCtrlPhyAddress"]               = "00:00:5e:00:53:af"
 
-        # EthCtrlConfigXgressFifo group
-        gen_dict["EthCtrlConfigEgressFifoBufLenByte"]          = "128"
-        gen_dict["EthCtrlConfigEgressFifoBufTotal"]            = "100"
-        gen_dict["EthCtrlConfigEgressFifoIdx"]                 = str(index)
-        gen_dict["EthCtrlConfigEgressFifoPriorityAssignment"]  = "7"
-        gen_dict["EthCtrlConfigIngressFifoBufLenByte"]         = "128"
-        gen_dict["EthCtrlConfigIngressFifoBufTotal"]           = "100"
-        gen_dict["EthCtrlConfigIngressFifoIdx"]                = str(index)
-        gen_dict["EthCtrlConfigIngressFifoPriorityAssignment"] = "7"
+        # # EthCtrlConfigXgressFifo group
+        # gen_dict["EthCtrlConfigEgressFifoBufLenByte"]          = "128"
+        # gen_dict["EthCtrlConfigEgressFifoBufTotal"]            = "100"
+        # gen_dict["EthCtrlConfigEgressFifoIdx"]                 = str(index)
+        # gen_dict["EthCtrlConfigEgressFifoPriorityAssignment"]  = "7"
+        # gen_dict["EthCtrlConfigIngressFifoBufLenByte"]         = "128"
+        # gen_dict["EthCtrlConfigIngressFifoBufTotal"]           = "100"
+        # gen_dict["EthCtrlConfigIngressFifoIdx"]                = str(index)
+        # gen_dict["EthCtrlConfigIngressFifoPriorityAssignment"] = "7"
 
-        # EthCtrlConfigSchedulerPredecessor group
-        gen_dict["EthCtrlConfigSchedulerPredecessorOrder"] = "0"
+        # # EthCtrlConfigSchedulerPredecessor group
+        # gen_dict["EthCtrlConfigSchedulerPredecessorOrder"] = "0"
         
         # EthCtrlConfigShaper group
         gen_dict["EthCtrlConfigShaperIdleSlope"] = "1"
@@ -130,57 +130,57 @@ class EthGeneralChildView:
     def draw_dappas(self, i):
         bool_cmbsel = ("FALSE", "TRUE")
 
-        # EthGeneral group
-        group = dappa.group(self, "EthGeneral", row=0, col=0)
-        dappa.entryg(group, self, "EthIndex",               i, 1, 1, 23, "readonly")
-        dappa.entryg(group, self, "EthMainFunctionPeriod",  i, 2, 1, 23, "normal")
-        dappa.combog(group, self, "EthDevErrorDetect",      i, 3, 1, 20, bool_cmbsel)
-        dappa.combog(group, self, "EthGetCounterValuesApi", i, 4, 1, 20, bool_cmbsel)
-        dappa.combog(group, self, "EthGetRxStatsApi",       i, 5, 1, 20, bool_cmbsel)
-        dappa.combog(group, self, "EthGetTxErrorCounterValuesApi", i, 6, 1, 20, bool_cmbsel)
-        dappa.combog(group, self, "EthGetTxStatsApi",       i, 7, 1, 20, bool_cmbsel)
-        dappa.combog(group, self, "EthGlobalTimeSupport",   i, 8, 1, 20, bool_cmbsel)
-        dappa.entryg(group, self, "EthMaxCtrlsSupported",   i, 9, 1, 23, "readonly")
-        dappa.combog(group, self, "EthVersionInfoApi",      i, 10, 1, 20, bool_cmbsel)
+        # # EthGeneral group
+        # group = dappa.group(self, "EthGeneral", row=0, col=0)
+        # dappa.entryg(group, self, "EthIndex",               i, 1, 1, 23, "readonly")
+        # dappa.entryg(group, self, "EthMainFunctionPeriod",  i, 2, 1, 23, "normal")
+        # dappa.combog(group, self, "EthDevErrorDetect",      i, 3, 1, 20, bool_cmbsel)
+        # dappa.combog(group, self, "EthGetCounterValuesApi", i, 4, 1, 20, bool_cmbsel)
+        # dappa.combog(group, self, "EthGetRxStatsApi",       i, 5, 1, 20, bool_cmbsel)
+        # dappa.combog(group, self, "EthGetTxErrorCounterValuesApi", i, 6, 1, 20, bool_cmbsel)
+        # dappa.combog(group, self, "EthGetTxStatsApi",       i, 7, 1, 20, bool_cmbsel)
+        # dappa.combog(group, self, "EthGlobalTimeSupport",   i, 8, 1, 20, bool_cmbsel)
+        # dappa.entryg(group, self, "EthMaxCtrlsSupported",   i, 9, 1, 23, "readonly")
+        # dappa.combog(group, self, "EthVersionInfoApi",      i, 10, 1, 20, bool_cmbsel)
 
-        # EthCtrlOffloading group
-        group = dappa.group(self, "EthCtrlOffloading", row=1, col=0)
-        dappa.combog(group, self, "EthCtrlEnableOffloadChecksumIPv4",  i, 1, 1, 15, bool_cmbsel)
-        dappa.combog(group, self, "EthCtrlEnableOffloadChecksumICMP",  i, 2, 1, 15, bool_cmbsel)
-        dappa.combog(group, self, "EthCtrlEnableOffloadChecksumTCP",   i, 3, 1, 15, bool_cmbsel)
-        dappa.combog(group, self, "EthCtrlEnableOffloadChecksumUDP",   i, 4, 1, 15, bool_cmbsel)
-        return
+        # # EthCtrlOffloading group
+        # group = dappa.group(self, "EthCtrlOffloading", row=1, col=0)
+        # dappa.combog(group, self, "EthCtrlEnableOffloadChecksumIPv4",  i, 1, 1, 15, bool_cmbsel)
+        # dappa.combog(group, self, "EthCtrlEnableOffloadChecksumICMP",  i, 2, 1, 15, bool_cmbsel)
+        # dappa.combog(group, self, "EthCtrlEnableOffloadChecksumTCP",   i, 3, 1, 15, bool_cmbsel)
+        # dappa.combog(group, self, "EthCtrlEnableOffloadChecksumUDP",   i, 4, 1, 15, bool_cmbsel)
+        # return
 
-        # EthCtrlConfig group
-        group = dappa.group(self, "EthCtrlConfig", row=0, col=1)
-        dappa.combog(group, self, "EthCtrlConfigSwBufferHandling",  i, 1, 1, 30, bool_cmbsel)
-        dappa.combog(group, self, "EthCtrlEnableMii",               i, 2, 1, 30, bool_cmbsel)
-        dappa.combog(group, self, "EthCtrlEnableRxInterrupt",       i, 3, 1, 30, bool_cmbsel)
-        dappa.combog(group, self, "EthCtrlEnableSpiInterface",      i, 4, 1, 30, bool_cmbsel)
-        dappa.combog(group, self, "EthCtrlEnableTxInterrupt",       i, 5, 1, 30, bool_cmbsel)
-        dappa.entryg(group, self, "EthCtrlIdx",                     i, 6, 1, 33, "readonly")
-        speed_cmbsel = ("ETH_MAC_LAYER_SPEED_10M", "ETH_MAC_LAYER_SPEED_100M", "ETH_MAC_LAYER_SPEED_1G", "ETH_MAC_LAYER_SPEED_2500M", "ETH_MAC_LAYER_SPEED_10G")
-        dappa.combog(group, self, "EthCtrlMacLayerSpeed",           i, 7, 1, 30, speed_cmbsel)
-        mactype_cmbsel = ("ETH_MAC_LAYER_TYPE_XMII", "ETH_MAC_LAYER_TYPE_XGMII", "ETH_MAC_LAYER_TYPE_XXGMII")
-        dappa.combog(group, self, "EthCtrlMacLayerType",            i, 8, 1, 30, mactype_cmbsel)
-        macsubtype_cmbsel = ("REDUCED", "REVERSED", "SERIAL", "STANDARD", "UNIVERSAL_SERIAL")
-        dappa.combog(group, self, "EthCtrlMacLayerSubType",         i, 9, 1, 30, macsubtype_cmbsel)
-        dappa.entryg(group, self, "EthCtrlPhyAddress",              i, 10, 1, 33, "normal")
+        # # EthCtrlConfig group
+        # group = dappa.group(self, "EthCtrlConfig", row=0, col=1)
+        # dappa.combog(group, self, "EthCtrlConfigSwBufferHandling",  i, 1, 1, 30, bool_cmbsel)
+        # dappa.combog(group, self, "EthCtrlEnableMii",               i, 2, 1, 30, bool_cmbsel)
+        # dappa.combog(group, self, "EthCtrlEnableRxInterrupt",       i, 3, 1, 30, bool_cmbsel)
+        # dappa.combog(group, self, "EthCtrlEnableSpiInterface",      i, 4, 1, 30, bool_cmbsel)
+        # dappa.combog(group, self, "EthCtrlEnableTxInterrupt",       i, 5, 1, 30, bool_cmbsel)
+        # dappa.entryg(group, self, "EthCtrlIdx",                     i, 6, 1, 33, "readonly")
+        # speed_cmbsel = ("ETH_MAC_LAYER_SPEED_10M", "ETH_MAC_LAYER_SPEED_100M", "ETH_MAC_LAYER_SPEED_1G", "ETH_MAC_LAYER_SPEED_2500M", "ETH_MAC_LAYER_SPEED_10G")
+        # dappa.combog(group, self, "EthCtrlMacLayerSpeed",           i, 7, 1, 30, speed_cmbsel)
+        # mactype_cmbsel = ("ETH_MAC_LAYER_TYPE_XMII", "ETH_MAC_LAYER_TYPE_XGMII", "ETH_MAC_LAYER_TYPE_XXGMII")
+        # dappa.combog(group, self, "EthCtrlMacLayerType",            i, 8, 1, 30, mactype_cmbsel)
+        # macsubtype_cmbsel = ("REDUCED", "REVERSED", "SERIAL", "STANDARD", "UNIVERSAL_SERIAL")
+        # dappa.combog(group, self, "EthCtrlMacLayerSubType",         i, 9, 1, 30, macsubtype_cmbsel)
+        # dappa.entryg(group, self, "EthCtrlPhyAddress",              i, 10, 1, 33, "normal")
 
-        # EthCtrlConfigXgressFifo group
-        group = dappa.group(self, "EthCtrlConfigXgressFifo", row=0, col=2)
-        dappa.spinbg(group, self, "EthCtrlConfigEgressFifoBufLenByte",  i, 1, 1, 20, tuple(range(0,65536)))
-        dappa.spinbg(group, self, "EthCtrlConfigEgressFifoBufTotal",    i, 2, 1, 20, tuple(range(0,65536)))
-        dappa.entryg(group, self, "EthCtrlConfigEgressFifoIdx",         i, 3, 1, 22, "readonly")
-        dappa.spinbg(group, self, "EthCtrlConfigEgressFifoPriorityAssignment", i, 4, 1, 20, tuple(range(0,256)))
-        dappa.spinbg(group, self, "EthCtrlConfigIngressFifoBufLenByte", i, 4, 1, 20, tuple(range(0,65536)))
-        dappa.spinbg(group, self, "EthCtrlConfigIngressFifoBufTotal",   i, 5, 1, 20, tuple(range(0,65536)))
-        dappa.entryg(group, self, "EthCtrlConfigIngressFifoIdx",        i, 6, 1, 22, "readonly")
-        dappa.spinbg(group, self, "EthCtrlConfigIngressFifoPriorityAssignment", i, 7, 1, 20, tuple(range(0,256)))
+        # # EthCtrlConfigXgressFifo group
+        # group = dappa.group(self, "EthCtrlConfigXgressFifo", row=0, col=2)
+        # dappa.spinbg(group, self, "EthCtrlConfigEgressFifoBufLenByte",  i, 1, 1, 20, tuple(range(0,65536)))
+        # dappa.spinbg(group, self, "EthCtrlConfigEgressFifoBufTotal",    i, 2, 1, 20, tuple(range(0,65536)))
+        # dappa.entryg(group, self, "EthCtrlConfigEgressFifoIdx",         i, 3, 1, 22, "readonly")
+        # dappa.spinbg(group, self, "EthCtrlConfigEgressFifoPriorityAssignment", i, 4, 1, 20, tuple(range(0,256)))
+        # dappa.spinbg(group, self, "EthCtrlConfigIngressFifoBufLenByte", i, 4, 1, 20, tuple(range(0,65536)))
+        # dappa.spinbg(group, self, "EthCtrlConfigIngressFifoBufTotal",   i, 5, 1, 20, tuple(range(0,65536)))
+        # dappa.entryg(group, self, "EthCtrlConfigIngressFifoIdx",        i, 6, 1, 22, "readonly")
+        # dappa.spinbg(group, self, "EthCtrlConfigIngressFifoPriorityAssignment", i, 7, 1, 20, tuple(range(0,256)))
 
-        # EthCtrlConfigSchedulerPredecessor group
-        group = dappa.group(self, "EthCtrlConfigSchedulerPredecessor", row=1, col=2)
-        dappa.entryg(group, self, "EthCtrlConfigSchedulerPredecessorOrder", i, 1, 1, 22, "normal")
+        # # EthCtrlConfigSchedulerPredecessor group
+        # group = dappa.group(self, "EthCtrlConfigSchedulerPredecessor", row=1, col=2)
+        # dappa.entryg(group, self, "EthCtrlConfigSchedulerPredecessorOrder", i, 1, 1, 22, "normal")
  
         # EthCtrlConfigShaper group
         group = dappa.group(self, "EthCtrlConfigShaper", row=1, col=1)

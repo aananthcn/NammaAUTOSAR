@@ -28,6 +28,7 @@ import gui.eth.eth_gen as eth_gen
 import gui.eth.eth_offload as eth_offload
 import gui.eth.eth_ctrlcfg as eth_ctrlcfg
 import gui.eth.eth_xgress as eth_xgress
+import gui.eth.eth_sch as eth_sch
 
 
 class EthChildView:
@@ -61,7 +62,7 @@ class EthernetConfigMainView:
     scrollw = None
     configs = None # all UI configs (tkinter strings) are stored here.
     cfgkeys = ["EthIndex", "EthGeneral", "EthCtrlOffloading", "EthCtrlConfig",
-               "EthCtrlConfigXgressFifo", "EthCtrlConfigSchedulerPredecessor",
+               "EthCtrlConfigXgressFifo", "EthCtrlConfigScheduler",
                "EthCtrlConfigShaper", "EthCtrlConfigSpiConfiguration"]
     
     n_header_objs = 0 #Objects / widgets that are part of the header and shouldn't be destroyed
@@ -101,7 +102,7 @@ class EthernetConfigMainView:
         eth_dev["EthCtrlOffloading"] = []
         eth_dev["EthCtrlConfig"] = []
         eth_dev["EthCtrlConfigXgressFifo"] = []
-        eth_dev["EthCtrlConfigSchedulerPredecessor"] = []
+        eth_dev["EthCtrlConfigScheduler"] = []
         eth_dev["EthCtrlConfigShaper"] = []
         eth_dev["EthCtrlConfigSpiConfiguration"] = []
 
@@ -129,9 +130,9 @@ class EthernetConfigMainView:
         cb = lambda id = i : self.eth_config_xgress_fifo_select(id)
         dappa.button(self, "EthCtrlConfigXgressFifo", i, self.header_row+i, 5, 22, text, cb)
 
-        text = "EthCtrlConfigSchedulerPredecessor["+str(i)+"]"
-        cb = lambda id = i : self.eth_ctrl_offloading_select(id)
-        dappa.button(self, "EthCtrlConfigSchedulerPredecessor", i, self.header_row+i, 6, 31, text, cb)
+        text = "EthCtrlConfigScheduler["+str(i)+"]"
+        cb = lambda id = i : self.eth_config_scheduler(id)
+        dappa.button(self, "EthCtrlConfigScheduler", i, self.header_row+i, 6, 22, text, cb)
 
         text = "EthCtrlConfigShaper["+str(i)+"]"
         cb = lambda id = i : self.eth_ctrl_offloading_select(id)
@@ -345,5 +346,43 @@ class EthernetConfigMainView:
         gen_view = EthChildView(self.active_dialog, width, height)
         gen_view.view = eth_xgress.EthConfigXgressFifoChildView(self.gui, row, self.configs[row].datavar["EthCtrlConfigXgressFifo"] )
         gen_view.name = "EthCtrlConfigXgressFifo"
+        self.active_view = gen_view
+        gen_view.view.draw(gen_view)
+
+
+
+    def on_eth_config_scheduler_close(self, row):
+        # backup data
+        self.configs[row].datavar["EthCtrlConfig"]  = self.active_view.view.configs[0].get()
+
+        # destroy view
+        del self.active_view
+        self.active_dialog.destroy()
+        del self.active_dialog
+
+        # re-draw all boxes (dappas) of this row
+        dappa.delete_dappa_row(self, row)
+        self.draw_dappa_row(row)
+
+
+    def eth_config_scheduler(self, row):
+        if self.active_dialog != None:
+            return
+
+        # function to create dialog window
+        self.active_dialog = tk.Toplevel() # create an instance of toplevel
+        self.active_dialog.protocol("WM_DELETE_WINDOW", lambda : self.on_eth_config_scheduler_close(row))
+
+        # set the geometry
+        x = self.active_dialog.winfo_screenwidth()
+        y = self.active_dialog.winfo_screenheight()
+        width = 360
+        height = 90
+        self.active_dialog.geometry("%dx%d+%d+%d" % (width, height, 2*x/5, y/8))
+
+        # create views and draw
+        gen_view = EthChildView(self.active_dialog, width, height)
+        gen_view.view = eth_sch.EthConfigSchedulerChildView(self.gui, row, self.configs[row].datavar["EthCtrlConfigScheduler"] )
+        gen_view.name = "EthCtrlConfigScheduler"
         self.active_view = gen_view
         gen_view.view.draw(gen_view)
