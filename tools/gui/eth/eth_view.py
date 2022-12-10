@@ -95,7 +95,7 @@ def show_eth_tabs(gui):
     # create new GUI objects
     ethcfg_view = EthTab(view, width, height)
     ethcfg_view.tab = eth_cfg.EthernetConfigMainView(gui, eth_configs)
-    ethcfg_view.name = "EthExternalDevice"
+    ethcfg_view.name = "EthernetConfigs"
     TabList.append(ethcfg_view)
 
     # Draw all tabs

@@ -29,6 +29,7 @@ import gui.eth.eth_offload as eth_offload
 import gui.eth.eth_ctrlcfg as eth_ctrlcfg
 import gui.eth.eth_xgress as eth_xgress
 import gui.eth.eth_sch as eth_sch
+import gui.eth.eth_shaper as eth_shaper
 
 
 class EthChildView:
@@ -131,11 +132,11 @@ class EthernetConfigMainView:
         dappa.button(self, "EthCtrlConfigXgressFifo", i, self.header_row+i, 5, 22, text, cb)
 
         text = "EthCtrlConfigScheduler["+str(i)+"]"
-        cb = lambda id = i : self.eth_config_scheduler(id)
+        cb = lambda id = i : self.eth_config_scheduler_select(id)
         dappa.button(self, "EthCtrlConfigScheduler", i, self.header_row+i, 6, 22, text, cb)
 
         text = "EthCtrlConfigShaper["+str(i)+"]"
-        cb = lambda id = i : self.eth_ctrl_offloading_select(id)
+        cb = lambda id = i : self.eth_config_shaper_select(id)
         dappa.button(self, "EthCtrlConfigShaper", i, self.header_row+i, 7, 20, text, cb)
 
         text = "EthCtrlConfigSpiConfiguration["+str(i)+"]"
@@ -365,7 +366,7 @@ class EthernetConfigMainView:
         self.draw_dappa_row(row)
 
 
-    def eth_config_scheduler(self, row):
+    def eth_config_scheduler_select(self, row):
         if self.active_dialog != None:
             return
 
@@ -378,11 +379,49 @@ class EthernetConfigMainView:
         y = self.active_dialog.winfo_screenheight()
         width = 360
         height = 90
-        self.active_dialog.geometry("%dx%d+%d+%d" % (width, height, 2*x/5, y/8))
+        self.active_dialog.geometry("%dx%d+%d+%d" % (width, height, 2*x/5, y/6))
 
         # create views and draw
         gen_view = EthChildView(self.active_dialog, width, height)
         gen_view.view = eth_sch.EthConfigSchedulerChildView(self.gui, row, self.configs[row].datavar["EthCtrlConfigScheduler"] )
         gen_view.name = "EthCtrlConfigScheduler"
+        self.active_view = gen_view
+        gen_view.view.draw(gen_view)
+
+
+
+    def on_eth_config_shaper_close(self, row):
+        # backup data
+        self.configs[row].datavar["EthCtrlConfig"]  = self.active_view.view.configs[0].get()
+
+        # destroy view
+        del self.active_view
+        self.active_dialog.destroy()
+        del self.active_dialog
+
+        # re-draw all boxes (dappas) of this row
+        dappa.delete_dappa_row(self, row)
+        self.draw_dappa_row(row)
+
+
+    def eth_config_shaper_select(self, row):
+        if self.active_dialog != None:
+            return
+
+        # function to create dialog window
+        self.active_dialog = tk.Toplevel() # create an instance of toplevel
+        self.active_dialog.protocol("WM_DELETE_WINDOW", lambda : self.on_eth_config_shaper_close(row))
+
+        # set the geometry
+        x = self.active_dialog.winfo_screenwidth()
+        y = self.active_dialog.winfo_screenheight()
+        width = 320
+        height = 130
+        self.active_dialog.geometry("%dx%d+%d+%d" % (width, height, x/2, y/6))
+
+        # create views and draw
+        gen_view = EthChildView(self.active_dialog, width, height)
+        gen_view.view = eth_shaper.EthConfigShaperChildView(self.gui, row, self.configs[row].datavar["EthCtrlConfigShaper"] )
+        gen_view.name = "EthCtrlConfigShaper"
         self.active_view = gen_view
         gen_view.view.draw(gen_view)
