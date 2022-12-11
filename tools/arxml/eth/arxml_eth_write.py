@@ -26,16 +26,39 @@ import arxml.core.lib_defs as lib_defs
 
 
 
-def add_eth_ctrl_sch_parameters_to_container(ctnr, dref, sch_cfg):
+def add_eth_ctrl_shape_parameters_to_container(ctnr, dref, shp_cfg):
     # Insert PARAMETER block
     params = ET.SubElement(ctnr, "PARAMETER-VALUES")
+
+    # Insert parameters
+    refname = dref+"/EthCtrlConfigShaperIdleSlope"
+    lib_conf.insert_conf_param(params, refname, "numerical", "int", str(shp_cfg["EthCtrlConfigShaperIdleSlope"]))
+    refname = dref+"/EthCtrlConfigShaperMaxCredit"
+    lib_conf.insert_conf_param(params, refname, "numerical", "int", str(shp_cfg["EthCtrlConfigShaperMaxCredit"]))
+    refname = dref+"/EthCtrlConfigShaperMinCredit"
+    lib_conf.insert_conf_param(params, refname, "numerical", "int", str(shp_cfg["EthCtrlConfigShaperMinCredit"]))
+
+
+
+def add_eth_ctrl_sched_parameters_to_container(ctnr, dref, sch_cfg):
+    # Create a sub-container for EthCtrlConfigScheduler
+    subctnr = ET.SubElement(ctnr, "SUB-CONTAINERS")
+
+    # Fill parameters EthCtrlConfigScheduler to the sub-container
+    sbc_name = "EthCtrlConfigSchedulerPredecessor"
+    sbc_dref = dref+"/"+sbc_name
+    mdc_ctnr = lib_conf.insert_conf_container(subctnr, sbc_name, "conf", sbc_dref)
+
+    # Insert PARAMETER block
+    params = ET.SubElement(mdc_ctnr, "PARAMETER-VALUES")
 
     # Insert parameters
     refname = dref+"/EthCtrlConfigSchedulerPredecessorOrder"
     lib_conf.insert_conf_param(params, refname, "numerical", "int", str(sch_cfg["EthCtrlConfigSchedulerPredecessorOrder"]))
 
 
-def add_eth_ctrl_egress_parameters_to_container(ctnr, dref, egr_cfg, sch_cfg):
+
+def add_eth_ctrl_egress_parameters_to_container(ctnr, dref, egr_cfg, sch_cfg, shp_cfg):
     # Insert PARAMETER block
     params = ET.SubElement(ctnr, "PARAMETER-VALUES")
 
@@ -56,15 +79,13 @@ def add_eth_ctrl_egress_parameters_to_container(ctnr, dref, egr_cfg, sch_cfg):
     sbc_name = "EthCtrlConfigScheduler"
     sbc_dref = dref+"/"+sbc_name
     mdc_ctnr = lib_conf.insert_conf_container(subctnr3, sbc_name, "conf", sbc_dref)
-
-    # Create a sub-container for EthCtrlConfigScheduler
-    subctnr4 = ET.SubElement(mdc_ctnr, "SUB-CONTAINERS")
+    add_eth_ctrl_sched_parameters_to_container(mdc_ctnr, sbc_dref, sch_cfg)
 
     # Fill parameters EthCtrlConfigScheduler to the sub-container
-    sbc_name = "EthCtrlConfigSchedulerPredecessor"
-    sbc_dref = sbc_dref+"/"+sbc_name
-    mdc_ctnr = lib_conf.insert_conf_container(subctnr4, sbc_name, "conf", sbc_dref)
-    add_eth_ctrl_sch_parameters_to_container(mdc_ctnr, sbc_dref, sch_cfg)
+    sbc_name = "EthCtrlConfigShaper"
+    sbc_dref = dref+"/"+sbc_name
+    mdc_ctnr = lib_conf.insert_conf_container(subctnr3, sbc_name, "conf", sbc_dref)
+    add_eth_ctrl_shape_parameters_to_container(mdc_ctnr, sbc_dref, shp_cfg)
 
 
 
@@ -84,7 +105,7 @@ def add_eth_ctrl_ingress_parameters_to_container(ctnr, dref, egr_cfg):
 
 
 
-def add_eth_ctrl_config_parameters_to_container(ctnr, dref, ecc_cfg, xgrs_cfg, sch_cfg):
+def add_eth_ctrl_config_parameters_to_container(ctnr, dref, ecc_cfg, xgrs_cfg, sch_cfg, shp_cfg):
     if not ecc_cfg:
         print("Warning: EthCtrlConfig is empty!")
         return
@@ -121,7 +142,7 @@ def add_eth_ctrl_config_parameters_to_container(ctnr, dref, ecc_cfg, xgrs_cfg, s
     sbc_name = "EthCtrlConfigEgress"
     sbc_dref = dref+"/"+sbc_name
     mdc_ctnr = lib_conf.insert_conf_container(subctnr2, sbc_name, "conf", sbc_dref)
-    add_eth_ctrl_egress_parameters_to_container(mdc_ctnr, sbc_dref, xgrs_cfg, sch_cfg)
+    add_eth_ctrl_egress_parameters_to_container(mdc_ctnr, sbc_dref, xgrs_cfg, sch_cfg, shp_cfg)
 
     # Fill parameters EthCtrlConfigIngress to the sub-container
     sbc_name = "EthCtrlConfigIngress"
@@ -145,15 +166,6 @@ def update_eth_driver_to_container(ctnrname, root, eth_configs):
     dref = "/AUTOSAR/EcucDefs/Eth/"+ctnrname
     ctnrblk = lib_conf.insert_conf_container(root, ctnrname, "conf", dref)
 
-    # # Parameters
-    # params = ET.SubElement(ctnrblk, "PARAMETER-VALUES")
-    # refname = dref+"/SpiMaxChannel"
-    # lib_conf.insert_conf_param(params, refname, "numerical", "int", str(eth_configs[ctnrname][0].datavar["SpiMaxChannel"]))
-    # refname = dref+"/SpiMaxJob"
-    # lib_conf.insert_conf_param(params, refname, "numerical", "int", str(eth_configs[ctnrname][0].datavar["SpiMaxJob"]))
-    # refname = dref+"/SpiMaxSequence"
-    # lib_conf.insert_conf_param(params, refname, "numerical", "int", str(eth_configs[ctnrname][0].datavar["SpiMaxSequence"]))
-
     # Create a sub-container
     subctnr1 = ET.SubElement(ctnrblk, "SUB-CONTAINERS")
 
@@ -163,7 +175,8 @@ def update_eth_driver_to_container(ctnrname, root, eth_configs):
         ecc_dref = dref+"/"+sctnr_name
         mdc_ctnr = lib_conf.insert_conf_container(subctnr1, sctnr_name, "conf", ecc_dref)
         add_eth_ctrl_config_parameters_to_container(mdc_ctnr, ecc_dref, cfg.datavar[sctnr_name],
-                            cfg.datavar["EthCtrlConfigXgressFifo"], cfg.datavar["EthCtrlConfigScheduler"])
+                            cfg.datavar["EthCtrlConfigXgressFifo"], cfg.datavar["EthCtrlConfigScheduler"],
+                            cfg.datavar["EthCtrlConfigShaper"])
 
 
 
