@@ -217,23 +217,26 @@ def add_eth_ctrl_config_parameters_to_container(ctnr, dref, ecc_cfg, xgrs_cfg, s
 
 
 
-def update_eth_driver_to_container(ctnrname, root, eth_configs):
-    rctnrblk = lib_conf.find_ecuc_container_block(ctnrname, root)
-    
-    # Delete node to rewrite new values
-    if None != rctnrblk:
-        root.remove(rctnrblk)
-    
-    # Create a new container - Eth Driver
-    dref = "/AUTOSAR/EcucDefs/Eth/"+ctnrname
-    ctnrblk = lib_conf.insert_conf_container(root, ctnrname, "conf", dref)
+def update_eth_configset_to_container(ctnrname, root, eth_configs):
+    # remove all old EthConfigSet nodes
+    rctnrblk = root
+    while rctnrblk != None:
+        rctnrblk = lib_conf.find_ecuc_container_block(ctnrname, root)
+        # Delete node to rewrite new values
+        if None != rctnrblk:
+            root.remove(rctnrblk)
 
-    # Create a sub-container
-    subctnr1 = ET.SubElement(ctnrblk, "SUB-CONTAINERS")
-
-    # Create ECUC Module Configs under above Sub-container
-    sctnr_name = "EthCtrlConfig"
+    # create new EthConfigSet nodes
     for cfg in eth_configs:
+        # Create a new container - Eth Driver
+        dref = "/AUTOSAR/EcucDefs/Eth/"+ctnrname
+        ctnrblk = lib_conf.insert_conf_container(root, ctnrname, "conf", dref)
+
+        # Create a sub-container
+        subctnr1 = ET.SubElement(ctnrblk, "SUB-CONTAINERS")
+
+        # Create ECUC Module Configs under above Sub-container
+        sctnr_name = "EthCtrlConfig"
         ecc_dref = dref+"/"+sctnr_name
         mdc_ctnr = lib_conf.insert_conf_container(subctnr1, sctnr_name, "conf", ecc_dref)
         add_eth_ctrl_config_parameters_to_container(mdc_ctnr, ecc_dref, cfg.datavar[sctnr_name],
@@ -243,37 +246,25 @@ def update_eth_driver_to_container(ctnrname, root, eth_configs):
 
 
 def update_eth_general_to_container(ctnrname, root, eth_configs):
-    rctnrblk = lib_conf.find_ecuc_container_block(ctnrname, root)
+    # remove all old EthGeneral nodes
+    rctnrblk = root
+    while rctnrblk != None:
+        rctnrblk = lib_conf.find_ecuc_container_block(ctnrname, root)
+        # Delete node to rewrite new values
+        if None != rctnrblk:
+            root.remove(rctnrblk)
 
-    # Delete node to rewrite new values
-    if None != rctnrblk:
-        root.remove(rctnrblk)
-
-    # Create a new container - SpiDriver
-    dref = "/AUTOSAR/EcucDefs/Eth/"+ctnrname
-    ctnrblk = lib_conf.insert_conf_container(root, ctnrname, "conf", dref)
+    # create new EthGeneral nodes
+    for cfg in eth_configs:
+        # Create a new container - EthGeneral
+        dref = "/AUTOSAR/EcucDefs/Eth/"+ctnrname
+        ctnrblk = lib_conf.insert_conf_container(root, ctnrname, "conf", dref)
 
     return
     # Parameters
     params = ET.SubElement(ctnrblk, "PARAMETER-VALUES")
     refname = dref+"/SpiCancelApi"
     lib_conf.insert_conf_param(params, refname, "numerical", "int", str(eth_configs[ctnrname][0].datavar["SpiCancelApi"]))
-    refname = dref+"/SpiChannelBuffersAllowed"
-    lib_conf.insert_conf_param(params, refname, "numerical", "int", str(eth_configs[ctnrname][0].datavar["SpiChannelBuffersAllowed"]))
-    refname = dref+"/SpiDevErrorDetect"
-    lib_conf.insert_conf_param(params, refname, "numerical", "int", str(eth_configs[ctnrname][0].datavar["SpiDevErrorDetect"]))
-    refname = dref+"/SpiHwStatusApi"
-    lib_conf.insert_conf_param(params, refname, "numerical", "int", str(eth_configs[ctnrname][0].datavar["SpiHwStatusApi"]))
-    refname = dref+"/SpiInterruptibleSeqAllowed"
-    lib_conf.insert_conf_param(params, refname, "numerical", "int", str(eth_configs[ctnrname][0].datavar["SpiInterruptibleSeqAllowed"]))
-    refname = dref+"/SpiLevelDelivered"
-    lib_conf.insert_conf_param(params, refname, "numerical", "int", str(eth_configs[ctnrname][0].datavar["SpiLevelDelivered"]))
-    refname = dref+"/SpiMainFunctionPeriod"
-    lib_conf.insert_conf_param(params, refname, "numerical", "int", str(eth_configs[ctnrname][0].datavar["SpiMainFunctionPeriod"]))
-    refname = dref+"/SpiSupportConcurrentSyncTransmit"
-    lib_conf.insert_conf_param(params, refname, "numerical", "int", str(eth_configs[ctnrname][0].datavar["SpiSupportConcurrentSyncTransmit"]))
-    refname = dref+"/SpiVersionInfoApi"
-    lib_conf.insert_conf_param(params, refname, "numerical", "int", str(eth_configs[ctnrname][0].datavar["SpiVersionInfoApi"]))
 
 
 
@@ -313,7 +304,7 @@ def update_arxml(ar_file, eth_configs):
         return
 
     # Add Eth contents to CONTAINER
-    update_eth_driver_to_container("EthConfigSet", containers, eth_configs)
+    update_eth_configset_to_container("EthConfigSet", containers, eth_configs)
     update_eth_general_to_container("EthGeneral", containers, eth_configs)
 
     # Save ARXML contents to file
