@@ -123,6 +123,7 @@ def uc_block_click_handler(gui):
     UcView.geometry("%dx%d+%d+%d" % (width, height, gui.main_view.xsize*25/90, gui.main_view.ysize - height*4))
     UcView.title("Microcontroller Configs")
     UcView.protocol("WM_DELETE_WINDOW", on_uc_view_close)
+    UcView.attributes('-topmost',True)
 
     col1_width = 22
     col2_width = 30

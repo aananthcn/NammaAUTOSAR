@@ -211,6 +211,7 @@ class SpiJobTab:
         ysize = 400
         self.active_dialog = tk.Toplevel(width=xsize, height=ysize) # create an instance of toplevel
         self.active_dialog.protocol("WM_DELETE_WINDOW", lambda : self.channel_list_select_close(row))
+        self.active_dialog.attributes('-topmost',True)
         x = self.active_dialog.winfo_screenwidth()
         y = self.active_dialog.winfo_screenheight()
         self.active_dialog.geometry("+%d+%d" % (0 + x/3, y/12))

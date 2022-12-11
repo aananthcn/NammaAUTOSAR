@@ -291,6 +291,7 @@ class AlarmTab:
         # function to create dialog window
         self.active_dialog = tk.Toplevel() # create an instance of toplevel
         self.active_dialog.protocol("WM_DELETE_WINDOW", lambda : self.on_autostart_dialog_close(row))
+        self.active_dialog.attributes('-topmost',True)
 
         # show all app modes
         self.active_widget = tk.Listbox(self.active_dialog, selectmode=tk.MULTIPLE, width=40, height=15)

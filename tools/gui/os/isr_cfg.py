@@ -259,6 +259,7 @@ class IsrTab:
         # function to create dialog window
         self.active_dialog = tk.Toplevel() # create an instance of toplevel
         self.active_dialog.protocol("WM_DELETE_WINDOW", lambda : self.on_resource_dialog_close(id))
+        self.active_dialog.attributes('-topmost',True)
 
         # show all app modes
         self.active_widget = tk.Listbox(self.active_dialog, selectmode=tk.MULTIPLE, width=40, height=15)
@@ -269,46 +270,4 @@ class IsrTab:
                 if res in self.sg_isrs[id]["RESOURCE"]:
                     self.active_widget.selection_set(i)
         self.active_widget.pack()
-
-
-    # def on_message_dialog_close(self, isr_id):
-    #     # remove old selections
-    #     if "MESSAGE" in self.sg_isrs[isr_id]:
-    #         del self.sg_isrs[isr_id]["MESSAGE"][:]
-    #     else:
-    #         self.sg_isrs[isr_id]["MESSAGE"] = []
-
-    #     # update new selections
-    #     if len(self.active_widget.curselection()):
-    #         for i in self.active_widget.curselection():
-    #             self.sg_isrs[isr_id]["MESSAGE"].append(self.active_widget.get(i))
-        
-    #     # dialog elements are no longer needed, destroy them. Else, new dialogs will not open!
-    #     self.active_widget.destroy()
-    #     del self.active_widget
-    #     self.active_dialog.destroy()
-    #     del self.active_dialog
-
-    #     # refresh screen
-    #     self.update()
-
-
-    # def select_messages(self, id):
-    #     if self.active_dialog != None:
-    #         return
-
-    #     # function to create dialog window
-    #     self.active_dialog = tk.Toplevel() # create an instance of toplevel
-    #     self.active_dialog.protocol("WM_DELETE_WINDOW", lambda : self.on_message_dialog_close(id))
-
-    #     # show all app modes
-    #     self.active_widget = tk.Listbox(self.active_dialog, selectmode=tk.MULTIPLE, width=40, height=15)
-    #     for i, obj in enumerate(self.mstab.msgs_str):
-    #         msg = obj.get()
-    #         self.active_widget.insert(i, msg)
-    #         if "MESSAGE" in self.sg_isrs[id]:
-    #             if msg in self.sg_isrs[id]["MESSAGE"]:
-    #                 self.active_widget.selection_set(i)
-    #     self.active_widget.pack()
-
 

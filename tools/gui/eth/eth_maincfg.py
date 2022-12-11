@@ -221,12 +221,13 @@ class EthernetConfigMainView:
         # function to create dialog window
         self.active_dialog = tk.Toplevel() # create an instance of toplevel
         self.active_dialog.protocol("WM_DELETE_WINDOW", lambda : self.on_eth_general_select_close(row))
+        self.active_dialog.attributes('-topmost',True)
 
         # set the geometry
         x = self.active_dialog.winfo_screenwidth()
         y = self.active_dialog.winfo_screenheight()
         width = 350
-        height = 300
+        height = 240
         self.active_dialog.geometry("%dx%d+%d+%d" % (width, height, x/10, y/5))
 
         # create views and draw
@@ -240,7 +241,7 @@ class EthernetConfigMainView:
 
     def on_eth_ctrl_offloading_select_close(self, row):
         # backup data
-        self.configs[row].datavar["EthCtrlOffloading"]  = self.active_view.view.configs[0].get()
+        self.configs[row].datavar["EthCtrlOffloading"] = self.active_view.view.configs[0].get()
 
         # destroy view
         del self.active_view
@@ -259,12 +260,13 @@ class EthernetConfigMainView:
         # function to create dialog window
         self.active_dialog = tk.Toplevel() # create an instance of toplevel
         self.active_dialog.protocol("WM_DELETE_WINDOW", lambda : self.on_eth_ctrl_offloading_select_close(row))
+        self.active_dialog.attributes('-topmost',True)
 
         # set the geometry
         x = self.active_dialog.winfo_screenwidth()
         y = self.active_dialog.winfo_screenheight()
         width = 370
-        height = 170
+        height = 110
         self.active_dialog.geometry("%dx%d+%d+%d" % (width, height, x/8, y/5))
 
         # create views and draw
@@ -278,7 +280,7 @@ class EthernetConfigMainView:
 
     def on_eth_ctrl_config_select_close(self, row):
         # backup data
-        self.configs[row].datavar["EthCtrlConfig"]  = self.active_view.view.configs[0].get()
+        self.configs[row].datavar["EthCtrlConfig"] = self.active_view.view.configs[0].get()
 
         # destroy view
         del self.active_view
@@ -297,12 +299,13 @@ class EthernetConfigMainView:
         # function to create dialog window
         self.active_dialog = tk.Toplevel() # create an instance of toplevel
         self.active_dialog.protocol("WM_DELETE_WINDOW", lambda : self.on_eth_ctrl_config_select_close(row))
+        self.active_dialog.attributes('-topmost',True)
 
         # set the geometry
         x = self.active_dialog.winfo_screenwidth()
         y = self.active_dialog.winfo_screenheight()
         width = 400
-        height = 290
+        height = 240
         self.active_dialog.geometry("%dx%d+%d+%d" % (width, height, x/4, y/5))
 
         # create views and draw
@@ -316,7 +319,7 @@ class EthernetConfigMainView:
 
     def on_eth_config_xgress_fifo_select_close(self, row):
         # backup data
-        self.configs[row].datavar["EthCtrlConfigXgressFifo"]  = self.active_view.view.configs[0].get()
+        self.configs[row].datavar["EthCtrlConfigXgressFifo"] = self.active_view.view.configs[0].get()
 
         # destroy view
         del self.active_view
@@ -335,12 +338,13 @@ class EthernetConfigMainView:
         # function to create dialog window
         self.active_dialog = tk.Toplevel() # create an instance of toplevel
         self.active_dialog.protocol("WM_DELETE_WINDOW", lambda : self.on_eth_config_xgress_fifo_select_close(row))
+        self.active_dialog.attributes('-topmost',True)
 
         # set the geometry
         x = self.active_dialog.winfo_screenwidth()
         y = self.active_dialog.winfo_screenheight()
         width = 400
-        height = 240
+        height = 190
         self.active_dialog.geometry("%dx%d+%d+%d" % (width, height, x/4, y/5))
 
         # create views and draw
@@ -354,7 +358,7 @@ class EthernetConfigMainView:
 
     def on_eth_config_scheduler_close(self, row):
         # backup data
-        self.configs[row].datavar["EthCtrlConfigScheduler"]  = self.active_view.view.configs[0].get()
+        self.configs[row].datavar["EthCtrlConfigScheduler"] = self.active_view.view.configs[0].get()
 
         # destroy view
         del self.active_view
@@ -373,12 +377,13 @@ class EthernetConfigMainView:
         # function to create dialog window
         self.active_dialog = tk.Toplevel() # create an instance of toplevel
         self.active_dialog.protocol("WM_DELETE_WINDOW", lambda : self.on_eth_config_scheduler_close(row))
+        self.active_dialog.attributes('-topmost',True)
 
         # set the geometry
         x = self.active_dialog.winfo_screenwidth()
         y = self.active_dialog.winfo_screenheight()
         width = 370
-        height = 90
+        height = 40
         self.active_dialog.geometry("%dx%d+%d+%d" % (width, height, 2*x/5, y/5))
 
         # create views and draw
@@ -392,7 +397,7 @@ class EthernetConfigMainView:
 
     def on_eth_config_shaper_close(self, row):
         # backup data
-        self.configs[row].datavar["EthCtrlConfigShaper"]  = self.active_view.view.configs[0].get()
+        self.configs[row].datavar["EthCtrlConfigShaper"] = self.active_view.view.configs[0].get()
 
         # destroy view
         del self.active_view
@@ -411,12 +416,13 @@ class EthernetConfigMainView:
         # function to create dialog window
         self.active_dialog = tk.Toplevel() # create an instance of toplevel
         self.active_dialog.protocol("WM_DELETE_WINDOW", lambda : self.on_eth_config_shaper_close(row))
+        self.active_dialog.attributes('-topmost',True)
 
         # set the geometry
         x = self.active_dialog.winfo_screenwidth()
         y = self.active_dialog.winfo_screenheight()
         width = 330
-        height = 130
+        height = 80
         self.active_dialog.geometry("%dx%d+%d+%d" % (width, height, x/2, y/5))
 
         # create views and draw
@@ -430,7 +436,7 @@ class EthernetConfigMainView:
 
     def on_eth_config_spicfg_close(self, row):
         # backup data
-        self.configs[row].datavar["EthCtrlConfigSpiConfiguration"]  = self.active_view.view.configs[0].get()
+        self.configs[row].datavar["EthCtrlConfigSpiConfiguration"] = self.active_view.view.configs[0].get()
 
         # destroy view
         del self.active_view
@@ -449,12 +455,13 @@ class EthernetConfigMainView:
         # function to create dialog window
         self.active_dialog = tk.Toplevel() # create an instance of toplevel
         self.active_dialog.protocol("WM_DELETE_WINDOW", lambda : self.on_eth_config_spicfg_close(row))
+        self.active_dialog.attributes('-topmost',True)
 
         # set the geometry
         x = self.active_dialog.winfo_screenwidth()
         y = self.active_dialog.winfo_screenheight()
         width = 470
-        height = 370
+        height = 310
         self.active_dialog.geometry("%dx%d+%d+%d" % (width, height, x/2, y/5))
 
         # parse ARXML for SPI sequence

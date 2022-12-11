@@ -25,114 +25,29 @@ import arxml.core.lib_conf as lib_conf
 import arxml.core.lib_defs as lib_defs
 
 
-
-def add_eth_chan_parameters_to_container(ctnr, cdref, chan_cfg):
-    chan_cfg.get() # pull data from UI
+def add_eth_ctrl_config_parameters_to_container(ctnr, dref, ecc_cfg):
     params = ET.SubElement(ctnr, "PARAMETER-VALUES")
-    refname = cdref+"/SpiChannelId"
-    lib_conf.insert_conf_param(params, refname, "numerical", "int", str(chan_cfg.datavar["SpiChannelId"]))
-    refname = cdref+"/SpiChannelType"
-    lib_conf.insert_conf_param(params, refname, "numerical", "enum", str(chan_cfg.datavar["SpiChannelType"]))
-    refname = cdref+"/SpiDataWidth"
-    lib_conf.insert_conf_param(params, refname, "numerical", "int", str(chan_cfg.datavar["SpiDataWidth"]))
-    refname = cdref+"/SpiDefaultData"
-    lib_conf.insert_conf_param(params, refname, "numerical", "int", str(chan_cfg.datavar["SpiDefaultData"]))
-    refname = cdref+"/SpiEbMaxLength"
-    lib_conf.insert_conf_param(params, refname, "numerical", "int", str(chan_cfg.datavar["SpiEbMaxLength"]))
-    refname = cdref+"/SpiIbNBuffers"
-    lib_conf.insert_conf_param(params, refname, "numerical", "int", str(chan_cfg.datavar["SpiIbNBuffers"]))
-    refname = cdref+"/SpiTransferStart"
-    lib_conf.insert_conf_param(params, refname, "numerical", "enum", str(chan_cfg.datavar["SpiTransferStart"]))
+    refname = dref+"/EthCtrlConfigSwBufferHandling"
+    lib_conf.insert_conf_param(params, refname, "numerical", "bool", str(ecc_cfg["EthCtrlConfigSwBufferHandling"]))
+    refname = dref+"/EthCtrlEnableMii"
+    lib_conf.insert_conf_param(params, refname, "numerical", "bool", str(ecc_cfg["EthCtrlEnableMii"]))
+    refname = dref+"/EthCtrlEnableRxInterrupt"
+    lib_conf.insert_conf_param(params, refname, "numerical", "bool", str(ecc_cfg["EthCtrlEnableRxInterrupt"]))
+    refname = dref+"/EthCtrlEnableSpiInterface"
+    lib_conf.insert_conf_param(params, refname, "numerical", "bool", str(ecc_cfg["EthCtrlEnableSpiInterface"]))
+    refname = dref+"/EthCtrlEnableTxInterrupt"
+    lib_conf.insert_conf_param(params, refname, "numerical", "bool", str(ecc_cfg["EthCtrlEnableTxInterrupt"]))
+    refname = dref+"/EthCtrlIdx"
+    lib_conf.insert_conf_param(params, refname, "numerical", "int", str(ecc_cfg["EthCtrlIdx"]))
+    refname = dref+"/EthCtrlMacLayerSpeed"
+    lib_conf.insert_conf_param(params, refname, "numerical", "enum", str(ecc_cfg["EthCtrlMacLayerSpeed"]))
+    refname = dref+"/EthCtrlMacLayerType"
+    lib_conf.insert_conf_param(params, refname, "numerical", "enum", str(ecc_cfg["EthCtrlMacLayerType"]))
+    refname = dref+"/EthCtrlMacLayerSubType"
+    lib_conf.insert_conf_param(params, refname, "numerical", "enum", str(ecc_cfg["EthCtrlMacLayerSubType"]))
+    refname = dref+"/EthCtrlPhyAddress"
+    lib_conf.insert_conf_param(params, refname, "text", "string", str(ecc_cfg["EthCtrlPhyAddress"]))
 
-
-
-def add_eth_exd_parameters_to_container(ctnr, cdref, exd_cfg):
-    exd_cfg.get() # pull data from UI
-    params = ET.SubElement(ctnr, "PARAMETER-VALUES")
-    refname = cdref+"/SpiBaudrate"
-    lib_conf.insert_conf_param(params, refname, "numerical", "float", str(exd_cfg.datavar["SpiBaudrate"]))
-    refname = cdref+"/SpiCsIdentifier"
-    lib_conf.insert_conf_param(params, refname, "text", "string", str(exd_cfg.datavar["SpiCsIdentifier"]))
-    refname = cdref+"/SpiCsPolarity"
-    lib_conf.insert_conf_param(params, refname, "numerical", "enum", str(exd_cfg.datavar["SpiCsPolarity"]))
-    refname = cdref+"/SpiCsSelection"
-    lib_conf.insert_conf_param(params, refname, "numerical", "enum", str(exd_cfg.datavar["SpiCsSelection"]))
-    refname = cdref+"/SpiDataShiftEdge"
-    lib_conf.insert_conf_param(params, refname, "numerical", "enum", str(exd_cfg.datavar["SpiDataShiftEdge"]))
-    refname = cdref+"/SpiEnableCs"
-    lib_conf.insert_conf_param(params, refname, "numerical", "bool", str(exd_cfg.datavar["SpiEnableCs"]))
-    refname = cdref+"/SpiHwUnit"
-    lib_conf.insert_conf_param(params, refname, "numerical", "enum", str(exd_cfg.datavar["SpiHwUnit"]))
-    refname = cdref+"/SpiShiftClockIdleLevel"
-    lib_conf.insert_conf_param(params, refname, "numerical", "enum", str(exd_cfg.datavar["SpiShiftClockIdleLevel"]))
-    refname = cdref+"/SpiTimeClk2Cs"
-    lib_conf.insert_conf_param(params, refname, "numerical", "float", str(exd_cfg.datavar["SpiTimeClk2Cs"]))
-    refname = cdref+"/SpiTimeCs2Clk"
-    lib_conf.insert_conf_param(params, refname, "numerical", "float", str(exd_cfg.datavar["SpiTimeCs2Clk"]))
-    refname = cdref+"/SpiTimeCs2Cs"
-    lib_conf.insert_conf_param(params, refname, "numerical", "float", str(exd_cfg.datavar["SpiTimeCs2Cs"]))
-    refname = cdref+"/Custom/DIO"
-    lib_conf.insert_conf_param(params, refname, "numerical", "enum", str(exd_cfg.datavar["DIO"]))
-    refname = cdref+"/Custom/SpiFrameFormat"
-    lib_conf.insert_conf_param(params, refname, "numerical", "enum", str(exd_cfg.datavar["SpiFrameFormat"]))
-
-
-
-def add_eth_job_parameters_to_container(ctnr, cdref, job_cfg):
-    job_cfg.get() # pull data from UI
-    params = ET.SubElement(ctnr, "PARAMETER-VALUES")
-    refname = cdref+"/SpiJobEndNotification"
-    lib_conf.insert_conf_param(params, refname, "text", "func", str(job_cfg.datavar["SpiJobEndNotification"]))
-    refname = cdref+"/SpiJobId"
-    lib_conf.insert_conf_param(params, refname, "numerical", "int", str(job_cfg.datavar["SpiJobId"]))
-    refname = cdref+"/SpiJobPriority"
-    lib_conf.insert_conf_param(params, refname, "numerical", "int", str(job_cfg.datavar["SpiJobPriority"]))
-    refname = cdref+"/SpiDeviceAssignment"
-    lib_conf.insert_conf_param(params, refname, "numerical", "enum", str(job_cfg.datavar["SpiDeviceAssignment"]))
-
-    # sub-container 2
-    subctnr2 = ET.SubElement(ctnr, "SUB-CONTAINERS")
-    subctnr2_name = "SpiChannelList"
-    dref2 = cdref+"/"+subctnr2_name
-    for chan in job_cfg.datavar["SpiChannelList"]:
-        cctnrblk2 = lib_conf.insert_conf_container(subctnr2, subctnr2_name, "conf", dref2)
-        params = ET.SubElement(cctnrblk2, "PARAMETER-VALUES")
-        # print("add_eth_job_parameters_to_container()", chan)
-        refname = dref2+"/SpiChannelIndex"
-        lib_conf.insert_conf_param(params, refname, "numerical", "int", str(chan["SpiChannelIndex"]))
-        refname = dref2+"/SpiChannelAssignment"
-        lib_conf.insert_conf_param(params, refname, "numerical", "int", str(chan["SpiChannelAssignment"]))
-
-
-def add_eth_seq_parameters_to_container(ctnr, cdref, seq_cfg):
-    seq_cfg.get() # pull data from UI
-    params = ET.SubElement(ctnr, "PARAMETER-VALUES")
-    refname = cdref+"/SpiInterruptibleSequence"
-    lib_conf.insert_conf_param(params, refname, "numerical", "bool", str(seq_cfg.datavar["SpiInterruptibleSequence"]))
-    refname = cdref+"/SpiSeqEndNotification"
-    lib_conf.insert_conf_param(params, refname, "text", "func", str(seq_cfg.datavar["SpiSeqEndNotification"]))
-    refname = cdref+"/SpiSequenceId"
-    lib_conf.insert_conf_param(params, refname, "numerical", "int", str(seq_cfg.datavar["SpiSequenceId"]))
-    refname = cdref+"/Custom/SpiSequenceName"
-    lib_conf.insert_conf_param(params, refname, "text", "enum", str(seq_cfg.datavar["SpiSequenceName"]))
-
-    # sub-container 2
-    subctnr2 = ET.SubElement(ctnr, "SUB-CONTAINERS")
-    subctnr2_name = "SpiJobAssignment"
-    dref2 = cdref+"/"+subctnr2_name
-    for job in seq_cfg.datavar["SpiJobAssignment"]:
-        cctnrblk2 = lib_conf.insert_conf_container(subctnr2, subctnr2_name, "conf", dref2)
-        params = ET.SubElement(cctnrblk2, "PARAMETER-VALUES")
-        refname = dref2+"/SpiJob"
-        lib_conf.insert_conf_param(params, refname, "numerical", "int", str(job))
-
-
-def add_eth_chanlist_parameters_to_container(ctnr, cdref, chlst_cfg):
-    chlst_cfg.get() # pull data from UI
-    params = ET.SubElement(ctnr, "PARAMETER-VALUES")
-    refname = cdref+"/SpiInterruptibleSequence"
-    lib_conf.insert_conf_param(params, refname, "numerical", "bool", str(chlst_cfg.datavar["SpiInterruptibleSequence"]))
-    refname = cdref+"/SpiSeqEndNotification"
 
 
 
@@ -143,51 +58,31 @@ def update_eth_driver_to_container(ctnrname, root, eth_configs):
     if None != rctnrblk:
         root.remove(rctnrblk)
     
-    # pull data from UI
-    eth_configs[ctnrname][0].get()
+    # # pull data from UI
+    # eth_configs[ctnrname][0].get()
 
-    # Create a new container - SpiDriver
-    dref = "/AUTOSAR/EcucDefs/Spi/"+ctnrname
+    # Create a new container - Eth Driver
+    dref = "/AUTOSAR/EcucDefs/Eth/"+ctnrname
     ctnrblk = lib_conf.insert_conf_container(root, ctnrname, "conf", dref)
 
-    # Parameters
-    params = ET.SubElement(ctnrblk, "PARAMETER-VALUES")
-    refname = dref+"/SpiMaxChannel"
-    lib_conf.insert_conf_param(params, refname, "numerical", "int", str(eth_configs[ctnrname][0].datavar["SpiMaxChannel"]))
-    refname = dref+"/SpiMaxJob"
-    lib_conf.insert_conf_param(params, refname, "numerical", "int", str(eth_configs[ctnrname][0].datavar["SpiMaxJob"]))
-    refname = dref+"/SpiMaxSequence"
-    lib_conf.insert_conf_param(params, refname, "numerical", "int", str(eth_configs[ctnrname][0].datavar["SpiMaxSequence"]))
+    # # Parameters
+    # params = ET.SubElement(ctnrblk, "PARAMETER-VALUES")
+    # refname = dref+"/SpiMaxChannel"
+    # lib_conf.insert_conf_param(params, refname, "numerical", "int", str(eth_configs[ctnrname][0].datavar["SpiMaxChannel"]))
+    # refname = dref+"/SpiMaxJob"
+    # lib_conf.insert_conf_param(params, refname, "numerical", "int", str(eth_configs[ctnrname][0].datavar["SpiMaxJob"]))
+    # refname = dref+"/SpiMaxSequence"
+    # lib_conf.insert_conf_param(params, refname, "numerical", "int", str(eth_configs[ctnrname][0].datavar["SpiMaxSequence"]))
 
     # Create a sub-container    
     subctnr1 = ET.SubElement(ctnrblk, "SUB-CONTAINERS")
 
     # Create ECUC Module Configs under above Sub-container
-    for chan in eth_configs["SpiChannel"]:
-        subctnr1_name = "SpiChannel"
-        dref1 = dref+"/"+subctnr1_name
-        cctnrblk1 = lib_conf.insert_conf_container(subctnr1, subctnr1_name, "conf", dref1)
-        add_eth_chan_parameters_to_container(cctnrblk1, dref1, chan)
-
-    for dev in eth_configs["SpiExternalDevice"]:
-        subctnr1_name = "SpiExternalDevice"
-        dref1 = dref+"/"+subctnr1_name
-        cctnrblk1 = lib_conf.insert_conf_container(subctnr1, subctnr1_name, "conf", dref1)
-        add_eth_exd_parameters_to_container(cctnrblk1, dref1, dev)
-
-    for job in eth_configs["SpiJob"]:
-        subctnr1_name = "SpiJob"
-        dref1 = dref+"/"+subctnr1_name
-        cctnrblk1 = lib_conf.insert_conf_container(subctnr1, subctnr1_name, "conf", dref1)
-        add_eth_job_parameters_to_container(cctnrblk1, dref1, job)
-
-
-    for seq in eth_configs["SpiSequence"]:
-        subctnr1_name = "SpiSequence"
-        dref1 = dref+"/"+subctnr1_name
-        cctnrblk1 = lib_conf.insert_conf_container(subctnr1, subctnr1_name, "conf", dref1)
-        add_eth_seq_parameters_to_container(cctnrblk1, dref1, seq)
-
+    sctnr_name = "EthCtrlConfig"
+    for cfg in eth_configs:
+        ecc_dref   = dref+"/"+sctnr_name
+        ecc_c_ctnr = lib_conf.insert_conf_container(subctnr1, sctnr_name, "conf", ecc_dref)
+        add_eth_ctrl_config_parameters_to_container(ecc_c_ctnr, ecc_dref, cfg.datavar[sctnr_name])
 
 
 
@@ -198,13 +93,14 @@ def update_eth_general_to_container(ctnrname, root, eth_configs):
     if None != rctnrblk:
         root.remove(rctnrblk)
 
-    # pull data from UI
-    eth_configs[ctnrname][0].get()
+    # # pull data from UI
+    # eth_configs[ctnrname][0].get()
 
     # Create a new container - SpiDriver
-    dref = "/AUTOSAR/EcucDefs/Spi/"+ctnrname
+    dref = "/AUTOSAR/EcucDefs/Eth/"+ctnrname
     ctnrblk = lib_conf.insert_conf_container(root, ctnrname, "conf", dref)
 
+    return
     # Parameters
     params = ET.SubElement(ctnrblk, "PARAMETER-VALUES")
     refname = dref+"/SpiCancelApi"
@@ -228,43 +124,20 @@ def update_eth_general_to_container(ctnrname, root, eth_configs):
 
 
 
-def update_eth_pubinfo_to_container(ctnrname, root, eth_configs):
-    rctnrblk = lib_conf.find_ecuc_container_block(ctnrname, root)
-
-    # Delete node to rewrite new values
-    if None != rctnrblk:
-        root.remove(rctnrblk)
-
-    # pull data from UI
-    eth_configs["SpiDriver"][0].get()
-
-    # Create a new container - SpiDriver
-    dref = "/AUTOSAR/EcucDefs/Spi/"+ctnrname
-    ctnrblk = lib_conf.insert_conf_container(root, ctnrname, "conf", dref)
-
-    # Parameters
-    params = ET.SubElement(ctnrblk, "PARAMETER-VALUES")
-    refname = dref+"/SpiMaxHwUnit"
-    lib_conf.insert_conf_param(params, refname, "numerical", "int", str(eth_configs["SpiDriver"][0].datavar["SpiMaxHwUnit"]))
-
-
-
 def print_eth_configs(eth_configs):
     for cfg in eth_configs:
         print(cfg.datavar)
 
 
 
-# # This function updates NammaAUTOSAR Spi parameters into its container
+# # This function updates NammaAUTOSAR Eth parameters into its container
 def update_arxml(ar_file, eth_configs):
-    print("arxml_eth_write.py: update_arxml called!")
-    print_eth_configs(eth_configs)
-    return
     # Following line is added to avoid ns0 prefix added
     ET.register_namespace('', "http://autosar.org/schema/r4.0")
     ET.register_namespace('xsi', "http://www.w3.org/2001/XMLSchema-instance")
     
-    # print_eth_configs(eth_configs)
+    print("arxml_eth_write.py: update_arxml called!")
+    print_eth_configs(eth_configs)
     
     # Read ARXML File
     tree = ET.parse(ar_file)
@@ -276,7 +149,7 @@ def update_arxml(ar_file, eth_configs):
         return
         
     # Now find if Mcu module-conf is already there in insertion-point
-    modname = "Spi"
+    modname = "Eth"
     modconf = lib_conf.find_module_conf_values(modname, ar_isp)
     if modconf == None:
         modconf = lib_conf.insert_ecuc_module_conf(ar_isp, modname)
@@ -286,16 +159,15 @@ def update_arxml(ar_file, eth_configs):
     if containers == None:
         return
 
-    # Add Spi Tab contents to CONTAINER
-    update_eth_driver_to_container("SpiDriver", containers, eth_configs)
-    update_eth_general_to_container("SpiGeneral", containers, eth_configs)
-    update_eth_pubinfo_to_container("SpiPublishedInformation", containers, eth_configs)
+    # Add Eth contents to CONTAINER
+    update_eth_driver_to_container("EthConfigSet", containers, eth_configs)
+    update_eth_general_to_container("EthGeneral", containers, eth_configs)
 
     # Save ARXML contents to file
     ET.indent(tree, space="\t", level=0)
     tree.write(ar_file, encoding="utf-8", xml_declaration=True)
     lib.finalize_arxml_doc(ar_file)
-    print("Info: Spi Configs are saved to " + ar_file)    
+    print("Info: Eth Configs are saved to " + ar_file)    
 
 
 

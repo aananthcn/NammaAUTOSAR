@@ -117,16 +117,5 @@ class EthConfigSpiConfigChildView:
         dappa.place_column_heading(self, row=0, col=0)
         self.draw_dappas()
 
-        # Place save button
-        space = tk.Label(self.scrollw.mnf)
-        space.grid(row=14, column=1)
-        saveb = tk.Button(self.scrollw.mnf, width=10, text="Save Configs", command=self.save_data, bg="#206020", fg='white')
-        saveb.grid(row=15, column=1)
-
         # Support scrollable view
         self.scrollw.scroll()
-
-
-
-    def save_data(self):
-        self.tab_struct.save_cb()
