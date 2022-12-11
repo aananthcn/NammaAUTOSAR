@@ -126,7 +126,43 @@ def add_eth_ctrl_ingress_parameters_to_container(ctnr, dref, igr_cfg):
 
 
 
-def add_eth_ctrl_config_parameters_to_container(ctnr, dref, ecc_cfg, xgrs_cfg, sch_cfg, shp_cfg):
+def add_eth_ctrl_spi_parameters_to_container(ctnr, dref, spi_cfg):
+    # Insert PARAMETER block
+    params = ET.SubElement(ctnr, "PARAMETER-VALUES")
+
+    # Insert parameters
+    refname = dref+"/EthCtrlConfigSpiChunkPayloadSize"
+    lib_conf.insert_conf_param(params, refname, "numerical", "int", str(spi_cfg["EthCtrlConfigSpiChunkPayloadSize"]))
+    refname = dref+"/EthCtrlConfigSpiCommRetries"
+    lib_conf.insert_conf_param(params, refname, "numerical", "int", str(spi_cfg["EthCtrlConfigSpiCommRetries"]))
+    refname = dref+"/EthCtrlConfigSpiCommTimeout"
+    lib_conf.insert_conf_param(params, refname, "numerical", "float", str(spi_cfg["EthCtrlConfigSpiCommTimeout"]))
+    refname = dref+"/EthCtrlConfigSpiEnableControlDataProtection"
+    lib_conf.insert_conf_param(params, refname, "numerical", "bool", str(spi_cfg["EthCtrlConfigSpiEnableControlDataProtection"]))
+    refname = dref+"/EthCtrlConfigSpiEnableRxCSAlign"
+    lib_conf.insert_conf_param(params, refname, "numerical", "bool", str(spi_cfg["EthCtrlConfigSpiEnableRxCSAlign"]))
+    refname = dref+"/EthCtrlConfigSpiEnableRxCutThrough"
+    lib_conf.insert_conf_param(params, refname, "numerical", "bool", str(spi_cfg["EthCtrlConfigSpiEnableRxCutThrough"]))
+    refname = dref+"/EthCtrlConfigSpiEnableRxZeroAlign"
+    lib_conf.insert_conf_param(params, refname, "numerical", "bool", str(spi_cfg["EthCtrlConfigSpiEnableRxZeroAlign"]))
+    refname = dref+"/EthCtrlConfigSpiEnableTransmitDataHdrSequence"
+    lib_conf.insert_conf_param(params, refname, "numerical", "bool", str(spi_cfg["EthCtrlConfigSpiEnableTransmitDataHdrSequence"]))
+    refname = dref+"/EthCtrlConfigSpiEnableTxChecksum"
+    lib_conf.insert_conf_param(params, refname, "numerical", "bool", str(spi_cfg["EthCtrlConfigSpiEnableTxChecksum"]))
+    refname = dref+"/EthCtrlConfigSpiEnableTxCutThrough"
+    lib_conf.insert_conf_param(params, refname, "numerical", "bool", str(spi_cfg["EthCtrlConfigSpiEnableTxCutThrough"]))
+    refname = dref+"/EthCtrlConfigSpiSelectTimeStamp"
+    lib_conf.insert_conf_param(params, refname, "numerical", "bool", str(spi_cfg["EthCtrlConfigSpiSelectTimeStamp"]))
+    refname = dref+"/EthCtrlConfigSpiTransmitCreditThreshold"
+    lib_conf.insert_conf_param(params, refname, "numerical", "int", str(spi_cfg["EthCtrlConfigSpiTransmitCreditThreshold"]))
+    refname = dref+"/EthCtrlConfigSpiAccessSynchronous"
+    lib_conf.insert_conf_param(params, refname, "numerical", "bool", str(spi_cfg["EthCtrlConfigSpiAccessSynchronous"]))
+    refname = dref+"/EthCtrlConfigSpiSequenceName"
+    lib_conf.insert_conf_param(params, refname, "text", "string", str(spi_cfg["EthCtrlConfigSpiSequenceName"]))
+
+
+
+def add_eth_ctrl_config_parameters_to_container(ctnr, dref, ecc_cfg, xgrs_cfg, sch_cfg, shp_cfg, spi_cfg):
     if not ecc_cfg:
         print("Warning: EthCtrlConfig is empty!")
         return
@@ -171,6 +207,14 @@ def add_eth_ctrl_config_parameters_to_container(ctnr, dref, ecc_cfg, xgrs_cfg, s
     mdc_ctnr = lib_conf.insert_conf_container(subctnr2, sbc_name, "conf", sbc_dref)
     add_eth_ctrl_ingress_parameters_to_container(mdc_ctnr, sbc_dref, xgrs_cfg)
 
+    if not spi_cfg:
+        return
+    # Fill parameters EthCtrlConfigSpiConfiguration to the sub-container
+    sbc_name = "EthCtrlConfigSpiConfiguration"
+    sbc_dref = dref+"/"+sbc_name
+    mdc_ctnr = lib_conf.insert_conf_container(subctnr2, sbc_name, "conf", sbc_dref)
+    add_eth_ctrl_spi_parameters_to_container(mdc_ctnr, sbc_dref, spi_cfg)
+
 
 
 def update_eth_driver_to_container(ctnrname, root, eth_configs):
@@ -194,7 +238,7 @@ def update_eth_driver_to_container(ctnrname, root, eth_configs):
         mdc_ctnr = lib_conf.insert_conf_container(subctnr1, sctnr_name, "conf", ecc_dref)
         add_eth_ctrl_config_parameters_to_container(mdc_ctnr, ecc_dref, cfg.datavar[sctnr_name],
                             cfg.datavar["EthCtrlConfigXgressFifo"], cfg.datavar["EthCtrlConfigScheduler"],
-                            cfg.datavar["EthCtrlConfigShaper"])
+                            cfg.datavar["EthCtrlConfigShaper"], cfg.datavar["EthCtrlConfigSpiConfiguration"])
 
 
 
