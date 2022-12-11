@@ -19,7 +19,7 @@ Motivation to create an OS came from Ashokkumar Narayanan (one of my best buddie
 Getting Started
 ===
 
-Prerequisites
+Prerequisites - SOFTWARE:
 ----
 * Ubuntu 20.04 OS (either on Linux or on WSL2 inside Windows)
   * Install following packages inside Ubuntu
@@ -35,7 +35,7 @@ Prerequisites
 
 <br>
 
-Development Setup
+Development Setup - HARDWARE:
 ----
 * Raspberry Pi Pico with pins soldered => [check this link](https://robocraze.com/products/raspberry-pi-pico-with-headers-and-micro-usb-cable)
 * Cytron Maker Pi Pico Base => [check this link](https://robu.in/product/cytron-maker-pi-pico-base-without-pico/)
@@ -57,7 +57,7 @@ Starting the NammaAUTOSAR Builder
 ----
 * To start the NammaAUTOSAR Builder GUI, first open the **MSYS2 MINGW64** terminal
 * Navigate to the cloned repository
-* Run this command in the **MSYS2 MINGW64** terminal - `py tools/autosar-gui.py`
+* Run this command in the **MSYS2 MINGW64** terminal: `python tools/autosar-gui.py`
 * **NammaAUTOSAR Builder** GUI will open
 
 
