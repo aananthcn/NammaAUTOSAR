@@ -25,8 +25,32 @@ import arxml.core.lib_conf as lib_conf
 import arxml.core.lib_defs as lib_defs
 
 
-def add_eth_ctrl_config_parameters_to_container(ctnr, dref, ecc_cfg):
+
+def add_eth_ctrl_egress_parameters_to_container(ctnr, dref, egr_cfg):
+    # Insert PARAMETER block
     params = ET.SubElement(ctnr, "PARAMETER-VALUES")
+
+    # Insert parameters
+    refname = dref+"/EthCtrlConfigEgressFifoBufLenByte"
+    lib_conf.insert_conf_param(params, refname, "numerical", "int", str(egr_cfg["EthCtrlConfigEgressFifoBufLenByte"]))
+    refname = dref+"/EthCtrlConfigEgressFifoBufTotal"
+    lib_conf.insert_conf_param(params, refname, "numerical", "int", str(egr_cfg["EthCtrlConfigEgressFifoBufTotal"]))
+    refname = dref+"/EthCtrlConfigEgressFifoIdx"
+    lib_conf.insert_conf_param(params, refname, "numerical", "int", str(egr_cfg["EthCtrlConfigEgressFifoIdx"]))
+    refname = dref+"/EthCtrlConfigEgressFifoPriorityAssignment"
+    lib_conf.insert_conf_param(params, refname, "numerical", "int", str(egr_cfg["EthCtrlConfigEgressFifoPriorityAssignment"]))
+ 
+
+
+def add_eth_ctrl_config_parameters_to_container(ctnr, dref, ecc_cfg, xgrs_cfg):
+    if not ecc_cfg:
+        print("Warning: EthCtrlConfig is empty!")
+        return
+
+    # Insert PARAMETER block
+    params = ET.SubElement(ctnr, "PARAMETER-VALUES")
+
+    # Insert parameters
     refname = dref+"/EthCtrlConfigSwBufferHandling"
     lib_conf.insert_conf_param(params, refname, "numerical", "bool", str(ecc_cfg["EthCtrlConfigSwBufferHandling"]))
     refname = dref+"/EthCtrlEnableMii"
@@ -48,6 +72,12 @@ def add_eth_ctrl_config_parameters_to_container(ctnr, dref, ecc_cfg):
     refname = dref+"/EthCtrlPhyAddress"
     lib_conf.insert_conf_param(params, refname, "text", "string", str(ecc_cfg["EthCtrlPhyAddress"]))
 
+    # Create a sub-container for EthCtrlConfigEgress
+    subctnr2 = ET.SubElement(ctnr, "SUB-CONTAINERS")
+    sbc_name = "EthCtrlConfigEgress"
+    sbc_dref = dref+"/"+sbc_name
+    mdc_ctnr = lib_conf.insert_conf_container(subctnr2, sbc_name, "conf", sbc_dref)
+    add_eth_ctrl_egress_parameters_to_container(mdc_ctnr, sbc_dref, xgrs_cfg)
 
 
 
@@ -74,15 +104,16 @@ def update_eth_driver_to_container(ctnrname, root, eth_configs):
     # refname = dref+"/SpiMaxSequence"
     # lib_conf.insert_conf_param(params, refname, "numerical", "int", str(eth_configs[ctnrname][0].datavar["SpiMaxSequence"]))
 
-    # Create a sub-container    
+    # Create a sub-container
     subctnr1 = ET.SubElement(ctnrblk, "SUB-CONTAINERS")
 
     # Create ECUC Module Configs under above Sub-container
     sctnr_name = "EthCtrlConfig"
+    addl_ctnrn = "EthCtrlConfigXgressFifo"
     for cfg in eth_configs:
-        ecc_dref   = dref+"/"+sctnr_name
-        ecc_c_ctnr = lib_conf.insert_conf_container(subctnr1, sctnr_name, "conf", ecc_dref)
-        add_eth_ctrl_config_parameters_to_container(ecc_c_ctnr, ecc_dref, cfg.datavar[sctnr_name])
+        ecc_dref = dref+"/"+sctnr_name
+        mdc_ctnr = lib_conf.insert_conf_container(subctnr1, sctnr_name, "conf", ecc_dref)
+        add_eth_ctrl_config_parameters_to_container(mdc_ctnr, ecc_dref, cfg.datavar[sctnr_name], cfg.datavar[addl_ctnrn])
 
 
 
