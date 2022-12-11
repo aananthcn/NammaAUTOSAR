@@ -58,7 +58,7 @@ def add_eth_ctrl_sched_parameters_to_container(ctnr, dref, sch_cfg):
 
 
 
-def add_eth_ctrl_egress_parameters_to_container(ctnr, dref, egr_cfg, sch_cfg, shp_cfg):
+def add_eth_ctrl_fifo_out_parameters_to_container(ctnr, dref, egr_cfg):
     # Insert PARAMETER block
     params = ET.SubElement(ctnr, "PARAMETER-VALUES")
 
@@ -72,8 +72,17 @@ def add_eth_ctrl_egress_parameters_to_container(ctnr, dref, egr_cfg, sch_cfg, sh
     refname = dref+"/EthCtrlConfigEgressFifoPriorityAssignment"
     lib_conf.insert_conf_param(params, refname, "numerical", "int", str(egr_cfg["EthCtrlConfigEgressFifoPriorityAssignment"]))
 
-    # Create a sub-container for EthCtrlConfigScheduler
+
+
+def add_eth_ctrl_egress_parameters_to_container(ctnr, dref, egr_cfg, sch_cfg, shp_cfg):
+    # Create a sub-container for 3 items
     subctnr3 = ET.SubElement(ctnr, "SUB-CONTAINERS")
+
+    # Fill parameters EthCtrlConfigEgressFifo to the sub-container
+    sbc_name = "EthCtrlConfigEgressFifo"
+    sbc_dref = dref+"/"+sbc_name
+    mdc_ctnr = lib_conf.insert_conf_container(subctnr3, sbc_name, "conf", sbc_dref)
+    add_eth_ctrl_fifo_out_parameters_to_container(mdc_ctnr, sbc_dref, egr_cfg)
 
     # Fill parameters EthCtrlConfigScheduler to the sub-container
     sbc_name = "EthCtrlConfigScheduler"
@@ -81,7 +90,7 @@ def add_eth_ctrl_egress_parameters_to_container(ctnr, dref, egr_cfg, sch_cfg, sh
     mdc_ctnr = lib_conf.insert_conf_container(subctnr3, sbc_name, "conf", sbc_dref)
     add_eth_ctrl_sched_parameters_to_container(mdc_ctnr, sbc_dref, sch_cfg)
 
-    # Fill parameters EthCtrlConfigScheduler to the sub-container
+    # Fill parameters EthCtrlConfigShaper to the sub-container
     sbc_name = "EthCtrlConfigShaper"
     sbc_dref = dref+"/"+sbc_name
     mdc_ctnr = lib_conf.insert_conf_container(subctnr3, sbc_name, "conf", sbc_dref)
@@ -89,19 +98,31 @@ def add_eth_ctrl_egress_parameters_to_container(ctnr, dref, egr_cfg, sch_cfg, sh
 
 
 
-def add_eth_ctrl_ingress_parameters_to_container(ctnr, dref, egr_cfg):
+def add_eth_ctrl_fifo_in_parameters_to_container(ctnr, dref, igr_cfg):
     # Insert PARAMETER block
     params = ET.SubElement(ctnr, "PARAMETER-VALUES")
 
     # Insert parameters
     refname = dref+"/EthCtrlConfigIngressFifoBufLenByte"
-    lib_conf.insert_conf_param(params, refname, "numerical", "int", str(egr_cfg["EthCtrlConfigIngressFifoBufLenByte"]))
+    lib_conf.insert_conf_param(params, refname, "numerical", "int", str(igr_cfg["EthCtrlConfigIngressFifoBufLenByte"]))
     refname = dref+"/EthCtrlConfigIngressFifoBufTotal"
-    lib_conf.insert_conf_param(params, refname, "numerical", "int", str(egr_cfg["EthCtrlConfigIngressFifoBufTotal"]))
+    lib_conf.insert_conf_param(params, refname, "numerical", "int", str(igr_cfg["EthCtrlConfigIngressFifoBufTotal"]))
     refname = dref+"/EthCtrlConfigIngressFifoIdx"
-    lib_conf.insert_conf_param(params, refname, "numerical", "int", str(egr_cfg["EthCtrlConfigIngressFifoIdx"]))
+    lib_conf.insert_conf_param(params, refname, "numerical", "int", str(igr_cfg["EthCtrlConfigIngressFifoIdx"]))
     refname = dref+"/EthCtrlConfigIngressFifoPriorityAssignment"
-    lib_conf.insert_conf_param(params, refname, "numerical", "int", str(egr_cfg["EthCtrlConfigIngressFifoPriorityAssignment"]))
+    lib_conf.insert_conf_param(params, refname, "numerical", "int", str(igr_cfg["EthCtrlConfigIngressFifoPriorityAssignment"]))
+
+	
+
+def add_eth_ctrl_ingress_parameters_to_container(ctnr, dref, igr_cfg):
+    # Create a sub-container for 3 items
+    subctnr3 = ET.SubElement(ctnr, "SUB-CONTAINERS")
+
+    # Fill parameters EthCtrlConfigIngressFifo to the sub-container
+    sbc_name = "EthCtrlConfigIngressFifo"
+    sbc_dref = dref+"/"+sbc_name
+    mdc_ctnr = lib_conf.insert_conf_container(subctnr3, sbc_name, "conf", sbc_dref)
+    add_eth_ctrl_fifo_in_parameters_to_container(mdc_ctnr, sbc_dref, igr_cfg)
 
 
 
@@ -159,9 +180,6 @@ def update_eth_driver_to_container(ctnrname, root, eth_configs):
     if None != rctnrblk:
         root.remove(rctnrblk)
     
-    # # pull data from UI
-    # eth_configs[ctnrname][0].get()
-
     # Create a new container - Eth Driver
     dref = "/AUTOSAR/EcucDefs/Eth/"+ctnrname
     ctnrblk = lib_conf.insert_conf_container(root, ctnrname, "conf", dref)
@@ -186,9 +204,6 @@ def update_eth_general_to_container(ctnrname, root, eth_configs):
     # Delete node to rewrite new values
     if None != rctnrblk:
         root.remove(rctnrblk)
-
-    # # pull data from UI
-    # eth_configs[ctnrname][0].get()
 
     # Create a new container - SpiDriver
     dref = "/AUTOSAR/EcucDefs/Eth/"+ctnrname
