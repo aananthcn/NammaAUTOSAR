@@ -71,7 +71,7 @@ def show_eth_tabs(gui):
 
     # Create a child window (tabbed view)
     width = gui.main_view.xsize * 80 / 100
-    height = gui.main_view.ysize * 50 / 100
+    height = gui.main_view.ysize * 60 / 100
     view = tk.Toplevel()
     gui.main_view.child_window = view
     xoff = (gui.main_view.xsize - width)/2
