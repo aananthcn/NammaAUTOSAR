@@ -42,6 +42,22 @@ def add_eth_ctrl_egress_parameters_to_container(ctnr, dref, egr_cfg):
  
 
 
+def add_eth_ctrl_ingress_parameters_to_container(ctnr, dref, egr_cfg):
+    # Insert PARAMETER block
+    params = ET.SubElement(ctnr, "PARAMETER-VALUES")
+
+    # Insert parameters
+    refname = dref+"/EthCtrlConfigIngressFifoBufLenByte"
+    lib_conf.insert_conf_param(params, refname, "numerical", "int", str(egr_cfg["EthCtrlConfigIngressFifoBufLenByte"]))
+    refname = dref+"/EthCtrlConfigIngressFifoBufTotal"
+    lib_conf.insert_conf_param(params, refname, "numerical", "int", str(egr_cfg["EthCtrlConfigIngressFifoBufTotal"]))
+    refname = dref+"/EthCtrlConfigIngressFifoIdx"
+    lib_conf.insert_conf_param(params, refname, "numerical", "int", str(egr_cfg["EthCtrlConfigIngressFifoIdx"]))
+    refname = dref+"/EthCtrlConfigIngressFifoPriorityAssignment"
+    lib_conf.insert_conf_param(params, refname, "numerical", "int", str(egr_cfg["EthCtrlConfigIngressFifoPriorityAssignment"]))
+
+
+
 def add_eth_ctrl_config_parameters_to_container(ctnr, dref, ecc_cfg, xgrs_cfg):
     if not ecc_cfg:
         print("Warning: EthCtrlConfig is empty!")
@@ -72,12 +88,20 @@ def add_eth_ctrl_config_parameters_to_container(ctnr, dref, ecc_cfg, xgrs_cfg):
     refname = dref+"/EthCtrlPhyAddress"
     lib_conf.insert_conf_param(params, refname, "text", "string", str(ecc_cfg["EthCtrlPhyAddress"]))
 
-    # Create a sub-container for EthCtrlConfigEgress
+    # Create a sub-container for EthCtrlConfig
     subctnr2 = ET.SubElement(ctnr, "SUB-CONTAINERS")
+
+    # Fill parameters EthCtrlConfigEgress to the sub-container
     sbc_name = "EthCtrlConfigEgress"
     sbc_dref = dref+"/"+sbc_name
     mdc_ctnr = lib_conf.insert_conf_container(subctnr2, sbc_name, "conf", sbc_dref)
     add_eth_ctrl_egress_parameters_to_container(mdc_ctnr, sbc_dref, xgrs_cfg)
+
+    # Fill parameters EthCtrlConfigIngress to the sub-container
+    sbc_name = "EthCtrlConfigIngress"
+    sbc_dref = dref+"/"+sbc_name
+    mdc_ctnr = lib_conf.insert_conf_container(subctnr2, sbc_name, "conf", sbc_dref)
+    add_eth_ctrl_ingress_parameters_to_container(mdc_ctnr, sbc_dref, xgrs_cfg)
 
 
 
