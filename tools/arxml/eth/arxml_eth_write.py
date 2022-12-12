@@ -28,6 +28,10 @@ import arxml.core.lib_defs as lib_defs
 
 
 def add_eth_ctrl_shape_parameters_to_container(ctnr, dref, shp_cfg):
+    if not shp_cfg:
+        print("Warning: ARXML write - EthCtrlConfigShaper is empty!")
+        return
+
     # Insert PARAMETER block
     params = ET.SubElement(ctnr, "PARAMETER-VALUES")
 
@@ -42,6 +46,10 @@ def add_eth_ctrl_shape_parameters_to_container(ctnr, dref, shp_cfg):
 
 
 def add_eth_ctrl_sched_parameters_to_container(ctnr, dref, sch_cfg):
+    if not sch_cfg:
+        print("Warning: ARXML write - EthCtrlConfigScheduler is empty!")
+        return
+
     # Create a sub-container for EthCtrlConfigScheduler
     subctnr = ET.SubElement(ctnr, "SUB-CONTAINERS")
 
@@ -60,6 +68,10 @@ def add_eth_ctrl_sched_parameters_to_container(ctnr, dref, sch_cfg):
 
 
 def add_eth_ctrl_fifo_out_parameters_to_container(ctnr, dref, egr_cfg):
+    if not egr_cfg:
+        print("Warning: ARXML write - EthCtrlConfigEgressFifo is empty!")
+        return
+
     # Insert PARAMETER block
     params = ET.SubElement(ctnr, "PARAMETER-VALUES")
 
@@ -100,6 +112,10 @@ def add_eth_ctrl_egress_parameters_to_container(ctnr, dref, egr_cfg, sch_cfg, sh
 
 
 def add_eth_ctrl_fifo_in_parameters_to_container(ctnr, dref, igr_cfg):
+    if not igr_cfg:
+        print("Warning: ARXML write - EthCtrlConfigIngressFifo is empty!")
+        return
+
     # Insert PARAMETER block
     params = ET.SubElement(ctnr, "PARAMETER-VALUES")
 
@@ -116,6 +132,10 @@ def add_eth_ctrl_fifo_in_parameters_to_container(ctnr, dref, igr_cfg):
 	
 
 def add_eth_ctrl_ingress_parameters_to_container(ctnr, dref, igr_cfg):
+    if not igr_cfg:
+        print("Warning: ARXML write - EthCtrlConfigIngress is empty!")
+        return
+
     # Create a sub-container for 3 items
     subctnr3 = ET.SubElement(ctnr, "SUB-CONTAINERS")
 
@@ -128,6 +148,10 @@ def add_eth_ctrl_ingress_parameters_to_container(ctnr, dref, igr_cfg):
 
 
 def add_eth_ctrl_spi_parameters_to_container(ctnr, dref, spi_cfg):
+    if not spi_cfg:
+        print("Warning: ARXML write - EthCtrlConfigSpiConfiguration is empty!")
+        return
+
     # Insert PARAMETER block
     params = ET.SubElement(ctnr, "PARAMETER-VALUES")
 
@@ -277,6 +301,26 @@ def add_eth_general_parameters_to_container(ctnr, dref, gen_cfg):
 
 
 
+def add_eth_ctrl_offload_parameters_to_container(ctnr, dref, ofl_cfg):
+    if not ofl_cfg:
+        print("Warning: ARXML write - EthCtrlOffloading is empty!")
+        return
+
+    # Insert PARAMETER block
+    params = ET.SubElement(ctnr, "PARAMETER-VALUES")
+
+    # Insert parameters
+    pref = dref+"/EthCtrlEnableOffloadChecksumIPv4"
+    lib_conf.insert_conf_param(params, pref, "numerical", "int", str(ofl_cfg["EthCtrlEnableOffloadChecksumIPv4"]))
+    pref = dref+"/EthCtrlEnableOffloadChecksumICMP"
+    lib_conf.insert_conf_param(params, pref, "numerical", "int", str(ofl_cfg["EthCtrlEnableOffloadChecksumICMP"]))
+    pref = dref+"/EthCtrlEnableOffloadChecksumTCP"
+    lib_conf.insert_conf_param(params, pref, "numerical", "int", str(ofl_cfg["EthCtrlEnableOffloadChecksumTCP"]))
+    pref = dref+"/EthCtrlEnableOffloadChecksumUDP"
+    lib_conf.insert_conf_param(params, pref, "numerical", "int", str(ofl_cfg["EthCtrlEnableOffloadChecksumUDP"]))
+
+
+
 def update_eth_general_to_container(ctnrname, root, eth_configs):
     # remove all old EthGeneral nodes
     rctnrblk = root
@@ -292,6 +336,15 @@ def update_eth_general_to_container(ctnrname, root, eth_configs):
         dref = "/AUTOSAR/EcucDefs/Eth/"+ctnrname
         mdc_ctnr = lib_conf.insert_conf_container(root, ctnrname, "conf", dref)
         add_eth_general_parameters_to_container(mdc_ctnr, dref, cfg.datavar["EthGeneral"])
+
+        # Create a sub-container
+        subctnr1 = ET.SubElement(mdc_ctnr, "SUB-CONTAINERS")
+
+        # Create ECUC Module Configs under above Sub-container
+        sctnr_name = "EthCtrlOffloading"
+        dref = dref+"/"+sctnr_name
+        mdc_ctnr = lib_conf.insert_conf_container(subctnr1, sctnr_name, "conf", dref)
+        add_eth_ctrl_offload_parameters_to_container(mdc_ctnr, dref, cfg.datavar[sctnr_name])
 
 
 
