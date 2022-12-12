@@ -1,5 +1,5 @@
 #
-# Created on Tue Sep 13 2022 10:00:03 PM
+# Created on Sun Dec 11 2022 11:47:00 PM
 #
 # The MIT License (MIT)
 # Copyright (c) 2022 Aananth C N
@@ -18,6 +18,7 @@
 # THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
 # TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #
+
 
 import xml.etree.ElementTree as ET
 import arxml.core.lib as lib
@@ -164,7 +165,7 @@ def add_eth_ctrl_spi_parameters_to_container(ctnr, dref, spi_cfg):
 
 def add_eth_ctrl_config_parameters_to_container(ctnr, dref, ecc_cfg, xgrs_cfg, sch_cfg, shp_cfg, spi_cfg):
     if not ecc_cfg:
-        print("Warning: EthCtrlConfig is empty!")
+        print("Warning: ARXML write - EthCtrlConfig is empty!")
         return
 
     # Insert PARAMETER block
@@ -244,6 +245,37 @@ def update_eth_configset_to_container(ctnrname, root, eth_configs):
                             cfg.datavar["EthCtrlConfigShaper"], cfg.datavar["EthCtrlConfigSpiConfiguration"])
 
 
+def add_eth_general_parameters_to_container(ctnr, dref, gen_cfg):
+    if not gen_cfg:
+        print("Warning: ARXML write - EthGeneral is empty!")
+        return
+
+    # Insert PARAMETER block
+    params = ET.SubElement(ctnr, "PARAMETER-VALUES")
+
+    # Insert parameters
+    pref = dref+"/EthIndex"
+    lib_conf.insert_conf_param(params, pref, "numerical", "int", str(gen_cfg["EthIndex"]))
+    pref = dref+"/EthDevErrorDetect"
+    lib_conf.insert_conf_param(params, pref, "numerical", "bool", str(gen_cfg["EthDevErrorDetect"]))
+    pref = dref+"/EthMainFunctionPeriod"
+    lib_conf.insert_conf_param(params, pref, "numerical", "float", str(gen_cfg["EthMainFunctionPeriod"]))
+    pref = dref+"/EthGetCounterValuesApi"
+    lib_conf.insert_conf_param(params, pref, "numerical", "bool", str(gen_cfg["EthGetCounterValuesApi"]))
+    pref = dref+"/EthGetRxStatsApi"
+    lib_conf.insert_conf_param(params, pref, "numerical", "bool", str(gen_cfg["EthGetRxStatsApi"]))
+    pref = dref+"/EthGetTxErrorCounterValuesApi"
+    lib_conf.insert_conf_param(params, pref, "numerical", "bool", str(gen_cfg["EthGetTxErrorCounterValuesApi"]))
+    pref = dref+"/EthGetTxStatsApi"
+    lib_conf.insert_conf_param(params, pref, "numerical", "bool", str(gen_cfg["EthGetTxStatsApi"]))
+    pref = dref+"/EthGlobalTimeSupport"
+    lib_conf.insert_conf_param(params, pref, "numerical", "bool", str(gen_cfg["EthGlobalTimeSupport"]))
+    pref = dref+"/EthMaxCtrlsSupported"
+    lib_conf.insert_conf_param(params, pref, "numerical", "int", str(gen_cfg["EthMaxCtrlsSupported"]))
+    pref = dref+"/EthVersionInfoApi"
+    lib_conf.insert_conf_param(params, pref, "numerical", "bool", str(gen_cfg["EthVersionInfoApi"]))
+
+
 
 def update_eth_general_to_container(ctnrname, root, eth_configs):
     # remove all old EthGeneral nodes
@@ -258,13 +290,8 @@ def update_eth_general_to_container(ctnrname, root, eth_configs):
     for cfg in eth_configs:
         # Create a new container - EthGeneral
         dref = "/AUTOSAR/EcucDefs/Eth/"+ctnrname
-        ctnrblk = lib_conf.insert_conf_container(root, ctnrname, "conf", dref)
-
-    return
-    # Parameters
-    params = ET.SubElement(ctnrblk, "PARAMETER-VALUES")
-    refname = dref+"/SpiCancelApi"
-    lib_conf.insert_conf_param(params, refname, "numerical", "int", str(eth_configs[ctnrname][0].datavar["SpiCancelApi"]))
+        mdc_ctnr = lib_conf.insert_conf_container(root, ctnrname, "conf", dref)
+        add_eth_general_parameters_to_container(mdc_ctnr, dref, cfg.datavar["EthGeneral"])
 
 
 
@@ -312,6 +339,3 @@ def update_arxml(ar_file, eth_configs):
     tree.write(ar_file, encoding="utf-8", xml_declaration=True)
     lib.finalize_arxml_doc(ar_file)
     print("Info: Eth Configs are saved to " + ar_file)    
-
-
-
