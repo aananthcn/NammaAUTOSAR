@@ -143,7 +143,7 @@ def update_arxml(ar_file, dio_cfg, dio_grp, dio_gen):
         
     # Now find if Mcu module-conf is already there in insertion-point
     modname = "Dio"
-    modconf = lib_conf.find_module_conf_values(modname, ar_isp)
+    modconf = lib_conf.find_module_configs(modname, ar_isp)
     if modconf == None:
         modconf = lib_conf.insert_ecuc_module_conf(ar_isp, modname)
    

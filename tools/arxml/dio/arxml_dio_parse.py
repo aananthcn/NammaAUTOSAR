@@ -126,7 +126,7 @@ def parse_arxml(ar_file):
         return
 
     # locate Mcu module configuration under ELEMENTS
-    modconf = lib_conf.find_module_conf_values("Dio", elems)
+    modconf = lib_conf.find_module_configs("Dio", elems)
 
     # locate container
     containers = lib_conf.find_containers_in_modconf(modconf)

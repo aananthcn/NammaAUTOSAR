@@ -139,7 +139,7 @@ def update_arxml(ar_file, port_info, port_gen):
         
     # Now find if Mcu module-conf is already there in insertion-point
     modname = "Port"
-    modconf = lib_conf.find_module_conf_values(modname, ar_isp)
+    modconf = lib_conf.find_module_configs(modname, ar_isp)
     if modconf == None:
         modconf = lib_conf.insert_ecuc_module_conf(ar_isp, modname)
    
@@ -179,7 +179,7 @@ def parse_arxml(ar_file):
         return
 
     # locate Mcu module configuration under ELEMENTS
-    modconf = lib_conf.find_module_conf_values("Port", elems)
+    modconf = lib_conf.find_module_configs("Port", elems)
 
     # locate container
     containers = lib_conf.find_containers_in_modconf(modconf)

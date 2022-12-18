@@ -126,12 +126,12 @@ def find_ecuc_elements_block(root):
 
 
 # arg2: root is ELEMENTS block inside AR-PACKAGE named Ecuc_<arpkg>
-def find_module_conf_values(shortname, root):
+def find_module_configs(shortname, root):
    modconf = None
 
    if shortname == None:
-      print("Error: Invalid argument to find_module_conf_values()")
-      return
+      print("Error: Invalid argument to find_module_configs()")
+      return modconf
 
    if get_tag(root) == "ELEMENTS":
       for elem in list(root):
@@ -143,6 +143,30 @@ def find_module_conf_values(shortname, root):
                      break
 
    return modconf
+
+
+
+# arg2: root is ELEMENTS block inside AR-PACKAGE named Ecuc_<arpkg>
+def findall_module_configs(shortname, root):
+   modconf = []
+
+   if shortname == None:
+      print("Error: Invalid argument to find_module_configs()")
+      return None
+
+   if get_tag(root) == "ELEMENTS":
+      for elem in list(root):
+         if get_tag(elem) == "ECUC-MODULE-CONFIGURATION-VALUES":
+            for item in list(elem):
+               if get_tag(item) == "SHORT-NAME":
+                  if item.text == shortname:
+                     modconf.append(elem)
+                     continue
+                  else:
+                     break
+
+   return modconf
+
 
 
 def find_containers_in_modconf(root):

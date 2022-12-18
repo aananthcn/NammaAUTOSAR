@@ -179,8 +179,11 @@ def parse_arxml(ar_file):
     if elems == None:
         return
 
+    eth_modconfs = lib_conf.findall_module_configs("Eth", elems)
+    print(eth_modconfs)
+
     # locate Mcu module configuration under ELEMENTS
-    modconf = lib_conf.find_module_conf_values("Eth", elems)
+    modconf = lib_conf.find_module_configs("Eth", elems)
 
     # locate container
     containers = lib_conf.find_containers_in_modconf(modconf)

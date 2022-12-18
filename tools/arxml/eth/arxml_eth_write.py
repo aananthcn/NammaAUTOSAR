@@ -242,31 +242,21 @@ def add_eth_ctrl_config_parameters_to_container(ctnr, dref, ecc_cfg, xgrs_cfg, s
 
 
 
-def update_eth_configset_to_container(ctnrname, root, eth_configs):
-    # remove all old EthConfigSet nodes
-    rctnrblk = root
-    while rctnrblk != None:
-        rctnrblk = lib_conf.find_ecuc_container_block(ctnrname, root)
-        # Delete node to rewrite new values
-        if None != rctnrblk:
-            root.remove(rctnrblk)
+def update_eth_configset_to_container(ctnrname, root, eth_cfg):
+    # Create a new container - Eth Driver
+    dref = "/AUTOSAR/EcucDefs/Eth/"+ctnrname
+    ctnrblk = lib_conf.insert_conf_container(root, ctnrname, "conf", dref)
 
-    # create new EthConfigSet nodes
-    for cfg in eth_configs:
-        # Create a new container - Eth Driver
-        dref = "/AUTOSAR/EcucDefs/Eth/"+ctnrname
-        ctnrblk = lib_conf.insert_conf_container(root, ctnrname, "conf", dref)
+    # Create a sub-container
+    subctnr1 = ET.SubElement(ctnrblk, "SUB-CONTAINERS")
 
-        # Create a sub-container
-        subctnr1 = ET.SubElement(ctnrblk, "SUB-CONTAINERS")
-
-        # Create ECUC Module Configs under above Sub-container
-        sctnr_name = "EthCtrlConfig"
-        ecc_dref = dref+"/"+sctnr_name
-        mdc_ctnr = lib_conf.insert_conf_container(subctnr1, sctnr_name, "conf", ecc_dref)
-        add_eth_ctrl_config_parameters_to_container(mdc_ctnr, ecc_dref, cfg.datavar[sctnr_name],
-                            cfg.datavar["EthCtrlConfigXgressFifo"], cfg.datavar["EthCtrlConfigScheduler"],
-                            cfg.datavar["EthCtrlConfigShaper"], cfg.datavar["EthCtrlConfigSpiConfiguration"])
+    # Create ECUC Module Configs under above Sub-container
+    sctnr_name = "EthCtrlConfig"
+    ecc_dref = dref+"/"+sctnr_name
+    mdc_ctnr = lib_conf.insert_conf_container(subctnr1, sctnr_name, "conf", ecc_dref)
+    add_eth_ctrl_config_parameters_to_container(mdc_ctnr, ecc_dref, eth_cfg.datavar[sctnr_name],
+                        eth_cfg.datavar["EthCtrlConfigXgressFifo"], eth_cfg.datavar["EthCtrlConfigScheduler"],
+                        eth_cfg.datavar["EthCtrlConfigShaper"], eth_cfg.datavar["EthCtrlConfigSpiConfiguration"])
 
 
 def add_eth_general_parameters_to_container(ctnr, dref, gen_cfg):
@@ -321,30 +311,20 @@ def add_eth_ctrl_offload_parameters_to_container(ctnr, dref, ofl_cfg):
 
 
 
-def update_eth_general_to_container(ctnrname, root, eth_configs):
-    # remove all old EthGeneral nodes
-    rctnrblk = root
-    while rctnrblk != None:
-        rctnrblk = lib_conf.find_ecuc_container_block(ctnrname, root)
-        # Delete node to rewrite new values
-        if None != rctnrblk:
-            root.remove(rctnrblk)
+def update_eth_general_to_container(ctnrname, root, eth_cfg):
+    # Create a new container - EthGeneral
+    dref = "/AUTOSAR/EcucDefs/Eth/"+ctnrname
+    mdc_ctnr = lib_conf.insert_conf_container(root, ctnrname, "conf", dref)
+    add_eth_general_parameters_to_container(mdc_ctnr, dref, eth_cfg.datavar["EthGeneral"])
 
-    # create new EthGeneral nodes
-    for cfg in eth_configs:
-        # Create a new container - EthGeneral
-        dref = "/AUTOSAR/EcucDefs/Eth/"+ctnrname
-        mdc_ctnr = lib_conf.insert_conf_container(root, ctnrname, "conf", dref)
-        add_eth_general_parameters_to_container(mdc_ctnr, dref, cfg.datavar["EthGeneral"])
+    # Create a sub-container
+    subctnr1 = ET.SubElement(mdc_ctnr, "SUB-CONTAINERS")
 
-        # Create a sub-container
-        subctnr1 = ET.SubElement(mdc_ctnr, "SUB-CONTAINERS")
-
-        # Create ECUC Module Configs under above Sub-container
-        sctnr_name = "EthCtrlOffloading"
-        dref = dref+"/"+sctnr_name
-        mdc_ctnr = lib_conf.insert_conf_container(subctnr1, sctnr_name, "conf", dref)
-        add_eth_ctrl_offload_parameters_to_container(mdc_ctnr, dref, cfg.datavar[sctnr_name])
+    # Create ECUC Module Configs under above Sub-container
+    sctnr_name = "EthCtrlOffloading"
+    dref = dref+"/"+sctnr_name
+    mdc_ctnr = lib_conf.insert_conf_container(subctnr1, sctnr_name, "conf", dref)
+    add_eth_ctrl_offload_parameters_to_container(mdc_ctnr, dref, eth_cfg.datavar[sctnr_name])
 
 
 
@@ -371,21 +351,25 @@ def update_arxml(ar_file, eth_configs):
     ar_isp = lib_conf.find_ecuc_elements_block(root)
     if ar_isp == None:
         return
-        
-    # Now find if Mcu module-conf is already there in insertion-point
-    modname = "Eth"
-    modconf = lib_conf.find_module_conf_values(modname, ar_isp)
-    if modconf == None:
-        modconf = lib_conf.insert_ecuc_module_conf(ar_isp, modname)
-   
-    # locate container
-    containers = lib_conf.find_containers_in_modconf(modconf)
-    if containers == None:
-        return
 
-    # Add Eth contents to CONTAINER
-    update_eth_configset_to_container("EthConfigSet", containers, eth_configs)
-    update_eth_general_to_container("EthGeneral", containers, eth_configs)
+    # remove all Eth configs
+    eth_modconfs = lib_conf.findall_module_configs("Eth", ar_isp)
+    for conf in eth_modconfs:
+        print(conf)
+        ar_isp.remove(conf)
+
+    # insert Eth configs
+    for cfg in eth_configs:
+        modconf = lib_conf.insert_ecuc_module_conf(ar_isp, "Eth")
+
+        # locate container
+        containers = lib_conf.find_containers_in_modconf(modconf)
+        if containers == None:
+            return
+
+        # Add Eth contents to CONTAINER
+        update_eth_configset_to_container("EthConfigSet", containers, cfg)
+        update_eth_general_to_container("EthGeneral", containers, cfg)
 
     # Save ARXML contents to file
     ET.indent(tree, space="\t", level=0)
