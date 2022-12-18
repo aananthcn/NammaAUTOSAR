@@ -175,6 +175,10 @@ class EthernetConfigMainView:
                 dappa.delete_dappa_row(self, (n_dappa_rows-1)+i)
                 del self.configs[-1]
 
+        # Update EthMaxCtrlsSupported for EthGeneral
+        for config in self.configs:
+            config.datavar["EthGeneral"]["EthMaxCtrlsSupported"] = str(self.n_eth_dev)
+
         # Set the self.cv scrolling region
         self.scrollw.scroll()
 
