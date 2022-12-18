@@ -178,11 +178,36 @@ def find_containers_in_modconf(root):
     for item in list(root):
         if get_tag(item) == "CONTAINERS":
             containers = item
+            break
     if containers == None:
-        print("Error: couldn't find CONTAINERS in Mcu Mod. Conf., hence can't update MicroC info to ARXML!")
+        print("Error: couldn't find CONTAINERS in Mcu Mod. Conf. root element:", get_tag(root))
 
     return containers
 
+
+
+def findall_containers_with_name(shortname, root):
+   ctnrnode = []
+
+   if shortname == None:
+      print("Error: Invalid argument to findall_containers_with_name()")
+      return
+
+   for child in list(root):
+      if get_tag(child) == "ECUC-CONTAINER-VALUE":
+         for item in list(child):
+            if get_tag(item) == "SHORT-NAME":
+               if item.text == shortname:
+                  ctnrnode.append(child)
+                  break # done, move to the next container
+               else:
+                  break # wrong container, so don't spend time here
+
+   # if there is no ECUC-CONTAINER with name == "shortname", return None
+   if len(ctnrnode) == 0:
+      ctnrnode = None
+
+   return ctnrnode
 
 
 # arg2: root is CONTAINERS block inside ECUC-MODULE-CONFIGURATION-VALUES
@@ -220,30 +245,6 @@ def findall_subcontainers_with_name(shortname, root):
                   if get_tag(item) == "SHORT-NAME":
                      if item.text == shortname:
                         ctnrnode.append(ecu_ctnr)
-
-   # if there is no ECUC-CONTAINER with name == "shortname", return None
-   if len(ctnrnode) == 0:
-      ctnrnode = None
-
-   return ctnrnode
-
-
-def findall_containers_with_name(shortname, root):
-   ctnrnode = []
-
-   if shortname == None:
-      print("Error: Invalid argument to findall_containers_with_name()")
-      return
-
-   for child in list(root):
-      if get_tag(child) == "ECUC-CONTAINER-VALUE":
-         for item in list(child):
-            if get_tag(item) == "SHORT-NAME":
-               if item.text == shortname:
-                  ctnrnode.append(child)
-                  break # done, move to the next container
-               else:
-                  break # wrong container, so don't spend time here
 
    # if there is no ECUC-CONTAINER with name == "shortname", return None
    if len(ctnrnode) == 0:

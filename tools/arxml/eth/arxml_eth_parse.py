@@ -30,23 +30,23 @@ import arxml.core.lib_defs as lib_defs
 
 
 def parse_eth_general(cname, containers):
-    eth_general = []
-    ofld_list = []
+    eth_params = {}
+    ofld_dict = {}
+
     ctnrblks = lib_conf.findall_containers_with_name(cname, containers)
     for ctnrblk in ctnrblks:
         if not ctnrblk or lib_conf.get_tag(ctnrblk) != "ECUC-CONTAINER-VALUE":
             return None
         params = lib_conf.get_param_list(ctnrblk)
-        eth_params = {}
         for par in params:
             eth_params[par["tag"]] = par["val"]
-        eth_general.append(eth_params)
 
-        ofld_dict = {}
         ofld_dict = get_eth_2nd_subcontainer("EthCtrlOffloading", ctnrblk, ofld_dict)
-        ofld_list.append(ofld_dict)
 
-    return eth_general, ofld_list
+        # EthGeneral has exactly one container, so it is safe to break the loop
+        break
+
+    return eth_params, ofld_dict
 
 
 
@@ -131,38 +131,35 @@ def get_configset_subcontainer(sub_ctnr_name, ctnr):
 
 
 
-def parse_eth_configset(containers):
-    cname = "EthConfigSet"
-    eth_cfgset_par = []
-    eth_cfgset = []
+def parse_eth_configset(cname, containers):
+    eth_cfgset_dict = {}
 
     ctnrblks = lib_conf.findall_containers_with_name(cname, containers)
-    for i, ctnrblk in enumerate(ctnrblks):
+    for ctnrblk in ctnrblks:
         if not ctnrblk or lib_conf.get_tag(ctnrblk) != "ECUC-CONTAINER-VALUE":
             return None
         params = lib_conf.get_param_list(ctnrblk)
         eth_params = {}
         for par in params:
             eth_params[par["tag"]] = par["val"]
-        eth_cfgset_par.append(eth_params)
 
         # Let us parse the sub-containers
         ecc_cfg, xgr_cfg, sch_cfg, shp_cfg, spi_cfg = get_configset_subcontainer("EthCtrlConfig", ctnrblk)
-        eth_cfgset_dict = {}
-        eth_cfgset_dict["EthIndex"] = str(i)
         eth_cfgset_dict["EthCtrlConfig"] = ecc_cfg
         eth_cfgset_dict["EthCtrlConfigXgressFifo"] = xgr_cfg
         eth_cfgset_dict["EthCtrlConfigScheduler"] = sch_cfg
         eth_cfgset_dict["EthCtrlConfigShaper"] = shp_cfg
         eth_cfgset_dict["EthCtrlConfigSpiConfiguration"] = spi_cfg
-        eth_cfgset.append(eth_cfgset_dict)
 
-    return eth_cfgset
+        #EthConfigSet has exactly one container, so it is safe to break the loop
+        break
+
+    return eth_cfgset_dict
 
 
 
 # This function parses ARXML and extract the Eth information
-# Returns: No of eth_configs, Eth pin dictionary
+# Returns: No of eth_configs
 def parse_arxml(ar_file):
     if ar_file == None:
         return None
@@ -180,24 +177,22 @@ def parse_arxml(ar_file):
         return
 
     eth_modconfs = lib_conf.findall_module_configs("Eth", elems)
-    print(eth_modconfs)
+    for i, modconf in enumerate(eth_modconfs):
+        # locate container
+        containers = lib_conf.find_containers_in_modconf(modconf)
+        if containers == None:
+            continue
 
-    # locate Mcu module configuration under ELEMENTS
-    modconf = lib_conf.find_module_configs("Eth", elems)
+        # copy EthConfigSet to eth_configs
+        eth_cfg = parse_eth_configset("EthConfigSet", containers)
 
-    # locate container
-    containers = lib_conf.find_containers_in_modconf(modconf)
-    if containers == None:
-        return
+        # copy EthGeneral params to eth_configs
+        eth_general, eth_offload = parse_eth_general("EthGeneral", containers)
+        eth_cfg["EthGeneral"] = eth_general
+        eth_cfg["EthCtrlOffloading"] = eth_offload
+        eth_cfg["EthIndex"] = str(i)
 
-    eth_configs = parse_eth_configset(containers)
-
-    # copy EthGeneral params to eth_configs
-    eth_general, eth_offload = parse_eth_general("EthGeneral", containers)
-    for i, cfg in enumerate(eth_general):
-        eth_configs[i]["EthGeneral"] = cfg
-    for i, cfg in enumerate(eth_offload):
-        eth_configs[i]["EthCtrlOffloading"] = cfg
+        eth_configs.append(eth_cfg)
 
     return eth_configs
 

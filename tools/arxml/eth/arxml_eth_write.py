@@ -341,7 +341,7 @@ def update_arxml(ar_file, eth_configs):
     ET.register_namespace('xsi', "http://www.w3.org/2001/XMLSchema-instance")
     
     print("arxml_eth_write.py: update_arxml called!")
-    print_eth_configs(eth_configs)
+    # print_eth_configs(eth_configs)
     
     # Read ARXML File
     tree = ET.parse(ar_file)
@@ -355,7 +355,6 @@ def update_arxml(ar_file, eth_configs):
     # remove all Eth configs
     eth_modconfs = lib_conf.findall_module_configs("Eth", ar_isp)
     for conf in eth_modconfs:
-        print(conf)
         ar_isp.remove(conf)
 
     # insert Eth configs
