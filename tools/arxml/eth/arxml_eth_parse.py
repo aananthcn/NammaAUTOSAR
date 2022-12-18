@@ -30,101 +30,145 @@ import arxml.core.lib_defs as lib_defs
 
 
 def parse_eth_general(cname, containers):
-    eth_general = {}
-    ctnrblk = lib_conf.find_ecuc_container_block(cname, containers)
-    if not ctnrblk or lib_conf.get_tag(ctnrblk) != "ECUC-CONTAINER-VALUE":
-        return None
-    params = lib_conf.get_param_list(ctnrblk)
-    for par in params:
-        eth_general[par["tag"]] = par["val"]
-    
-    return eth_general
+    eth_general = []
+    ofld_list = []
+    ctnrblks = lib_conf.findall_containers_with_name(cname, containers)
+    for ctnrblk in ctnrblks:
+        if not ctnrblk or lib_conf.get_tag(ctnrblk) != "ECUC-CONTAINER-VALUE":
+            return None
+        params = lib_conf.get_param_list(ctnrblk)
+        eth_params = {}
+        for par in params:
+            eth_params[par["tag"]] = par["val"]
+        eth_general.append(eth_params)
+
+        ofld_dict = {}
+        ofld_dict = get_eth_2nd_subcontainer("EthCtrlOffloading", ctnrblk, ofld_dict)
+        ofld_list.append(ofld_dict)
+
+    return eth_general, ofld_list
 
 
 
-def parse_eth_pubinfo(cname, containers):
-    eth_pubinfo = {}
-    ctnrblk = lib_conf.find_ecuc_container_block(cname, containers)
-    if not ctnrblk or lib_conf.get_tag(ctnrblk) != "ECUC-CONTAINER-VALUE":
-        return None
-    params = lib_conf.get_param_list(ctnrblk)
-    for par in params:
-        eth_pubinfo[par["tag"]] = par["val"]
+def get_eth_3rd_subcontainer(subc2_name, subc3_name, root, par_dict):
+    sub2_list = lib_conf.findall_subcontainers_with_name(subc2_name, root)
+    if not sub2_list:
+        return par_dict
 
-    return eth_pubinfo
+    # Only one "EthCtrlConfigEgress" or "EthCtrlConfigIngress" container exist within its super container, but loop one and exit
+    for ctnr2 in sub2_list:
+        if lib_conf.get_tag(ctnr2) == "ECUC-CONTAINER-VALUE":
+            sub3_list = lib_conf.findall_subcontainers_with_name(subc3_name, ctnr2)
+            for ctnr3 in sub3_list:
+                item_params = lib_conf.get_param_list(ctnr3)
+                for par in item_params:
+                    par_dict[par["tag"]] = par["val"]
+        # break after one loop, refer above note for more details
+        break
 
-
-
-def getall_spidriver_2nd_subcontainer(sub_ctnr_name, item, par_dict):
-    item_list = lib_conf.findall_subcontainers_with_name(sub_ctnr_name, item)
-    par_dict[sub_ctnr_name] = []
-    for item in item_list:
-        item_params = lib_conf.get_param_list(item)
-        item_dict = {}
-        for par in item_params:
-            item_dict[par["tag"]] = par["val"]
-        par_dict[sub_ctnr_name].append(item_dict)
     return par_dict
 
 
-def getall_spidriver_subcontainer(sub_ctnr_name, ctnr):
-    param_list = []
+
+def get_eth_2nd_subcontainer(sub_ctnr_name, root, par_dict):
+    sub2_list = lib_conf.findall_subcontainers_with_name(sub_ctnr_name, root)
+    if not sub2_list:
+        return par_dict
+
+    # Only one "EthCtrlConfigSpiConfiguration" container exist within its super container, but loop one and exit
+    for cntr2 in sub2_list:
+        item_params = lib_conf.get_param_list(cntr2)
+        for par in item_params:
+            par_dict[par["tag"]] = par["val"]
+        # break after one loop, refer above note for more details
+        break
+
+    return par_dict
+
+
+
+def get_ethcfg_scheduler_dict(root, par_dict):
+    sub2_list = lib_conf.findall_subcontainers_with_name("EthCtrlConfigEgress", root)
+    if not sub2_list:
+        return par_dict
+
+    # Only one "EthCtrlConfigScheduler" container exist within its super container, but loop one and exit
+    for ctnr2 in sub2_list:
+        par_dict = get_eth_3rd_subcontainer("EthCtrlConfigScheduler", "EthCtrlConfigSchedulerPredecessor", ctnr2, par_dict)
+
+    return par_dict
+
+
+
+def get_configset_subcontainer(sub_ctnr_name, ctnr):
+    eccpar_dict = {}
+    egress_dict = {}
+    schdlr_dict = {}
+    shaper_dict = {}
+    xgress_dict = {}
+    spicfg_dict = {}
+
     ctnr_list = lib_conf.findall_subcontainers_with_name(sub_ctnr_name, ctnr)
+    # Only one "EthCtrlConfig" container exist within its super container, but loop one iteration and exit
     for item in ctnr_list:
         params = lib_conf.get_param_list(item)
-        par_dict = {}
         for par in params:
-            par_dict[par["tag"]] = par["val"]
+            eccpar_dict[par["tag"]] = par["val"]
 
-        if sub_ctnr_name == "SpiJob":
-            par_dict = getall_spidriver_2nd_subcontainer("SpiChannelList", item, par_dict)
-            # print("getall_spidriver_subcontainer()", par_dict)
-        elif sub_ctnr_name == "SpiSequence":
-            par_dict = getall_spidriver_2nd_subcontainer("SpiJobAssignment", item, par_dict)
-            # print("getall_spidriver_subcontainer()", par_dict)
-        param_list.append(par_dict)
-    return param_list
+        egress_dict = get_eth_3rd_subcontainer("EthCtrlConfigEgress", "EthCtrlConfigEgressFifo", item, egress_dict)
+        schdlr_dict = get_ethcfg_scheduler_dict(item, schdlr_dict)
+        shaper_dict = get_eth_3rd_subcontainer("EthCtrlConfigEgress", "EthCtrlConfigShaper", item, shaper_dict)
+        xgress_dict = get_eth_3rd_subcontainer("EthCtrlConfigIngress", "EthCtrlConfigIngressFifo", item, xgress_dict)
+        spicfg_dict = get_eth_2nd_subcontainer("EthCtrlConfigSpiConfiguration", item, spicfg_dict)
 
+        # merge Egress and Ingress dicts
+        xgress_dict.update(egress_dict)
 
+        # break after getting the first, see above note for more details
+        break
 
-def parse_eth_driver(cname, containers):
-    eth_driver = {}
-    ctnrblk = lib_conf.find_ecuc_container_block(cname, containers)
-    if not ctnrblk or lib_conf.get_tag(ctnrblk) != "ECUC-CONTAINER-VALUE":
-        return None
-    params = lib_conf.get_param_list(ctnrblk)
-    for par in params:
-        eth_driver[par["tag"]] = par["val"]
-
-    # Let us parse the sub-containers
-    spichn = getall_spidriver_subcontainer("SpiChannel", ctnrblk)
-    spiexd = getall_spidriver_subcontainer("SpiExternalDevice", ctnrblk)
-    spijob = getall_spidriver_subcontainer("SpiJob", ctnrblk)
-    spiseq = getall_spidriver_subcontainer("SpiSequence", ctnrblk)
-    
-    eth_config = {}
-    eth_config["SpiDriver"] = eth_driver
-    eth_config["SpiChannel"] = spichn
-    eth_config["SpiExternalDevice"] = spiexd
-    eth_config["SpiJob"] = spijob
-    eth_config["SpiSequence"] = spiseq
-
-    return eth_config
+    return eccpar_dict, xgress_dict, schdlr_dict, shaper_dict, spicfg_dict
 
 
 
+def parse_eth_configset(containers):
+    cname = "EthConfigSet"
+    eth_cfgset_par = []
+    eth_cfgset = []
 
-# This function parses ARXML and extract the Spi information
-# Returns: No of eth_configs, Spi pin dictionary
+    ctnrblks = lib_conf.findall_containers_with_name(cname, containers)
+    for i, ctnrblk in enumerate(ctnrblks):
+        if not ctnrblk or lib_conf.get_tag(ctnrblk) != "ECUC-CONTAINER-VALUE":
+            return None
+        params = lib_conf.get_param_list(ctnrblk)
+        eth_params = {}
+        for par in params:
+            eth_params[par["tag"]] = par["val"]
+        eth_cfgset_par.append(eth_params)
+
+        # Let us parse the sub-containers
+        ecc_cfg, xgr_cfg, sch_cfg, shp_cfg, spi_cfg = get_configset_subcontainer("EthCtrlConfig", ctnrblk)
+        eth_cfgset_dict = {}
+        eth_cfgset_dict["EthIndex"] = str(i)
+        eth_cfgset_dict["EthCtrlConfig"] = ecc_cfg
+        eth_cfgset_dict["EthCtrlConfigXgressFifo"] = xgr_cfg
+        eth_cfgset_dict["EthCtrlConfigScheduler"] = sch_cfg
+        eth_cfgset_dict["EthCtrlConfigShaper"] = shp_cfg
+        eth_cfgset_dict["EthCtrlConfigSpiConfiguration"] = spi_cfg
+        eth_cfgset.append(eth_cfgset_dict)
+
+    return eth_cfgset
+
+
+
+# This function parses ARXML and extract the Eth information
+# Returns: No of eth_configs, Eth pin dictionary
 def parse_arxml(ar_file):
-    print("arxml_eth_parse.py: parse_arxml called!")
-    return None
-
     if ar_file == None:
         return None
 
-    # empty dictionary
-    eth_configs = {}
+    # empty list
+    eth_configs = []
 
     # Read ARXML File
     tree = ET.parse(ar_file)
@@ -136,24 +180,21 @@ def parse_arxml(ar_file):
         return
 
     # locate Mcu module configuration under ELEMENTS
-    modconf = lib_conf.find_module_conf_values("Spi", elems)
+    modconf = lib_conf.find_module_conf_values("Eth", elems)
 
     # locate container
     containers = lib_conf.find_containers_in_modconf(modconf)
     if containers == None:
         return
 
-    eth_general = parse_eth_general("SpiGeneral", containers)
-    eth_pubinfo = parse_eth_general("SpiPublishedInformation", containers)
-    eth_driver  = parse_eth_driver("SpiDriver", containers)
+    eth_configs = parse_eth_configset(containers)
 
-    # consolidate all parsed output to one nested-dict
-    eth_configs = eth_driver
-    eth_configs["SpiDriver"]["SpiMaxHwUnit"] = eth_pubinfo["SpiMaxHwUnit"]
-    eth_configs["SpiGeneral"] = eth_general
+    # copy EthGeneral params to eth_configs
+    eth_general, eth_offload = parse_eth_general("EthGeneral", containers)
+    for i, cfg in enumerate(eth_general):
+        eth_configs[i]["EthGeneral"] = cfg
+    for i, cfg in enumerate(eth_offload):
+        eth_configs[i]["EthCtrlOffloading"] = cfg
 
-    # print("parse_arxml->eth_configs", eth_configs)
-    
-    # return eth_n_pins, eth_configs, eth_groups, eth_general
     return eth_configs
 

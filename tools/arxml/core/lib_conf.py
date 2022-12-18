@@ -29,7 +29,7 @@ def insert_ecuc_module_conf(element_node, module_name):
     # Comment block
     ci = len(list(element_node))
     element_node.insert(ci, ET.Comment("Module Configuration: "+module_name))
-    
+
     # ECUC Module Configuration
     mod_conf = ET.SubElement(element_node, "ECUC-MODULE-CONFIGURATION-VALUES")
     shortname = ET.SubElement(mod_conf, "SHORT-NAME")
@@ -81,7 +81,6 @@ def insert_conf_param(root, refname, paramtype, subtype, value):
    else:
       param_blk = ET.SubElement(root, "ECUC-ERROR_UNDEFINED-PARAM-VALUE")
 
-
    if subtype == "bool":
       def_ref = ET.SubElement(param_blk, "DEFINITION-REF", DEST="ECUC-BOOLEAN-PARAM-DEF")
    elif subtype == "int":
@@ -112,7 +111,7 @@ def find_ecuc_elements_block(root):
     if ar_pkg == None:
         print("Error: find_ecuc_elements_block() couldn't find "+ecuc_arpkg_name+"!")
         return
-    
+
     # Now find insertion point. Our insert point is ELEMENTS block inside AR-PACKAGE named EcucDefs (in ver R20-11)
     ar_elems = None
     for item in list(ar_pkg):
@@ -129,11 +128,11 @@ def find_ecuc_elements_block(root):
 # arg2: root is ELEMENTS block inside AR-PACKAGE named Ecuc_<arpkg>
 def find_module_conf_values(shortname, root):
    modconf = None
-   
+
    if shortname == None:
       print("Error: Invalid argument to find_module_conf_values()")
       return
-   
+
    if get_tag(root) == "ELEMENTS":
       for elem in list(root):
          if get_tag(elem) == "ECUC-MODULE-CONFIGURATION-VALUES":
@@ -142,7 +141,7 @@ def find_module_conf_values(shortname, root):
                   if item.text == shortname:
                      modconf = elem
                      break
-                  
+
    return modconf
 
 
@@ -151,13 +150,13 @@ def find_containers_in_modconf(root):
     if root == None:
        print("Error: Invalid argument to find_containers_in_modconf()")
        return
-    
+
     for item in list(root):
         if get_tag(item) == "CONTAINERS":
             containers = item
     if containers == None:
         print("Error: couldn't find CONTAINERS in Mcu Mod. Conf., hence can't update MicroC info to ARXML!")
-        
+
     return containers
 
 
@@ -165,11 +164,11 @@ def find_containers_in_modconf(root):
 # arg2: root is CONTAINERS block inside ECUC-MODULE-CONFIGURATION-VALUES
 def find_ecuc_container_block(shortname, root):
    ctnrval = None
-   
+
    if shortname == None:
       print("Error: Invalid argument to find_ecuc_container_block()")
       return
-   
+
    if get_tag(root) == "CONTAINERS":
       for elem in list(root):
          if get_tag(elem) == "ECUC-CONTAINER-VALUE":
@@ -178,17 +177,17 @@ def find_ecuc_container_block(shortname, root):
                   if item.text == shortname:
                      ctnrval = elem
                      break
-                  
+
    return ctnrval
 
 
 def findall_subcontainers_with_name(shortname, root):
    ctnrnode = []
-   
+
    if shortname == None:
       print("Error: Invalid argument to find_subcontainer_with_name()")
       return
-   
+
    for child in list(root):
       if get_tag(child) == "SUB-CONTAINERS":
          for ecu_ctnr in list(child):
@@ -201,5 +200,29 @@ def findall_subcontainers_with_name(shortname, root):
    # if there is no ECUC-CONTAINER with name == "shortname", return None
    if len(ctnrnode) == 0:
       ctnrnode = None
-   
+
+   return ctnrnode
+
+
+def findall_containers_with_name(shortname, root):
+   ctnrnode = []
+
+   if shortname == None:
+      print("Error: Invalid argument to findall_containers_with_name()")
+      return
+
+   for child in list(root):
+      if get_tag(child) == "ECUC-CONTAINER-VALUE":
+         for item in list(child):
+            if get_tag(item) == "SHORT-NAME":
+               if item.text == shortname:
+                  ctnrnode.append(child)
+                  break # done, move to the next container
+               else:
+                  break # wrong container, so don't spend time here
+
+   # if there is no ECUC-CONTAINER with name == "shortname", return None
+   if len(ctnrnode) == 0:
+      ctnrnode = None
+
    return ctnrnode

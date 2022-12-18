@@ -83,8 +83,19 @@ class EthernetConfigMainView:
         self.n_eth_dev_str = tk.StringVar()
         self.save_cb = save_cb
 
-        # read child view configs from ARXML
-        #gen_cfgs = ARXML read
+        # read configs from ARXML
+        self.n_eth_dev = len(eth_cfgs)
+        self.n_eth_dev_str.set(len(eth_cfgs))
+
+        # initialize configurations from ARXML file
+        for i, cfg in enumerate(eth_cfgs):
+            self.configs.insert(len(self.configs), dappa.AsrCfgStr(self.cfgkeys, cfg))
+            self.configs[i].datavar["EthGeneral"] = cfg["EthGeneral"]
+            self.configs[i].datavar["EthCtrlConfig"] = cfg["EthCtrlConfig"]
+            self.configs[i].datavar["EthCtrlConfigXgressFifo"] = cfg["EthCtrlConfigXgressFifo"]
+            self.configs[i].datavar["EthCtrlConfigScheduler"] = cfg["EthCtrlConfigScheduler"]
+            self.configs[i].datavar["EthCtrlConfigShaper"] = cfg["EthCtrlConfigShaper"]
+            self.configs[i].datavar["EthCtrlConfigSpiConfiguration"] = cfg["EthCtrlConfigSpiConfiguration"]
 
 
     def __del__(self):
