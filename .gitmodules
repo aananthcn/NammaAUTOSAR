@@ -22,3 +22,6 @@
 	path = submodules/MCAL/Spi
 	url = https://github.com/aananthcn/NammaSpi.git
 	branch = main
+[submodule "submodules/MCAL/Lin"]
+	path = submodules/MCAL/Lin
+	url = https://github.com/aananthcn/NammaLin.git
