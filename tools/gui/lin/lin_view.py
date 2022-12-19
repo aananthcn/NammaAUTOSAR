@@ -23,8 +23,8 @@ from tkinter import ttk
 
 import gui.lin.lin_maincfg as lin_cfg
 
-# import arxml.lin.arxml_lin_parse as arxml_lin_r
-# import arxml.lin.arxml_lin_write as arxml_lin_w
+import arxml.lin.arxml_lin_parse as arxml_lin_r
+import arxml.lin.arxml_lin_write as arxml_lin_w
 
 # import gui.lin.lin_code_gen as lin_cgen
 
