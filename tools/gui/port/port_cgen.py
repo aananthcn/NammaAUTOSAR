@@ -93,5 +93,5 @@ def generate_code(gui):
     pins, port_info, port_gen = arxml_port.parse_arxml(gui.arxml_file)
     generate_headerfile(port_src_path, pins, port_info)
     generate_sourcefile(port_src_path, pins, port_info)
-    uc_cgen.create_source(gui)
+    uc_cgen.create_source(gui) # calling uc_cgen.create_source() is a work-around. This will be corrected later.
     

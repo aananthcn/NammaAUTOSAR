@@ -497,5 +497,5 @@ def generate_code(gui, spi_configs):
     spi_src_path = search.find_dir("Spi", cwd+"/submodules/MCAL/")
     generate_headerfile(spi_src_path, spi_configs)
     generate_sourcefile(spi_src_path, spi_configs)
-    uc_cgen.create_source(gui)
+    uc_cgen.create_source(gui) # calling uc_cgen.create_source() is a work-around. This will be corrected later.
     
