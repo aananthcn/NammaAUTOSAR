@@ -34,6 +34,7 @@ import gui.port.port_view as port_view
 import gui.dio.dio_view as dio_view
 import gui.spi.spi_view as spi_view
 import gui.eth.eth_view as eth_view
+import gui.lin.lin_view as lin_view
 
 
 
@@ -112,7 +113,7 @@ AsrBlocksConfigList = [
         # Position (offset % of screen size), size (% of screen size) & colors
         "x": 42.4, "y": l1_y, "w": 2.5, "h": 18, "bgc": '#FF7C80', "fgc": 'black',
         # click callback & constructor
-        "cb": None, "cons": None,
+        "cb": lin_view.lin_block_click_handler, "cons": None,
         "postdraw": None
     },
     {

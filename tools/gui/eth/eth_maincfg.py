@@ -32,8 +32,6 @@ import gui.eth.eth_sch as eth_sch
 import gui.eth.eth_shaper as eth_shaper
 import gui.eth.eth_spicfg as eth_spicfg
 
-import arxml.spi.arxml_spi_parse as arxml_spi_r
-
 
 class EthChildView:
     view = None

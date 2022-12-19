@@ -1,5 +1,5 @@
 #
-# Created on Fri Dec 09 2022 5:40:07 AM
+# Created on Mon Dec 19 2022 7:18:20 AM
 #
 # The MIT License (MIT)
 # Copyright (c) 2022 Aananth C N
@@ -21,19 +21,19 @@
 import tkinter as tk
 from tkinter import ttk
 
-import gui.eth.eth_maincfg as eth_cfg
+import gui.lin.lin_maincfg as lin_cfg
 
-import arxml.eth.arxml_eth_parse as arxml_eth_r
-import arxml.eth.arxml_eth_write as arxml_eth_w
+# import arxml.lin.arxml_lin_parse as arxml_lin_r
+# import arxml.lin.arxml_lin_write as arxml_lin_w
 
-# import gui.eth.eth_code_gen as eth_cgen
+# import gui.lin.lin_code_gen as lin_cgen
 
 
 TabList = []
-EthConfigViewActive = False
+LinConfigViewActive = False
 
 
-class EthTab:
+class LinTab:
     tab = None
     name = None
     xsize = None
@@ -42,64 +42,65 @@ class EthTab:
     save_cb = None
     
     def __init__(self, f, w, h):
-        self.save_cb = eth_save_callback
+        self.save_cb = lin_save_callback
         self.frame = f
         self.xsize = w
         self.ysize = h
 
 
 
-def eth_config_close_event(gui, view):
-    global EthConfigViewActive
+def lin_config_close_event(gui, view):
+    global LinConfigViewActive
 
-    EthConfigViewActive = False
+    LinConfigViewActive = False
     view.destroy()
 
 
 
-def eth_save_callback(gui, eth_configs):
-    arxml_eth_w.update_arxml(gui.arxml_file, eth_configs)
-    # eth_cgen.generate_code(gui, eth_configs)
+def lin_save_callback(gui, lin_configs):
+    arxml_lin_w.update_arxml(gui.arxml_file, lin_configs)
+    # lin_cgen.generate_code(gui, lin_configs)
 
 
     
-def show_eth_tabs(gui):
-    global EthConfigViewActive, TabList
+def show_lin_tabs(gui):
+    global LinConfigViewActive, TabList
     
-    if EthConfigViewActive:
+    if LinConfigViewActive:
         return
 
     # Create a child window (tabbed view)
-    width = gui.main_view.xsize * 80 / 100
+    width = gui.main_view.xsize * 30 / 100
     height = gui.main_view.ysize * 60 / 100
     view = tk.Toplevel()
     gui.main_view.child_window = view
     xoff = (gui.main_view.xsize - width)/2
     yoff = (gui.main_view.ysize - height)/3
     view.geometry("%dx%d+%d+%d" % (width, height, xoff, yoff))
-    view.title("AUTOSAR Ethernet Driver (MAC) Configuration Tool")
-    EthConfigViewActive = True
-    view.protocol("WM_DELETE_WINDOW", lambda: eth_config_close_event(gui, view))
+    view.title("AUTOSAR Lin Driver Configuration Tool")
+    LinConfigViewActive = True
+    view.protocol("WM_DELETE_WINDOW", lambda: lin_config_close_event(gui, view))
 
     # destroy old GUI objects
     for obj in TabList:
         del obj
 
-    # read Eth content from ARXML file
-    eth_configs = arxml_eth_r.parse_arxml(gui.arxml_file)
+    # read Lin content from ARXML file
+    # lin_configs = arxml_lin_r.parse_arxml(gui.arxml_file)
+    lin_configs = None
     
-    # create the main Ethernet GUI object
-    ethcfg_view = EthTab(view, width, height)
-    ethcfg_view.tab = eth_cfg.EthernetConfigMainView(gui, eth_configs, ethcfg_view.save_cb)
-    ethcfg_view.name = "EthernetConfigs"
-    TabList.append(ethcfg_view)
+    # create the main Lin GUI object
+    lincfg_view = LinTab(view, width, height)
+    lincfg_view.tab = lin_cfg.LinConfigMainView(gui, lin_configs, lincfg_view.save_cb)
+    lincfg_view.name = "LinConfigs"
+    TabList.append(lincfg_view)
 
     # Draw all tabs
-    ethcfg_view.tab.draw(ethcfg_view)
+    lincfg_view.tab.draw(lincfg_view)
     # gui.main_view.window.bind("<<NotebookTabChanged>>", show_os_tab_switch)
 
 
 
 # Main Entry Point
-def eth_block_click_handler(gui):
-    show_eth_tabs(gui)
+def lin_block_click_handler(gui):
+    show_lin_tabs(gui)
