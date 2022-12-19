@@ -106,7 +106,7 @@ def update_arxml(ar_file, lin_configs):
     ET.register_namespace('xsi', "http://www.w3.org/2001/XMLSchema-instance")
     
     print("arxml_lin_write.py: update_arxml called!")
-    print_lin_configs(lin_configs)
+    # print_lin_configs(lin_configs)
     
     # Read ARXML File
     tree = ET.parse(ar_file)

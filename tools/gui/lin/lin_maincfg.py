@@ -86,7 +86,7 @@ class LinConfigMainView:
         for i, cfg in enumerate(lin_cfgs):
             self.configs.insert(len(self.configs), dappa.AsrCfgStr(self.cfgkeys, cfg))
             self.configs[i].datavar["LinGeneral"] = cfg["LinGeneral"]
-            self.configs[i].datavar["LinChannel"] = cfg["LinChannel"]
+            self.configs[i].datavar["LinChannel"] = cfg["LinGlobalConfig"]
 
 
     def __del__(self):

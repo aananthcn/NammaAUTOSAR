@@ -86,8 +86,7 @@ def show_lin_tabs(gui):
         del obj
 
     # read Lin content from ARXML file
-    # lin_configs = arxml_lin_r.parse_arxml(gui.arxml_file)
-    lin_configs = None
+    lin_configs = arxml_lin_r.parse_arxml(gui.arxml_file)
     
     # create the main Lin GUI object
     lincfg_view = LinTab(view, width, height)
