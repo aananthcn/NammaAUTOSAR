@@ -25,3 +25,6 @@
 [submodule "submodules/MCAL/Lin"]
 	path = submodules/MCAL/Lin
 	url = https://github.com/aananthcn/NammaLin.git
+[submodule "submodules/MCAL/Eth"]
+	path = submodules/MCAL/Eth
+	url = https://github.com/aananthcn/NammaEth.git

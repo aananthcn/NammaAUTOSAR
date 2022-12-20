@@ -28,10 +28,10 @@ import gui.mcu.uc_cgen as uc_cgen
 
 
 LinGeneralCfgType_str = "\n\ntypedef struct {\n\
+    uint16 lin_timeout_sec;\n\
     uint8 lin_index;\n\
     boolean lin_dev_error_detect;\n\
     boolean lin_version_info_api;\n\
-    uint16 lin_timeout_sec;\n\
 } LinGeneralCfgType;\n\
 \n"
 

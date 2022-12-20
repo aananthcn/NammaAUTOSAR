@@ -26,7 +26,7 @@ import gui.eth.eth_maincfg as eth_cfg
 import arxml.eth.arxml_eth_parse as arxml_eth_r
 import arxml.eth.arxml_eth_write as arxml_eth_w
 
-# import gui.eth.eth_code_gen as eth_cgen
+import gui.eth.eth_code_gen as eth_cgen
 
 
 TabList = []
@@ -59,7 +59,7 @@ def eth_config_close_event(gui, view):
 
 def eth_save_callback(gui, eth_configs):
     arxml_eth_w.update_arxml(gui.arxml_file, eth_configs)
-    # eth_cgen.generate_code(gui, eth_configs)
+    eth_cgen.generate_code(gui, eth_configs)
 
 
     
