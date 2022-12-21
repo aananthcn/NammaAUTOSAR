@@ -123,6 +123,7 @@ Eth_ConfigSpiCfgType_str = "\ntypedef struct {\n\
     const boolean               txd_hdr_seq;\n\
     const boolean               tx_en_cksum;\n\
     const boolean               tx_cut_thru;\n\
+    const boolean               spi_timstmp;\n\
     const uint8                 tx_crdthrsh; /* Credit Threshold */\n\
     const boolean               spi_syncacc; /* Accesss Synchronous */\n\
     const Spi_SequenceEnumType  spisequence;\n\
@@ -208,6 +209,31 @@ def generate_sourcefile(eth_src_path, eth_configs):
         cf.write("\t\t\t.fifo_idx = "+ cfg.datavar["EthCtrlConfigXgressFifo"]["EthCtrlConfigEgressFifoIdx"] +",\n")
         cf.write("\t\t\t.fifoprio = "+ cfg.datavar["EthCtrlConfigXgressFifo"]["EthCtrlConfigEgressFifoPriorityAssignment"] +"\n")
         cf.write("\t\t},\n")
+        cf.write("\t\t.sched_c = {\n")
+        cf.write("\t\t\t.predes_order = "+ cfg.datavar["EthCtrlConfigScheduler"]["EthCtrlConfigSchedulerPredecessorOrder"] +"\n")
+        cf.write("\t\t},\n")
+        cf.write("\t\t.shape_c = {\n")
+        cf.write("\t\t\t.idle_slope = "+ cfg.datavar["EthCtrlConfigShaper"]["EthCtrlConfigShaperIdleSlope"] +",\n")
+        cf.write("\t\t\t.max_credit = "+ cfg.datavar["EthCtrlConfigShaper"]["EthCtrlConfigShaperMaxCredit"] +",\n")
+        cf.write("\t\t\t.min_credit = "+ cfg.datavar["EthCtrlConfigShaper"]["EthCtrlConfigShaperMinCredit"] +"\n")
+        cf.write("\t\t},\n")
+        cf.write("\t\t.spi_cfg = {\n")
+        cf.write("\t\t\t.pay_ld_size = "+ cfg.datavar["EthCtrlConfigSpiConfiguration"]["EthCtrlConfigSpiChunkPayloadSize"] +",\n")
+        cf.write("\t\t\t.com_retries = "+ cfg.datavar["EthCtrlConfigSpiConfiguration"]["EthCtrlConfigSpiCommRetries"] +",\n")
+        com_timout_ms = int(float(cfg.datavar["EthCtrlConfigSpiConfiguration"]["EthCtrlConfigSpiCommTimeout"])*1000)
+        cf.write("\t\t\t.ctimeout_ms = "+ str(com_timout_ms) +",\n")
+        cf.write("\t\t\t.ctrldatprot = "+ cfg.datavar["EthCtrlConfigSpiConfiguration"]["EthCtrlConfigSpiEnableControlDataProtection"] +",\n")
+        cf.write("\t\t\t.rx_cs_align = "+ cfg.datavar["EthCtrlConfigSpiConfiguration"]["EthCtrlConfigSpiEnableRxCSAlign"] +",\n")
+        cf.write("\t\t\t.rx_cut_thru = "+ cfg.datavar["EthCtrlConfigSpiConfiguration"]["EthCtrlConfigSpiEnableRxCutThrough"] +",\n")
+        cf.write("\t\t\t.rx_zero_aln = "+ cfg.datavar["EthCtrlConfigSpiConfiguration"]["EthCtrlConfigSpiEnableRxZeroAlign"] +",\n")
+        cf.write("\t\t\t.txd_hdr_seq = "+ cfg.datavar["EthCtrlConfigSpiConfiguration"]["EthCtrlConfigSpiEnableTransmitDataHdrSequence"] +",\n")
+        cf.write("\t\t\t.tx_en_cksum = "+ cfg.datavar["EthCtrlConfigSpiConfiguration"]["EthCtrlConfigSpiEnableTxChecksum"] +",\n")
+        cf.write("\t\t\t.tx_cut_thru = "+ cfg.datavar["EthCtrlConfigSpiConfiguration"]["EthCtrlConfigSpiEnableTxCutThrough"] +",\n")
+        cf.write("\t\t\t.spi_timstmp = "+ cfg.datavar["EthCtrlConfigSpiConfiguration"]["EthCtrlConfigSpiSelectTimeStamp"] +",\n")
+        cf.write("\t\t\t.tx_crdthrsh = "+ cfg.datavar["EthCtrlConfigSpiConfiguration"]["EthCtrlConfigSpiTransmitCreditThreshold"] +",\n")
+        cf.write("\t\t\t.spi_syncacc = "+ cfg.datavar["EthCtrlConfigSpiConfiguration"]["EthCtrlConfigSpiAccessSynchronous"] +",\n")
+        cf.write("\t\t\t.spisequence = "+ cfg.datavar["EthCtrlConfigSpiConfiguration"]["EthCtrlConfigSpiSequenceName"] +"\n")
+        cf.write("\t\t}\n")
         cf.write("\t},\n")
     cf.write("};\n")
 
