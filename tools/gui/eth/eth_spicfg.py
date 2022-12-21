@@ -32,12 +32,12 @@ class EthConfigSpiConfigChildView:
     tab_struct = None # passed from *_view.py file
     configs = None # all UI configs (tkinter strings) are stored here.
     cfgkeys = ["EthCtrlConfigSpiChunkPayloadSize", "EthCtrlConfigSpiCommRetries",
-               "EthCtrlConfigSpiCommTimeout", "EthCtrlConfigSpiEnableControlDataProtection",
-               "EthCtrlConfigSpiEnableRxCSAlign", "EthCtrlConfigSpiEnableRxCutThrough",
-               "EthCtrlConfigSpiEnableRxZeroAlign", "EthCtrlConfigSpiEnableTransmitDataHdrSequence",
-               "EthCtrlConfigSpiEnableTxChecksum", "EthCtrlConfigSpiEnableTxCutThrough",
-               "EthCtrlConfigSpiSelectTimeStamp", "EthCtrlConfigSpiTransmitCreditThreshold",
-               "EthCtrlConfigSpiAccessSynchronous", "EthCtrlConfigSpiSequenceName"]
+               "EthCtrlConfigSpiEnableControlDataProtection", "EthCtrlConfigSpiEnableRxCSAlign",
+               "EthCtrlConfigSpiEnableRxCutThrough", "EthCtrlConfigSpiEnableRxZeroAlign",
+               "EthCtrlConfigSpiEnableTransmitDataHdrSequence", "EthCtrlConfigSpiEnableTxChecksum",
+               "EthCtrlConfigSpiEnableTxCutThrough", "EthCtrlConfigSpiSelectTimeStamp",
+               "EthCtrlConfigSpiTransmitCreditThreshold", "EthCtrlConfigSpiAccessSynchronous",
+               "EthCtrlConfigSpiSequenceName", "EthCtrlConfigSpiCommTimeout"]
 
     non_header_objs = []
     dappas_per_col = len(cfgkeys)
@@ -57,7 +57,7 @@ class EthConfigSpiConfigChildView:
         
         # parse Spi Sequences
         if spi_cfg:
-            self.spi_sequences = []
+            self.spi_sequences = ["NONE"]
             for cfg in spi_cfg:
                 self.spi_sequences.append(cfg["SpiSequenceName"])
 
@@ -72,7 +72,6 @@ class EthConfigSpiConfigChildView:
 
         gen_dict["EthCtrlConfigSpiChunkPayloadSize"] = "64" # 64 bits
         gen_dict["EthCtrlConfigSpiCommRetries"] = "1"
-        gen_dict["EthCtrlConfigSpiCommTimeout"] = "0.1" # 100 ms
         gen_dict["EthCtrlConfigSpiEnableControlDataProtection"] = "FALSE" # No encryption
         gen_dict["EthCtrlConfigSpiEnableRxCSAlign"] = "FALSE"
         gen_dict["EthCtrlConfigSpiEnableRxCutThrough"] = "FALSE"
@@ -84,6 +83,7 @@ class EthConfigSpiConfigChildView:
         gen_dict["EthCtrlConfigSpiTransmitCreditThreshold"] = "0"
         gen_dict["EthCtrlConfigSpiAccessSynchronous"] = "FALSE"
         gen_dict["EthCtrlConfigSpiSequenceName"] = "" # get from Spi Sequence
+        gen_dict["EthCtrlConfigSpiCommTimeout"] = "0.1" # 100 ms
 
         return gen_dict
 
@@ -94,18 +94,23 @@ class EthConfigSpiConfigChildView:
         cmbsel_bool = ("FALSE", "TRUE")
         dappa.combo(self, "EthCtrlConfigSpiChunkPayloadSize",   0,  0, 1, 22, cmbsel_payld)
         dappa.spinb(self, "EthCtrlConfigSpiCommRetries",        0,  1, 1, 23, tuple(range(0,256)))
-        dappa.entry(self, "EthCtrlConfigSpiCommTimeout",        0,  2, 1, 25, "normal")
-        dappa.combo(self, "EthCtrlConfigSpiEnableControlDataProtection",   0, 3, 1, 22, cmbsel_bool)
-        dappa.combo(self, "EthCtrlConfigSpiEnableRxCSAlign",    0,  4, 1, 22, cmbsel_bool)
-        dappa.combo(self, "EthCtrlConfigSpiEnableRxCutThrough", 0,  5, 1, 22, cmbsel_bool)
-        dappa.combo(self, "EthCtrlConfigSpiEnableRxZeroAlign",  0,  6, 1, 22, cmbsel_bool)
-        dappa.combo(self, "EthCtrlConfigSpiEnableTransmitDataHdrSequence", 0, 7, 1, 22, cmbsel_bool)
-        dappa.combo(self, "EthCtrlConfigSpiEnableTxChecksum",   0,  8, 1, 22, cmbsel_bool)
-        dappa.combo(self, "EthCtrlConfigSpiEnableTxCutThrough", 0,  9, 1, 22, cmbsel_bool)
-        dappa.combo(self, "EthCtrlConfigSpiSelectTimeStamp",    0, 10, 1, 22, cmbsel_bool)
-        dappa.spinb(self, "EthCtrlConfigSpiTransmitCreditThreshold", 0, 11, 1, 23, tuple(range(0,4)))
-        dappa.combo(self, "EthCtrlConfigSpiAccessSynchronous",  0, 12, 1, 22, cmbsel_bool)
-        dappa.combo(self, "EthCtrlConfigSpiSequenceName",       0, 13, 1, 22, tuple(self.spi_sequences))
+        dappa.combo(self, "EthCtrlConfigSpiEnableControlDataProtection",   0, 2, 1, 22, cmbsel_bool)
+        dappa.combo(self, "EthCtrlConfigSpiEnableRxCSAlign",    0,  3, 1, 22, cmbsel_bool)
+        dappa.combo(self, "EthCtrlConfigSpiEnableRxCutThrough", 0,  4, 1, 22, cmbsel_bool)
+        dappa.combo(self, "EthCtrlConfigSpiEnableRxZeroAlign",  0,  5, 1, 22, cmbsel_bool)
+        dappa.combo(self, "EthCtrlConfigSpiEnableTransmitDataHdrSequence", 0, 6, 1, 22, cmbsel_bool)
+        dappa.combo(self, "EthCtrlConfigSpiEnableTxChecksum",   0,  7, 1, 22, cmbsel_bool)
+        dappa.combo(self, "EthCtrlConfigSpiEnableTxCutThrough", 0,  8, 1, 22, cmbsel_bool)
+        dappa.combo(self, "EthCtrlConfigSpiSelectTimeStamp",    0,  9, 1, 22, cmbsel_bool)
+        dappa.spinb(self, "EthCtrlConfigSpiTransmitCreditThreshold", 0, 10, 1, 23, tuple(range(0,4)))
+        dappa.combo(self, "EthCtrlConfigSpiAccessSynchronous",  0, 11, 1, 22, cmbsel_bool)
+        ss = dappa.combo(self, "EthCtrlConfigSpiSequenceName",  0, 12, 1, 22, tuple(self.spi_sequences))
+        ss.bind("<<ComboboxSelected>>", lambda evt: self.spi_selected(evt))
+        if "NONE" in self.configs[0].dispvar["EthCtrlConfigSpiSequenceName"].get():
+            dappa.entry(self, "EthCtrlConfigSpiCommTimeout",    0, 13, 1, 25, "readonly")
+            self.configs[0].dispvar["EthCtrlConfigSpiCommTimeout"].set("0")
+        else:
+            dappa.entry(self, "EthCtrlConfigSpiCommTimeout",    0, 13, 1, 25, "normal")
 
 
 
@@ -119,3 +124,10 @@ class EthConfigSpiConfigChildView:
 
         # Support scrollable view
         self.scrollw.scroll()
+
+
+    def spi_selected(self, event):
+        self.configs[0].get() # read from UI (backup last selection)
+        # re-draw all boxes (dappas) of this row
+        dappa.delete_dappas(self)
+        self.draw_dappas()

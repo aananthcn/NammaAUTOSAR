@@ -483,8 +483,8 @@ class EthernetConfigMainView:
         # set the geometry
         x = self.active_dialog.winfo_screenwidth()
         y = self.active_dialog.winfo_screenheight()
-        width = 470
-        height = 310
+        width = 460
+        height = 315
         self.active_dialog.geometry("%dx%d+%d+%d" % (width, height, x/2, y/5))
 
         # parse ARXML for SPI sequence
