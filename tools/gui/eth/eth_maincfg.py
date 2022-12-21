@@ -150,8 +150,13 @@ class EthernetConfigMainView:
         cb = lambda id = i : self.eth_config_shaper_select(id)
         dappa.button(self, "EthCtrlConfigShaper", i, self.header_row+i, 7, 20, text, cb)
 
-        text = "EthCtrlConfigSpiConfiguration["+str(i)+"]"
-        cb = lambda id = i : self.eth_config_spicfg_select(id)
+        # Spi configuration is valid only if EthCtrlConfig->EthCtrlEnableSpiInterface is TRUE
+        if "TRUE" in self.configs[i].datavar["EthCtrlConfig"]["EthCtrlEnableSpiInterface"]:
+            text = "EthCtrlConfigSpiConfiguration["+str(i)+"]"
+            cb = lambda id = i : self.eth_config_spicfg_select(id)
+        else:
+            text = "SPI disabled in EthCtrlConfig"
+            cb = lambda id = i : self.do_nothing(id)
         dappa.button(self, "EthCtrlConfigSpiConfiguration", i, self.header_row+i, 8, 27, text, cb)
 
 
@@ -252,6 +257,9 @@ class EthernetConfigMainView:
         self.active_view = gen_view
         gen_view.view.draw(gen_view)
 
+
+    def do_nothing(self, row):
+        return
 
 
     def on_eth_ctrl_offloading_select_close(self, row):
