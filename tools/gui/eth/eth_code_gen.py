@@ -144,6 +144,16 @@ Eth_ConfigType_str = "\ntypedef struct {\n\
 
 
 
+def print_mac_address_as_hex_bytes(cf, cfg):
+    cf.write("\t\t\t.mac_addres = {")
+    mac_addr_octets = cfg.datavar["EthCtrlConfig"]["EthCtrlPhyAddress"].split(":")
+    for i, octet in enumerate(mac_addr_octets):
+        cf.write("0x"+octet)
+        if i < 5:
+            cf.write(", ")
+    cf.write("},\n")
+
+
 def generate_sourcefile(eth_src_path, eth_configs):
     cf = open(eth_src_path+"/cfg/Eth_cfg.c", "w")
     cf.write("#include <stddef.h>\n")
@@ -173,7 +183,19 @@ def generate_sourcefile(eth_src_path, eth_configs):
         cf.write("\t\t\t.en_cksum_icmp = "+ cfg.datavar["EthCtrlOffloading"]["EthCtrlEnableOffloadChecksumICMP"] +",\n")
         cf.write("\t\t\t.en_cksum_tcp = "+ cfg.datavar["EthCtrlOffloading"]["EthCtrlEnableOffloadChecksumTCP"] +",\n")
         cf.write("\t\t\t.en_cksum_udp = "+ cfg.datavar["EthCtrlOffloading"]["EthCtrlEnableOffloadChecksumUDP"] +"\n")
-        cf.write("\t\t}\n")
+        cf.write("\t\t},\n")
+        cf.write("\t\t.ctrlcfg = {\n")
+        cf.write("\t\t\t.buf_handlg = "+ cfg.datavar["EthCtrlConfig"]["EthCtrlConfigSwBufferHandling"] +",\n")
+        cf.write("\t\t\t.enable_mii = "+ cfg.datavar["EthCtrlConfig"]["EthCtrlEnableMii"] +",\n")
+        cf.write("\t\t\t.enable_spi = "+ cfg.datavar["EthCtrlConfig"]["EthCtrlEnableSpiInterface"] +",\n")
+        cf.write("\t\t\t.en_rx_intr = "+ cfg.datavar["EthCtrlConfig"]["EthCtrlEnableRxInterrupt"] +",\n")
+        cf.write("\t\t\t.en_tx_intr = "+ cfg.datavar["EthCtrlConfig"]["EthCtrlEnableTxInterrupt"] +",\n")
+        cf.write("\t\t\t.ctrl_index = "+ cfg.datavar["EthCtrlConfig"]["EthCtrlIdx"] +",\n")
+        cf.write("\t\t\t.mac_lr_spd = "+ cfg.datavar["EthCtrlConfig"]["EthCtrlMacLayerSpeed"] +",\n")
+        cf.write("\t\t\t.mac_lr_typ = "+ cfg.datavar["EthCtrlConfig"]["EthCtrlMacLayerType"] +",\n")
+        cf.write("\t\t\t.mac_sb_typ = "+ cfg.datavar["EthCtrlConfig"]["EthCtrlMacLayerSubType"] +",\n")
+        print_mac_address_as_hex_bytes(cf, cfg)
+        cf.write("\t\t},\n")
         cf.write("\t},\n")
     cf.write("};\n")
 
