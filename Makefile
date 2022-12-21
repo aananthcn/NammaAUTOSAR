@@ -9,6 +9,7 @@ PORT_PATH := D:/_E/projects/oss/NammaAUTOSAR/submodules/MCAL/Port
 DIO_PATH := D:/_E/projects/oss/NammaAUTOSAR/submodules/MCAL/Dio
 SPI_PATH := D:/_E/projects/oss/NammaAUTOSAR/submodules/MCAL/Spi
 LIN_PATH := D:/_E/projects/oss/NammaAUTOSAR/submodules/MCAL/Lin
+ETH_PATH := D:/_E/projects/oss/NammaAUTOSAR/submodules/MCAL/Eth
 OS_PATH := D:/_E/projects/oss/NammaAUTOSAR/submodules/SL/Os
 OS_BUILDER_PATH := D:/_E/projects/oss/NammaAUTOSAR/tools/os_builder
 
@@ -24,6 +25,7 @@ include D:/_E/projects/oss/NammaAUTOSAR/submodules/MCAL/Port/Port.mk
 include D:/_E/projects/oss/NammaAUTOSAR/submodules/MCAL/Dio/Dio.mk
 include D:/_E/projects/oss/NammaAUTOSAR/submodules/MCAL/Spi/Spi.mk
 include D:/_E/projects/oss/NammaAUTOSAR/submodules/MCAL/Lin/Lin.mk
+include D:/_E/projects/oss/NammaAUTOSAR/submodules/MCAL/Eth/Eth.mk
 include D:/_E/projects/oss/NammaAUTOSAR/tools/os_builder/src/os-objs.mk
 include D:/_E/projects/oss/NammaAUTOSAR/submodules/SL/Os/os-common.mk
 include D:/_E/projects/oss/NammaAUTOSAR/common.mk

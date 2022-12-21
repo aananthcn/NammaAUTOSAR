@@ -28,7 +28,7 @@ endif
 
 OBJS	:= $(CMN_OBJS) $(BRD_OBJS) $(ARCH_OBJS) $(LIBOBJS) $(SG_OBJS) \
 	   $(MCU_OBJS) $(ECUM_OBJS)  $(PORT_OBJS) $(DIO_OBJS) $(SPI_OBJS) \
-	   $(LIN_OBJS) $(APP_OBJS)
+	   $(LIN_OBJS) $(ETH_OBJS) $(APP_OBJS)
 
 .PHONY: all
 .DEFAULT_GOAL := all

@@ -72,6 +72,9 @@ def create_source(gui):
     lin_path = search.find_dir("Lin", cwd+"/submodules")
     makefile.write("LIN_PATH := "+lin_path+"\n")
 
+    eth_path = search.find_dir("Eth", cwd+"/submodules")
+    makefile.write("ETH_PATH := "+eth_path+"\n")
+
     os_path = search.find_dir("Os", cwd+"/submodules")
     makefile.write("OS_PATH := "+os_path+"\n")
 
@@ -107,6 +110,8 @@ def create_source(gui):
     makefile.write("include "+Spi_mk+"\n")
     Lin_mk = search.find_file("Lin.mk", cwd+"/submodules")
     makefile.write("include "+Lin_mk+"\n")
+    Eth_mk = search.find_file("Eth.mk", cwd+"/submodules")
+    makefile.write("include "+Eth_mk+"\n")
 
     os_objs_mk = search.find_file("os-objs.mk", cwd)
     makefile.write("include "+os_objs_mk+"\n")

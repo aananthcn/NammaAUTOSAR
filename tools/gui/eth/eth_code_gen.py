@@ -88,12 +88,59 @@ EthCtrlConfigType_str = "\ntypedef struct {\n\
 } EthCtrlConfigType;\n\
 \n"
 
+
+Eth_ConfigFifoType_str = "\ntypedef struct {\n\
+    const uint16    buff_len;\n\
+    const uint16    buf_totl;\n\
+    const uint16    fifo_idx;\n\
+    const uint8     fifoprio;\n\
+} Eth_ConfigFifoType;\n\
+\n"
+
+
+Eth_ConfigSchedulerType_str = "\ntypedef struct {\n\
+    const uint32 predes_order;\n\
+} Eth_ConfigSchedulerType;\n\
+\n"
+
+
+Eth_ConfigShaperType_str = "\ntypedef struct {\n\
+    const uint32 idle_slope;\n\
+    const uint32 max_credit;\n\
+    const uint32 min_credit;\n\
+} Eth_ConfigShaperType;\n\
+\n"
+
+
+Eth_ConfigSpiCfgType_str = "\ntypedef struct {\n\
+    const uint8                 pay_ld_size;\n\
+    const uint8                 com_retries;\n\
+    const uint32                ctimeout_ms; /* Comm. Timeout */\n\
+    const boolean               ctrldatprot;\n\
+    const boolean               rx_cs_align;\n\
+    const boolean               rx_cut_thru;\n\
+    const boolean               rx_zero_aln;\n\
+    const boolean               txd_hdr_seq;\n\
+    const boolean               tx_en_cksum;\n\
+    const boolean               tx_cut_thru;\n\
+    const uint8                 tx_crdthrsh; /* Credit Threshold */\n\
+    const boolean               spi_syncacc; /* Accesss Synchronous */\n\
+    const Spi_SequenceEnumType  spisequence;\n\
+} Eth_ConfigSpiCfgType;\n\
+\n"
+
+
 Eth_ConfigType_str = "\ntypedef struct {\n\
-    const EthGeneralCfgType     general;\n\
-    const EthCtrlOffloadingType offload;\n\
-    const EthCtrlConfigType     ctrlcfg;\n\
+    const EthGeneralCfgType         general;\n\
+    const EthCtrlOffloadingType     offload;\n\
+    const EthCtrlConfigType         ctrlcfg;\n\
+    const Eth_ConfigFifoType        fifo_ig;\n\
+    const Eth_ConfigFifoType        fifo_eg;\n\
+    const Eth_ConfigSchedulerType   sched_c;\n\
+    const Eth_ConfigShaperType      shape_c;\n\
+    const Eth_ConfigSpiCfgType      spi_cfg;\n\
 } Eth_ConfigType;\n\
-"
+\n\n"
 
 
 
@@ -109,18 +156,23 @@ def generate_sourcefile(eth_src_path, eth_configs):
         cf.write("\t{\n")
         cf.write("\t\t/* Eth channel - "+str(i)+" */\n")
         cf.write("\t\t.general = {\n")
-        cf.write("\t\t\t.eth_index = "+ cfg.datavar["EthGeneral"]["EthIndex"] +",\n")
-        cf.write("\t\t\t.eth_dev_error_detect = "+ cfg.datavar["EthGeneral"]["EthDevErrorDetect"] +",\n")
-        cf.write("\t\t\t.eth_version_info_api = "+ cfg.datavar["EthGeneral"]["EthVersionInfoApi"] +",\n")
-        cf.write("\t\t\t.eth_timeout_sec = "+ cfg.datavar["EthGeneral"]["EthTimeoutDuration"] +"\n")
+        cf.write("\t\t\t.index = "+ cfg.datavar["EthGeneral"]["EthIndex"] +",\n")
+        period_ms = int(float(cfg.datavar["EthGeneral"]["EthMainFunctionPeriod"])*1000)
+        cf.write("\t\t\t.mainfn_period_ms = "+ str(period_ms) +",\n")
+        cf.write("\t\t\t.dev_error_detect = "+ cfg.datavar["EthGeneral"]["EthDevErrorDetect"] +",\n")
+        cf.write("\t\t\t.get_cntr_val_api = "+ cfg.datavar["EthGeneral"]["EthGetCounterValuesApi"] +",\n")
+        cf.write("\t\t\t.get_rx_stats_api = "+ cfg.datavar["EthGeneral"]["EthGetRxStatsApi"] +",\n")
+        cf.write("\t\t\t.get_tx_stats_api = "+ cfg.datavar["EthGeneral"]["EthGetTxStatsApi"] +",\n")
+        cf.write("\t\t\t.get_tx_erctv_api = "+ cfg.datavar["EthGeneral"]["EthGetTxErrorCounterValuesApi"] +",\n")
+        cf.write("\t\t\t.get_gbl_time_api = "+ cfg.datavar["EthGeneral"]["EthGlobalTimeSupport"] +",\n")
+        cf.write("\t\t\t.max_ctrl_suportd = "+ cfg.datavar["EthGeneral"]["EthMaxCtrlsSupported"] +",\n")
+        cf.write("\t\t\t.version_info_api = "+ cfg.datavar["EthGeneral"]["EthVersionInfoApi"] +"\n")
         cf.write("\t\t},\n")
-        cf.write("\t\t.chn_cfg = {\n")
-        cf.write("\t\t\t.eth_chan_id = "+ cfg.datavar["EthGlobalConfig"]["EthChannelId"] +",\n")
-        cf.write("\t\t\t.eth_chan_baudrate = "+ cfg.datavar["EthGlobalConfig"]["EthChannelBaudRate"] +",\n")
-        cf.write("\t\t\t.eth_node_type = "+ cfg.datavar["EthGlobalConfig"]["EthNodeType"] +",\n")
-        cf.write("\t\t\t.eth_wakeup_support = "+ cfg.datavar["EthGlobalConfig"]["EthChannelWakeupSupport"] +",\n")
-        cf.write("\t\t\t.eth_wakeup_source = \""+ cfg.datavar["EthGlobalConfig"]["EthChannelEcuMWakeupSource"] +"\", /* This could be wrong! */\n")
-        cf.write("\t\t\t.eth_clock_ref = \""+ cfg.datavar["EthGlobalConfig"]["EthClockRef"] +"\", /* This could be wrong! */ \n")
+        cf.write("\t\t.offload = {\n")
+        cf.write("\t\t\t.en_cksum_ipv4 = "+ cfg.datavar["EthCtrlOffloading"]["EthCtrlEnableOffloadChecksumIPv4"] +",\n")
+        cf.write("\t\t\t.en_cksum_icmp = "+ cfg.datavar["EthCtrlOffloading"]["EthCtrlEnableOffloadChecksumICMP"] +",\n")
+        cf.write("\t\t\t.en_cksum_tcp = "+ cfg.datavar["EthCtrlOffloading"]["EthCtrlEnableOffloadChecksumTCP"] +",\n")
+        cf.write("\t\t\t.en_cksum_udp = "+ cfg.datavar["EthCtrlOffloading"]["EthCtrlEnableOffloadChecksumUDP"] +"\n")
         cf.write("\t\t}\n")
         cf.write("\t},\n")
     cf.write("};\n")
@@ -135,8 +187,7 @@ def generate_headerfile(eth_src_path, eth_configs):
     hf.write("#define NAMMA_AUTOSAR_ETH_CFG_H\n\n")
     hf.write("// This file is autogenerated, any hand modifications will be lost!\n\n")
     hf.write("#include <Platform_Types.h>\n\n")
-
-    hf.write("#define ETH_DRIVER_MAX_CHANNEL    ("+str(len(eth_configs))+")\n")
+    hf.write("#include <Spi_cfg.h>\n\n")
 
     hf.write(EthGeneralCfgType_str)
     hf.write(EthCtrlOffloadingType_str)
@@ -145,11 +196,19 @@ def generate_headerfile(eth_src_path, eth_configs):
     hf.write(EthCtrlMacLayerType_str)
     hf.write(EthCtrlMacLayerSubType_str)
     hf.write(EthCtrlConfigType_str)
+    
+    hf.write(Eth_ConfigFifoType_str)
+    hf.write(Eth_ConfigSchedulerType_str)
+    hf.write(Eth_ConfigShaperType_str)
+    hf.write(Eth_ConfigSpiCfgType_str)
 
     hf.write(Eth_ConfigType_str)
 
+    # Macros
+    hf.write("#define ETH_DRIVER_MAX_CHANNEL    ("+str(len(eth_configs))+")\n")
+    
     # External Declarations
-    hf.write("\n\n\nextern const Eth_ConfigType EthConfigs[ETH_DRIVER_MAX_CHANNEL];\n")
+    hf.write("\n\nextern const Eth_ConfigType EthConfigs[ETH_DRIVER_MAX_CHANNEL];\n")
 
     hf.write("\n\n#endif\n")
     hf.close()
@@ -160,6 +219,6 @@ def generate_code(gui, eth_configs):
     cwd = os.getcwd()
     eth_src_path = search.find_dir("Eth", cwd+"/submodules/MCAL/")
     generate_headerfile(eth_src_path, eth_configs)
-    # generate_sourcefile(eth_src_path, eth_configs)
+    generate_sourcefile(eth_src_path, eth_configs)
     uc_cgen.create_source(gui) # calling uc_cgen.create_source() is a work-around. This will be corrected later.
     
