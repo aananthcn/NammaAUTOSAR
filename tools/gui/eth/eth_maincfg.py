@@ -151,7 +151,8 @@ class EthernetConfigMainView:
         dappa.button(self, "EthCtrlConfigShaper", i, self.header_row+i, 7, 20, text, cb)
 
         # Spi configuration is valid only if EthCtrlConfig->EthCtrlEnableSpiInterface is TRUE
-        if "TRUE" in self.configs[i].datavar["EthCtrlConfig"]["EthCtrlEnableSpiInterface"]:
+        ecc_cfg = self.configs[i].datavar["EthCtrlConfig"]
+        if ecc_cfg and "TRUE" in ecc_cfg["EthCtrlEnableSpiInterface"]:
             text = "EthCtrlConfigSpiConfiguration["+str(i)+"]"
             cb = lambda id = i : self.eth_config_spicfg_select(id)
         else:
@@ -328,7 +329,7 @@ class EthernetConfigMainView:
         x = self.active_dialog.winfo_screenwidth()
         y = self.active_dialog.winfo_screenheight()
         width = 400
-        height = 240
+        height = 260
         self.active_dialog.geometry("%dx%d+%d+%d" % (width, height, x/4, y/5))
 
         # create views and draw

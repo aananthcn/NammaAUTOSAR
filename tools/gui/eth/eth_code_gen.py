@@ -23,6 +23,8 @@ import os
 # import arxml.lin.arxml_lin as arxml_lin
 import utils.search as search
 
+import gui.eth.eth_ctrlcfg as eth_cc
+
 # Temporary work-around
 import gui.mcu.uc_cgen as uc_cgen
 
@@ -74,6 +76,15 @@ EthCtrlMacLayerSubType_str = "\ntypedef enum {\n\
 } EthCtrlMacLayerSubType;\n\
 \n"
 
+
+def generate_eth_ctrl_dev_type_enum(hf):
+    dev_list = list(eth_cc.get_supported_spi_eth_devs())
+    hf.write("\ntypedef enum {\n")
+    for dev in dev_list:
+        hf.write("\tETH_DEV_"+str(dev).upper()+",\n")
+    hf.write("\tMAX_ETH_DEV\n")
+    hf.write("} EthControllerDevType;\n\n")
+
 EthCtrlConfigType_str = "\ntypedef struct {\n\
     boolean                 buf_handlg;\n\
     boolean                 enable_mii;\n\
@@ -85,6 +96,7 @@ EthCtrlConfigType_str = "\ntypedef struct {\n\
     EthCtrlMacLayerType     mac_lr_typ;\n\
     EthCtrlMacLayerSubType  mac_sb_typ;\n\
     uint8                   mac_addres[6];\n\
+    EthControllerDevType    spi_device;\n\
 } EthCtrlConfigType;\n\
 \n"
 
@@ -189,6 +201,7 @@ def generate_sourcefile(eth_src_path, eth_configs):
         cf.write("\t\t\t.buf_handlg = "+ cfg.datavar["EthCtrlConfig"]["EthCtrlConfigSwBufferHandling"] +",\n")
         cf.write("\t\t\t.enable_mii = "+ cfg.datavar["EthCtrlConfig"]["EthCtrlEnableMii"] +",\n")
         cf.write("\t\t\t.enable_spi = "+ cfg.datavar["EthCtrlConfig"]["EthCtrlEnableSpiInterface"] +",\n")
+        cf.write("\t\t\t.spi_device = ETH_DEV_"+ cfg.datavar["EthCtrlConfig"]["EthSpiCtrlDevice"] +",\n")
         cf.write("\t\t\t.en_rx_intr = "+ cfg.datavar["EthCtrlConfig"]["EthCtrlEnableRxInterrupt"] +",\n")
         cf.write("\t\t\t.en_tx_intr = "+ cfg.datavar["EthCtrlConfig"]["EthCtrlEnableTxInterrupt"] +",\n")
         cf.write("\t\t\t.ctrl_index = "+ cfg.datavar["EthCtrlConfig"]["EthCtrlIdx"] +",\n")
@@ -255,6 +268,8 @@ def generate_headerfile(eth_src_path, eth_configs):
     hf.write(EthCtrlMacLayerSpeed_str)
     hf.write(EthCtrlMacLayerType_str)
     hf.write(EthCtrlMacLayerSubType_str)
+
+    generate_eth_ctrl_dev_type_enum(hf)
     hf.write(EthCtrlConfigType_str)
     
     hf.write(Eth_ConfigFifoType_str)

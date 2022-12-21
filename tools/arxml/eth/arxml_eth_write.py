@@ -216,6 +216,8 @@ def add_eth_ctrl_config_parameters_to_container(ctnr, dref, ecc_cfg, xgrs_cfg, s
     lib_conf.insert_conf_param(params, refname, "numerical", "enum", str(ecc_cfg["EthCtrlMacLayerSubType"]))
     refname = dref+"/EthCtrlPhyAddress"
     lib_conf.insert_conf_param(params, refname, "text", "string", str(ecc_cfg["EthCtrlPhyAddress"]))
+    refname = dref+"/VendorSpecific/EthSpiCtrlDevice"
+    lib_conf.insert_conf_param(params, refname, "numerical", "enum", str(ecc_cfg["EthSpiCtrlDevice"]))
 
     # Create a sub-container for EthCtrlConfig
     subctnr2 = ET.SubElement(ctnr, "SUB-CONTAINERS")

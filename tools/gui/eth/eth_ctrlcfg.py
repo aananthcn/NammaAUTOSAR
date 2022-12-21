@@ -26,6 +26,10 @@ import gui.lib.asr_widget as dappa # dappa in Tamil means box
 
 
 
+def get_supported_spi_eth_devs():
+    return ("NONE", "ENC28J60")
+
+
 class EthCtrlConfigChildView:
     gui = None
     scrollw = None
@@ -33,7 +37,7 @@ class EthCtrlConfigChildView:
     configs = None # all UI configs (tkinter strings) are stored here.
     cfgkeys = ["EthCtrlEnableSpiInterface", "EthCtrlEnableMii", "EthCtrlConfigSwBufferHandling", 
                "EthCtrlEnableRxInterrupt", "EthCtrlEnableTxInterrupt", "EthCtrlIdx", "EthCtrlMacLayerSpeed",
-               "EthCtrlMacLayerType", "EthCtrlMacLayerSubType", "EthCtrlPhyAddress"]
+               "EthCtrlMacLayerType", "EthCtrlMacLayerSubType", "EthCtrlPhyAddress", "EthSpiCtrlDevice"]
 
     non_header_objs = []
     dappas_per_col = len(cfgkeys)
@@ -68,6 +72,7 @@ class EthCtrlConfigChildView:
         gen_dict["EthCtrlMacLayerType"]             = "ETH_MAC_LAYER_TYPE_XMII"
         gen_dict["EthCtrlMacLayerSubType"]          = "STANDARD"
         gen_dict["EthCtrlPhyAddress"]               = "00:00:5e:00:53:"+format(index, '02x')
+        gen_dict["EthSpiCtrlDevice"]             = ""
         
         return gen_dict
 
@@ -76,29 +81,34 @@ class EthCtrlConfigChildView:
     def draw_dappas(self):
         bool_cmbsel = ("FALSE", "TRUE")
 
-        si = dappa.combo(self, "EthCtrlEnableSpiInterface", 0, 0, 1, 30, bool_cmbsel)
+        si = dappa.combo(self, "EthCtrlEnableSpiInterface", 0,  0, 1, 30, bool_cmbsel)
         si.bind("<<ComboboxSelected>>", lambda evt: self.spi_selected(evt))
 
         # Spi interface has a dependency on EnableMii selection
         if "TRUE" in self.configs[0].dispvar["EthCtrlEnableSpiInterface"].get():
-            dappa.combo(self, "EthCtrlEnableMii",           0, 1, 1, 30, ("TRUE"))
+            dappa.combo(self, "EthCtrlEnableMii",           0,  1, 1, 30, ("TRUE"))
             self.configs[0].dispvar["EthCtrlEnableMii"].set("TRUE")
         else:
-	        dappa.combo(self, "EthCtrlEnableMii",           0, 1, 1, 30, bool_cmbsel)
+	        dappa.combo(self, "EthCtrlEnableMii",           0,  1, 1, 30, bool_cmbsel)
 
-        dappa.combo(self, "EthCtrlConfigSwBufferHandling",  0, 2, 1, 30, bool_cmbsel)
-        dappa.combo(self, "EthCtrlEnableRxInterrupt",       0, 3, 1, 30, bool_cmbsel)
+        dappa.combo(self, "EthCtrlConfigSwBufferHandling",  0,  2, 1, 30, bool_cmbsel)
+        dappa.combo(self, "EthCtrlEnableRxInterrupt",       0,  3, 1, 30, bool_cmbsel)
 
 
-        dappa.combo(self, "EthCtrlEnableTxInterrupt",       0, 4, 1, 30, bool_cmbsel)
-        dappa.entry(self, "EthCtrlIdx",                     0, 5, 1, 33, "readonly")
+        dappa.combo(self, "EthCtrlEnableTxInterrupt",       0,  4, 1, 30, bool_cmbsel)
+        dappa.entry(self, "EthCtrlIdx",                     0,  5, 1, 33, "readonly")
         speed_cmbsel = ("ETH_MAC_LAYER_SPEED_10M", "ETH_MAC_LAYER_SPEED_100M", "ETH_MAC_LAYER_SPEED_1G", "ETH_MAC_LAYER_SPEED_2500M", "ETH_MAC_LAYER_SPEED_10G")
-        dappa.combo(self, "EthCtrlMacLayerSpeed",           0, 6, 1, 30, speed_cmbsel)
+        dappa.combo(self, "EthCtrlMacLayerSpeed",           0,  6, 1, 30, speed_cmbsel)
         mactype_cmbsel = ("ETH_MAC_LAYER_TYPE_XMII", "ETH_MAC_LAYER_TYPE_XGMII", "ETH_MAC_LAYER_TYPE_XXGMII")
-        dappa.combo(self, "EthCtrlMacLayerType",            0, 7, 1, 30, mactype_cmbsel)
+        dappa.combo(self, "EthCtrlMacLayerType",            0,  7, 1, 30, mactype_cmbsel)
         macsubtype_cmbsel = ("REDUCED", "REVERSED", "SERIAL", "STANDARD", "UNIVERSAL_SERIAL")
-        dappa.combo(self, "EthCtrlMacLayerSubType",         0, 8, 1, 30, macsubtype_cmbsel)
-        dappa.entry(self, "EthCtrlPhyAddress",              0, 9, 1, 28, "larger")
+        dappa.combo(self, "EthCtrlMacLayerSubType",         0,  8, 1, 30, macsubtype_cmbsel)
+        dappa.entry(self, "EthCtrlPhyAddress",              0,  9, 1, 28, "larger")
+        if "TRUE" in self.configs[0].dispvar["EthCtrlEnableSpiInterface"].get():
+            dappa.combo(self, "EthSpiCtrlDevice",           0, 10, 1, 30, get_supported_spi_eth_devs())
+        else:
+            dappa.combo(self, "EthSpiCtrlDevice",           0, 10, 1, 30, ("NONE"))
+            self.configs[0].dispvar["EthSpiCtrlDevice"].set("NONE")
 
 
 
