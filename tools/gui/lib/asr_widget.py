@@ -210,6 +210,11 @@ def delete_dappa_row(view, row):
         del view.non_header_objs[x]
 
 
+def delete_dappas(view):
+    for dappa in view.non_header_objs:
+        dappa.destroy()
+
+
 def button_selections(view, idx, cfg_label):
     n_btn_entries = 0
     if idx < len(view.configs) and view.configs[idx].datavar[cfg_label]:

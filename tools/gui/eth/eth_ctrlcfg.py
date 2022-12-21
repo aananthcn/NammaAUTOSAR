@@ -77,9 +77,17 @@ class EthCtrlConfigChildView:
         bool_cmbsel = ("FALSE", "TRUE")
 
         dappa.combo(self, "EthCtrlConfigSwBufferHandling",  0, 0, 1, 30, bool_cmbsel)
-        dappa.combo(self, "EthCtrlEnableMii",               0, 1, 1, 30, bool_cmbsel)
+        mii = dappa.combo(self, "EthCtrlEnableMii",               0, 1, 1, 30, bool_cmbsel)
+        mii.bind("<<ComboboxSelected>>", lambda evt: self.mii_selected(evt))
         dappa.combo(self, "EthCtrlEnableRxInterrupt",       0, 2, 1, 30, bool_cmbsel)
-        dappa.combo(self, "EthCtrlEnableSpiInterface",      0, 3, 1, 30, bool_cmbsel)
+
+        # Spi interface has a dependency on EnableMii selection
+        if "TRUE" in self.configs[0].dispvar["EthCtrlEnableMii"].get():
+            dappa.combo(self, "EthCtrlEnableSpiInterface",  0, 3, 1, 30, bool_cmbsel)
+        else:
+            dappa.combo(self, "EthCtrlEnableSpiInterface",  0, 3, 1, 30, ("FALSE"))
+            self.configs[0].dispvar["EthCtrlEnableSpiInterface"].set("FALSE")
+
         dappa.combo(self, "EthCtrlEnableTxInterrupt",       0, 4, 1, 30, bool_cmbsel)
         dappa.entry(self, "EthCtrlIdx",                     0, 5, 1, 33, "readonly")
         speed_cmbsel = ("ETH_MAC_LAYER_SPEED_10M", "ETH_MAC_LAYER_SPEED_100M", "ETH_MAC_LAYER_SPEED_1G", "ETH_MAC_LAYER_SPEED_2500M", "ETH_MAC_LAYER_SPEED_10G")
@@ -102,3 +110,11 @@ class EthCtrlConfigChildView:
 
         # Support scrollable view
         self.scrollw.scroll()
+
+
+
+    def mii_selected(self, event):
+        self.configs[0].get() # read from UI (backup last selection)
+        # re-draw all boxes (dappas) of this row
+        dappa.delete_dappas(self)
+        self.draw_dappas()
