@@ -31,8 +31,8 @@ class EthCtrlConfigChildView:
     scrollw = None
     tab_struct = None # passed from *_view.py file
     configs = None # all UI configs (tkinter strings) are stored here.
-    cfgkeys = ["EthCtrlConfigSwBufferHandling", "EthCtrlEnableMii", "EthCtrlEnableRxInterrupt", 
-               "EthCtrlEnableSpiInterface", "EthCtrlEnableTxInterrupt", "EthCtrlIdx", "EthCtrlMacLayerSpeed",
+    cfgkeys = ["EthCtrlEnableSpiInterface", "EthCtrlEnableMii", "EthCtrlConfigSwBufferHandling", 
+               "EthCtrlEnableRxInterrupt", "EthCtrlEnableTxInterrupt", "EthCtrlIdx", "EthCtrlMacLayerSpeed",
                "EthCtrlMacLayerType", "EthCtrlMacLayerSubType", "EthCtrlPhyAddress"]
 
     non_header_objs = []
@@ -58,10 +58,10 @@ class EthCtrlConfigChildView:
     def create_empty_configs(self, index):
         gen_dict = {}
         
-        gen_dict["EthCtrlConfigSwBufferHandling"]   = "FALSE"
-        gen_dict["EthCtrlEnableMii"]                = "FALSE"
-        gen_dict["EthCtrlEnableRxInterrupt"]        = "FALSE"
         gen_dict["EthCtrlEnableSpiInterface"]       = "FALSE"
+        gen_dict["EthCtrlEnableMii"]                = "FALSE"
+        gen_dict["EthCtrlConfigSwBufferHandling"]   = "FALSE"
+        gen_dict["EthCtrlEnableRxInterrupt"]        = "FALSE"
         gen_dict["EthCtrlEnableTxInterrupt"]        = "FALSE"
         gen_dict["EthCtrlIdx"]                      = str(index)
         gen_dict["EthCtrlMacLayerSpeed"]            = "ETH_MAC_LAYER_SPEED_10M"
@@ -76,17 +76,19 @@ class EthCtrlConfigChildView:
     def draw_dappas(self):
         bool_cmbsel = ("FALSE", "TRUE")
 
-        dappa.combo(self, "EthCtrlConfigSwBufferHandling",  0, 0, 1, 30, bool_cmbsel)
-        mii = dappa.combo(self, "EthCtrlEnableMii",               0, 1, 1, 30, bool_cmbsel)
-        mii.bind("<<ComboboxSelected>>", lambda evt: self.mii_selected(evt))
-        dappa.combo(self, "EthCtrlEnableRxInterrupt",       0, 2, 1, 30, bool_cmbsel)
+        si = dappa.combo(self, "EthCtrlEnableSpiInterface", 0, 0, 1, 30, bool_cmbsel)
+        si.bind("<<ComboboxSelected>>", lambda evt: self.spi_selected(evt))
 
         # Spi interface has a dependency on EnableMii selection
-        if "TRUE" in self.configs[0].dispvar["EthCtrlEnableMii"].get():
-            dappa.combo(self, "EthCtrlEnableSpiInterface",  0, 3, 1, 30, bool_cmbsel)
+        if "TRUE" in self.configs[0].dispvar["EthCtrlEnableSpiInterface"].get():
+            dappa.combo(self, "EthCtrlEnableMii",           0, 1, 1, 30, ("TRUE"))
+            self.configs[0].dispvar["EthCtrlEnableMii"].set("TRUE")
         else:
-            dappa.combo(self, "EthCtrlEnableSpiInterface",  0, 3, 1, 30, ("FALSE"))
-            self.configs[0].dispvar["EthCtrlEnableSpiInterface"].set("FALSE")
+	        dappa.combo(self, "EthCtrlEnableMii",           0, 1, 1, 30, bool_cmbsel)
+
+        dappa.combo(self, "EthCtrlConfigSwBufferHandling",  0, 2, 1, 30, bool_cmbsel)
+        dappa.combo(self, "EthCtrlEnableRxInterrupt",       0, 3, 1, 30, bool_cmbsel)
+
 
         dappa.combo(self, "EthCtrlEnableTxInterrupt",       0, 4, 1, 30, bool_cmbsel)
         dappa.entry(self, "EthCtrlIdx",                     0, 5, 1, 33, "readonly")
@@ -113,7 +115,7 @@ class EthCtrlConfigChildView:
 
 
 
-    def mii_selected(self, event):
+    def spi_selected(self, event):
         self.configs[0].get() # read from UI (backup last selection)
         # re-draw all boxes (dappas) of this row
         dappa.delete_dappas(self)
