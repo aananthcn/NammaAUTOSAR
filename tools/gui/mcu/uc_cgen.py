@@ -42,84 +42,87 @@ def generate_platform_header(gui):
 # returns non-zero in case of error
 def create_source(gui):
     cwd = os.getcwd()
-    makefile = open(cwd+"/Makefile", "w")
+    paths_mk = open(cwd+"/pathdefs.mk", "w")
+    incls_mk = open(cwd+"/includes.mk", "w")
 
     # PATH variables
-    makefile.write("# Definitions\n")
-    makefile.write("CWD := "+cwd+"\n")
-    makefile.write("ROOT_PATH := "+cwd+"\n")
+    paths_mk.write("# Definitions\n")
+    paths_mk.write("CWD := "+cwd+"\n")
+    paths_mk.write("ROOT_PATH := "+cwd+"\n")
 
     mcu_board_path = search.find_dir("bsp", cwd+"/submodules/MCAL/Mcu")
-    mcu_micro_path = mcu_board_path+"/"+gui.uc_info.micro
-    makefile.write("MCU_BOARD_PATH := "+mcu_board_path+"\n")
-    makefile.write("MCU_MICRO_PATH := "+mcu_micro_path+"\n")
+    paths_mk.write("MCU_BOARD_PATH := "+mcu_board_path+"\n")
+    mcu_micro_path = mcu_board_path+"/startup/"+gui.uc_info.micro
+    paths_mk.write("MCU_MICRO_PATH := "+mcu_micro_path+"\n")
 
     mcu_path = search.find_dir("Mcu", cwd+"/submodules")
-    makefile.write("MCU_PATH := "+mcu_path+"\n")
+    paths_mk.write("MCU_PATH := "+mcu_path+"\n")
     
     mcu_path = search.find_dir("EcuM", cwd+"/submodules")
-    makefile.write("ECUM_PATH := "+mcu_path+"\n")
+    paths_mk.write("ECUM_PATH := "+mcu_path+"\n")
 
     port_path = search.find_dir("Port", cwd+"/submodules")
-    makefile.write("PORT_PATH := "+port_path+"\n")
+    paths_mk.write("PORT_PATH := "+port_path+"\n")
 
     dio_path = search.find_dir("Dio", cwd+"/submodules")
-    makefile.write("DIO_PATH := "+dio_path+"\n")
+    paths_mk.write("DIO_PATH := "+dio_path+"\n")
 
     spi_path = search.find_dir("Spi", cwd+"/submodules")
-    makefile.write("SPI_PATH := "+spi_path+"\n")
+    paths_mk.write("SPI_PATH := "+spi_path+"\n")
 
     lin_path = search.find_dir("Lin", cwd+"/submodules")
-    makefile.write("LIN_PATH := "+lin_path+"\n")
+    paths_mk.write("LIN_PATH := "+lin_path+"\n")
 
     eth_path = search.find_dir("Eth", cwd+"/submodules")
-    makefile.write("ETH_PATH := "+eth_path+"\n")
+    paths_mk.write("ETH_PATH := "+eth_path+"\n")
 
     os_path = search.find_dir("Os", cwd+"/submodules")
-    makefile.write("OS_PATH := "+os_path+"\n")
+    paths_mk.write("OS_PATH := "+os_path+"\n")
 
     os_builder_path = search.find_dir("os_builder", cwd)
-    makefile.write("OS_BUILDER_PATH := "+os_builder_path+"\n")
+    paths_mk.write("OS_BUILDER_PATH := "+os_builder_path+"\n")
 
-    makefile.write("\n")
+    paths_mk.write("\n")
 
     # Include mk files
-    makefile.write("# Inclusions\n")
+    incls_mk.write("# Inclusions\n")
     micro_mk = search.find_file(gui.uc_info.micro+".mk", cwd)
-    makefile.write("include "+micro_mk+"\n")
+    incls_mk.write("include "+micro_mk+"\n")
     microarch_mk = search.find_file(gui.uc_info.micro_arch+".mk", cwd)
-    makefile.write("include "+microarch_mk+"\n")
-    makefile.write("\n")
+    incls_mk.write("include "+microarch_mk+"\n")
+    incls_mk.write("\n")
 
     ################################################################
     # Temporary work around. This function needs a redesign
     app_path = search.find_dir("NammaTestApp", cwd+"/submodules")
-    makefile.write("NAMMATESTAPP_PATH := "+app_path+"\n")
+    paths_mk.write("NAMMATESTAPP_PATH := "+app_path+"\n")
     mk_file = search.find_file_ext("mk", app_path)
-    makefile.write("include "+mk_file+"\n")
+    incls_mk.write("include "+mk_file+"\n")
 
     Mcu_mk = search.find_file("Mcu.mk", cwd+"/submodules")
-    makefile.write("include "+Mcu_mk+"\n")
+    incls_mk.write("include "+Mcu_mk+"\n")
     EcuM_mk = search.find_file("EcuM.mk", cwd+"/submodules")
-    makefile.write("include "+EcuM_mk+"\n")
+    incls_mk.write("include "+EcuM_mk+"\n")
     Port_mk = search.find_file("Port.mk", cwd+"/submodules")
-    makefile.write("include "+Port_mk+"\n")
+    incls_mk.write("include "+Port_mk+"\n")
     Dio_mk = search.find_file("Dio.mk", cwd+"/submodules")
-    makefile.write("include "+Dio_mk+"\n")
+    incls_mk.write("include "+Dio_mk+"\n")
     Spi_mk = search.find_file("Spi.mk", cwd+"/submodules")
-    makefile.write("include "+Spi_mk+"\n")
+    incls_mk.write("include "+Spi_mk+"\n")
     Lin_mk = search.find_file("Lin.mk", cwd+"/submodules")
-    makefile.write("include "+Lin_mk+"\n")
+    incls_mk.write("include "+Lin_mk+"\n")
     Eth_mk = search.find_file("Eth.mk", cwd+"/submodules")
-    makefile.write("include "+Eth_mk+"\n")
+    incls_mk.write("include "+Eth_mk+"\n")
+    MacPhy_mk = search.find_file("macphy.mk", cwd+"/submodules")
+    incls_mk.write("include "+MacPhy_mk+"\n")
 
     os_objs_mk = search.find_file("os-objs.mk", cwd)
-    makefile.write("include "+os_objs_mk+"\n")
+    incls_mk.write("include "+os_objs_mk+"\n")
     os_common_mk = search.find_file("os-common.mk", cwd)
-    makefile.write("include "+os_common_mk+"\n")
+    incls_mk.write("include "+os_common_mk+"\n")
     common_mk = search.find_file("common.mk", cwd)
-    makefile.write("include "+common_mk+"\n")
-    makefile.write("\n")
+    incls_mk.write("include "+common_mk+"\n")
+    incls_mk.write("\n")
     # Temporary work around. This function needs a redesign
     ##################################################################
 
@@ -129,6 +132,7 @@ def create_source(gui):
     # Update ARXML file
     arxml_mcu.update_arxml(gui.arxml_file, gui.uc_info)
     
-    makefile.close()
+    paths_mk.close()
+    incls_mk.close()
     
     return 0

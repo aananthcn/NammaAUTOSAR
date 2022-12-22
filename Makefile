@@ -1,32 +1,45 @@
-# Definitions
-CWD := D:/_E/projects/oss/NammaAUTOSAR
-ROOT_PATH := D:/_E/projects/oss/NammaAUTOSAR
-MCU_BOARD_PATH := D:/_E/projects/oss/NammaAUTOSAR/submodules/MCAL/Mcu/src/bsp
-MCU_MICRO_PATH := D:/_E/projects/oss/NammaAUTOSAR/submodules/MCAL/Mcu/src/bsp/rp2040
-MCU_PATH := D:/_E/projects/oss/NammaAUTOSAR/submodules/MCAL/Mcu
-ECUM_PATH := D:/_E/projects/oss/NammaAUTOSAR/submodules/SL/EcuM
-PORT_PATH := D:/_E/projects/oss/NammaAUTOSAR/submodules/MCAL/Port
-DIO_PATH := D:/_E/projects/oss/NammaAUTOSAR/submodules/MCAL/Dio
-SPI_PATH := D:/_E/projects/oss/NammaAUTOSAR/submodules/MCAL/Spi
-LIN_PATH := D:/_E/projects/oss/NammaAUTOSAR/submodules/MCAL/Lin
-ETH_PATH := D:/_E/projects/oss/NammaAUTOSAR/submodules/MCAL/Eth
-OS_PATH := D:/_E/projects/oss/NammaAUTOSAR/submodules/SL/Os
-OS_BUILDER_PATH := D:/_E/projects/oss/NammaAUTOSAR/tools/os_builder
+# 
+# Created on Thu Dec 22 2022 9:41:36 AM
+# 
+# The MIT License (MIT)
+# Copyright (c) 2022 Aananth C N
+# 
+# Permission is hereby granted, free of charge, to any person obtaining a copy of this software
+# and associated documentation files (the "Software"), to deal in the Software without restriction,
+# including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
+# and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so,
+# subject to the following conditions:
+# 
+# The above copyright notice and this permission notice shall be included in all copies or substantial
+# portions of the Software.
+# 
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED
+# TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+# THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+# TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+# 
+include pathdefs.mk
 
-# Inclusions
-include D:/_E/projects/oss/NammaAUTOSAR/submodules/MCAL/Mcu/src/bsp/startup/rp2040/rp2040.mk
-include D:/_E/projects/oss/NammaAUTOSAR/submodules/MCAL/Mcu/src/bsp/arch/arm/cortex-m0/cortex-m0.mk
 
-NAMMATESTAPP_PATH := D:/_E/projects/oss/NammaAUTOSAR/submodules/AL/NammaTestApp
-include D:/_E/projects/oss/NammaAUTOSAR/submodules/AL/NammaTestApp/namma_test_app.mk
-include D:/_E/projects/oss/NammaAUTOSAR/submodules/MCAL/Mcu/Mcu.mk
-include D:/_E/projects/oss/NammaAUTOSAR/submodules/SL/EcuM/EcuM.mk
-include D:/_E/projects/oss/NammaAUTOSAR/submodules/MCAL/Port/Port.mk
-include D:/_E/projects/oss/NammaAUTOSAR/submodules/MCAL/Dio/Dio.mk
-include D:/_E/projects/oss/NammaAUTOSAR/submodules/MCAL/Spi/Spi.mk
-include D:/_E/projects/oss/NammaAUTOSAR/submodules/MCAL/Lin/Lin.mk
-include D:/_E/projects/oss/NammaAUTOSAR/submodules/MCAL/Eth/Eth.mk
-include D:/_E/projects/oss/NammaAUTOSAR/tools/os_builder/src/os-objs.mk
-include D:/_E/projects/oss/NammaAUTOSAR/submodules/SL/Os/os-common.mk
-include D:/_E/projects/oss/NammaAUTOSAR/common.mk
+COMPILER=arm-none-eabi-
+CC=${COMPILER}gcc
+LD=${COMPILER}ld
+AS=${COMPILER}as
+AR=${COMPILER}ar
+RANLIB=${COMPILER}ranlib
+OBJCOPY=${COMPILER}objcopy
 
+components := $(OS_PATH)
+
+.PHONY: all $(components)
+all: $(components)
+
+$(components):
+	$(MAKE) --directory=$@ ROOT_DIR=$(CWD) COMPILER=$(COMPILER)
+
+
+clean:
+	for d in $(components); 		\
+	do					\
+		$(MAKE) --directory=$$d ROOT_DIR=$(CWD) clean;	\
+	done
