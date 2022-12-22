@@ -29,7 +29,7 @@ AR=${COMPILER}ar
 RANLIB=${COMPILER}ranlib
 OBJCOPY=${COMPILER}objcopy
 
-components := $(OS_PATH)
+components := $(OS_PATH) $(ECUM_PATH)
 
 .PHONY: all $(components)
 all: $(components)
