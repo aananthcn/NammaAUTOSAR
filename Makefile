@@ -18,8 +18,8 @@
 # THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
 # TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 # 
-include pathdefs.mk
-
+include path_defs.mk
+include app_paths.mk
 
 COMPILER=arm-none-eabi-
 CC=${COMPILER}gcc
@@ -29,7 +29,8 @@ AR=${COMPILER}ar
 RANLIB=${COMPILER}ranlib
 OBJCOPY=${COMPILER}objcopy
 
-components := $(OS_PATH) $(ECUM_PATH)
+components := $(OS_PATH) $(ECUM_PATH) \
+		$(APP_LIST)
 
 .PHONY: all $(components)
 all: $(components)
