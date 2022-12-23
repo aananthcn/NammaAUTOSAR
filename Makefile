@@ -31,7 +31,7 @@ RANLIB=${COMPILER}ranlib
 OBJCOPY=${COMPILER}objcopy
 
 components := $(OS_PATH) $(ECUM_PATH) \
-	      $(DIO_PATH) $(ETH_PATH) \
+	      $(DIO_PATH) $(ETH_PATH) $(LIN_PATH) $(PORT_PATH) $(SPI_PATH) $(MCU_PATH) \
 	      $(APP_LIST)
 
 .PHONY: all $(components)
@@ -42,7 +42,7 @@ $(components):
 
 
 clean:
-	for d in $(components); 		\
-	do					\
+	for d in $(components); 				\
+	do							\
 		$(MAKE) --directory=$$d ROOT_DIR=$(CWD) clean;	\
 	done
