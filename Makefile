@@ -31,7 +31,7 @@ RANLIB=${COMPILER}ranlib
 OBJCOPY=${COMPILER}objcopy
 
 components := $(OS_PATH) $(ECUM_PATH) \
-	      $(DIO_PATH) \
+	      $(DIO_PATH) $(ETH_PATH) \
 	      $(APP_LIST)
 
 .PHONY: all $(components)
