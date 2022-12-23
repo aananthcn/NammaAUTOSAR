@@ -102,14 +102,13 @@ def create_source(gui):
     paths_mk.write("CWD := "+cwd+"\n")
     paths_mk.write("ROOT_PATH := "+cwd+"\n")
 
-    mcu_board_path = search.find_dir("bsp", cwd+"/submodules/MCAL/Mcu")
-    paths_mk.write("MCU_BOARD_PATH := "+mcu_board_path+"\n")
-    mcu_micro_path = mcu_board_path+"/startup/"+gui.uc_info.micro
-    paths_mk.write("MCU_MICRO_PATH := "+mcu_micro_path+"\n")
-
     mcu_path = search.find_dir("Mcu", cwd+"/submodules")
     paths_mk.write("MCU_PATH := "+mcu_path+"\n")
     
+    mcu_board_path = search.find_dir("bsp", cwd+"/submodules/MCAL/Mcu")
+    mcu_micro_path = mcu_board_path+"/startup/"+gui.uc_info.micro
+    paths_mk.write("MCU_STARTUP_PATH := "+mcu_micro_path+"\n")
+
     mcu_path = search.find_dir("EcuM", cwd+"/submodules")
     paths_mk.write("ECUM_PATH := "+mcu_path+"\n")
 

@@ -1,9 +1,8 @@
 # Definitions
 CWD := D:/_E/projects/oss/NammaAUTOSAR
 ROOT_PATH := D:/_E/projects/oss/NammaAUTOSAR
-MCU_BOARD_PATH := D:/_E/projects/oss/NammaAUTOSAR/submodules/MCAL/Mcu/src/bsp
-MCU_MICRO_PATH := D:/_E/projects/oss/NammaAUTOSAR/submodules/MCAL/Mcu/src/bsp/startup/rp2040
 MCU_PATH := D:/_E/projects/oss/NammaAUTOSAR/submodules/MCAL/Mcu
+MCU_STARTUP_PATH := D:/_E/projects/oss/NammaAUTOSAR/submodules/MCAL/Mcu/src/bsp/startup/rp2040
 ECUM_PATH := D:/_E/projects/oss/NammaAUTOSAR/submodules/SL/EcuM
 PORT_PATH := D:/_E/projects/oss/NammaAUTOSAR/submodules/MCAL/Port
 DIO_PATH := D:/_E/projects/oss/NammaAUTOSAR/submodules/MCAL/Dio
