@@ -13,4 +13,3 @@ ETH_PATH := D:/_E/projects/oss/NammaAUTOSAR/submodules/MCAL/Eth
 OS_PATH := D:/_E/projects/oss/NammaAUTOSAR/submodules/SL/Os
 OS_BUILDER_PATH := D:/_E/projects/oss/NammaAUTOSAR/tools/os_builder
 
-NAMMATESTAPP_PATH := D:/_E/projects/oss/NammaAUTOSAR/submodules/AL/NammaTestApp
