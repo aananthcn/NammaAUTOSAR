@@ -298,7 +298,7 @@ def generate_makefile(eth_src_path, eth_configs):
     for spidevcfg in eth_configs:
         if "NONE" not in spidevcfg.datavar["EthCtrlConfig"]["EthSpiCtrlDevice"]:
             device = spidevcfg.datavar["EthCtrlConfig"]["EthSpiCtrlDevice"]
-            mf.write("include "+macphy_path+"/"+str(device).lower()+"/"+str(device).lower()+".mk\n")
+            mf.write("include "+macphy_path+"/"+str(device).lower()+"/"+str(device).lower()+".mk\n\n")
 
     mf.close()
 

@@ -78,8 +78,8 @@ def generate_make_list_for_apps(cwd, swc_list):
 # The c_l_flags.mk will be included by main Makefile to provide target specific
 # CFLAGS and LDFLAGS to all other makefiles.
 def generate_c_l_flags_file(gui, cwd):
-    micro_file = search.find_file(gui.uc_info.micro+".mk", cwd)
-    micro_path = micro_file.split(gui.uc_info.micro+".mk")[0]
+    micro_file = search.find_file(gui.uc_info.micro+".lds", cwd)
+    micro_path = micro_file.split(gui.uc_info.micro+".lds")[0]
     u_c_l_file = micro_path+"c_l_flags.mk"
 
     if os.path.exists(u_c_l_file):
