@@ -3,8 +3,8 @@
 # Makefile Paths Definitions
 CWD := D:/_E/projects/oss/NammaAUTOSAR
 ROOT_PATH := D:/_E/projects/oss/NammaAUTOSAR
-MCU_PATH := D:/_E/projects/oss/NammaAUTOSAR/submodules/MCAL/Mcu
 MCU_STARTUP_PATH := D:/_E/projects/oss/NammaAUTOSAR/submodules/MCAL/Mcu/src/bsp/startup/rp2040
+MCU_PATH := D:/_E/projects/oss/NammaAUTOSAR/submodules/MCAL/Mcu
 ECUM_PATH := D:/_E/projects/oss/NammaAUTOSAR/submodules/SL/EcuM
 PORT_PATH := D:/_E/projects/oss/NammaAUTOSAR/submodules/MCAL/Port
 DIO_PATH := D:/_E/projects/oss/NammaAUTOSAR/submodules/MCAL/Dio
@@ -16,8 +16,8 @@ OS_BUILDER_PATH := D:/_E/projects/oss/NammaAUTOSAR/tools/os_builder
 
 
 # Link Archive File Path Definitions
-LIBMCU := D:/_E/projects/oss/NammaAUTOSAR/submodules/MCAL/Mcu/libMcu.la
 LIBMCU_STARTUP := D:/_E/projects/oss/NammaAUTOSAR/submodules/MCAL/Mcu/src/bsp/startup/rp2040/libMcu_Startup.la
+LIBMCU := D:/_E/projects/oss/NammaAUTOSAR/submodules/MCAL/Mcu/libMcu.la
 LIBECUM := D:/_E/projects/oss/NammaAUTOSAR/submodules/SL/EcuM/libEcuM.la
 LIBPORT := D:/_E/projects/oss/NammaAUTOSAR/submodules/MCAL/Port/libPort.la
 LIBDIO := D:/_E/projects/oss/NammaAUTOSAR/submodules/MCAL/Dio/libDio.la
@@ -29,5 +29,5 @@ LIBNAMMATESTAPP := D:/_E/projects/oss/NammaAUTOSAR/submodules/AL/NammaTestApp/li
 
 
 # Link Archive Object List
-LA_OBJS :=  $(LIBMCU) $(LIBMCU_STARTUP) $(LIBECUM) $(LIBPORT) $(LIBDIO) $(LIBSPI) $(LIBLIN) \
-	     $(LIBETH) $(LIBOS) $(LIBNAMMATESTAPP)
+LA_OBJS :=  $(LIBMCU_STARTUP) $(LIBMCU) $(LIBECUM) $(LIBPORT) $(LIBDIO) $(LIBSPI) $(LIBLIN) \
+	    $(LIBETH) $(LIBOS) $(LIBNAMMATESTAPP)

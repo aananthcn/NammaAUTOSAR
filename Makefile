@@ -30,20 +30,44 @@ AR=${COMPILER}ar
 RANLIB=${COMPILER}ranlib
 OBJCOPY=${COMPILER}objcopy
 
-components := $(OS_PATH) $(ECUM_PATH) \
-	      $(MCU_STARTUP_PATH) $(MCU_PATH) \
-	      $(DIO_PATH) $(ETH_PATH) $(LIN_PATH) $(PORT_PATH) $(SPI_PATH) \
-	      $(APP_LIST)
+TARGET := NammaAutosar
 
-.PHONY: all $(components)
-all: $(components)
+# AUTOSAR SoftWare Components list
+autosar_swc_s := $(OS_PATH) $(ECUM_PATH) \
+	$(MCU_STARTUP_PATH) $(MCU_PATH) \
+	$(DIO_PATH) $(ETH_PATH) $(LIN_PATH) $(PORT_PATH) $(SPI_PATH) \
+	$(APP_LIST)
 
-$(components):
+
+.PHONY: all $(autosar_swc_s)
+all: $(TARGET)
+
+
+CC_VERS := $(shell ${CC} -dumpfullversion)
+ifeq ($(OS),Windows_NT)
+LIB_GCC_A_PATH=${MINGW_ROOT}/lib/gcc/arm-none-eabi/${CC_VERS}/thumb/v6-m/nofp/
+else
+LIB_GCC_A_PATH=/usr/lib/gcc/arm-none-eabi/${CC_VERS}/thumb/v6-m/nofp/
+endif
+GCC_LDFLAGS := -L${LIB_GCC_A_PATH} -lgcc 
+
+
+# Build all AUTOSAR SWCs
+$(autosar_swc_s):
 	$(MAKE) --directory=$@ ROOT_DIR=$(CWD) COMPILER=$(COMPILER)
 
 
+# The Main Target. Here LA_OBJS is constructed by uc_cgen.py python script. This
+# script is a temporary work-around, will be moved to the right script later.
+$(TARGET): $(autosar_swc_s)
+	@echo LINKING OBJECTS...
+	$(LD) ${LDFLAGS} $(LA_OBJS) -o ${TARGET}.elf -T $(LINK_DEF_F) -Map=${TARGET}.map ${GCC_LDFLAGS}
+	$(OBJCOPY) -O binary ${TARGET}.elf ${TARGET}.bin
+
+# Clean Target
 clean:
-	for d in $(components); 				\
+	for d in $(autosar_swc_s); 				\
 	do							\
 		$(MAKE) --directory=$$d ROOT_DIR=$(CWD) clean;	\
 	done
+	$(RM) ${TARGET}.elf ${TARGET}.bin ${TARGET}.map
