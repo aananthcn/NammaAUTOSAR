@@ -60,9 +60,16 @@ $(autosar_swc_s):
 # The Main Target. Here LA_OBJS is constructed by uc_cgen.py python script. This
 # script is a temporary work-around, will be moved to the right script later.
 $(TARGET): $(autosar_swc_s)
-	@echo LINKING OBJECTS...
+	@echo ""
+	@echo ╔════════════════════╗
+	@echo ║ LINKING OBJECTS... ║
+	@echo ╚════════════════════╝
 	$(LD) ${LDFLAGS} $(LA_OBJS) -o ${TARGET}.elf -T $(LINK_DEF_F) -Map=${TARGET}.map ${GCC_LDFLAGS}
 	$(OBJCOPY) -O binary ${TARGET}.elf ${TARGET}.bin
+	@echo ""
+	@echo ╔══════════════════════════════╗
+	@echo ║ NammaAUTOSAR Build Complete! ║
+	@echo ╚══════════════════════════════╝
 
 # Clean Target
 clean:
