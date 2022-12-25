@@ -484,7 +484,7 @@ class EthernetConfigMainView:
         # set the geometry
         x = self.active_dialog.winfo_screenwidth()
         y = self.active_dialog.winfo_screenheight()
-        width = 460
+        width = 490
         height = 315
         self.active_dialog.geometry("%dx%d+%d+%d" % (width, height, x/2, y/5))
 
