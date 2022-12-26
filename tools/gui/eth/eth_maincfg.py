@@ -105,18 +105,18 @@ class EthernetConfigMainView:
 
 
 
-    def create_empty_configs(self):
+    def create_empty_configs(self, index):
         eth_dev = {}
 
         # child view configs
         eth_dev["EthIndex"] = str(self.n_eth_dev-1)
-        eth_dev["EthGeneral"] = []
-        eth_dev["EthCtrlOffloading"] = []
-        eth_dev["EthCtrlConfig"] = []
-        eth_dev["EthCtrlConfigXgressFifo"] = []
-        eth_dev["EthCtrlConfigScheduler"] = []
-        eth_dev["EthCtrlConfigShaper"] = []
-        eth_dev["EthCtrlConfigSpiConfiguration"] = []
+        eth_dev["EthGeneral"] = eth_gen.EthGeneralChildView(self.gui, 0, None).create_empty_configs(index)
+        eth_dev["EthCtrlOffloading"] = eth_offload.EthChecksumOffloadChildView(self.gui, 0, None).create_empty_configs()
+        eth_dev["EthCtrlConfig"] = eth_ctrlcfg.EthCtrlConfigChildView(self.gui, 0, None).create_empty_configs(index)
+        eth_dev["EthCtrlConfigXgressFifo"] = eth_xgress.EthConfigXgressFifoChildView(self.gui, 0, None).create_empty_configs(index)
+        eth_dev["EthCtrlConfigScheduler"] = eth_sch.EthConfigSchedulerChildView(self.gui, 0, None).create_empty_configs()
+        eth_dev["EthCtrlConfigShaper"] = eth_shaper.EthConfigShaperChildView(self.gui, 0, None).create_empty_configs()
+        eth_dev["EthCtrlConfigSpiConfiguration"] = eth_spicfg.EthConfigSpiConfigChildView(self.gui, 0, None, None).create_empty_configs()
 
         return eth_dev
 
@@ -174,7 +174,7 @@ class EthernetConfigMainView:
             self.init_view_done = True
         elif self.n_eth_dev > n_dappa_rows:
             for i in range(self.n_eth_dev - n_dappa_rows):
-                self.configs.insert(len(self.configs), dappa.AsrCfgStr(self.cfgkeys, self.create_empty_configs()))
+                self.configs.insert(len(self.configs), dappa.AsrCfgStr(self.cfgkeys, self.create_empty_configs(n_dappa_rows+i)))
                 self.draw_dappa_row(n_dappa_rows+i)
         elif n_dappa_rows > self.n_eth_dev:
             for i in range(n_dappa_rows - self.n_eth_dev):

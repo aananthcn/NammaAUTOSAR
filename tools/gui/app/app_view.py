@@ -50,6 +50,7 @@ Parent_Frame = None
 Canvas_Frame = None
 Child_Frame = None
 Canvas = None
+Gui = None
 
 AppLayerPath = os.getcwd()+"/submodules/AL/"
 AppsJsonFile = AppLayerPath+"/applications.json"
