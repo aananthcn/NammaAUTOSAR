@@ -85,7 +85,7 @@ def app_draw_childrens(gui):
 
 
 
-def update_or_clone_app(app_id):
+def update_or_clone_app(app_id, gui):
     app_name = AppInfo_List[app_id].git.split("/")[-1].split(".")[0]
     app_path = AppLayerPath+"/"+app_name
     if os.path.exists(app_path):
@@ -96,7 +96,8 @@ def update_or_clone_app(app_id):
         subprocess.call(["git", "clone", AppInfo_List[app_id].git], cwd=AppLayerPath)
 
     # generate code to build
-    app_gen.create_source(app_name)
+    app_gen.create_source(app_name, gui)
+
  
     
 def select_arxml_file(app_id):
@@ -148,7 +149,7 @@ def restore_data_from_disk():
 
 
 
-def app_draw(view, xsize, ysize):
+def app_draw(view, gui, xsize, ysize):
     global Parent_Frame, Canvas_Frame, Child_Frame, N_Apps, N_AppsStr, n_header_objs, MaxApps
     global Canvas
 
@@ -158,7 +159,7 @@ def app_draw(view, xsize, ysize):
     label = tk.Label(Child_Frame.mnf, text="No. of Application SWCs:")
     label.grid(row=0, column=0, sticky="w")
     N_AppsStr = tk.StringVar()
-    spinb = tk.Spinbox(Child_Frame.mnf, width=10, textvariable=N_AppsStr, command=lambda: update_apps(N_AppsStr, xsize),
+    spinb = tk.Spinbox(Child_Frame.mnf, width=10, textvariable=N_AppsStr, command=lambda: update_apps(N_AppsStr, gui, xsize),
                 values=tuple(range(0,MaxApps)))
     N_AppsStr.set(N_Apps)
     spinb.grid(row=0, column=1, sticky="w")
@@ -168,11 +169,11 @@ def app_draw(view, xsize, ysize):
 
     Child_Frame.update()
 
-    app_update(xsize)
+    app_update(gui, xsize)
 
 
 
-def update_apps(mstr, xsize):
+def update_apps(mstr, gui, xsize):
     global Parent_Frame, Canvas_Frame, Child_Frame, N_Apps, N_AppsStr, n_header_objs, MaxApps
     
     N_Apps = int(mstr.get())
@@ -180,11 +181,11 @@ def update_apps(mstr, xsize):
     for i, item in enumerate(Child_Frame.mnf.winfo_children()):
         if i >= n_header_objs:
             item.destroy()
-    app_update(xsize)
+    app_update(gui, xsize)
 
 
 
-def app_update(xsize):
+def app_update(gui, xsize):
     global Parent_Frame, Canvas_Frame, Child_Frame, N_Apps, N_AppsStr, n_header_objs, MaxApps
     global AppInfo_List, Canvas
 
@@ -215,7 +216,7 @@ def app_update(xsize):
         entry.grid(row=header_row+i, column=1)
 
         # Button - Update / Clone
-        select = tk.Button(Child_Frame.mnf, width=10, text="Update", command=lambda id = i : update_or_clone_app(id))
+        select = tk.Button(Child_Frame.mnf, width=10, text="Update", command=lambda id = i : update_or_clone_app(id, gui))
         select.grid(row=header_row+i, column=2)
 
         # Button - Update / Clone
@@ -258,7 +259,7 @@ def app_block_click_handler(gui):
     AppView.title("Applications Configs")
     AppView.protocol("WM_DELETE_WINDOW", lambda: on_app_view_close(gui))
 
-    app_draw(AppView, width, height)
+    app_draw(AppView, gui, width, height)
 
 
 def app_post_draw_handler(gui):

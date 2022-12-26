@@ -215,6 +215,8 @@ def save_project():
 
 
 def generate_code():
+    global Gui
+
     # root window
     root = tk.Toplevel()
     root.geometry('400x120')
@@ -238,7 +240,7 @@ def generate_code():
     root.update_idletasks()
 
     # Generate code for Application
-    app_rc = app_gen.sync_n_create_source()
+    app_rc = app_gen.sync_n_create_source(Gui)
     pb["value"] = 100
     root.update_idletasks()
 
@@ -344,9 +346,6 @@ def textBox():
 
 
 
-
-
-
 def update_recent_files(filepath):
     if not os.path.exists(RecentFiles):
         # create empty file
@@ -385,4 +384,3 @@ def get_recent_files():
             file_list.append(item.strip())
 
     return file_list
-

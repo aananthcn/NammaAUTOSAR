@@ -25,40 +25,13 @@ import gui.mcu.uc_cgen as uc_cgen
 
 
 # returns non-zero in case of error
-def sync_n_create_source():
+def sync_n_create_source(gui):
     for i in range(app_view.N_Apps):
-        app_view.update_or_clone_app(i)
+        app_view.update_or_clone_app(i, gui)
     
     return 0
 
 
 
-def create_source(app_name):
+def create_source(app_name, gui):
     uc_cgen.create_source(gui)
-    print("app_gen.py->create_source(): Fix error here")
-    return
-    # cwd = os.getcwd()
-    # f = open(cwd+"/Makefile", "r")
-    # makefile = f.readlines()
-    # f.close()
-    
-    # app_path = search.find_dir(app_name, cwd)
-    # app_path_def = app_name.upper()+"_PATH := "+app_path+"\n"
-    # mk_file = search.find_file_ext("mk", app_path)
-    # mk_file_inc ="include "+mk_file+"\n"
-    
-    # def_insert = False
-    # mk_insert = False
-    
-    # for i, line in enumerate(makefile):
-    #     if line[0] == "#" and "Definitions" in line and not def_insert:
-    #         makefile.insert(i+1, app_path_def)
-    #         def_insert = True
-    #     if line[0] == "#" and "Inclusions" in line and not mk_insert:
-    #         makefile.insert(i+1, mk_file_inc)
-    #         mk_insert = True
-
-    # f = open(cwd+"/Makefile", "w")
-    # makefile = "".join(makefile)
-    # f.write(makefile)
-    # f.close()
