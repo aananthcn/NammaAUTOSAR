@@ -1,7 +1,7 @@
-# FreeAUTOSAR
-A project repo to create and learn AUTOSAR stack
+# NammaAUTOSAR
+This project repo is created to learn and also establish a free and open source AUTOSAR stack that enables the new engineers to learn it practically. This should create more quality engineers for the Industry that paid me Salary for the last 23 years.
 
-
+<br>
 
 What is NammaAUTOSAR?
 ---
@@ -14,7 +14,7 @@ What is Namma? Namma means our in Tamil and Kannada. We used to say "Avan namma 
 Motivation to create an OS came from Ashokkumar Narayanan (one of my best buddies in Visteon Chennai).
 
 
-<br>
+<br><br>
 
 Getting Started
 ===
@@ -47,24 +47,40 @@ Development Setup - HARDWARE:
 * 2 x Grove 4-pin => [check this link](https://www.fabtolab.com/grove-universal-cable?search=grove%204%20pin)
 * ENC28J60 Ethernet LAN controller => [check this link](https://robocraze.com/products/enc28j60-ethernet-lan-module)
 
+<br><br>
+
+Getting / Pulling the latest changes
+===
+* Do the following to get the latest changes from the main and submodules
+  * `git pull`
+  * `git submodule update --recursive --remote`
+* After this, do not forget to pull the applications (apps are loosely coupled) manually as below
+  * `cd submodules/AL/NammaTestApp`
+  * `git pull`
+
+If all steps above are successfull you are now ready to continue your contribution.
+
 <br>
 
-Cloning the Repo
-----
+Cloning the Repo - Fresh Start
+===
 As NammaAUTOSAR uses git submodules, please use the following command to clone the main and submodules
 * `git clone --recurse-submodules -j4 https://github.com/aananthcn/NammaAUTOSAR.git`
 
+<br>
 
-Starting the NammaAUTOSAR Builder
-----
+Starting the NammaAUTOSAR GUI
+===
 * To start the NammaAUTOSAR Builder GUI, first open the **MSYS2 MINGW64** terminal
 * Navigate to the cloned repository
 * Run this command in the **MSYS2 MINGW64** terminal: `python tools/autosar-gui.py`
 * **NammaAUTOSAR Builder** GUI will open
 
 
+<br>
+
 Importing ARXML
-----
+---
 * To import ARXML, go to File --> Import ARXML File. It will give 3 different ARXML like below
 
 ![image](https://user-images.githubusercontent.com/61110156/201695803-adf3e135-035e-4a83-ad0b-58f7b60012d9.png)
@@ -74,16 +90,19 @@ Importing ARXML
 * **NOTE:** Since this project in initial phase, only few modules are presented in the layered view
 
 
+<br>
+
 Configuration
 ----
-* Click on the module, another window will open for configuration of various parameters
+* Click on the any AUTOSAR module (i.e., colored rectangle boxes; e.g., Spi), another window will open for configuration of various parameters
 * Once all the configuration is done, the click on **Save Config** to update the changes and close the module specific window
 * Repeat the steps for all the necessary modules
 
+<br><br>
 
 Importing NammaTestApp
-----
-* Click on **Applications** (1)
+===
+* Click on **Applications** (1) and wait for the clone operation to complete.
 * Mention how many number of applications you want to import. In this case, I have given as 1
 * Provide the **NammaTestApp** repository path in the App 0 - `https://github.com/aananthcn/NammaTestApp.git`
 
@@ -91,9 +110,10 @@ Importing NammaTestApp
 
 * This will automatically import the NammaTestApp into respective folder
 
+<br><br>
 
 Code Generation
-----
+===
 * Once all the configuration is done, click on the **Generate --> Generate Source**
 * If all the changes are proper, then a popup with this message will be shown **Code Generated Successfully!**
 
@@ -101,14 +121,16 @@ Code Generation
 
 * Close the NammaAUTOSAR Builder GUI
 
+<br>
 
 Generate the ELF File
-----
+===
 * In the MSYS2 MINGW64 terminal, type **make**
 * This process will take sometime as it needs to compile all the source files and link them to generate the ELF file
 
+<br>
 
 Test it on Real Hardware
-----
+===
 * If you have real hardware *Raspberry Pi Pico*, then flash the generated *\*.elf* file and test it
 
