@@ -71,7 +71,7 @@ class EthCtrlConfigChildView:
         gen_dict["EthCtrlMacLayerSpeed"]            = "ETH_MAC_LAYER_SPEED_10M"
         gen_dict["EthCtrlMacLayerType"]             = "ETH_MAC_LAYER_TYPE_XMII"
         gen_dict["EthCtrlMacLayerSubType"]          = "STANDARD"
-        gen_dict["EthCtrlPhyAddress"]               = "00:00:5e:00:53:"+format(index, '02x')
+        gen_dict["EthCtrlPhyAddress"]               = "00:7D:FA:BA:BA:"+format(index, '02x')
         gen_dict["EthSpiCtrlDevice"]             = ""
         
         return gen_dict

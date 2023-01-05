@@ -161,6 +161,11 @@ def insert_in_task(task, key, val):
 def parse_task(ctnr):
    iter_per_task = len(list(ctnr)) - 1
    task = {}
+
+   task["RESOURCE"] = []
+   task["EVENT"] = []
+   task["AUTOSTART_APPMODE"] = []
+
    autostart = False
    for elem in list(ctnr):
       if lib.get_tag(elem) == "SHORT-NAME":
