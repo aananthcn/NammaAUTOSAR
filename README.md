@@ -37,6 +37,8 @@ Prerequisites - SOFTWARE:
 
 Development Setup - HARDWARE:
 ----
+![Pi Pico Development Setup](docs/namma-autosar-dev-setup.png?raw=true "Title")
+
 * Raspberry Pi Pico with pins soldered => [check this link](https://robocraze.com/products/raspberry-pi-pico-with-headers-and-micro-usb-cable)
 * Cytron Maker Pi Pico Base => [check this link](https://robu.in/product/cytron-maker-pi-pico-base-without-pico/)
 * DTech FTDI USB to TTL Serial Converter => [Amazon: PL2303TA chip](https://amzn.eu/d/eYsRoTC)
