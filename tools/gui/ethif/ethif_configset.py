@@ -28,6 +28,7 @@ import gui.ethif.ethif_frameowner as ethif_fo
 import gui.ethif.ethif_rx_ind as ethif_rxi
 import gui.ethif.ethif_tx_cnfrm as ethif_txc
 import gui.ethif.ethif_lnk_state_chg as ethif_lsc
+import gui.ethif.ethif_phys_ctrlr as ethif_pctrl
 
 
 
@@ -102,7 +103,7 @@ class EthIfConfigSetView:
         dappa.button(self, "EthIfRxIndicationConfig",    0, 1, 1, 30, "EthIfRxIndicationConfig", self.ethif_rx_indic_select)
         dappa.button(self, "EthIfTxConfirmationConfig",  0, 2, 1, 30, "EthIfTxConfirmationConfig", self.ethif_tx_cnfrm_select)
         dappa.button(self, "EthIfTrcvLinkStateChgConfig",0, 3, 1, 30, "EthIfTrcvLinkStateChgConfig", self.ethif_lnk_state_chg_select)
-        dappa.button(self, "EthIfPhysController",  0, 4, 1, 30, "EthIfPhysController", self.ethif_frameowner_select)
+        dappa.button(self, "EthIfPhysController",  0, 4, 1, 30, "EthIfPhysController", self.ethif_phys_ctrlr_select)
         dappa.button(self, "EthIfController",      0, 5, 1, 30, "EthIfController", self.ethif_frameowner_select)
         dappa.button(self, "EthIfTransceiver",     0, 6, 1, 30, "EthIfTransceiver", self.ethif_frameowner_select)
         dappa.button(self, "EthIfSwitch",          0, 7, 1, 30, "EthIfSwitch", self.ethif_frameowner_select)
@@ -275,5 +276,42 @@ class EthIfConfigSetView:
         gen_view.view = ethif_lsc.EthIfLinkStateChangeCfgView(self.gui,
                                             self.configs[row].datavar["EthIfTrcvLinkStateChgConfig"])
         gen_view.name = "EthIfTrcvLinkStateChgConfig"
+        self.active_view = gen_view
+        gen_view.view.draw(gen_view)
+
+
+
+    def on_ethif_phys_ctrlr_close(self):
+        # backup data
+        if self.active_view.view.configs:
+            self.configs[0].datavar["EthIfPhysController"] = self.active_view.view.configs[0].get()
+
+        # destroy view
+        del self.active_view
+        self.active_dialog.destroy()
+        del self.active_dialog
+
+
+    def ethif_phys_ctrlr_select(self, row):
+        if self.active_dialog != None:
+            return
+
+        # function to create dialog window
+        self.active_dialog = tk.Toplevel() # create an instance of toplevel
+        self.active_dialog.protocol("WM_DELETE_WINDOW", lambda : self.on_ethif_phys_ctrlr_close())
+        self.active_dialog.attributes('-topmost',True)
+
+        # set the geometry
+        x = self.active_dialog.winfo_screenwidth()
+        y = self.active_dialog.winfo_screenheight()
+        width = 1050
+        height = 240
+        self.active_dialog.geometry("%dx%d+%d+%d" % (width, height, x/4, y/5))
+
+        # create views and draw
+        gen_view = EthChildView(self.active_dialog, width, height, self.save_data)
+        gen_view.view = ethif_pctrl.EthIfPhysControllerView(self.gui,
+                                            self.configs[row].datavar["EthIfPhysController"])
+        gen_view.name = "EthIfPhysController"
         self.active_view = gen_view
         gen_view.view.draw(gen_view)
