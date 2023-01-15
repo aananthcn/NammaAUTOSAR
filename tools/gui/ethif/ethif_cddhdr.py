@@ -136,53 +136,5 @@ class EthIfPublicHeaderFilesView:
 
 
 
-    def on_select_ethif_jobs_close(self, row):
-        # remove old selections
-        if self.configs[row].datavar["SpiJobAssignment"]:
-            del self.configs[row].datavar["SpiJobAssignment"][:]
-
-        # update new selections
-        if len(self.active_widget.curselection()):
-            for i in self.active_widget.curselection():
-                if not self.configs[row].datavar["SpiJobAssignment"]:
-                    self.configs[row].datavar["SpiJobAssignment"] = []
-                self.configs[row].datavar["SpiJobAssignment"].append(self.active_widget.get(i).split()[-1])
-
-        # dialog elements are no longer needed, destroy them. Else, new dialogs will not open!
-        self.active_widget.destroy()
-        del self.active_widget
-        self.active_dialog.destroy()
-        del self.active_dialog
-
-        # re-draw all boxes (dappas) of this row
-        dappa.delete_dappa_row(self, row)
-        self.draw_dappa_row(row)
-
-
-    def select_ethif_jobs(self, row):
-        if self.active_dialog != None:
-            return
-
-        # function to create dialog window
-        self.active_dialog = tk.Toplevel() # create an instance of toplevel
-        self.active_dialog.protocol("WM_DELETE_WINDOW", lambda : self.on_select_ethif_jobs_close(row))
-        self.active_dialog.attributes('-topmost',True)
-        x = self.active_dialog.winfo_screenwidth()
-        y = self.active_dialog.winfo_screenheight()
-        self.active_dialog.geometry("+%d+%d" % (0 + x/2, y/16))
-
-        # show all SpiJobs
-        self.active_widget = tk.Listbox(self.active_dialog, selectmode=tk.MULTIPLE, width=40, height=15)
-        for i, j_cfg in enumerate(self.ethifjobtab.tab.configs):
-            job = j_cfg.datavar["SpiJobId"]
-            job_str = "SpiJob: "+str(job)
-            self.active_widget.insert(i, job_str)
-            if row < len(self.configs) and self.configs[row].datavar["SpiJobAssignment"]:
-                if job in self.configs[row].datavar["SpiJobAssignment"]:
-                    self.active_widget.selection_set(i)
-        self.active_widget.pack()
-
-
-
     def save_data(self):
         self.tab_struct.save_cb(self.gui)

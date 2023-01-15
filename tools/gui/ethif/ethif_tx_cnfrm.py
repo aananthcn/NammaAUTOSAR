@@ -1,5 +1,5 @@
 #
-# Created on Sun Jan 15 2023 5:33:00 PM
+# Created on Sun Jan 15 2023 6:12:50 PM
 #
 # The MIT License (MIT)
 # Copyright (c) 2023 Aananth C N
@@ -27,16 +27,16 @@ import gui.lib.asr_widget as dappa # dappa in Tamil means box
 
 
 
-class EthIfFrameOwnerConfigView:
-    n_ethif_fo_cfgs = 0
-    max_ethif_fo_cfgs = 255
-    n_ethif_fo_cfgs_str = None
+class EthIfTxConfirmConfigView:
+    n_ethif_txc_fns = 0
+    max_ethif_txc_fns = 255
+    n_ethif_txc_fns_str = None
 
     gui = None
     tab_struct = None # passed from *_view.py file
     scrollw = None
     configs = None # all UI configs (tkinter strings) are stored here.
-    cfgkeys = ["EthIfFrameType", "EthIfOwner"]
+    cfgkeys = ["Idx", "EthIfTxConfirmationFunction"]
     
     n_header_objs = 0 #Objects / widgets that are part of the header and shouldn't be destroyed
     header_row = 3
@@ -48,21 +48,21 @@ class EthIfFrameOwnerConfigView:
     active_widget = None
 
 
-    def __init__(self, gui, fo_cfg):
+    def __init__(self, gui, txc_cfg):
         self.gui = gui
         self.configs = []
-        self.n_ethif_fo_cfgs = 0
-        self.n_ethif_fo_cfgs_str = tk.StringVar()
+        self.n_ethif_txc_fns = 0
+        self.n_ethif_txc_fns_str = tk.StringVar()
 
-        for fo in fo_cfg:
+        for fo in txc_cfg:
             self.configs.insert(len(self.configs), dappa.AsrCfgStr(self.cfgkeys, fo))
-            self.n_ethif_fo_cfgs += 1
-        self.n_ethif_fo_cfgs_str.set(self.n_ethif_fo_cfgs)
+            self.n_ethif_txc_fns += 1
+        self.n_ethif_txc_fns_str.set(self.n_ethif_txc_fns)
 
 
 
     def __del__(self):
-        del self.n_ethif_fo_cfgs_str
+        del self.n_ethif_txc_fns_str
         del self.non_header_objs[:]
         del self.configs[:]
 
@@ -71,8 +71,8 @@ class EthIfFrameOwnerConfigView:
     def create_empty_configs(self):
         ethif_hfile = {}
 
-        ethif_hfile["EthIfFrameType"] = ""
-        ethif_hfile["EthIfOwner"] = ""
+        ethif_hfile["Idx"] = str(self.n_ethif_txc_fns-1)
+        ethif_hfile["EthIfTxConfirmationFunction"] = ""
 
         return ethif_hfile
 
@@ -81,14 +81,14 @@ class EthIfFrameOwnerConfigView:
     def draw_dappa_row(self, i):
         dappa.label(self, "Config #", self.header_row+i, 0, "e")
 
-        dappa.entry(self, "EthIfFrameType", i, self.header_row+i, 1, 25, "normal")
-        dappa.entry(self, "EthIfOwner", i, self.header_row+i, 2, 25, "normal")
+        dappa.entry(self, "Idx", i, self.header_row+i, 1, 10, "readonly")
+        dappa.entry(self, "EthIfTxConfirmationFunction", i, self.header_row+i, 2, 40, "normal")
 
 
 
     def update(self):
         # get dappas to be added or removed
-        self.n_ethif_fo_cfgs = int(self.n_ethif_fo_cfgs_str.get())
+        self.n_ethif_txc_fns = int(self.n_ethif_txc_fns_str.get())
 
         # Tune memory allocations based on number of rows or boxes
         n_dappa_rows = len(self.configs)
@@ -96,12 +96,12 @@ class EthIfFrameOwnerConfigView:
             for i in range(n_dappa_rows):
                 self.draw_dappa_row(i)
             self.init_view_done = True
-        elif self.n_ethif_fo_cfgs > n_dappa_rows:
-            for i in range(self.n_ethif_fo_cfgs - n_dappa_rows):
+        elif self.n_ethif_txc_fns > n_dappa_rows:
+            for i in range(self.n_ethif_txc_fns - n_dappa_rows):
                 self.configs.insert(len(self.configs), dappa.AsrCfgStr(self.cfgkeys, self.create_empty_configs()))
                 self.draw_dappa_row(n_dappa_rows+i)
-        elif n_dappa_rows > self.n_ethif_fo_cfgs:
-            for i in range(n_dappa_rows - self.n_ethif_fo_cfgs):
+        elif n_dappa_rows > self.n_ethif_txc_fns:
+            for i in range(n_dappa_rows - self.n_ethif_txc_fns):
                 dappa.delete_dappa_row(self, (n_dappa_rows-1)+i)
                 del self.configs[-1]
 
@@ -115,11 +115,11 @@ class EthIfFrameOwnerConfigView:
         self.scrollw = window.ScrollableWindow(tab.frame, tab.xsize, tab.ysize)
         
         #Number of modes - Label + Spinbox
-        label = tk.Label(self.scrollw.mnf, text="Frame types:")
+        label = tk.Label(self.scrollw.mnf, text="Tx Confirm Fns:")
         label.grid(row=0, column=0, sticky="w")
-        ethifnb = tk.Spinbox(self.scrollw.mnf, width=10, textvariable=self.n_ethif_fo_cfgs_str, command=lambda : self.update(),
-                    values=tuple(range(0,self.max_ethif_fo_cfgs+1)))
-        self.n_ethif_fo_cfgs_str.set(self.n_ethif_fo_cfgs)
+        ethifnb = tk.Spinbox(self.scrollw.mnf, width=10, textvariable=self.n_ethif_txc_fns_str, command=lambda : self.update(),
+                    values=tuple(range(0,self.max_ethif_txc_fns+1)))
+        self.n_ethif_txc_fns_str.set(self.n_ethif_txc_fns)
         ethifnb.grid(row=0, column=1, sticky="w")
 
         # Save Button
