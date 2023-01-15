@@ -22,6 +22,7 @@ import tkinter as tk
 from tkinter import ttk
 
 import gui.ethif.ethif_gen as ethif_gen
+import gui.ethif.ethif_configset as ethif_cs
 
 # import arxml.ethif.arxml_ethif_parse as arxml_ethif_r
 # import arxml.ethif.arxml_ethif_write as arxml_ethif_w
@@ -70,8 +71,8 @@ def show_ethif_tabs(gui):
         return
 
     # Create a child window (tabbed view)
-    width = gui.main_view.xsize * 80 / 100
-    height = gui.main_view.ysize * 60 / 100
+    width = gui.main_view.xsize * 30 / 100
+    height = gui.main_view.ysize * 55 / 100
     view = tk.Toplevel()
     gui.main_view.child_window = view
     xoff = (gui.main_view.xsize - width)/2
@@ -98,14 +99,22 @@ def show_ethif_tabs(gui):
     # ethif_configs = arxml_ethif_r.parse_arxml(gui.arxml_file)
     ethif_configs = None
     
-    # create the main EthIfernet GUI object
+    # create the EthIfGeneral GUI tab
     ethif_gen_view = EthIfTab(gen_frame, width, height)
     ethif_gen_view.tab = ethif_gen.EthIfGeneralView(gui, ethif_configs)
-    ethif_gen_view.name = "EthIfernetConfigs"
+    ethif_gen_view.name = "EthIfGeneral"
     TabList.append(ethif_gen_view)
+
+    # create the EthIfGeneral GUI tab
+    ethif_configset_view = EthIfTab(cfg_frame, width, height)
+    ethif_configset_view.tab = ethif_cs.EthIfConfigSetView(gui, ethif_configs)
+    ethif_configset_view.name = "EthIfConfigSet"
+    TabList.append(ethif_configset_view)
 
     # Draw all tabs
     ethif_gen_view.tab.draw(ethif_gen_view)
+    ethif_configset_view.tab.draw(ethif_configset_view)
+
     # gui.main_view.window.bind("<<NotebookTabChanged>>", show_os_tab_switch)
 
 
