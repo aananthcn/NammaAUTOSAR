@@ -28,3 +28,6 @@
 [submodule "submodules/MCAL/Eth"]
 	path = submodules/MCAL/Eth
 	url = https://github.com/aananthcn/NammaEth.git
+[submodule "submodules/ECU-AL/EthIf"]
+	path = submodules/ECU-AL/EthIf
+	url = https://github.com/aananthcn/NammaEthIf.git
