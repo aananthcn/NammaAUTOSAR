@@ -30,6 +30,9 @@ import gui.ethif.ethif_tx_cnfrm as ethif_txc
 import gui.ethif.ethif_lnk_state_chg as ethif_lsc
 import gui.ethif.ethif_phys_ctrlr as ethif_pctrl
 import gui.ethif.ethif_ctrlr as ethif_ctrl
+import gui.ethif.ethif_trcv as ethif_trcv
+import gui.ethif.ethif_switch as ethif_swt
+import gui.ethif.ethif_swt_prt_grp as ethif_spg
 
 
 
@@ -106,9 +109,9 @@ class EthIfConfigSetView:
         dappa.button(self, "EthIfTrcvLinkStateChgConfig",0, 3, 1, 30, "EthIfTrcvLinkStateChgConfig", self.ethif_lnk_state_chg_select)
         dappa.button(self, "EthIfPhysController",  0, 4, 1, 30, "EthIfPhysController", self.ethif_phys_ctrlr_select)
         dappa.button(self, "EthIfController",      0, 5, 1, 30, "EthIfController", self.ethif_ctrlr_select)
-        dappa.button(self, "EthIfTransceiver",     0, 6, 1, 30, "EthIfTransceiver", self.ethif_frameowner_select)
-        dappa.button(self, "EthIfSwitch",          0, 7, 1, 30, "EthIfSwitch", self.ethif_frameowner_select)
-        dappa.button(self, "EthIfSwitchPortGroup", 0, 8, 1, 30, "EthIfSwitchPortGroup", self.ethif_frameowner_select)
+        dappa.button(self, "EthIfTransceiver",     0, 6, 1, 30, "EthIfTransceiver", self.ethif_trcv_select)
+        dappa.button(self, "EthIfSwitch",          0, 7, 1, 30, "EthIfSwitch", self.ethif_switch_select)
+        dappa.button(self, "EthIfSwitchPortGroup", 0, 8, 1, 30, "EthIfSwitchPortGroup", self.ethif_swt_prt_grp_select)
 
         # empty space
         label = tk.Label(self.scrollw.mnf, text="")
@@ -164,6 +167,7 @@ class EthIfConfigSetView:
         width = 450
         height = 540
         self.active_dialog.geometry("%dx%d+%d+%d" % (width, height, x/4, y/5))
+        self.active_dialog.title("EthIfFrameOwnerConfig")
 
         # create views and draw
         gen_view = EthChildView(self.active_dialog, width, height, self.save_data)
@@ -202,6 +206,7 @@ class EthIfConfigSetView:
         width = 450
         height = 540
         self.active_dialog.geometry("%dx%d+%d+%d" % (width, height, x/4, y/5))
+        self.active_dialog.title("EthIfRxIndicationConfig")
 
         # create views and draw
         gen_view = EthChildView(self.active_dialog, width, height, self.save_data)
@@ -240,6 +245,7 @@ class EthIfConfigSetView:
         width = 450
         height = 540
         self.active_dialog.geometry("%dx%d+%d+%d" % (width, height, x/4, y/5))
+        self.active_dialog.title("EthIfTxConfirmationConfig")
 
         # create views and draw
         gen_view = EthChildView(self.active_dialog, width, height, self.save_data)
@@ -279,6 +285,7 @@ class EthIfConfigSetView:
         width = 450
         height = 540
         self.active_dialog.geometry("%dx%d+%d+%d" % (width, height, x/4, y/5))
+        self.active_dialog.title("EthIfTrcvLinkStateChgConfig")
 
         # create views and draw
         gen_view = EthChildView(self.active_dialog, width, height, self.save_data)
@@ -317,7 +324,8 @@ class EthIfConfigSetView:
         y = self.active_dialog.winfo_screenheight()
         width = 1050
         height = 240
-        self.active_dialog.geometry("%dx%d+%d+%d" % (width, height, x/4, y/5))
+        self.active_dialog.geometry("%dx%d+%d+%d" % (width, height, x/6, y/5))
+        self.active_dialog.title("EthIfPhysController")
 
         # create views and draw
         gen_view = EthChildView(self.active_dialog, width, height, self.save_data)
@@ -358,11 +366,132 @@ class EthIfConfigSetView:
         width = 1050
         height = 440
         self.active_dialog.geometry("%dx%d+%d+%d" % (width, height, x/5, y/5))
+        self.active_dialog.title("EthIfController")
 
         # create views and draw
         gen_view = EthChildView(self.active_dialog, width, height, self.save_data)
         gen_view.view = ethif_ctrl.EthIfControllerView(self.gui,
                                             self.configs[0].datavar["EthIfController"])
         gen_view.name = "EthIfController"
+        self.active_view = gen_view
+        gen_view.view.draw(gen_view)
+
+
+
+    def on_ethif_trcv_close(self):
+        # backup data
+        if self.active_view.view.configs:
+            self.configs[0].datavar["EthIfTransceiver"] = []  # ignore old data
+            for cfg in self.active_view.view.configs:
+                self.configs[0].datavar["EthIfTransceiver"].append(cfg.get())
+
+        # destroy view
+        del self.active_view
+        self.active_dialog.destroy()
+        del self.active_dialog
+
+
+    def ethif_trcv_select(self, row):
+        if self.active_dialog != None:
+            return
+
+        # function to create dialog window
+        self.active_dialog = tk.Toplevel() # create an instance of toplevel
+        self.active_dialog.protocol("WM_DELETE_WINDOW", lambda : self.on_ethif_trcv_close())
+        self.active_dialog.attributes('-topmost',True)
+
+        # set the geometry
+        x = self.active_dialog.winfo_screenwidth()
+        y = self.active_dialog.winfo_screenheight()
+        width = 650
+        height = 240
+        self.active_dialog.geometry("%dx%d+%d+%d" % (width, height, x/5, y/5))
+        self.active_dialog.title("EthIfTransceiver")
+
+        # create views and draw
+        gen_view = EthChildView(self.active_dialog, width, height, self.save_data)
+        gen_view.view = ethif_trcv.EthIfTransceiverView(self.gui,
+                                            self.configs[0].datavar["EthIfTransceiver"])
+        gen_view.name = "EthIfTransceiver"
+        self.active_view = gen_view
+        gen_view.view.draw(gen_view)
+
+
+
+    def on_ethif_switch_close(self):
+        # backup data
+        if self.active_view.view.configs:
+            self.configs[0].datavar["EthIfSwitch"] = []  # ignore old data
+            for cfg in self.active_view.view.configs:
+                self.configs[0].datavar["EthIfSwitch"].append(cfg.get())
+
+        # destroy view
+        del self.active_view
+        self.active_dialog.destroy()
+        del self.active_dialog
+
+
+    def ethif_switch_select(self, row):
+        if self.active_dialog != None:
+            return
+
+        # function to create dialog window
+        self.active_dialog = tk.Toplevel() # create an instance of toplevel
+        self.active_dialog.protocol("WM_DELETE_WINDOW", lambda : self.on_ethif_switch_close())
+        self.active_dialog.attributes('-topmost',True)
+
+        # set the geometry
+        x = self.active_dialog.winfo_screenwidth()
+        y = self.active_dialog.winfo_screenheight()
+        width = 370
+        height = 240
+        self.active_dialog.geometry("%dx%d+%d+%d" % (width, height, x/5, y/5))
+        self.active_dialog.title("EthIfSwitch")
+
+        # create views and draw
+        gen_view = EthChildView(self.active_dialog, width, height, self.save_data)
+        gen_view.view = ethif_swt.EthIfSwitchView(self.gui,
+                                            self.configs[0].datavar["EthIfSwitch"])
+        gen_view.name = "EthIfSwitch"
+        self.active_view = gen_view
+        gen_view.view.draw(gen_view)
+
+
+
+    def on_ethif_swt_prt_grp_close(self):
+        # backup data
+        if self.active_view.view.configs:
+            self.configs[0].datavar["EthIfSwitchPortGroup"] = []  # ignore old data
+            for cfg in self.active_view.view.configs:
+                self.configs[0].datavar["EthIfSwitchPortGroup"].append(cfg.get())
+
+        # destroy view
+        del self.active_view
+        self.active_dialog.destroy()
+        del self.active_dialog
+
+
+    def ethif_swt_prt_grp_select(self, row):
+        if self.active_dialog != None:
+            return
+
+        # function to create dialog window
+        self.active_dialog = tk.Toplevel() # create an instance of toplevel
+        self.active_dialog.protocol("WM_DELETE_WINDOW", lambda : self.on_ethif_swt_prt_grp_close())
+        self.active_dialog.attributes('-topmost',True)
+
+        # set the geometry
+        x = self.active_dialog.winfo_screenwidth()
+        y = self.active_dialog.winfo_screenheight()
+        width = 950
+        height = 440
+        self.active_dialog.geometry("%dx%d+%d+%d" % (width, height, x/5, y/5))
+        self.active_dialog.title("EthIfSwitchPortGroup")
+
+        # create views and draw
+        gen_view = EthChildView(self.active_dialog, width, height, self.save_data)
+        gen_view.view = ethif_spg.EthIfSwtPortGrpView(self.gui,
+                                            self.configs[0].datavar["EthIfSwitchPortGroup"])
+        gen_view.name = "EthIfSwitchPortGroup"
         self.active_view = gen_view
         gen_view.view.draw(gen_view)

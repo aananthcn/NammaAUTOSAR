@@ -250,6 +250,7 @@ class EthernetConfigMainView:
         width = 350
         height = 240
         self.active_dialog.geometry("%dx%d+%d+%d" % (width, height, x/10, y/5))
+        self.active_dialog.title("EthGeneral")
 
         # create views and draw
         gen_view = EthChildView(self.active_dialog, width, height, self.save_data)
@@ -292,6 +293,7 @@ class EthernetConfigMainView:
         width = 370
         height = 110
         self.active_dialog.geometry("%dx%d+%d+%d" % (width, height, x/8, y/5))
+        self.active_dialog.title("EthCtrlOffloading")
 
         # create views and draw
         gen_view = EthChildView(self.active_dialog, width, height, self.save_data)
@@ -331,6 +333,7 @@ class EthernetConfigMainView:
         width = 400
         height = 260
         self.active_dialog.geometry("%dx%d+%d+%d" % (width, height, x/4, y/5))
+        self.active_dialog.title("EthCtrlConfig")
 
         # create views and draw
         gen_view = EthChildView(self.active_dialog, width, height, self.save_data)
@@ -370,6 +373,7 @@ class EthernetConfigMainView:
         width = 400
         height = 190
         self.active_dialog.geometry("%dx%d+%d+%d" % (width, height, x/4, y/5))
+        self.active_dialog.title("EthCtrlConfigXgressFifo")
 
         # create views and draw
         gen_view = EthChildView(self.active_dialog, width, height, self.save_data)
@@ -409,6 +413,7 @@ class EthernetConfigMainView:
         width = 370
         height = 40
         self.active_dialog.geometry("%dx%d+%d+%d" % (width, height, 2*x/5, y/5))
+        self.active_dialog.title("EthCtrlConfigScheduler")
 
         # create views and draw
         gen_view = EthChildView(self.active_dialog, width, height, self.save_data)
@@ -448,6 +453,7 @@ class EthernetConfigMainView:
         width = 330
         height = 80
         self.active_dialog.geometry("%dx%d+%d+%d" % (width, height, x/2, y/5))
+        self.active_dialog.title("EthCtrlConfigShaper")
 
         # create views and draw
         gen_view = EthChildView(self.active_dialog, width, height, self.save_data)
@@ -487,6 +493,7 @@ class EthernetConfigMainView:
         width = 490
         height = 315
         self.active_dialog.geometry("%dx%d+%d+%d" % (width, height, x/2, y/5))
+        self.active_dialog.title("EthCtrlConfigSpiConfiguration")
 
         # parse ARXML for SPI sequence
         spi_configs = arxml_spi_r.parse_arxml(self.gui.arxml_file)
