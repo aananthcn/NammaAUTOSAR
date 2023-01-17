@@ -36,8 +36,9 @@ class EthIfPhysControllerView:
     tab_struct = None # passed from *_view.py file
     scrollw = None
     configs = None # all UI configs (tkinter strings) are stored here.
-    cfgkeys = ["EthIfPhysControllerIdx", "EthIfPhysCtrlRxIngressFifoRef", "EthIfPhysCtrlRxMainFunctionPeriod",
-               "EthIfPhysCtrlRxIndicationIterations", "EthIfEthCtrlRef", "EthIfWEthCtrlRef", ]
+    cfgkeys = ["EthIfPhysControllerIdx", "EthIfPhysCtrlRxIngressFifoRef",
+               "EthIfPhysCtrlRxMainFunctionPeriod", "EthIfPhysCtrlRxIndicationIterations",
+               "EthIfEthCtrlRef", "EthIfWEthCtrlRef"]
     
     n_header_objs = 0 #Objects / widgets that are part of the header and shouldn't be destroyed
     header_row = 3
@@ -55,8 +56,11 @@ class EthIfPhysControllerView:
         self.n_ethif_phys_ctrlr = 0
         self.n_ethif_phys_ctrlr_str = tk.StringVar()
 
-        for fo in lsc_cfg:
-            self.configs.insert(len(self.configs), dappa.AsrCfgStr(self.cfgkeys, fo))
+        for cfg in lsc_cfg:
+            if not cfg:
+                self.configs.insert(len(self.configs), dappa.AsrCfgStr(self.cfgkeys, self.create_empty_configs()))
+            else:
+                self.configs.insert(len(self.configs), dappa.AsrCfgStr(self.cfgkeys, cfg))
             self.n_ethif_phys_ctrlr += 1
         self.n_ethif_phys_ctrlr_str.set(self.n_ethif_phys_ctrlr)
 

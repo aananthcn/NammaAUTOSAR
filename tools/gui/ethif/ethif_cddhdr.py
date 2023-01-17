@@ -55,7 +55,10 @@ class EthIfPublicHeaderFilesView:
         self.n_ethif_hdrfiles_str = tk.StringVar()
 
         for file_item in hdrf_cfg:
-            self.configs.insert(len(self.configs), dappa.AsrCfgStr(self.cfgkeys, file_item))
+            if not file_item:
+                self.configs.insert(len(self.configs), dappa.AsrCfgStr(self.cfgkeys, self.create_empty_configs()))
+            else:
+                self.configs.insert(len(self.configs), dappa.AsrCfgStr(self.cfgkeys, file_item))
             self.n_ethif_hdrfiles += 1
         self.n_ethif_hdrfiles_str.set(self.n_ethif_hdrfiles)
 

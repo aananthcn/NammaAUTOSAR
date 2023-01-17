@@ -1,5 +1,5 @@
 #
-# Created on Sun Jan 15 2023 5:33:00 PM
+# Created on Tue Jan 17 2023 8:38:20 AM
 #
 # The MIT License (MIT)
 # Copyright (c) 2023 Aananth C N
@@ -27,16 +27,18 @@ import gui.lib.asr_widget as dappa # dappa in Tamil means box
 
 
 
-class EthIfFrameOwnerConfigView:
-    n_ethif_fo_cfgs = 0
-    max_ethif_fo_cfgs = 255
-    n_ethif_fo_cfgs_str = None
+class EthIfControllerView:
+    n_ethif_ctrlr = 0
+    max_ethif_ctrlr = 255
+    n_ethif_ctrlr_str = None
 
     gui = None
     tab_struct = None # passed from *_view.py file
     scrollw = None
     configs = None # all UI configs (tkinter strings) are stored here.
-    cfgkeys = ["EthIfFrameType", "EthIfOwner"]
+    cfgkeys = ["EthIfCtrlIdx", "EthIfPhysControllerRef", "EthIfVlanId",
+               "EthIfCtrlMtu", "EthIfMaxTxBufsTotal", "EthIfEthTrcvRef",
+               "EthIfSwitchRefOrPortGroupRef"]
     
     n_header_objs = 0 #Objects / widgets that are part of the header and shouldn't be destroyed
     header_row = 3
@@ -48,50 +50,62 @@ class EthIfFrameOwnerConfigView:
     active_widget = None
 
 
-    def __init__(self, gui, fo_cfg):
+    def __init__(self, gui, lsc_cfg):
         self.gui = gui
         self.configs = []
-        self.n_ethif_fo_cfgs = 0
-        self.n_ethif_fo_cfgs_str = tk.StringVar()
+        self.n_ethif_ctrlr = 0
+        self.n_ethif_ctrlr_str = tk.StringVar()
 
-        for fo in fo_cfg:
-            if not fo:
+        for cfg in lsc_cfg:
+            if not cfg:
                 self.configs.insert(len(self.configs), dappa.AsrCfgStr(self.cfgkeys, self.create_empty_configs()))
             else:
-                self.configs.insert(len(self.configs), dappa.AsrCfgStr(self.cfgkeys, fo))
-            self.n_ethif_fo_cfgs += 1
-        self.n_ethif_fo_cfgs_str.set(self.n_ethif_fo_cfgs)
+                self.configs.insert(len(self.configs), dappa.AsrCfgStr(self.cfgkeys, cfg))
+            self.n_ethif_ctrlr += 1
+        self.n_ethif_ctrlr_str.set(self.n_ethif_ctrlr)
 
 
 
     def __del__(self):
-        del self.n_ethif_fo_cfgs_str
+        del self.n_ethif_ctrlr_str
         del self.non_header_objs[:]
         del self.configs[:]
 
 
 
     def create_empty_configs(self):
-        ethif_hfile = {}
+        gen_dict = {}
 
-        ethif_hfile["EthIfFrameType"] = ""
-        ethif_hfile["EthIfOwner"] = ""
+        gen_dict["EthIfCtrlIdx"] = str(self.n_ethif_ctrlr-1)
+        gen_dict["EthIfPhysControllerRef"] = "..."
+        gen_dict["EthIfVlanId"] = "0"
+        gen_dict["EthIfCtrlMtu"] = "64"
+        gen_dict["EthIfMaxTxBufsTotal"] = "1"
+        gen_dict["EthIfEthTrcvRef"] = "..."
+        gen_dict["EthIfSwitchRefOrPortGroupRef"] = "..."
 
-        return ethif_hfile
+        return gen_dict
 
 
 
     def draw_dappa_row(self, i):
         dappa.label(self, "Config #", self.header_row+i, 0, "e")
+        bool_cmbsel = ("FALSE", "TRUE")
+        ref_cmbsel = ("Ref1", "Ref2", "...")
 
-        dappa.entry(self, "EthIfFrameType", i, self.header_row+i, 1, 25, "normal")
-        dappa.entry(self, "EthIfOwner", i, self.header_row+i, 2, 25, "normal")
+        dappa.entry(self, "EthIfCtrlIdx", i, self.header_row+i, 1, 12, "readonly")
+        dappa.combo(self, "EthIfPhysControllerRef", i, self.header_row+i, 2, 23, ref_cmbsel)
+        dappa.entry(self, "EthIfVlanId", i, self.header_row+i, 3, 15, "normal")
+        dappa.entry(self, "EthIfCtrlMtu", i, self.header_row+i, 4, 15, "normal")
+        dappa.entry(self, "EthIfMaxTxBufsTotal", i, self.header_row+i, 5, 20, "normal")
+        dappa.combo(self, "EthIfEthTrcvRef", i, self.header_row+i, 6, 25, ref_cmbsel)
+        dappa.combo(self, "EthIfSwitchRefOrPortGroupRef", i, self.header_row+i, 7, 30, ref_cmbsel)
 
 
 
     def update(self):
         # get dappas to be added or removed
-        self.n_ethif_fo_cfgs = int(self.n_ethif_fo_cfgs_str.get())
+        self.n_ethif_ctrlr = int(self.n_ethif_ctrlr_str.get())
 
         # Tune memory allocations based on number of rows or boxes
         n_dappa_rows = len(self.configs)
@@ -99,12 +113,12 @@ class EthIfFrameOwnerConfigView:
             for i in range(n_dappa_rows):
                 self.draw_dappa_row(i)
             self.init_view_done = True
-        elif self.n_ethif_fo_cfgs > n_dappa_rows:
-            for i in range(self.n_ethif_fo_cfgs - n_dappa_rows):
+        elif self.n_ethif_ctrlr > n_dappa_rows:
+            for i in range(self.n_ethif_ctrlr - n_dappa_rows):
                 self.configs.insert(len(self.configs), dappa.AsrCfgStr(self.cfgkeys, self.create_empty_configs()))
                 self.draw_dappa_row(n_dappa_rows+i)
-        elif n_dappa_rows > self.n_ethif_fo_cfgs:
-            for i in range(n_dappa_rows - self.n_ethif_fo_cfgs):
+        elif n_dappa_rows > self.n_ethif_ctrlr:
+            for i in range(n_dappa_rows - self.n_ethif_ctrlr):
                 dappa.delete_dappa_row(self, (n_dappa_rows-1)+i)
                 del self.configs[-1]
 
@@ -118,11 +132,11 @@ class EthIfFrameOwnerConfigView:
         self.scrollw = window.ScrollableWindow(tab.frame, tab.xsize, tab.ysize)
         
         #Number of modes - Label + Spinbox
-        label = tk.Label(self.scrollw.mnf, text="Frame types:")
+        label = tk.Label(self.scrollw.mnf, text="EthIf Ctrls:")
         label.grid(row=0, column=0, sticky="w")
-        ethifnb = tk.Spinbox(self.scrollw.mnf, width=10, textvariable=self.n_ethif_fo_cfgs_str, command=lambda : self.update(),
-                    values=tuple(range(0,self.max_ethif_fo_cfgs+1)))
-        self.n_ethif_fo_cfgs_str.set(self.n_ethif_fo_cfgs)
+        ethifnb = tk.Spinbox(self.scrollw.mnf, width=10, textvariable=self.n_ethif_ctrlr_str, command=lambda : self.update(),
+                    values=tuple(range(0,self.max_ethif_ctrlr+1)))
+        self.n_ethif_ctrlr_str.set(self.n_ethif_ctrlr)
         ethifnb.grid(row=0, column=1, sticky="w")
 
         # Save Button

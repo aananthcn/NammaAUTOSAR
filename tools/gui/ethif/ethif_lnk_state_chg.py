@@ -54,8 +54,11 @@ class EthIfLinkStateChangeCfgView:
         self.n_ethif_lsc_fns = 0
         self.n_ethif_lsc_fns_str = tk.StringVar()
 
-        for fo in lsc_cfg:
-            self.configs.insert(len(self.configs), dappa.AsrCfgStr(self.cfgkeys, fo))
+        for cfg in lsc_cfg:
+            if not cfg:
+                self.configs.insert(len(self.configs), dappa.AsrCfgStr(self.cfgkeys, self.create_empty_configs()))
+            else:
+                self.configs.insert(len(self.configs), dappa.AsrCfgStr(self.cfgkeys, cfg))
             self.n_ethif_lsc_fns += 1
         self.n_ethif_lsc_fns_str.set(self.n_ethif_lsc_fns)
 

@@ -54,8 +54,11 @@ class EthIfTxConfirmConfigView:
         self.n_ethif_txc_fns = 0
         self.n_ethif_txc_fns_str = tk.StringVar()
 
-        for fo in txc_cfg:
-            self.configs.insert(len(self.configs), dappa.AsrCfgStr(self.cfgkeys, fo))
+        for cfg in txc_cfg:
+            if not cfg:
+                self.configs.insert(len(self.configs), dappa.AsrCfgStr(self.cfgkeys, self.create_empty_configs()))
+            else:
+                self.configs.insert(len(self.configs), dappa.AsrCfgStr(self.cfgkeys, cfg))
             self.n_ethif_txc_fns += 1
         self.n_ethif_txc_fns_str.set(self.n_ethif_txc_fns)
 
