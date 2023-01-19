@@ -148,6 +148,7 @@ class EthIfGeneralView:
 
     def save_data(self):
         print("save_data called!")
+        self.tab_struct.save_cb(self.gui)
 
 
     def on_ethif_cddhdr_select_close(self, row):

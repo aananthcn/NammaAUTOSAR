@@ -1,8 +1,8 @@
 #
-# Created on Sun Dec 11 2022 11:47:00 PM
+# Created on Thu Jan 19 2023 10:50:02 PM
 #
 # The MIT License (MIT)
-# Copyright (c) 2022 Aananth C N
+# Copyright (c) 2023 Aananth C N
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy of this software
 # and associated documentation files (the "Software"), to deal in the Software without restriction,
@@ -19,7 +19,6 @@
 # TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #
 
-
 import xml.etree.ElementTree as ET
 import arxml.core.lib as lib
 import arxml.core.lib_conf as lib_conf
@@ -27,7 +26,7 @@ import arxml.core.lib_defs as lib_defs
 
 
 
-def add_eth_ctrl_shape_parameters_to_container(ctnr, dref, shp_cfg):
+def add_ethif_ctrl_shape_parameters_to_container(ctnr, dref, shp_cfg):
     if not shp_cfg:
         print("Warning: ARXML write - EthCtrlConfigShaper is empty!")
         return
@@ -45,7 +44,7 @@ def add_eth_ctrl_shape_parameters_to_container(ctnr, dref, shp_cfg):
 
 
 
-def add_eth_ctrl_sched_parameters_to_container(ctnr, dref, sch_cfg):
+def add_ethif_ctrl_sched_parameters_to_container(ctnr, dref, sch_cfg):
     if not sch_cfg:
         print("Warning: ARXML write - EthCtrlConfigScheduler is empty!")
         return
@@ -67,7 +66,7 @@ def add_eth_ctrl_sched_parameters_to_container(ctnr, dref, sch_cfg):
 
 
 
-def add_eth_ctrl_fifo_out_parameters_to_container(ctnr, dref, egr_cfg):
+def add_ethif_ctrl_fifo_out_parameters_to_container(ctnr, dref, egr_cfg):
     if not egr_cfg:
         print("Warning: ARXML write - EthCtrlConfigEgressFifo is empty!")
         return
@@ -87,7 +86,7 @@ def add_eth_ctrl_fifo_out_parameters_to_container(ctnr, dref, egr_cfg):
 
 
 
-def add_eth_ctrl_egress_parameters_to_container(ctnr, dref, egr_cfg, sch_cfg, shp_cfg):
+def add_ethif_ctrl_egress_parameters_to_container(ctnr, dref, egr_cfg, sch_cfg, shp_cfg):
     # Create a sub-container for 3 items
     subctnr3 = ET.SubElement(ctnr, "SUB-CONTAINERS")
 
@@ -95,23 +94,23 @@ def add_eth_ctrl_egress_parameters_to_container(ctnr, dref, egr_cfg, sch_cfg, sh
     sbc_name = "EthCtrlConfigEgressFifo"
     sbc_dref = dref+"/"+sbc_name
     mdc_ctnr = lib_conf.insert_conf_container(subctnr3, sbc_name, "conf", sbc_dref)
-    add_eth_ctrl_fifo_out_parameters_to_container(mdc_ctnr, sbc_dref, egr_cfg)
+    add_ethif_ctrl_fifo_out_parameters_to_container(mdc_ctnr, sbc_dref, egr_cfg)
 
     # Fill parameters EthCtrlConfigScheduler to the sub-container
     sbc_name = "EthCtrlConfigScheduler"
     sbc_dref = dref+"/"+sbc_name
     mdc_ctnr = lib_conf.insert_conf_container(subctnr3, sbc_name, "conf", sbc_dref)
-    add_eth_ctrl_sched_parameters_to_container(mdc_ctnr, sbc_dref, sch_cfg)
+    add_ethif_ctrl_sched_parameters_to_container(mdc_ctnr, sbc_dref, sch_cfg)
 
     # Fill parameters EthCtrlConfigShaper to the sub-container
     sbc_name = "EthCtrlConfigShaper"
     sbc_dref = dref+"/"+sbc_name
     mdc_ctnr = lib_conf.insert_conf_container(subctnr3, sbc_name, "conf", sbc_dref)
-    add_eth_ctrl_shape_parameters_to_container(mdc_ctnr, sbc_dref, shp_cfg)
+    add_ethif_ctrl_shape_parameters_to_container(mdc_ctnr, sbc_dref, shp_cfg)
 
 
 
-def add_eth_ctrl_fifo_in_parameters_to_container(ctnr, dref, igr_cfg):
+def add_ethif_ctrl_fifo_in_parameters_to_container(ctnr, dref, igr_cfg):
     if not igr_cfg:
         print("Warning: ARXML write - EthCtrlConfigIngressFifo is empty!")
         return
@@ -131,7 +130,7 @@ def add_eth_ctrl_fifo_in_parameters_to_container(ctnr, dref, igr_cfg):
 
 	
 
-def add_eth_ctrl_ingress_parameters_to_container(ctnr, dref, igr_cfg):
+def add_ethif_ctrl_ingress_parameters_to_container(ctnr, dref, igr_cfg):
     if not igr_cfg:
         print("Warning: ARXML write - EthCtrlConfigIngress is empty!")
         return
@@ -143,11 +142,11 @@ def add_eth_ctrl_ingress_parameters_to_container(ctnr, dref, igr_cfg):
     sbc_name = "EthCtrlConfigIngressFifo"
     sbc_dref = dref+"/"+sbc_name
     mdc_ctnr = lib_conf.insert_conf_container(subctnr3, sbc_name, "conf", sbc_dref)
-    add_eth_ctrl_fifo_in_parameters_to_container(mdc_ctnr, sbc_dref, igr_cfg)
+    add_ethif_ctrl_fifo_in_parameters_to_container(mdc_ctnr, sbc_dref, igr_cfg)
 
 
 
-def add_eth_ctrl_spi_parameters_to_container(ctnr, dref, spi_cfg):
+def add_ethif_ctrl_spi_parameters_to_container(ctnr, dref, spi_cfg):
     if not spi_cfg:
         print("Warning: ARXML write - EthCtrlConfigSpiConfiguration is empty!")
         return
@@ -187,7 +186,7 @@ def add_eth_ctrl_spi_parameters_to_container(ctnr, dref, spi_cfg):
 
 
 
-def add_eth_ctrl_config_parameters_to_container(ctnr, dref, ecc_cfg, xgrs_cfg, sch_cfg, shp_cfg, spi_cfg):
+def add_ethif_ctrl_config_parameters_to_container(ctnr, dref, ecc_cfg, xgrs_cfg, sch_cfg, shp_cfg, spi_cfg):
     if not ecc_cfg:
         print("Warning: ARXML write - EthCtrlConfig is empty!")
         return
@@ -226,13 +225,13 @@ def add_eth_ctrl_config_parameters_to_container(ctnr, dref, ecc_cfg, xgrs_cfg, s
     sbc_name = "EthCtrlConfigEgress"
     sbc_dref = dref+"/"+sbc_name
     mdc_ctnr = lib_conf.insert_conf_container(subctnr2, sbc_name, "conf", sbc_dref)
-    add_eth_ctrl_egress_parameters_to_container(mdc_ctnr, sbc_dref, xgrs_cfg, sch_cfg, shp_cfg)
+    add_ethif_ctrl_egress_parameters_to_container(mdc_ctnr, sbc_dref, xgrs_cfg, sch_cfg, shp_cfg)
 
     # Fill parameters EthCtrlConfigIngress to the sub-container
     sbc_name = "EthCtrlConfigIngress"
     sbc_dref = dref+"/"+sbc_name
     mdc_ctnr = lib_conf.insert_conf_container(subctnr2, sbc_name, "conf", sbc_dref)
-    add_eth_ctrl_ingress_parameters_to_container(mdc_ctnr, sbc_dref, xgrs_cfg)
+    add_ethif_ctrl_ingress_parameters_to_container(mdc_ctnr, sbc_dref, xgrs_cfg)
 
     if not spi_cfg:
         return
@@ -240,13 +239,13 @@ def add_eth_ctrl_config_parameters_to_container(ctnr, dref, ecc_cfg, xgrs_cfg, s
     sbc_name = "EthCtrlConfigSpiConfiguration"
     sbc_dref = dref+"/"+sbc_name
     mdc_ctnr = lib_conf.insert_conf_container(subctnr2, sbc_name, "conf", sbc_dref)
-    add_eth_ctrl_spi_parameters_to_container(mdc_ctnr, sbc_dref, spi_cfg)
+    add_ethif_ctrl_spi_parameters_to_container(mdc_ctnr, sbc_dref, spi_cfg)
 
 
 
-def update_eth_configset_to_container(ctnrname, root, eth_cfg):
-    # Create a new container - Eth Driver
-    dref = "/AUTOSAR/EcucDefs/Eth/"+ctnrname
+def update_ethif_configset_to_container(ctnrname, root, ethif_cfg):
+    # Create a new container - EthIf Driver
+    dref = "/AUTOSAR/EcucDefs/EthIf/"+ctnrname
     ctnrblk = lib_conf.insert_conf_container(root, ctnrname, "conf", dref)
 
     # Create a sub-container
@@ -256,12 +255,12 @@ def update_eth_configset_to_container(ctnrname, root, eth_cfg):
     sctnr_name = "EthCtrlConfig"
     ecc_dref = dref+"/"+sctnr_name
     mdc_ctnr = lib_conf.insert_conf_container(subctnr1, sctnr_name, "conf", ecc_dref)
-    add_eth_ctrl_config_parameters_to_container(mdc_ctnr, ecc_dref, eth_cfg.datavar[sctnr_name],
-                        eth_cfg.datavar["EthCtrlConfigXgressFifo"], eth_cfg.datavar["EthCtrlConfigScheduler"],
-                        eth_cfg.datavar["EthCtrlConfigShaper"], eth_cfg.datavar["EthCtrlConfigSpiConfiguration"])
+    add_ethif_ctrl_config_parameters_to_container(mdc_ctnr, ecc_dref, ethif_cfg.datavar[sctnr_name],
+                        ethif_cfg.datavar["EthCtrlConfigXgressFifo"], ethif_cfg.datavar["EthCtrlConfigScheduler"],
+                        ethif_cfg.datavar["EthCtrlConfigShaper"], ethif_cfg.datavar["EthCtrlConfigSpiConfiguration"])
 
 
-def add_eth_general_parameters_to_container(ctnr, dref, gen_cfg):
+def add_ethif_general_parameters_to_container(ctnr, dref, gen_cfg):
     if not gen_cfg:
         print("Warning: ARXML write - EthGeneral is empty!")
         return
@@ -293,7 +292,7 @@ def add_eth_general_parameters_to_container(ctnr, dref, gen_cfg):
 
 
 
-def add_eth_ctrl_offload_parameters_to_container(ctnr, dref, ofl_cfg):
+def add_ethif_ctrl_offload_parameters_to_container(ctnr, dref, ofl_cfg):
     if not ofl_cfg:
         print("Warning: ARXML write - EthCtrlOffloading is empty!")
         return
@@ -313,11 +312,11 @@ def add_eth_ctrl_offload_parameters_to_container(ctnr, dref, ofl_cfg):
 
 
 
-def update_eth_general_to_container(ctnrname, root, eth_cfg):
+def update_ethif_general_to_container(ctnrname, root, ethif_cfg):
     # Create a new container - EthGeneral
-    dref = "/AUTOSAR/EcucDefs/Eth/"+ctnrname
+    dref = "/AUTOSAR/EcucDefs/EthIf/"+ctnrname
     mdc_ctnr = lib_conf.insert_conf_container(root, ctnrname, "conf", dref)
-    add_eth_general_parameters_to_container(mdc_ctnr, dref, eth_cfg.datavar["EthGeneral"])
+    add_ethif_general_parameters_to_container(mdc_ctnr, dref, ethif_cfg.datavar["EthGeneral"])
 
     # Create a sub-container
     subctnr1 = ET.SubElement(mdc_ctnr, "SUB-CONTAINERS")
@@ -326,23 +325,31 @@ def update_eth_general_to_container(ctnrname, root, eth_cfg):
     sctnr_name = "EthCtrlOffloading"
     dref = dref+"/"+sctnr_name
     mdc_ctnr = lib_conf.insert_conf_container(subctnr1, sctnr_name, "conf", dref)
-    add_eth_ctrl_offload_parameters_to_container(mdc_ctnr, dref, eth_cfg.datavar[sctnr_name])
+    add_ethif_ctrl_offload_parameters_to_container(mdc_ctnr, dref, ethif_cfg.datavar[sctnr_name])
 
 
 
-def print_eth_configs(eth_configs):
-    for cfg in eth_configs:
+def print_ethif_configs(ethif_configs):
+    print("\nEthIfGeneral:")
+    for cfg in ethif_configs["EthIfGeneral"]:
+        print(cfg.datavar)
+
+    print("\nEthIfConfigSet:")
+    for cfg in ethif_configs["EthIfConfigSet"]:
         print(cfg.datavar)
 
 
 
-# # This function updates NammaAUTOSAR Eth parameters into its container
-def update_arxml(ar_file, eth_configs):
+# # This function updates NammaAUTOSAR EthIf parameters into its container
+def update_arxml(ar_file, ethif_configs):
     # Following line is added to avoid ns0 prefix added
     ET.register_namespace('', "http://autosar.org/schema/r4.0")
     ET.register_namespace('xsi', "http://www.w3.org/2001/XMLSchema-instance")
     
-    # print_eth_configs(eth_configs)
+    print("arxml_ethif_write.py: update_arxml called!")
+    print_ethif_configs(ethif_configs)
+    
+    return
     
     # Read ARXML File
     tree = ET.parse(ar_file)
@@ -353,26 +360,26 @@ def update_arxml(ar_file, eth_configs):
     if ar_isp == None:
         return
 
-    # remove all Eth configs
-    eth_modconfs = lib_conf.findall_module_configs("Eth", ar_isp)
-    for conf in eth_modconfs:
+    # remove all EthIf configs
+    ethif_modconfs = lib_conf.findall_module_configs("EthIf", ar_isp)
+    for conf in ethif_modconfs:
         ar_isp.remove(conf)
 
-    # insert Eth configs
-    for cfg in eth_configs:
-        modconf = lib_conf.insert_ecuc_module_conf(ar_isp, "Eth")
+    # insert EthIf configs
+    for cfg in ethif_configs:
+        modconf = lib_conf.insert_ecuc_module_conf(ar_isp, "EthIf")
 
         # locate container
         containers = lib_conf.find_containers_in_modconf(modconf)
         if containers == None:
             return
 
-        # Add Eth contents to CONTAINER
-        update_eth_configset_to_container("EthConfigSet", containers, cfg)
-        update_eth_general_to_container("EthGeneral", containers, cfg)
+        # Add EthIf contents to CONTAINER
+        update_ethif_configset_to_container("EthConfigSet", containers, cfg)
+        update_ethif_general_to_container("EthGeneral", containers, cfg)
 
     # Save ARXML contents to file
     ET.indent(tree, space="\t", level=0)
     tree.write(ar_file, encoding="utf-8", xml_declaration=True)
     lib.finalize_arxml_doc(ar_file)
-    print("Info: Eth Configs are saved to " + ar_file)    
+    print("Info: EthIf Configs are saved to " + ar_file)    

@@ -25,7 +25,7 @@ import gui.ethif.ethif_gen as ethif_gen
 import gui.ethif.ethif_configset as ethif_cs
 
 # import arxml.ethif.arxml_ethif_parse as arxml_ethif_r
-# import arxml.ethif.arxml_ethif_write as arxml_ethif_w
+import arxml.ethif.arxml_ethif_write as arxml_ethif_w
 
 # import gui.ethif.ethif_code_gen as ethif_cgen
 
@@ -58,9 +58,12 @@ def ethif_config_close_event(gui, view):
 
 
 
-def ethif_save_callback(gui, ethif_configs):
+def ethif_save_callback(gui):
+    ethif_configs = {}
+    for tab in TabList:
+        ethif_configs[tab.name] = tab.tab.configs
     arxml_ethif_w.update_arxml(gui.arxml_file, ethif_configs)
-    ethif_cgen.generate_code(gui, ethif_configs)
+    # ethif_cgen.generate_code(gui, ethif_configs)
 
 
     
