@@ -163,6 +163,27 @@ def add_ethif_ctrlr_config_params_to_container(ctnr, dref, cfg):
 
 
 
+def add_ethif_trcv_config_params_to_container(ctnr, dref, cfg):
+    if not cfg:
+        print("Warning: ARXML write - EthIfTransceiver is empty!")
+        return
+
+    # Insert PARAMETER block
+    params = ET.SubElement(ctnr, "PARAMETER-VALUES")
+
+    # Insert parameters
+    refname = dref+"/EthIfTransceiverIdx"
+    lib_conf.insert_conf_param(params, refname, "numerical", "int", str(cfg["EthIfTransceiverIdx"]))
+    # Insert references
+    refname = dref+"/EthIfEthTrcvRef"
+    refdest = str(cfg["EthIfEthTrcvRef"])
+    lib_conf.insert_conf_reference(params, refdest, refname)
+    refname = dref+"/EthIfWEthTrcvRef"
+    refdest = str(cfg["EthIfWEthTrcvRef"])
+    lib_conf.insert_conf_reference(params, refdest, refname)
+
+
+
 def update_ethif_configset_to_container(ctnrname, root, ethif_cfg):
     # Create a new container - EthIf Driver
     dref = "/AUTOSAR/EcucDefs/EthIf/"+ctnrname
@@ -212,7 +233,7 @@ def update_ethif_configset_to_container(ctnrname, root, ethif_cfg):
     eif_dref = dref+"/"+sctnr_name
     for cfg in ethif_cfg[0].datavar[sctnr_name]:
         mdc_ctnr = lib_conf.insert_conf_container(subctnr1, sctnr_name, "conf", eif_dref)
-        # add_ethif_fo_config_params_to_container(mdc_ctnr, eif_dref, cfg)
+        add_ethif_trcv_config_params_to_container(mdc_ctnr, eif_dref, cfg)
 
     sctnr_name = "EthIfSwitch"
     eif_dref = dref+"/"+sctnr_name
