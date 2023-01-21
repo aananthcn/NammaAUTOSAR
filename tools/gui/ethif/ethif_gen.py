@@ -49,7 +49,7 @@ class EthIfGeneralView:
     scrollw = None
     tab_struct = None # passed from *_view.py file
     configs = None # all UI configs (tkinter strings) are stored here.
-    cfgkeys = ["EthifMaxTrcvsTotal", "EthifDevErrorDetect", "EthIfEnableRxInterrupt",
+    cfgkeys = ["EthIfMaxTrcvsTotal", "EthIfDevErrorDetect", "EthIfEnableRxInterrupt",
                "EthIfEnableTxInterrupt", "EthIfVersionInfoApi", "EthIfVersionInfoApiMacro",
                "EthIfTrcvLinkStateChgMainReload", "EthIfMainFunctionPeriod", "EthIfPublicCddHeaderFile",
                "EthIfRxIndicationIterations", "EthIfGetAndResetMeasurementDataApi",
@@ -81,8 +81,8 @@ class EthIfGeneralView:
     def create_empty_configs(self):
         gen_dict = {}
         
-        gen_dict["EthifMaxTrcvsTotal"]      = "1"
-        gen_dict["EthifDevErrorDetect"]     = "FALSE"
+        gen_dict["EthIfMaxTrcvsTotal"]      = "1"
+        gen_dict["EthIfDevErrorDetect"]     = "FALSE"
         gen_dict["EthIfEnableRxInterrupt"]  = "FALSE"
         gen_dict["EthIfEnableTxInterrupt"]  = "FALSE"
         gen_dict["EthIfVersionInfoApi"]     = "FALSE"
@@ -106,8 +106,8 @@ class EthIfGeneralView:
     def draw_dappas(self):
         bool_cmbsel = ("FALSE", "TRUE")
 
-        dappa.spinb(self, "EthifMaxTrcvsTotal",     0, 0, 1, 21, tuple(range(0,256)))
-        dappa.combo(self, "EthifDevErrorDetect",    0, 1, 1, 20, bool_cmbsel)
+        dappa.spinb(self, "EthIfMaxTrcvsTotal",     0, 0, 1, 21, tuple(range(0,256)))
+        dappa.combo(self, "EthIfDevErrorDetect",    0, 1, 1, 20, bool_cmbsel)
         dappa.combo(self, "EthIfEnableRxInterrupt", 0, 2, 1, 20, bool_cmbsel)
         dappa.combo(self, "EthIfEnableTxInterrupt", 0, 3, 1, 20, bool_cmbsel)
         dappa.combo(self, "EthIfVersionInfoApi",    0, 4, 1, 20, bool_cmbsel)
@@ -147,22 +147,21 @@ class EthIfGeneralView:
 
 
     def save_data(self):
-        print("save_data called!")
         self.tab_struct.save_cb(self.gui)
 
 
     def on_ethif_cddhdr_select_close(self, row):
         # backup data
-        self.configs[row].datavar["EthIfPublicCddHeaderFile"] = self.active_view.view.configs[0].get()
+        if self.active_view.view.configs:
+            self.configs[0].datavar["EthIfPublicCddHeaderFile"] = []  # ignore old data
+            for cfg in self.active_view.view.configs:
+                self.configs[0].datavar["EthIfPublicCddHeaderFile"].append(cfg.get())
 
         # destroy view
         del self.active_view
         self.active_dialog.destroy()
         del self.active_dialog
 
-        # # re-draw all boxes (dappas) of this row
-        # dappa.delete_dappa_row(self, row)
-        # self.draw_dappas(row)
 
 
     def ethif_cddhdr_select(self, row):
@@ -171,7 +170,7 @@ class EthIfGeneralView:
 
         # function to create dialog window
         self.active_dialog = tk.Toplevel() # create an instance of toplevel
-        self.active_dialog.protocol("WM_DELETE_WINDOW", lambda : self.on_ethif_cddhdr_select_close(row))
+        self.active_dialog.protocol("WM_DELETE_WINDOW", lambda : self.on_ethif_cddhdr_select_close(0))
         self.active_dialog.attributes('-topmost',True)
 
         # set the geometry
@@ -184,7 +183,7 @@ class EthIfGeneralView:
         # create views and draw
         gen_view = EthChildView(self.active_dialog, width, height, self.save_data)
         gen_view.view = ethif_cddhdr.EthIfPublicHeaderFilesView(self.gui,
-                                            self.configs[row].datavar["EthIfPublicCddHeaderFile"])
+                                            self.configs[0].datavar["EthIfPublicCddHeaderFile"])
         gen_view.name = "EthIfPublicCddHeaderFile"
         self.active_view = gen_view
         gen_view.view.draw(gen_view)

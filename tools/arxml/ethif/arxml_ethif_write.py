@@ -251,6 +251,8 @@ def update_ethif_configset_to_container(ctnrname, root, ethif_cfg):
     # Create a sub-container
     subctnr1 = ET.SubElement(ctnrblk, "SUB-CONTAINERS")
 
+    return
+
     # Create ECUC Module Configs under above Sub-container
     sctnr_name = "EthCtrlConfig"
     ecc_dref = dref+"/"+sctnr_name
@@ -262,33 +264,48 @@ def update_ethif_configset_to_container(ctnrname, root, ethif_cfg):
 
 def add_ethif_general_parameters_to_container(ctnr, dref, gen_cfg):
     if not gen_cfg:
-        print("Warning: ARXML write - EthGeneral is empty!")
+        print("Warning: ARXML write - EthIfGeneral is empty!")
         return
 
     # Insert PARAMETER block
     params = ET.SubElement(ctnr, "PARAMETER-VALUES")
 
     # Insert parameters
-    pref = dref+"/EthIndex"
-    lib_conf.insert_conf_param(params, pref, "numerical", "int", str(gen_cfg["EthIndex"]))
-    pref = dref+"/EthDevErrorDetect"
-    lib_conf.insert_conf_param(params, pref, "numerical", "bool", str(gen_cfg["EthDevErrorDetect"]))
-    pref = dref+"/EthMainFunctionPeriod"
-    lib_conf.insert_conf_param(params, pref, "numerical", "float", str(gen_cfg["EthMainFunctionPeriod"]))
-    pref = dref+"/EthGetCounterValuesApi"
-    lib_conf.insert_conf_param(params, pref, "numerical", "bool", str(gen_cfg["EthGetCounterValuesApi"]))
-    pref = dref+"/EthGetRxStatsApi"
-    lib_conf.insert_conf_param(params, pref, "numerical", "bool", str(gen_cfg["EthGetRxStatsApi"]))
-    pref = dref+"/EthGetTxErrorCounterValuesApi"
-    lib_conf.insert_conf_param(params, pref, "numerical", "bool", str(gen_cfg["EthGetTxErrorCounterValuesApi"]))
-    pref = dref+"/EthGetTxStatsApi"
-    lib_conf.insert_conf_param(params, pref, "numerical", "bool", str(gen_cfg["EthGetTxStatsApi"]))
-    pref = dref+"/EthGlobalTimeSupport"
-    lib_conf.insert_conf_param(params, pref, "numerical", "bool", str(gen_cfg["EthGlobalTimeSupport"]))
-    pref = dref+"/EthMaxCtrlsSupported"
-    lib_conf.insert_conf_param(params, pref, "numerical", "int", str(gen_cfg["EthMaxCtrlsSupported"]))
-    pref = dref+"/EthVersionInfoApi"
-    lib_conf.insert_conf_param(params, pref, "numerical", "bool", str(gen_cfg["EthVersionInfoApi"]))
+    pref = dref+"/EthIfMaxTrcvsTotal"
+    lib_conf.insert_conf_param(params, pref, "numerical", "int", str(gen_cfg["EthIfMaxTrcvsTotal"]))
+    pref = dref+"/EthIfDevErrorDetect"
+    lib_conf.insert_conf_param(params, pref, "numerical", "bool", str(gen_cfg["EthIfDevErrorDetect"]))
+    pref = dref+"/EthIfEnableRxInterrupt"
+    lib_conf.insert_conf_param(params, pref, "numerical", "bool", str(gen_cfg["EthIfEnableRxInterrupt"]))
+    pref = dref+"/EthIfEnableTxInterrupt"
+    lib_conf.insert_conf_param(params, pref, "numerical", "bool", str(gen_cfg["EthIfEnableTxInterrupt"]))
+    pref = dref+"/EthIfVersionInfoApi"
+    lib_conf.insert_conf_param(params, pref, "numerical", "bool", str(gen_cfg["EthIfVersionInfoApi"]))
+    pref = dref+"/EthIfVersionInfoApiMacro"
+    lib_conf.insert_conf_param(params, pref, "numerical", "bool", str(gen_cfg["EthIfVersionInfoApiMacro"]))
+    pref = dref+"/EthIfTrcvLinkStateChgMainReload"
+    lib_conf.insert_conf_param(params, pref, "numerical", "int", str(gen_cfg["EthIfTrcvLinkStateChgMainReload"]))
+    pref = dref+"/EthIfMainFunctionPeriod"
+    lib_conf.insert_conf_param(params, pref, "numerical", "float", str(gen_cfg["EthIfMainFunctionPeriod"]))
+    pref = dref+"/EthIfPublicCddHeaderFile"
+    for obj in gen_cfg["EthIfPublicCddHeaderFile"]:
+        lib_conf.insert_conf_param(params, pref, "text", "string", obj["Headerfile"])
+    pref = dref+"/EthIfRxIndicationIterations"
+    lib_conf.insert_conf_param(params, pref, "numerical", "int", str(gen_cfg["EthIfRxIndicationIterations"]))
+    pref = dref+"/EthIfGetAndResetMeasurementDataApi"
+    lib_conf.insert_conf_param(params, pref, "numerical", "bool", str(gen_cfg["EthIfGetAndResetMeasurementDataApi"]))
+    pref = dref+"/EthIfStartAutoNegotiation"
+    lib_conf.insert_conf_param(params, pref, "numerical", "bool", str(gen_cfg["EthIfStartAutoNegotiation"]))
+    pref = dref+"/EthIfGetBaudRate"
+    lib_conf.insert_conf_param(params, pref, "numerical", "bool", str(gen_cfg["EthIfGetBaudRate"]))
+    pref = dref+"/EthIfGetCounterState"
+    lib_conf.insert_conf_param(params, pref, "numerical", "bool", str(gen_cfg["EthIfGetCounterState"]))
+    pref = dref+"/EthIfGlobalTimeSupport"
+    lib_conf.insert_conf_param(params, pref, "numerical", "bool", str(gen_cfg["EthIfGlobalTimeSupport"]))
+    pref = dref+"/EthIfWakeUpSupport"
+    lib_conf.insert_conf_param(params, pref, "numerical", "bool", str(gen_cfg["EthIfWakeUpSupport"]))
+    pref = dref+"/EthIfGetTransceiverWakeupModeApi"
+    lib_conf.insert_conf_param(params, pref, "numerical", "bool", str(gen_cfg["EthIfGetTransceiverWakeupModeApi"]))
 
 
 
@@ -313,13 +330,15 @@ def add_ethif_ctrl_offload_parameters_to_container(ctnr, dref, ofl_cfg):
 
 
 def update_ethif_general_to_container(ctnrname, root, ethif_cfg):
-    # Create a new container - EthGeneral
+    # Create a new container - EthIfGeneral
     dref = "/AUTOSAR/EcucDefs/EthIf/"+ctnrname
     mdc_ctnr = lib_conf.insert_conf_container(root, ctnrname, "conf", dref)
-    add_ethif_general_parameters_to_container(mdc_ctnr, dref, ethif_cfg.datavar["EthGeneral"])
+    add_ethif_general_parameters_to_container(mdc_ctnr, dref, ethif_cfg.datavar)
 
     # Create a sub-container
     subctnr1 = ET.SubElement(mdc_ctnr, "SUB-CONTAINERS")
+
+    return
 
     # Create ECUC Module Configs under above Sub-container
     sctnr_name = "EthCtrlOffloading"
@@ -349,34 +368,29 @@ def update_arxml(ar_file, ethif_configs):
     print("arxml_ethif_write.py: update_arxml called!")
     print_ethif_configs(ethif_configs)
     
-    return
-    
     # Read ARXML File
     tree = ET.parse(ar_file)
     root = tree.getroot()
 
-    # locate ELEMENTS block
+    # locate ELEMENTS block, i.e., insert point
     ar_isp = lib_conf.find_ecuc_elements_block(root)
-    if ar_isp == None:
-        return
 
-    # remove all EthIf configs
-    ethif_modconfs = lib_conf.findall_module_configs("EthIf", ar_isp)
-    for conf in ethif_modconfs:
-        ar_isp.remove(conf)
+	# remove EthIf configs
+    ethif_modconfs = lib_conf.find_module_configs("EthIf", ar_isp)
+    if ethif_modconfs:
+        ar_isp.remove(ethif_modconfs)
 
     # insert EthIf configs
-    for cfg in ethif_configs:
-        modconf = lib_conf.insert_ecuc_module_conf(ar_isp, "EthIf")
+    modconf = lib_conf.insert_ecuc_module_conf(ar_isp, "EthIf")
 
-        # locate container
-        containers = lib_conf.find_containers_in_modconf(modconf)
-        if containers == None:
-            return
+    # locate container
+    containers = lib_conf.find_containers_in_modconf(modconf)
+    if containers == None:
+        return
 
-        # Add EthIf contents to CONTAINER
-        update_ethif_configset_to_container("EthConfigSet", containers, cfg)
-        update_ethif_general_to_container("EthGeneral", containers, cfg)
+    # Add EthIf contents to CONTAINER
+    update_ethif_configset_to_container("EthIfConfigSet", containers, ethif_configs["EthIfConfigSet"])
+    update_ethif_general_to_container("EthIfGeneral", containers, ethif_configs["EthIfGeneral"][0])
 
     # Save ARXML contents to file
     ET.indent(tree, space="\t", level=0)
