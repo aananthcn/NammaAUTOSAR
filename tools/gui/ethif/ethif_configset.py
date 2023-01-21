@@ -363,7 +363,7 @@ class EthIfConfigSetView:
         # set the geometry
         x = self.active_dialog.winfo_screenwidth()
         y = self.active_dialog.winfo_screenheight()
-        width = 1050
+        width = 1100
         height = 440
         self.active_dialog.geometry("%dx%d+%d+%d" % (width, height, x/5, y/5))
         self.active_dialog.title("EthIfController")

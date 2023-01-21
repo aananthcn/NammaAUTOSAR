@@ -28,7 +28,7 @@ import arxml.core.lib_defs as lib_defs
 
 def add_ethif_fo_config_params_to_container(ctnr, dref, cfg):
     if not cfg:
-        print("Warning: ARXML write - EthCtrlConfig is empty!")
+        print("Warning: ARXML write - EthIfFrameOwnerConfig is empty!")
         return
 
     # Insert PARAMETER block
@@ -44,7 +44,7 @@ def add_ethif_fo_config_params_to_container(ctnr, dref, cfg):
 
 def add_ethif_rxi_config_params_to_container(ctnr, dref, cfg):
     if not cfg:
-        print("Warning: ARXML write - EthCtrlConfig is empty!")
+        print("Warning: ARXML write - EthIfRxIndicationConfig is empty!")
         return
 
     # Insert PARAMETER block
@@ -58,7 +58,7 @@ def add_ethif_rxi_config_params_to_container(ctnr, dref, cfg):
 
 def add_ethif_txc_config_params_to_container(ctnr, dref, cfg):
     if not cfg:
-        print("Warning: ARXML write - EthCtrlConfig is empty!")
+        print("Warning: ARXML write - EthIfTxConfirmationConfig is empty!")
         return
 
     # Insert PARAMETER block
@@ -72,7 +72,7 @@ def add_ethif_txc_config_params_to_container(ctnr, dref, cfg):
 
 def add_ethif_tlsc_config_params_to_container(ctnr, dref, cfg):
     if not cfg:
-        print("Warning: ARXML write - EthCtrlConfig is empty!")
+        print("Warning: ARXML write - EthIfTrcvLinkStateChgConfig is empty!")
         return
 
     # Insert PARAMETER block
@@ -107,7 +107,7 @@ def insert_ethif_pctrl_sub_container(ctnr, dref, cfg):
 
 def add_ethif_pctrlr_config_params_to_container(ctnr, dref, cfg):
     if not cfg:
-        print("Warning: ARXML write - EthCtrlConfig is empty!")
+        print("Warning: ARXML write - EthIfPhysController is empty!")
         return
 
     # Insert PARAMETER block
@@ -118,17 +118,48 @@ def add_ethif_pctrlr_config_params_to_container(ctnr, dref, cfg):
     lib_conf.insert_conf_param(params, refname, "numerical", "int", str(cfg["EthIfPhysControllerIdx"]))
     # Insert references
     refname = dref+"/EthIfEthCtrlRef"
-    # refdest = "/AUTOSAR/EcucDefs/Eth/EthCtrlConfig"
     refdest = str(cfg["EthIfEthCtrlRef"])
     lib_conf.insert_conf_reference(params, refdest, refname)
     refname = dref+"/EthIfWEthCtrlRef"
-    # refdest = "/AUTOSAR/EcucDefs/Eth/WEthCtrlConfig"
     refdest = str(cfg["EthIfWEthCtrlRef"])
     lib_conf.insert_conf_reference(params, refdest, refname)
 
     # # Insert subContainer(s) - EthIfPhysCtrlRxMainFunctionPriorityProcessing
     dref2 = dref+"/EthIfPhysCtrlRxMainFunctionPriorityProcessing"
     insert_ethif_pctrl_sub_container(ctnr, dref2, cfg)
+
+
+
+def add_ethif_ctrlr_config_params_to_container(ctnr, dref, cfg):
+    if not cfg:
+        print("Warning: ARXML write - EthIfController is empty!")
+        return
+
+    # Insert PARAMETER block
+    params = ET.SubElement(ctnr, "PARAMETER-VALUES")
+
+    # Insert parameters
+    refname = dref+"/EthIfCtrlIdx"
+    lib_conf.insert_conf_param(params, refname, "numerical", "int", str(cfg["EthIfCtrlIdx"]))
+    refname = dref+"/EthIfVlanId"
+    lib_conf.insert_conf_param(params, refname, "numerical", "int", str(cfg["EthIfVlanId"]))
+    refname = dref+"/EthIfCtrlMtu"
+    lib_conf.insert_conf_param(params, refname, "numerical", "int", str(cfg["EthIfCtrlMtu"]))
+    refname = dref+"/EthIfMaxTxBufsTotal"
+    lib_conf.insert_conf_param(params, refname, "numerical", "int", str(cfg["EthIfMaxTxBufsTotal"]))
+    # Insert references
+    refname = dref+"/EthIfPhysControllerRef"
+    refdest = str(cfg["EthIfPhysControllerRef"])
+    lib_conf.insert_conf_reference(params, refdest, refname)
+    refname = dref+"/EthIfEthTrcvRef"
+    refdest = str(cfg["EthIfEthTrcvRef"])
+    lib_conf.insert_conf_reference(params, refdest, refname)
+    refname = dref+"/EthIfSwitchRefOrPortGroupRef/EthIfSwitchRef"
+    refdest = str(cfg["EthIfSwitchRef"])
+    lib_conf.insert_conf_reference(params, refdest, refname)
+    refname = dref+"/EthIfSwitchRefOrPortGroupRef/EthIfSwitchPortGroupRef"
+    refdest = str(cfg["EthIfSwitchPortGroupRef"])
+    lib_conf.insert_conf_reference(params, refdest, refname)
 
 
 
@@ -175,7 +206,7 @@ def update_ethif_configset_to_container(ctnrname, root, ethif_cfg):
     eif_dref = dref+"/"+sctnr_name
     for cfg in ethif_cfg[0].datavar[sctnr_name]:
         mdc_ctnr = lib_conf.insert_conf_container(subctnr1, sctnr_name, "conf", eif_dref)
-        # add_ethif_fo_config_params_to_container(mdc_ctnr, eif_dref, cfg)
+        add_ethif_ctrlr_config_params_to_container(mdc_ctnr, eif_dref, cfg)
 
     sctnr_name = "EthIfTransceiver"
     eif_dref = dref+"/"+sctnr_name

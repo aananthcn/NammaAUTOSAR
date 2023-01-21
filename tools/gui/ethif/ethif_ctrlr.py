@@ -38,7 +38,7 @@ class EthIfControllerView:
     configs = None # all UI configs (tkinter strings) are stored here.
     cfgkeys = ["EthIfCtrlIdx", "EthIfPhysControllerRef", "EthIfVlanId",
                "EthIfCtrlMtu", "EthIfMaxTxBufsTotal", "EthIfEthTrcvRef",
-               "EthIfSwitchRefOrPortGroupRef"]
+               "EthIfSwitchRef", "EthIfSwitchPortGroupRef"]
     
     n_header_objs = 0 #Objects / widgets that are part of the header and shouldn't be destroyed
     header_row = 3
@@ -82,7 +82,8 @@ class EthIfControllerView:
         gen_dict["EthIfCtrlMtu"] = "64"
         gen_dict["EthIfMaxTxBufsTotal"] = "1"
         gen_dict["EthIfEthTrcvRef"] = "..."
-        gen_dict["EthIfSwitchRefOrPortGroupRef"] = "..."
+        gen_dict["EthIfSwitchRef"] = "..."
+        gen_dict["EthIfSwitchPortGroupRef"] = "..."
 
         return gen_dict
 
@@ -94,12 +95,13 @@ class EthIfControllerView:
         ref_cmbsel = ("Ref1", "Ref2", "...")
 
         dappa.entry(self, "EthIfCtrlIdx", i, self.header_row+i, 1, 12, "readonly")
-        dappa.combo(self, "EthIfPhysControllerRef", i, self.header_row+i, 2, 23, ref_cmbsel)
+        dappa.combo(self, "EthIfPhysControllerRef", i, self.header_row+i, 2, 21, ref_cmbsel)
         dappa.entry(self, "EthIfVlanId", i, self.header_row+i, 3, 15, "normal")
         dappa.entry(self, "EthIfCtrlMtu", i, self.header_row+i, 4, 15, "normal")
         dappa.entry(self, "EthIfMaxTxBufsTotal", i, self.header_row+i, 5, 20, "normal")
-        dappa.combo(self, "EthIfEthTrcvRef", i, self.header_row+i, 6, 25, ref_cmbsel)
-        dappa.combo(self, "EthIfSwitchRefOrPortGroupRef", i, self.header_row+i, 7, 30, ref_cmbsel)
+        dappa.combo(self, "EthIfEthTrcvRef", i, self.header_row+i, 6, 18, ref_cmbsel)
+        dappa.combo(self, "EthIfSwitchRef", i, self.header_row+i, 7, 18, ref_cmbsel)
+        dappa.combo(self, "EthIfSwitchPortGroupRef", i, self.header_row+i, 8, 23, ref_cmbsel)
 
 
 
