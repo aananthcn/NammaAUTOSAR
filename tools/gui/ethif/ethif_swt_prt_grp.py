@@ -36,9 +36,7 @@ class EthIfSwtPortGrpView:
     tab_struct = None # passed from *_view.py file
     scrollw = None
     configs = None # all UI configs (tkinter strings) are stored here.
-    cfgkeys = ["EthIfSwitchPortGroupIdx", "EthIfPortRef",
-               "ETHIF_SWITCH_PORT_GROUP_LINK_INFO",
-               "ETHIF_SWITCH_PORT_GROUP_CONTROL"]
+    cfgkeys = ["EthIfSwitchPortGroupIdx", "EthIfPortRef", "EthIfSwitchPortGroupRefSemantics"]
     
     n_header_objs = 0 #Objects / widgets that are part of the header and shouldn't be destroyed
     header_row = 3
@@ -78,8 +76,7 @@ class EthIfSwtPortGrpView:
 
         gen_dict["EthIfSwitchPortGroupIdx"] = str(self.n_ethif_spg-1)
         gen_dict["EthIfPortRef"] = "..."
-        gen_dict["ETHIF_SWITCH_PORT_GROUP_LINK_INFO"] = ""
-        gen_dict["ETHIF_SWITCH_PORT_GROUP_CONTROL"] = ""
+        gen_dict["EthIfSwitchPortGroupRefSemantics"] = ""
 
         return gen_dict
 
@@ -89,11 +86,11 @@ class EthIfSwtPortGrpView:
         dappa.label(self, "Config #", self.header_row+i, 0, "e")
         bool_cmbsel = ("FALSE", "TRUE")
         ref_cmbsel = ("Ref1", "Ref2", "...")
+        swtpg_refsel = ("ETHIF_SWITCH_PORT_GROUP_LINK_INFO", "ETHIF_SWITCH_PORT_GROUP_CONTROL")
 
         dappa.entry(self, "EthIfSwitchPortGroupIdx", i, self.header_row+i, 1, 24, "readonly")
         dappa.combo(self, "EthIfPortRef", i, self.header_row+i, 2, 23, ref_cmbsel)
-        dappa.entry(self, "ETHIF_SWITCH_PORT_GROUP_LINK_INFO", i, self.header_row+i, 3, 40, "normal")
-        dappa.entry(self, "ETHIF_SWITCH_PORT_GROUP_CONTROL", i, self.header_row+i, 4, 40, "normal")
+        dappa.combo(self, "EthIfSwitchPortGroupRefSemantics", i, self.header_row+i, 3, 40, swtpg_refsel)
 
 
 

@@ -184,6 +184,44 @@ def add_ethif_trcv_config_params_to_container(ctnr, dref, cfg):
 
 
 
+def add_ethif_swt_config_params_to_container(ctnr, dref, cfg):
+    if not cfg:
+        print("Warning: ARXML write - EthIfSwitch is empty!")
+        return
+
+    # Insert PARAMETER block
+    params = ET.SubElement(ctnr, "PARAMETER-VALUES")
+
+    # Insert parameters
+    refname = dref+"/EthIfSwitchIdx"
+    lib_conf.insert_conf_param(params, refname, "numerical", "int", str(cfg["EthIfSwitchIdx"]))
+    # Insert references
+    refname = dref+"/EthIfSwitchRef"
+    refdest = str(cfg["EthIfSwitchRef"])
+    lib_conf.insert_conf_reference(params, refdest, refname)
+
+
+
+def add_ethif_spg_config_params_to_container(ctnr, dref, cfg):
+    if not cfg:
+        print("Warning: ARXML write - EthIfSwitchPortGroup is empty!")
+        return
+
+    # Insert PARAMETER block
+    params = ET.SubElement(ctnr, "PARAMETER-VALUES")
+
+    # Insert parameters
+    refname = dref+"/EthIfSwitchPortGroupIdx"
+    lib_conf.insert_conf_param(params, refname, "numerical", "int", str(cfg["EthIfSwitchPortGroupIdx"]))
+    refname = dref+"/EthIfSwitchPortGroupRefSemantics"
+    lib_conf.insert_conf_param(params, refname, "numerical", "enum", str(cfg["EthIfSwitchPortGroupRefSemantics"]))
+    # Insert references
+    refname = dref+"/EthIfPortRef"
+    refdest = str(cfg["EthIfPortRef"])
+    lib_conf.insert_conf_reference(params, refdest, refname)
+
+
+
 def update_ethif_configset_to_container(ctnrname, root, ethif_cfg):
     # Create a new container - EthIf Driver
     dref = "/AUTOSAR/EcucDefs/EthIf/"+ctnrname
@@ -239,13 +277,13 @@ def update_ethif_configset_to_container(ctnrname, root, ethif_cfg):
     eif_dref = dref+"/"+sctnr_name
     for cfg in ethif_cfg[0].datavar[sctnr_name]:
         mdc_ctnr = lib_conf.insert_conf_container(subctnr1, sctnr_name, "conf", eif_dref)
-        # add_ethif_fo_config_params_to_container(mdc_ctnr, eif_dref, cfg)
+        add_ethif_swt_config_params_to_container(mdc_ctnr, eif_dref, cfg)
 
     sctnr_name = "EthIfSwitchPortGroup"
     eif_dref = dref+"/"+sctnr_name
     for cfg in ethif_cfg[0].datavar[sctnr_name]:
         mdc_ctnr = lib_conf.insert_conf_container(subctnr1, sctnr_name, "conf", eif_dref)
-        # add_ethif_fo_config_params_to_container(mdc_ctnr, eif_dref, cfg)
+        add_ethif_spg_config_params_to_container(mdc_ctnr, eif_dref, cfg)
 
 
 
