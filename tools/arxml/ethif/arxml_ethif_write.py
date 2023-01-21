@@ -26,168 +26,8 @@ import arxml.core.lib_defs as lib_defs
 
 
 
-def add_ethif_ctrl_shape_parameters_to_container(ctnr, dref, shp_cfg):
-    if not shp_cfg:
-        print("Warning: ARXML write - EthCtrlConfigShaper is empty!")
-        return
-
-    # Insert PARAMETER block
-    params = ET.SubElement(ctnr, "PARAMETER-VALUES")
-
-    # Insert parameters
-    refname = dref+"/EthCtrlConfigShaperIdleSlope"
-    lib_conf.insert_conf_param(params, refname, "numerical", "int", str(shp_cfg["EthCtrlConfigShaperIdleSlope"]))
-    refname = dref+"/EthCtrlConfigShaperMaxCredit"
-    lib_conf.insert_conf_param(params, refname, "numerical", "int", str(shp_cfg["EthCtrlConfigShaperMaxCredit"]))
-    refname = dref+"/EthCtrlConfigShaperMinCredit"
-    lib_conf.insert_conf_param(params, refname, "numerical", "int", str(shp_cfg["EthCtrlConfigShaperMinCredit"]))
-
-
-
-def add_ethif_ctrl_sched_parameters_to_container(ctnr, dref, sch_cfg):
-    if not sch_cfg:
-        print("Warning: ARXML write - EthCtrlConfigScheduler is empty!")
-        return
-
-    # Create a sub-container for EthCtrlConfigScheduler
-    subctnr = ET.SubElement(ctnr, "SUB-CONTAINERS")
-
-    # Fill parameters EthCtrlConfigScheduler to the sub-container
-    sbc_name = "EthCtrlConfigSchedulerPredecessor"
-    sbc_dref = dref+"/"+sbc_name
-    mdc_ctnr = lib_conf.insert_conf_container(subctnr, sbc_name, "conf", sbc_dref)
-
-    # Insert PARAMETER block
-    params = ET.SubElement(mdc_ctnr, "PARAMETER-VALUES")
-
-    # Insert parameters
-    refname = dref+"/EthCtrlConfigSchedulerPredecessorOrder"
-    lib_conf.insert_conf_param(params, refname, "numerical", "int", str(sch_cfg["EthCtrlConfigSchedulerPredecessorOrder"]))
-
-
-
-def add_ethif_ctrl_fifo_out_parameters_to_container(ctnr, dref, egr_cfg):
-    if not egr_cfg:
-        print("Warning: ARXML write - EthCtrlConfigEgressFifo is empty!")
-        return
-
-    # Insert PARAMETER block
-    params = ET.SubElement(ctnr, "PARAMETER-VALUES")
-
-    # Insert parameters
-    refname = dref+"/EthCtrlConfigEgressFifoBufLenByte"
-    lib_conf.insert_conf_param(params, refname, "numerical", "int", str(egr_cfg["EthCtrlConfigEgressFifoBufLenByte"]))
-    refname = dref+"/EthCtrlConfigEgressFifoBufTotal"
-    lib_conf.insert_conf_param(params, refname, "numerical", "int", str(egr_cfg["EthCtrlConfigEgressFifoBufTotal"]))
-    refname = dref+"/EthCtrlConfigEgressFifoIdx"
-    lib_conf.insert_conf_param(params, refname, "numerical", "int", str(egr_cfg["EthCtrlConfigEgressFifoIdx"]))
-    refname = dref+"/EthCtrlConfigEgressFifoPriorityAssignment"
-    lib_conf.insert_conf_param(params, refname, "numerical", "int", str(egr_cfg["EthCtrlConfigEgressFifoPriorityAssignment"]))
-
-
-
-def add_ethif_ctrl_egress_parameters_to_container(ctnr, dref, egr_cfg, sch_cfg, shp_cfg):
-    # Create a sub-container for 3 items
-    subctnr3 = ET.SubElement(ctnr, "SUB-CONTAINERS")
-
-    # Fill parameters EthCtrlConfigEgressFifo to the sub-container
-    sbc_name = "EthCtrlConfigEgressFifo"
-    sbc_dref = dref+"/"+sbc_name
-    mdc_ctnr = lib_conf.insert_conf_container(subctnr3, sbc_name, "conf", sbc_dref)
-    add_ethif_ctrl_fifo_out_parameters_to_container(mdc_ctnr, sbc_dref, egr_cfg)
-
-    # Fill parameters EthCtrlConfigScheduler to the sub-container
-    sbc_name = "EthCtrlConfigScheduler"
-    sbc_dref = dref+"/"+sbc_name
-    mdc_ctnr = lib_conf.insert_conf_container(subctnr3, sbc_name, "conf", sbc_dref)
-    add_ethif_ctrl_sched_parameters_to_container(mdc_ctnr, sbc_dref, sch_cfg)
-
-    # Fill parameters EthCtrlConfigShaper to the sub-container
-    sbc_name = "EthCtrlConfigShaper"
-    sbc_dref = dref+"/"+sbc_name
-    mdc_ctnr = lib_conf.insert_conf_container(subctnr3, sbc_name, "conf", sbc_dref)
-    add_ethif_ctrl_shape_parameters_to_container(mdc_ctnr, sbc_dref, shp_cfg)
-
-
-
-def add_ethif_ctrl_fifo_in_parameters_to_container(ctnr, dref, igr_cfg):
-    if not igr_cfg:
-        print("Warning: ARXML write - EthCtrlConfigIngressFifo is empty!")
-        return
-
-    # Insert PARAMETER block
-    params = ET.SubElement(ctnr, "PARAMETER-VALUES")
-
-    # Insert parameters
-    refname = dref+"/EthCtrlConfigIngressFifoBufLenByte"
-    lib_conf.insert_conf_param(params, refname, "numerical", "int", str(igr_cfg["EthCtrlConfigIngressFifoBufLenByte"]))
-    refname = dref+"/EthCtrlConfigIngressFifoBufTotal"
-    lib_conf.insert_conf_param(params, refname, "numerical", "int", str(igr_cfg["EthCtrlConfigIngressFifoBufTotal"]))
-    refname = dref+"/EthCtrlConfigIngressFifoIdx"
-    lib_conf.insert_conf_param(params, refname, "numerical", "int", str(igr_cfg["EthCtrlConfigIngressFifoIdx"]))
-    refname = dref+"/EthCtrlConfigIngressFifoPriorityAssignment"
-    lib_conf.insert_conf_param(params, refname, "numerical", "int", str(igr_cfg["EthCtrlConfigIngressFifoPriorityAssignment"]))
-
-	
-
-def add_ethif_ctrl_ingress_parameters_to_container(ctnr, dref, igr_cfg):
-    if not igr_cfg:
-        print("Warning: ARXML write - EthCtrlConfigIngress is empty!")
-        return
-
-    # Create a sub-container for 3 items
-    subctnr3 = ET.SubElement(ctnr, "SUB-CONTAINERS")
-
-    # Fill parameters EthCtrlConfigIngressFifo to the sub-container
-    sbc_name = "EthCtrlConfigIngressFifo"
-    sbc_dref = dref+"/"+sbc_name
-    mdc_ctnr = lib_conf.insert_conf_container(subctnr3, sbc_name, "conf", sbc_dref)
-    add_ethif_ctrl_fifo_in_parameters_to_container(mdc_ctnr, sbc_dref, igr_cfg)
-
-
-
-def add_ethif_ctrl_spi_parameters_to_container(ctnr, dref, spi_cfg):
-    if not spi_cfg:
-        print("Warning: ARXML write - EthCtrlConfigSpiConfiguration is empty!")
-        return
-
-    # Insert PARAMETER block
-    params = ET.SubElement(ctnr, "PARAMETER-VALUES")
-
-    # Insert parameters
-    refname = dref+"/EthCtrlConfigSpiChunkPayloadSize"
-    lib_conf.insert_conf_param(params, refname, "numerical", "int", str(spi_cfg["EthCtrlConfigSpiChunkPayloadSize"]))
-    refname = dref+"/EthCtrlConfigSpiCommRetries"
-    lib_conf.insert_conf_param(params, refname, "numerical", "int", str(spi_cfg["EthCtrlConfigSpiCommRetries"]))
-    refname = dref+"/EthCtrlConfigSpiCommTimeout"
-    lib_conf.insert_conf_param(params, refname, "numerical", "float", str(spi_cfg["EthCtrlConfigSpiCommTimeout"]))
-    refname = dref+"/EthCtrlConfigSpiEnableControlDataProtection"
-    lib_conf.insert_conf_param(params, refname, "numerical", "bool", str(spi_cfg["EthCtrlConfigSpiEnableControlDataProtection"]))
-    refname = dref+"/EthCtrlConfigSpiEnableRxCSAlign"
-    lib_conf.insert_conf_param(params, refname, "numerical", "bool", str(spi_cfg["EthCtrlConfigSpiEnableRxCSAlign"]))
-    refname = dref+"/EthCtrlConfigSpiEnableRxCutThrough"
-    lib_conf.insert_conf_param(params, refname, "numerical", "bool", str(spi_cfg["EthCtrlConfigSpiEnableRxCutThrough"]))
-    refname = dref+"/EthCtrlConfigSpiEnableRxZeroAlign"
-    lib_conf.insert_conf_param(params, refname, "numerical", "bool", str(spi_cfg["EthCtrlConfigSpiEnableRxZeroAlign"]))
-    refname = dref+"/EthCtrlConfigSpiEnableTransmitDataHdrSequence"
-    lib_conf.insert_conf_param(params, refname, "numerical", "bool", str(spi_cfg["EthCtrlConfigSpiEnableTransmitDataHdrSequence"]))
-    refname = dref+"/EthCtrlConfigSpiEnableTxChecksum"
-    lib_conf.insert_conf_param(params, refname, "numerical", "bool", str(spi_cfg["EthCtrlConfigSpiEnableTxChecksum"]))
-    refname = dref+"/EthCtrlConfigSpiEnableTxCutThrough"
-    lib_conf.insert_conf_param(params, refname, "numerical", "bool", str(spi_cfg["EthCtrlConfigSpiEnableTxCutThrough"]))
-    refname = dref+"/EthCtrlConfigSpiSelectTimeStamp"
-    lib_conf.insert_conf_param(params, refname, "numerical", "bool", str(spi_cfg["EthCtrlConfigSpiSelectTimeStamp"]))
-    refname = dref+"/EthCtrlConfigSpiTransmitCreditThreshold"
-    lib_conf.insert_conf_param(params, refname, "numerical", "int", str(spi_cfg["EthCtrlConfigSpiTransmitCreditThreshold"]))
-    refname = dref+"/EthCtrlConfigSpiAccessSynchronous"
-    lib_conf.insert_conf_param(params, refname, "numerical", "bool", str(spi_cfg["EthCtrlConfigSpiAccessSynchronous"]))
-    refname = dref+"/EthCtrlConfigSpiSequenceName"
-    lib_conf.insert_conf_param(params, refname, "text", "string", str(spi_cfg["EthCtrlConfigSpiSequenceName"]))
-
-
-
-def add_ethif_ctrl_config_parameters_to_container(ctnr, dref, ecc_cfg, xgrs_cfg, sch_cfg, shp_cfg, spi_cfg):
-    if not ecc_cfg:
+def add_ethif_fo_config_params_to_container(ctnr, dref, cfg):
+    if not cfg:
         print("Warning: ARXML write - EthCtrlConfig is empty!")
         return
 
@@ -195,51 +35,100 @@ def add_ethif_ctrl_config_parameters_to_container(ctnr, dref, ecc_cfg, xgrs_cfg,
     params = ET.SubElement(ctnr, "PARAMETER-VALUES")
 
     # Insert parameters
-    refname = dref+"/EthCtrlConfigSwBufferHandling"
-    lib_conf.insert_conf_param(params, refname, "numerical", "bool", str(ecc_cfg["EthCtrlConfigSwBufferHandling"]))
-    refname = dref+"/EthCtrlEnableMii"
-    lib_conf.insert_conf_param(params, refname, "numerical", "bool", str(ecc_cfg["EthCtrlEnableMii"]))
-    refname = dref+"/EthCtrlEnableRxInterrupt"
-    lib_conf.insert_conf_param(params, refname, "numerical", "bool", str(ecc_cfg["EthCtrlEnableRxInterrupt"]))
-    refname = dref+"/EthCtrlEnableSpiInterface"
-    lib_conf.insert_conf_param(params, refname, "numerical", "bool", str(ecc_cfg["EthCtrlEnableSpiInterface"]))
-    refname = dref+"/EthCtrlEnableTxInterrupt"
-    lib_conf.insert_conf_param(params, refname, "numerical", "bool", str(ecc_cfg["EthCtrlEnableTxInterrupt"]))
-    refname = dref+"/EthCtrlIdx"
-    lib_conf.insert_conf_param(params, refname, "numerical", "int", str(ecc_cfg["EthCtrlIdx"]))
-    refname = dref+"/EthCtrlMacLayerSpeed"
-    lib_conf.insert_conf_param(params, refname, "numerical", "enum", str(ecc_cfg["EthCtrlMacLayerSpeed"]))
-    refname = dref+"/EthCtrlMacLayerType"
-    lib_conf.insert_conf_param(params, refname, "numerical", "enum", str(ecc_cfg["EthCtrlMacLayerType"]))
-    refname = dref+"/EthCtrlMacLayerSubType"
-    lib_conf.insert_conf_param(params, refname, "numerical", "enum", str(ecc_cfg["EthCtrlMacLayerSubType"]))
-    refname = dref+"/EthCtrlPhyAddress"
-    lib_conf.insert_conf_param(params, refname, "text", "string", str(ecc_cfg["EthCtrlPhyAddress"]))
-    refname = dref+"/VendorSpecific/EthSpiCtrlDevice"
-    lib_conf.insert_conf_param(params, refname, "numerical", "enum", str(ecc_cfg["EthSpiCtrlDevice"]))
+    refname = dref+"/EthIfFrameType"
+    lib_conf.insert_conf_param(params, refname, "numerical", "int", str(cfg["EthIfFrameType"]))
+    refname = dref+"/EthIfOwner"
+    lib_conf.insert_conf_param(params, refname, "numerical", "int", str(cfg["EthIfOwner"]))
 
-    # Create a sub-container for EthCtrlConfig
-    subctnr2 = ET.SubElement(ctnr, "SUB-CONTAINERS")
 
-    # Fill parameters EthCtrlConfigEgress to the sub-container
-    sbc_name = "EthCtrlConfigEgress"
-    sbc_dref = dref+"/"+sbc_name
-    mdc_ctnr = lib_conf.insert_conf_container(subctnr2, sbc_name, "conf", sbc_dref)
-    add_ethif_ctrl_egress_parameters_to_container(mdc_ctnr, sbc_dref, xgrs_cfg, sch_cfg, shp_cfg)
 
-    # Fill parameters EthCtrlConfigIngress to the sub-container
-    sbc_name = "EthCtrlConfigIngress"
-    sbc_dref = dref+"/"+sbc_name
-    mdc_ctnr = lib_conf.insert_conf_container(subctnr2, sbc_name, "conf", sbc_dref)
-    add_ethif_ctrl_ingress_parameters_to_container(mdc_ctnr, sbc_dref, xgrs_cfg)
-
-    if not spi_cfg:
+def add_ethif_rxi_config_params_to_container(ctnr, dref, cfg):
+    if not cfg:
+        print("Warning: ARXML write - EthCtrlConfig is empty!")
         return
-    # Fill parameters EthCtrlConfigSpiConfiguration to the sub-container
-    sbc_name = "EthCtrlConfigSpiConfiguration"
-    sbc_dref = dref+"/"+sbc_name
-    mdc_ctnr = lib_conf.insert_conf_container(subctnr2, sbc_name, "conf", sbc_dref)
-    add_ethif_ctrl_spi_parameters_to_container(mdc_ctnr, sbc_dref, spi_cfg)
+
+    # Insert PARAMETER block
+    params = ET.SubElement(ctnr, "PARAMETER-VALUES")
+
+    # Insert parameters
+    refname = dref+"/EthIfRxIndicationFunction"
+    lib_conf.insert_conf_param(params, refname, "text", "string", str(cfg["EthIfRxIndicationFunction"]))
+
+
+
+def add_ethif_txc_config_params_to_container(ctnr, dref, cfg):
+    if not cfg:
+        print("Warning: ARXML write - EthCtrlConfig is empty!")
+        return
+
+    # Insert PARAMETER block
+    params = ET.SubElement(ctnr, "PARAMETER-VALUES")
+
+    # Insert parameters
+    refname = dref+"/EthIfTxConfirmationFunction"
+    lib_conf.insert_conf_param(params, refname, "text", "string", str(cfg["EthIfTxConfirmationFunction"]))
+
+
+
+def add_ethif_tlsc_config_params_to_container(ctnr, dref, cfg):
+    if not cfg:
+        print("Warning: ARXML write - EthCtrlConfig is empty!")
+        return
+
+    # Insert PARAMETER block
+    params = ET.SubElement(ctnr, "PARAMETER-VALUES")
+
+    # Insert parameters
+    refname = dref+"/EthIfTrcvLinkStateChgFunction"
+    lib_conf.insert_conf_param(params, refname, "text", "string", str(cfg["EthIfTrcvLinkStateChgFunction"]))
+
+
+
+def insert_ethif_pctrl_sub_container(ctnr, dref, cfg):
+    # Insert subContainer(s) - EthIfPhysCtrlRxMainFunctionPriorityProcessing
+    subctnr2 = ET.SubElement(ctnr, "SUB-CONTAINERS")
+    sctnr_name = "EthIfPhysCtrlRxMainFunctionPriorityProcessing"
+    cf_ctnr = lib_conf.insert_conf_container(subctnr2, sctnr_name, "conf", dref)
+
+    # Insert PARAMETER block
+    params = ET.SubElement(cf_ctnr, "PARAMETER-VALUES")
+
+    # Insert parameters
+    refname = dref+"/EthIfPhysCtrlRxMainFunctionPeriod"
+    lib_conf.insert_conf_param(params, refname, "numerical", "float", str(cfg["EthIfPhysCtrlRxMainFunctionPeriod"]))
+    refname = dref+"/EthIfPhysCtrlRxIndicationIterations"
+    lib_conf.insert_conf_param(params, refname, "numerical", "int", str(cfg["EthIfPhysCtrlRxIndicationIterations"]))
+    # Insert references
+    refname = dref+"/EthIfPhysCtrlRxIngressFifoRef"
+    refdest = str(cfg["EthIfPhysCtrlRxIngressFifoRef"])
+    lib_conf.insert_conf_reference(params, refdest, refname)
+
+
+
+def add_ethif_pctrlr_config_params_to_container(ctnr, dref, cfg):
+    if not cfg:
+        print("Warning: ARXML write - EthCtrlConfig is empty!")
+        return
+
+    # Insert PARAMETER block
+    params = ET.SubElement(ctnr, "PARAMETER-VALUES")
+
+    # Insert parameters
+    refname = dref+"/EthIfPhysControllerIdx"
+    lib_conf.insert_conf_param(params, refname, "numerical", "int", str(cfg["EthIfPhysControllerIdx"]))
+    # Insert references
+    refname = dref+"/EthIfEthCtrlRef"
+    # refdest = "/AUTOSAR/EcucDefs/Eth/EthCtrlConfig"
+    refdest = str(cfg["EthIfEthCtrlRef"])
+    lib_conf.insert_conf_reference(params, refdest, refname)
+    refname = dref+"/EthIfWEthCtrlRef"
+    # refdest = "/AUTOSAR/EcucDefs/Eth/WEthCtrlConfig"
+    refdest = str(cfg["EthIfWEthCtrlRef"])
+    lib_conf.insert_conf_reference(params, refdest, refname)
+
+    # # Insert subContainer(s) - EthIfPhysCtrlRxMainFunctionPriorityProcessing
+    dref2 = dref+"/EthIfPhysCtrlRxMainFunctionPriorityProcessing"
+    insert_ethif_pctrl_sub_container(ctnr, dref2, cfg)
 
 
 
@@ -251,15 +140,62 @@ def update_ethif_configset_to_container(ctnrname, root, ethif_cfg):
     # Create a sub-container
     subctnr1 = ET.SubElement(ctnrblk, "SUB-CONTAINERS")
 
-    return
-
     # Create ECUC Module Configs under above Sub-container
-    sctnr_name = "EthCtrlConfig"
-    ecc_dref = dref+"/"+sctnr_name
-    mdc_ctnr = lib_conf.insert_conf_container(subctnr1, sctnr_name, "conf", ecc_dref)
-    add_ethif_ctrl_config_parameters_to_container(mdc_ctnr, ecc_dref, ethif_cfg.datavar[sctnr_name],
-                        ethif_cfg.datavar["EthCtrlConfigXgressFifo"], ethif_cfg.datavar["EthCtrlConfigScheduler"],
-                        ethif_cfg.datavar["EthCtrlConfigShaper"], ethif_cfg.datavar["EthCtrlConfigSpiConfiguration"])
+    sctnr_name = "EthIfFrameOwnerConfig"
+    eif_dref = dref+"/"+sctnr_name
+    for cfg in ethif_cfg[0].datavar[sctnr_name]:
+        mdc_ctnr = lib_conf.insert_conf_container(subctnr1, sctnr_name, "conf", eif_dref)
+        add_ethif_fo_config_params_to_container(mdc_ctnr, eif_dref, cfg)
+
+    sctnr_name = "EthIfRxIndicationConfig"
+    eif_dref = dref+"/"+sctnr_name
+    for cfg in ethif_cfg[0].datavar[sctnr_name]:
+        mdc_ctnr = lib_conf.insert_conf_container(subctnr1, sctnr_name, "conf", eif_dref)
+        add_ethif_rxi_config_params_to_container(mdc_ctnr, eif_dref, cfg)
+
+    sctnr_name = "EthIfTxConfirmationConfig"
+    eif_dref = dref+"/"+sctnr_name
+    for cfg in ethif_cfg[0].datavar[sctnr_name]:
+        mdc_ctnr = lib_conf.insert_conf_container(subctnr1, sctnr_name, "conf", eif_dref)
+        add_ethif_txc_config_params_to_container(mdc_ctnr, eif_dref, cfg)
+
+    sctnr_name = "EthIfTrcvLinkStateChgConfig"
+    eif_dref = dref+"/"+sctnr_name
+    for cfg in ethif_cfg[0].datavar[sctnr_name]:
+        mdc_ctnr = lib_conf.insert_conf_container(subctnr1, sctnr_name, "conf", eif_dref)
+        add_ethif_tlsc_config_params_to_container(mdc_ctnr, eif_dref, cfg)
+
+    sctnr_name = "EthIfPhysController"
+    eif_dref = dref+"/"+sctnr_name
+    for cfg in ethif_cfg[0].datavar[sctnr_name]:
+        mdc_ctnr = lib_conf.insert_conf_container(subctnr1, sctnr_name, "conf", eif_dref)
+        add_ethif_pctrlr_config_params_to_container(mdc_ctnr, eif_dref, cfg)
+
+    sctnr_name = "EthIfController"
+    eif_dref = dref+"/"+sctnr_name
+    for cfg in ethif_cfg[0].datavar[sctnr_name]:
+        mdc_ctnr = lib_conf.insert_conf_container(subctnr1, sctnr_name, "conf", eif_dref)
+        # add_ethif_fo_config_params_to_container(mdc_ctnr, eif_dref, cfg)
+
+    sctnr_name = "EthIfTransceiver"
+    eif_dref = dref+"/"+sctnr_name
+    for cfg in ethif_cfg[0].datavar[sctnr_name]:
+        mdc_ctnr = lib_conf.insert_conf_container(subctnr1, sctnr_name, "conf", eif_dref)
+        # add_ethif_fo_config_params_to_container(mdc_ctnr, eif_dref, cfg)
+
+    sctnr_name = "EthIfSwitch"
+    eif_dref = dref+"/"+sctnr_name
+    for cfg in ethif_cfg[0].datavar[sctnr_name]:
+        mdc_ctnr = lib_conf.insert_conf_container(subctnr1, sctnr_name, "conf", eif_dref)
+        # add_ethif_fo_config_params_to_container(mdc_ctnr, eif_dref, cfg)
+
+    sctnr_name = "EthIfSwitchPortGroup"
+    eif_dref = dref+"/"+sctnr_name
+    for cfg in ethif_cfg[0].datavar[sctnr_name]:
+        mdc_ctnr = lib_conf.insert_conf_container(subctnr1, sctnr_name, "conf", eif_dref)
+        # add_ethif_fo_config_params_to_container(mdc_ctnr, eif_dref, cfg)
+
+
 
 
 def add_ethif_general_parameters_to_container(ctnr, dref, gen_cfg):
@@ -309,26 +245,6 @@ def add_ethif_general_parameters_to_container(ctnr, dref, gen_cfg):
 
 
 
-def add_ethif_ctrl_offload_parameters_to_container(ctnr, dref, ofl_cfg):
-    if not ofl_cfg:
-        print("Warning: ARXML write - EthCtrlOffloading is empty!")
-        return
-
-    # Insert PARAMETER block
-    params = ET.SubElement(ctnr, "PARAMETER-VALUES")
-
-    # Insert parameters
-    pref = dref+"/EthCtrlEnableOffloadChecksumIPv4"
-    lib_conf.insert_conf_param(params, pref, "numerical", "int", str(ofl_cfg["EthCtrlEnableOffloadChecksumIPv4"]))
-    pref = dref+"/EthCtrlEnableOffloadChecksumICMP"
-    lib_conf.insert_conf_param(params, pref, "numerical", "int", str(ofl_cfg["EthCtrlEnableOffloadChecksumICMP"]))
-    pref = dref+"/EthCtrlEnableOffloadChecksumTCP"
-    lib_conf.insert_conf_param(params, pref, "numerical", "int", str(ofl_cfg["EthCtrlEnableOffloadChecksumTCP"]))
-    pref = dref+"/EthCtrlEnableOffloadChecksumUDP"
-    lib_conf.insert_conf_param(params, pref, "numerical", "int", str(ofl_cfg["EthCtrlEnableOffloadChecksumUDP"]))
-
-
-
 def update_ethif_general_to_container(ctnrname, root, ethif_cfg):
     # Create a new container - EthIfGeneral
     dref = "/AUTOSAR/EcucDefs/EthIf/"+ctnrname
@@ -337,14 +253,6 @@ def update_ethif_general_to_container(ctnrname, root, ethif_cfg):
 
     # Create a sub-container
     subctnr1 = ET.SubElement(mdc_ctnr, "SUB-CONTAINERS")
-
-    return
-
-    # Create ECUC Module Configs under above Sub-container
-    sctnr_name = "EthCtrlOffloading"
-    dref = dref+"/"+sctnr_name
-    mdc_ctnr = lib_conf.insert_conf_container(subctnr1, sctnr_name, "conf", dref)
-    add_ethif_ctrl_offload_parameters_to_container(mdc_ctnr, dref, ethif_cfg.datavar[sctnr_name])
 
 
 
