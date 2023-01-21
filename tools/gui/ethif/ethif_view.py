@@ -24,7 +24,7 @@ from tkinter import ttk
 import gui.ethif.ethif_gen as ethif_gen
 import gui.ethif.ethif_configset as ethif_cs
 
-# import arxml.ethif.arxml_ethif_parse as arxml_ethif_r
+import arxml.ethif.arxml_ethif_parse as arxml_ethif_r
 import arxml.ethif.arxml_ethif_write as arxml_ethif_w
 
 # import gui.ethif.ethif_code_gen as ethif_cgen
@@ -60,9 +60,20 @@ def ethif_config_close_event(gui, view):
 
 def ethif_save_callback(gui):
     ethif_configs = {}
+
+    # pull all configs from UI tabs
     for tab in TabList:
+	    # backup configs (i.e, pull from dispvar to datavar)
+        for cfg in tab.tab.configs:
+            cfg.get()
+
+        # copy to configs to dict
         ethif_configs[tab.name] = tab.tab.configs
+
+    # write to file
     arxml_ethif_w.update_arxml(gui.arxml_file, ethif_configs)
+
+    # generate code
     # ethif_cgen.generate_code(gui, ethif_configs)
 
 
@@ -99,18 +110,17 @@ def show_ethif_tabs(gui):
     del TabList[:]
 
     # read EthIf content from ARXML file
-    # ethif_configs = arxml_ethif_r.parse_arxml(gui.arxml_file)
-    ethif_configs = None
+    ethif_configs = arxml_ethif_r.parse_arxml(gui.arxml_file)
     
     # create the EthIfGeneral GUI tab
     ethif_gen_view = EthIfTab(gen_frame, width, height)
-    ethif_gen_view.tab = ethif_gen.EthIfGeneralView(gui, ethif_configs)
+    ethif_gen_view.tab = ethif_gen.EthIfGeneralView(gui, ethif_configs[0]["EthIfGeneral"])
     ethif_gen_view.name = "EthIfGeneral"
     TabList.append(ethif_gen_view)
 
     # create the EthIfGeneral GUI tab
     ethif_configset_view = EthIfTab(cfg_frame, width, height)
-    ethif_configset_view.tab = ethif_cs.EthIfConfigSetView(gui, ethif_configs)
+    ethif_configset_view.tab = ethif_cs.EthIfConfigSetView(gui, ethif_configs[0]["EthIfConfigSet"])
     ethif_configset_view.name = "EthIfConfigSet"
     TabList.append(ethif_configset_view)
 

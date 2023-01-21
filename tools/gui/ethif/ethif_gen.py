@@ -66,6 +66,8 @@ class EthIfGeneralView:
         self.gui = gui
         self.configs = []
 
+        print(gen_cfg)
+
         # Create config string for AUTOSAR configs on this tab
         if not gen_cfg:
             self.configs.append(dappa.AsrCfgStr(self.cfgkeys, self.create_empty_configs()))

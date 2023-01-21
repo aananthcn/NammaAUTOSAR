@@ -29,9 +29,10 @@ import arxml.core.lib_defs as lib_defs
 
 
 
-def parse_eth_general(cname, containers):
-    eth_params = {}
-    ofld_dict = {}
+def parse_ethif_general(cname, containers):
+    ethif_params = {}
+    hfile_idx = 0
+    hfiles = []
 
     ctnrblks = lib_conf.findall_containers_with_name(cname, containers)
     for ctnrblk in ctnrblks:
@@ -39,23 +40,32 @@ def parse_eth_general(cname, containers):
             return None
         params = lib_conf.get_param_list(ctnrblk)
         for par in params:
-            eth_params[par["tag"]] = par["val"]
+            if "EthIfPublicCddHeaderFile" == par["tag"]:
+                hfile = {}
+                hfile["FileNo"] = hfile_idx
+                hfile_idx += 1
+                hfile["Headerfile"] = par["val"]
+                hfiles.append(hfile)
+            else:
+                ethif_params[par["tag"]] = par["val"]
 
-        ofld_dict = get_eth_2nd_subcontainer("EthCtrlOffloading", ctnrblk, ofld_dict)
+        # ofld_dict = get_ethif_2nd_subcontainer("EthIfCtrlOffloading", ctnrblk, ofld_dict)
 
-        # EthGeneral has exactly one container, so it is safe to break the loop
+        # EthIfGeneral has exactly one container, so it is safe to break the loop
         break
 
-    return eth_params, ofld_dict
+    ethif_params["EthIfPublicCddHeaderFile"] = hfiles
+
+    return ethif_params
 
 
 
-def get_eth_3rd_subcontainer(subc2_name, subc3_name, root, par_dict):
+def get_ethif_3rd_subcontainer(subc2_name, subc3_name, root, par_dict):
     sub2_list = lib_conf.findall_subcontainers_with_name(subc2_name, root)
     if not sub2_list:
         return par_dict
 
-    # Only one "EthCtrlConfigEgress" or "EthCtrlConfigIngress" container exist within its super container, but loop one and exit
+    # Only one "EthIfCtrlConfigEgress" or "EthIfCtrlConfigIngress" container exist within its super container, but loop one and exit
     for ctnr2 in sub2_list:
         if lib_conf.get_tag(ctnr2) == "ECUC-CONTAINER-VALUE":
             sub3_list = lib_conf.findall_subcontainers_with_name(subc3_name, ctnr2)
@@ -70,12 +80,12 @@ def get_eth_3rd_subcontainer(subc2_name, subc3_name, root, par_dict):
 
 
 
-def get_eth_2nd_subcontainer(sub_ctnr_name, root, par_dict):
+def get_ethif_2nd_subcontainer(sub_ctnr_name, root, par_dict):
     sub2_list = lib_conf.findall_subcontainers_with_name(sub_ctnr_name, root)
     if not sub2_list:
         return par_dict
 
-    # Only one "EthCtrlConfigSpiConfiguration" container exist within its super container, but loop one and exit
+    # Only one "EthIfCtrlConfigSpiConfiguration" container exist within its super container, but loop one and exit
     for cntr2 in sub2_list:
         item_params = lib_conf.get_param_list(cntr2)
         for par in item_params:
@@ -87,14 +97,14 @@ def get_eth_2nd_subcontainer(sub_ctnr_name, root, par_dict):
 
 
 
-def get_ethcfg_scheduler_dict(root, par_dict):
-    sub2_list = lib_conf.findall_subcontainers_with_name("EthCtrlConfigEgress", root)
+def get_ethifcfg_scheduler_dict(root, par_dict):
+    sub2_list = lib_conf.findall_subcontainers_with_name("EthIfCtrlConfigEgress", root)
     if not sub2_list:
         return par_dict
 
-    # Only one "EthCtrlConfigScheduler" container exist within its super container, but loop one and exit
+    # Only one "EthIfCtrlConfigScheduler" container exist within its super container, but loop one and exit
     for ctnr2 in sub2_list:
-        par_dict = get_eth_3rd_subcontainer("EthCtrlConfigScheduler", "EthCtrlConfigSchedulerPredecessor", ctnr2, par_dict)
+        par_dict = get_ethif_3rd_subcontainer("EthIfCtrlConfigScheduler", "EthIfCtrlConfigSchedulerPredecessor", ctnr2, par_dict)
 
     return par_dict
 
@@ -109,17 +119,17 @@ def get_configset_subcontainer(sub_ctnr_name, ctnr):
     spicfg_dict = {}
 
     ctnr_list = lib_conf.findall_subcontainers_with_name(sub_ctnr_name, ctnr)
-    # Only one "EthCtrlConfig" container exist within its super container, but loop one iteration and exit
+    # Only one "EthIfCtrlConfig" container exist within its super container, but loop one iteration and exit
     for item in ctnr_list:
         params = lib_conf.get_param_list(item)
         for par in params:
             eccpar_dict[par["tag"]] = par["val"]
 
-        egress_dict = get_eth_3rd_subcontainer("EthCtrlConfigEgress", "EthCtrlConfigEgressFifo", item, egress_dict)
-        schdlr_dict = get_ethcfg_scheduler_dict(item, schdlr_dict)
-        shaper_dict = get_eth_3rd_subcontainer("EthCtrlConfigEgress", "EthCtrlConfigShaper", item, shaper_dict)
-        xgress_dict = get_eth_3rd_subcontainer("EthCtrlConfigIngress", "EthCtrlConfigIngressFifo", item, xgress_dict)
-        spicfg_dict = get_eth_2nd_subcontainer("EthCtrlConfigSpiConfiguration", item, spicfg_dict)
+        egress_dict = get_ethif_3rd_subcontainer("EthIfCtrlConfigEgress", "EthIfCtrlConfigEgressFifo", item, egress_dict)
+        schdlr_dict = get_ethifcfg_scheduler_dict(item, schdlr_dict)
+        shaper_dict = get_ethif_3rd_subcontainer("EthIfCtrlConfigEgress", "EthIfCtrlConfigShaper", item, shaper_dict)
+        xgress_dict = get_ethif_3rd_subcontainer("EthIfCtrlConfigIngress", "EthIfCtrlConfigIngressFifo", item, xgress_dict)
+        spicfg_dict = get_ethif_2nd_subcontainer("EthIfCtrlConfigSpiConfiguration", item, spicfg_dict)
 
         # merge Egress and Ingress dicts
         xgress_dict.update(egress_dict)
@@ -131,41 +141,43 @@ def get_configset_subcontainer(sub_ctnr_name, ctnr):
 
 
 
-def parse_eth_configset(cname, containers):
-    eth_cfgset_dict = {}
+def parse_ethif_configset(cname, containers):
+    ethif_cfgset_dict = {}
+
+    return ethif_cfgset_dict
 
     ctnrblks = lib_conf.findall_containers_with_name(cname, containers)
     for ctnrblk in ctnrblks:
         if not ctnrblk or lib_conf.get_tag(ctnrblk) != "ECUC-CONTAINER-VALUE":
             return None
         params = lib_conf.get_param_list(ctnrblk)
-        eth_params = {}
+        ethif_params = {}
         for par in params:
-            eth_params[par["tag"]] = par["val"]
+            ethif_params[par["tag"]] = par["val"]
 
         # Let us parse the sub-containers
-        ecc_cfg, xgr_cfg, sch_cfg, shp_cfg, spi_cfg = get_configset_subcontainer("EthCtrlConfig", ctnrblk)
-        eth_cfgset_dict["EthCtrlConfig"] = ecc_cfg
-        eth_cfgset_dict["EthCtrlConfigXgressFifo"] = xgr_cfg
-        eth_cfgset_dict["EthCtrlConfigScheduler"] = sch_cfg
-        eth_cfgset_dict["EthCtrlConfigShaper"] = shp_cfg
-        eth_cfgset_dict["EthCtrlConfigSpiConfiguration"] = spi_cfg
+        ecc_cfg, xgr_cfg, sch_cfg, shp_cfg, spi_cfg = get_configset_subcontainer("EthIfCtrlConfig", ctnrblk)
+        ethif_cfgset_dict["EthIfCtrlConfig"] = ecc_cfg
+        ethif_cfgset_dict["EthIfCtrlConfigXgressFifo"] = xgr_cfg
+        ethif_cfgset_dict["EthIfCtrlConfigScheduler"] = sch_cfg
+        ethif_cfgset_dict["EthIfCtrlConfigShaper"] = shp_cfg
+        ethif_cfgset_dict["EthIfCtrlConfigSpiConfiguration"] = spi_cfg
 
-        #EthConfigSet has exactly one container, so it is safe to break the loop
+        #EthIfConfigSet has exactly one container, so it is safe to break the loop
         break
 
-    return eth_cfgset_dict
+    return ethif_cfgset_dict
 
 
 
-# This function parses ARXML and extract the Eth information
-# Returns: No of eth_configs
+# This function parses ARXML and extract the EthIf information
+# Returns: No of ethif_configs
 def parse_arxml(ar_file):
     if ar_file == None:
         return None
 
     # empty list
-    eth_configs = []
+    ethif_configs = []
 
     # Read ARXML File
     tree = ET.parse(ar_file)
@@ -176,23 +188,23 @@ def parse_arxml(ar_file):
     if elems == None:
         return
 
-    eth_modconfs = lib_conf.findall_module_configs("Eth", elems)
-    for i, modconf in enumerate(eth_modconfs):
-        # locate container
-        containers = lib_conf.find_containers_in_modconf(modconf)
-        if containers == None:
-            continue
+    # locate container
+    ethif_modconfs = lib_conf.find_module_configs("EthIf", elems)
+    containers = lib_conf.find_containers_in_modconf(ethif_modconfs)
+    if containers == None:
+        print("Error: parse_arxml() couldn't locate EthIf module in ", ar_file)
+        return
 
-        # copy EthConfigSet to eth_configs
-        eth_cfg = parse_eth_configset("EthConfigSet", containers)
+    # copy EthIfConfigSet to ethif_configs
+    ethif_cfg = {}
+    ethif_cfgset = parse_ethif_configset("EthIfConfigSet", containers)
+    ethif_cfg["EthIfConfigSet"] = ethif_cfgset
 
-        # copy EthGeneral params to eth_configs
-        eth_general, eth_offload = parse_eth_general("EthGeneral", containers)
-        eth_cfg["EthGeneral"] = eth_general
-        eth_cfg["EthCtrlOffloading"] = eth_offload
-        eth_cfg["EthIndex"] = str(i)
+    # copy EthIfGeneral params to ethif_configs
+    ethif_general = parse_ethif_general("EthIfGeneral", containers)
+    ethif_cfg["EthIfGeneral"] = ethif_general
 
-        eth_configs.append(eth_cfg)
+    ethif_configs.append(ethif_cfg)
 
-    return eth_configs
+    return ethif_configs
 
