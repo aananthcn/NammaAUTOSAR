@@ -349,6 +349,33 @@ def add_ethif_general_parameters_to_container(ctnr, dref, gen_cfg):
     pref = dref+"/EthIfGetTransceiverWakeupModeApi"
     lib_conf.insert_conf_param(params, pref, "numerical", "bool", str(gen_cfg["EthIfGetTransceiverWakeupModeApi"]))
 
+    pref = dref+"/EthIfSwitchOffPortTimeDelay"
+    lib_conf.insert_conf_param(params, pref, "numerical", "bool", str(gen_cfg["EthIfSwitchOffPortTimeDelay"]))
+    pref = dref+"/EthIfPortStartupActiveTime"
+    lib_conf.insert_conf_param(params, pref, "numerical", "bool", str(gen_cfg["EthIfPortStartupActiveTime"]))
+    pref = dref+"/EthIfMainFunctionStatePeriod"
+    lib_conf.insert_conf_param(params, pref, "numerical", "bool", str(gen_cfg["EthIfMainFunctionStatePeriod"]))
+    pref = dref+"/EthIfSetForwardingModeApi"
+    lib_conf.insert_conf_param(params, pref, "numerical", "bool", str(gen_cfg["EthIfSetForwardingModeApi"]))
+    pref = dref+"/EthIfVerifyConfigApi"
+    lib_conf.insert_conf_param(params, pref, "numerical", "bool", str(gen_cfg["EthIfVerifyConfigApi"]))
+    pref = dref+"/EthIfSwitchManagementSupport"
+    lib_conf.insert_conf_param(params, pref, "numerical", "bool", str(gen_cfg["EthIfSwitchManagementSupport"]))
+    pref = dref+"/EthIfGetCtrlIdxList"
+    lib_conf.insert_conf_param(params, pref, "numerical", "bool", str(gen_cfg["EthIfGetCtrlIdxList"]))
+    pref = dref+"/EthIfGetVlanIdSupport"
+    lib_conf.insert_conf_param(params, pref, "numerical", "bool", str(gen_cfg["EthIfGetVlanIdSupport"]))
+    pref = dref+"/EthIfEnableWEthApi"
+    lib_conf.insert_conf_param(params, pref, "numerical", "bool", str(gen_cfg["EthIfEnableWEthApi"]))
+    pref = dref+"/EthIfEnableSignalQualityApi"
+    lib_conf.insert_conf_param(params, pref, "numerical", "bool", str(gen_cfg["EthIfEnableSignalQualityApi"]))
+    pref = dref+"/EthIfSignalQualityCheckPeriod"
+    lib_conf.insert_conf_param(params, pref, "numerical", "bool", str(gen_cfg["EthIfSignalQualityCheckPeriod"]))
+    pref = dref+"/EthIfEnableSecurityEventReporting"
+    lib_conf.insert_conf_param(params, pref, "numerical", "bool", str(gen_cfg["EthIfEnableSecurityEventReporting"]))
+    pref = dref+"/EthIfSecurityEventRefs"
+    lib_conf.insert_conf_param(params, pref, "numerical", "bool", str(gen_cfg["EthIfSecurityEventRefs"]))
+
 
 
 def update_ethif_general_to_container(ctnrname, root, ethif_cfg):

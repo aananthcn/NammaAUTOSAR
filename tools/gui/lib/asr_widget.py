@@ -154,26 +154,29 @@ def spinb(view, key, index, row, col, width, values):
 def button(view, key, index, row, col, width, text, cb):
     return buttonf(view.scrollw.mnf, view, key, index, row, col, width, text, cb)
 
+def colsep(view, col):
+    label(view, "   ", 0, col, "e")
+
 
 
 ###############################################################################
 # Scrollable Widgets on scrollable given frame, with label on side
 ###############################################################################
-def entryg(frame, view, key, index, row, col, width, state):
-    labelf(frame, view, key, row, col-1, "e")
-    return entryf(frame, view, key, index, row, col, width, state)
+def entryg(view, key, index, row, col, width, state):
+    label(view, key, row, col-1, "e")
+    return entry(view, key, index, row, col, width, state)
 
-def combog(frame, view, key, index, row, col, width, values):
-    labelf(frame, view, key, row, col-1, "e")
-    return combof(frame, view, key, index, row, col, width, values)
+def combog(view, key, index, row, col, width, values):
+    label(view, key, row, col-1, "e")
+    return combo(view, key, index, row, col, width, values)
 
-def spinbg(frame, view, key, index, row, col, width, values):
-    labelf(frame, view, key, row, col-1, "e")
-    return spinbf(frame, view, key, index, row, col, width, values)
+def spinbg(view, key, index, row, col, width, values):
+    label(view, key, row, col-1, "e")
+    return spinb(view, key, index, row, col, width, values)
 
-def buttong(frame, view, key, index, row, col, width, text, cb):
-    labelf(frame, view, key, row, col-1, "e")
-    return buttonf(frame, view, key, index, row, col, width, text, cb)
+def buttong(view, key, index, row, col, width, text, cb):
+    label(view, key, row, col-1, "e")
+    return button(view, key, index, row, col, width, text, cb)
 
 
 
@@ -252,3 +255,11 @@ def place_column_heading_f(frame, view, row, col):
 
 def place_column_heading(view, row, col):
     place_column_heading_f(view.scrollw.mnf, view, row, col)
+
+
+def place_no_heading(view):
+    # for column heading, the concept of header or row is invalid, hence 0
+    view.n_header_objs = 0
+    view.header_row = 0
+    view.dappas_per_row = 0
+    view.header_orientation = "v"  # vertical

@@ -27,7 +27,7 @@ import gui.ethif.ethif_configset as ethif_cs
 import arxml.ethif.arxml_ethif_parse as arxml_ethif_r
 import arxml.ethif.arxml_ethif_write as arxml_ethif_w
 
-# import gui.ethif.ethif_code_gen as ethif_cgen
+import gui.ethif.ethif_code_gen as ethif_cgen
 
 
 TabList = []
@@ -74,7 +74,7 @@ def ethif_save_callback(gui):
     arxml_ethif_w.update_arxml(gui.arxml_file, ethif_configs)
 
     # generate code
-    # ethif_cgen.generate_code(gui, ethif_configs)
+    ethif_cgen.generate_code(gui, ethif_configs)
 
 
     
@@ -85,7 +85,7 @@ def show_ethif_tabs(gui):
         return
 
     # Create a child window (tabbed view)
-    width = gui.main_view.xsize * 30 / 100
+    width = gui.main_view.xsize * 50 / 100
     height = gui.main_view.ysize * 55 / 100
     view = tk.Toplevel()
     gui.main_view.child_window = view

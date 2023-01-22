@@ -54,7 +54,12 @@ class EthIfGeneralView:
                "EthIfTrcvLinkStateChgMainReload", "EthIfMainFunctionPeriod", "EthIfPublicCddHeaderFile",
                "EthIfRxIndicationIterations", "EthIfGetAndResetMeasurementDataApi",
                "EthIfStartAutoNegotiation", "EthIfGetBaudRate", "EthIfGetCounterState",
-               "EthIfGlobalTimeSupport", "EthIfWakeUpSupport", "EthIfGetTransceiverWakeupModeApi"]
+               "EthIfGlobalTimeSupport", "EthIfWakeUpSupport", "EthIfGetTransceiverWakeupModeApi",
+               "EthIfSwitchOffPortTimeDelay", "EthIfPortStartupActiveTime", "EthIfMainFunctionStatePeriod",
+               "EthIfSetForwardingModeApi", "EthIfVerifyConfigApi", "EthIfSwitchManagementSupport",
+               "EthIfGetCtrlIdxList", "EthIfGetVlanIdSupport", "EthIfEnableWEthApi",
+               "EthIfEnableSignalQualityApi", "EthIfSignalQualityCheckPeriod", "EthIfEnableSecurityEventReporting",
+               "EthIfSecurityEventRefs"]
 
     non_header_objs = []
     dappas_per_col = len(cfgkeys)
@@ -98,6 +103,20 @@ class EthIfGeneralView:
         gen_dict["EthIfWakeUpSupport"]          = "FALSE"
         gen_dict["EthIfGetAndResetMeasurementDataApi"]  = "FALSE"
         gen_dict["EthIfGetTransceiverWakeupModeApi"]    = "FALSE"
+
+        gen_dict["EthIfSwitchOffPortTimeDelay"]     = "0.001"
+        gen_dict["EthIfPortStartupActiveTime"]      = "0.001"
+        gen_dict["EthIfMainFunctionStatePeriod"]    = "0.0"
+        gen_dict["EthIfSetForwardingModeApi"]       = "FALSE"
+        gen_dict["EthIfVerifyConfigApi"]            = "FALSE"
+        gen_dict["EthIfSwitchManagementSupport"]    = "FALSE"
+        gen_dict["EthIfGetCtrlIdxList"]         = "FALSE"
+        gen_dict["EthIfGetVlanIdSupport"]       = "FALSE"
+        gen_dict["EthIfEnableWEthApi"]          = "FALSE"
+        gen_dict["EthIfEnableSignalQualityApi"] = "FALSE"
+        gen_dict["EthIfSignalQualityCheckPeriod"]       = "0.01"
+        gen_dict["EthIfEnableSecurityEventReporting"]   = "FALSE"
+        gen_dict["EthIfSecurityEventRefs"]              = "..."
         
         return gen_dict
 
@@ -105,24 +124,47 @@ class EthIfGeneralView:
 
     def draw_dappas(self):
         bool_cmbsel = ("FALSE", "TRUE")
+        ref_cmbsel = ("Ref1", "Ref2", "...")
 
-        dappa.spinb(self, "EthIfMaxTrcvsTotal",     0, 0, 1, 21, tuple(range(0,256)))
-        dappa.combo(self, "EthIfDevErrorDetect",    0, 1, 1, 20, bool_cmbsel)
-        dappa.combo(self, "EthIfEnableRxInterrupt", 0, 2, 1, 20, bool_cmbsel)
-        dappa.combo(self, "EthIfEnableTxInterrupt", 0, 3, 1, 20, bool_cmbsel)
-        dappa.combo(self, "EthIfVersionInfoApi",    0, 4, 1, 20, bool_cmbsel)
-        dappa.combo(self, "EthIfVersionInfoApiMacro",        0, 5, 1, 20, bool_cmbsel)
-        dappa.spinb(self, "EthIfTrcvLinkStateChgMainReload", 0, 6, 1, 21, tuple(range(0,256)))
-        dappa.entry(self, "EthIfMainFunctionPeriod",     0, 7, 1, 23, "normal")
-        dappa.button(self, "EthIfPublicCddHeaderFile",   0, 8, 1, 19, "CDD HeaderFiles", self.ethif_cddhdr_select)
-        dappa.spinb(self, "EthIfRxIndicationIterations", 0, 9, 1, 21, tuple(range(0,65536)))
-        dappa.combo(self, "EthIfGetAndResetMeasurementDataApi", 0, 10, 1, 20, bool_cmbsel)
-        dappa.combo(self, "EthIfStartAutoNegotiation",  0, 11, 1, 20, bool_cmbsel)
-        dappa.combo(self, "EthIfGetBaudRate",           0, 12, 1, 20, bool_cmbsel)
-        dappa.combo(self, "EthIfGetCounterState",       0, 13, 1, 20, bool_cmbsel)
-        dappa.combo(self, "EthIfGlobalTimeSupport",     0, 14, 1, 20, bool_cmbsel)
-        dappa.combo(self, "EthIfWakeUpSupport",         0, 15, 1, 20, bool_cmbsel)
-        dappa.combo(self, "EthIfGetTransceiverWakeupModeApi", 0, 16, 1, 20, bool_cmbsel)
+        # insert column separator at 0
+        dappa.colsep(self, 0)
+
+        # column = 2; label at 1
+        dappa.spinbg(self, "EthIfMaxTrcvsTotal",     0, 0, 2, 21, tuple(range(0,256)))
+        dappa.combog(self, "EthIfDevErrorDetect",    0, 1, 2, 20, bool_cmbsel)
+        dappa.combog(self, "EthIfEnableRxInterrupt", 0, 2, 2, 20, bool_cmbsel)
+        dappa.combog(self, "EthIfEnableTxInterrupt", 0, 3, 2, 20, bool_cmbsel)
+        dappa.combog(self, "EthIfVersionInfoApi",    0, 4, 2, 20, bool_cmbsel)
+        dappa.combog(self, "EthIfVersionInfoApiMacro",        0, 5, 2, 20, bool_cmbsel)
+        dappa.spinbg(self, "EthIfTrcvLinkStateChgMainReload", 0, 6, 2, 21, tuple(range(0,256)))
+        dappa.entryg(self, "EthIfMainFunctionPeriod",     0, 7, 2, 23, "normal")
+        dappa.buttong(self, "EthIfPublicCddHeaderFile",   0, 8, 2, 19, "CDD HeaderFiles", self.ethif_cddhdr_select)
+        dappa.spinbg(self, "EthIfRxIndicationIterations", 0, 9, 2, 21, tuple(range(0,65536)))
+        dappa.combog(self, "EthIfGetAndResetMeasurementDataApi", 0, 10, 2, 20, bool_cmbsel)
+        dappa.combog(self, "EthIfStartAutoNegotiation",  0, 11, 2, 20, bool_cmbsel)
+        dappa.combog(self, "EthIfGetBaudRate",           0, 12, 2, 20, bool_cmbsel)
+        dappa.combog(self, "EthIfGetCounterState",       0, 13, 2, 20, bool_cmbsel)
+        dappa.combog(self, "EthIfGlobalTimeSupport",     0, 14, 2, 20, bool_cmbsel)
+        dappa.combog(self, "EthIfWakeUpSupport",         0, 15, 2, 20, bool_cmbsel)
+        dappa.combog(self, "EthIfGetTransceiverWakeupModeApi", 0, 16, 2, 20, bool_cmbsel)
+
+        # insert column separator at 3
+        dappa.colsep(self, 3)
+
+        # column = 5; label at 4
+        dappa.entryg(self, "EthIfSwitchOffPortTimeDelay",  0, 0, 5, 23, "normal")
+        dappa.entryg(self, "EthIfPortStartupActiveTime",   0, 1, 5, 23, "normal")
+        dappa.entryg(self, "EthIfMainFunctionStatePeriod", 0, 2, 5, 23, "normal")
+        dappa.combog(self, "EthIfSetForwardingModeApi",    0, 3, 5, 20, bool_cmbsel)
+        dappa.combog(self, "EthIfVerifyConfigApi",         0, 4, 5, 20, bool_cmbsel)
+        dappa.combog(self, "EthIfSwitchManagementSupport", 0, 5, 5, 20, bool_cmbsel)
+        dappa.combog(self, "EthIfGetCtrlIdxList",   0, 6, 5, 20, bool_cmbsel)
+        dappa.combog(self, "EthIfGetVlanIdSupport", 0, 7, 5, 20, bool_cmbsel)
+        dappa.combog(self, "EthIfEnableWEthApi",    0, 8, 5, 20, bool_cmbsel)
+        dappa.combog(self, "EthIfEnableSignalQualityApi",       0, 9, 5, 20, bool_cmbsel)
+        dappa.entryg(self, "EthIfSignalQualityCheckPeriod",     0, 10, 5, 23, "normal")
+        dappa.combog(self, "EthIfEnableSecurityEventReporting", 0, 11, 5, 20, bool_cmbsel)
+        dappa.combog(self, "EthIfSecurityEventRefs", 0, 12, 5, 20, ref_cmbsel)
 
         # empty space
         label = tk.Label(self.scrollw.mnf, text="")
@@ -138,8 +180,9 @@ class EthIfGeneralView:
         self.tab_struct = view
         self.scrollw = window.ScrollableWindow(view.frame, view.xsize, view.ysize)
 
-        # Table heading @0th row, 0th column
-        dappa.place_column_heading(self, row=0, col=0)
+        # # Table heading @0th row, 0th column
+        # dappa.place_column_heading(self, row=0, col=0)
+        dappa.place_no_heading(self)
         self.draw_dappas()
 
         # Support scrollable view
