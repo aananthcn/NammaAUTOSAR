@@ -48,13 +48,13 @@ class EthIfTransceiverView:
     active_widget = None
 
 
-    def __init__(self, gui, lsc_cfg):
+    def __init__(self, gui, trcv_cfgs):
         self.gui = gui
         self.configs = []
         self.n_ethif_trcv = 0
         self.n_ethif_trcv_str = tk.StringVar()
 
-        for cfg in lsc_cfg:
+        for cfg in trcv_cfgs:
             if not cfg:
                 self.configs.insert(len(self.configs), dappa.AsrCfgStr(self.cfgkeys, self.create_empty_configs()))
             else:

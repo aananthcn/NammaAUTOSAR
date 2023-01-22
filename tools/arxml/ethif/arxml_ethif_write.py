@@ -90,8 +90,9 @@ def insert_ethif_pctrl_sub_container(ctnr, dref, cfg):
     sctnr_name = "EthIfPhysCtrlRxMainFunctionPriorityProcessing"
     cf_ctnr = lib_conf.insert_conf_container(subctnr2, sctnr_name, "conf", dref)
 
-    # Insert PARAMETER block
+    # Insert PARAMETER & REFERENCE block
     params = ET.SubElement(cf_ctnr, "PARAMETER-VALUES")
+    refs = ET.SubElement(cf_ctnr, "REFERENCE-VALUES")
 
     # Insert parameters
     refname = dref+"/EthIfPhysCtrlRxMainFunctionPeriod"
@@ -99,9 +100,10 @@ def insert_ethif_pctrl_sub_container(ctnr, dref, cfg):
     refname = dref+"/EthIfPhysCtrlRxIndicationIterations"
     lib_conf.insert_conf_param(params, refname, "numerical", "int", str(cfg["EthIfPhysCtrlRxIndicationIterations"]))
     # Insert references
-    refname = dref+"/EthIfPhysCtrlRxIngressFifoRef"
-    refdest = str(cfg["EthIfPhysCtrlRxIngressFifoRef"])
-    lib_conf.insert_conf_reference(params, refdest, refname)
+    if "EthIfPhysCtrlRxIngressFifoRef" in cfg:
+        refname = dref+"/EthIfPhysCtrlRxIngressFifoRef"
+        refdest = str(cfg["EthIfPhysCtrlRxIngressFifoRef"])
+        lib_conf.insert_conf_reference(refs, refname, refdest)
 
 
 
@@ -110,8 +112,9 @@ def add_ethif_pctrlr_config_params_to_container(ctnr, dref, cfg):
         print("Warning: ARXML write - EthIfPhysController is empty!")
         return
 
-    # Insert PARAMETER block
+    # Insert PARAMETER & REFERENCE block
     params = ET.SubElement(ctnr, "PARAMETER-VALUES")
+    refs = ET.SubElement(ctnr, "REFERENCE-VALUES")
 
     # Insert parameters
     refname = dref+"/EthIfPhysControllerIdx"
@@ -119,12 +122,12 @@ def add_ethif_pctrlr_config_params_to_container(ctnr, dref, cfg):
     # Insert references
     refname = dref+"/EthIfEthCtrlRef"
     refdest = str(cfg["EthIfEthCtrlRef"])
-    lib_conf.insert_conf_reference(params, refdest, refname)
+    lib_conf.insert_conf_reference(refs, refname, refdest)
     refname = dref+"/EthIfWEthCtrlRef"
     refdest = str(cfg["EthIfWEthCtrlRef"])
-    lib_conf.insert_conf_reference(params, refdest, refname)
+    lib_conf.insert_conf_reference(refs, refname, refdest)
 
-    # # Insert subContainer(s) - EthIfPhysCtrlRxMainFunctionPriorityProcessing
+    # Insert subContainer(s) - EthIfPhysCtrlRxMainFunctionPriorityProcessing
     dref2 = dref+"/EthIfPhysCtrlRxMainFunctionPriorityProcessing"
     insert_ethif_pctrl_sub_container(ctnr, dref2, cfg)
 
@@ -135,8 +138,9 @@ def add_ethif_ctrlr_config_params_to_container(ctnr, dref, cfg):
         print("Warning: ARXML write - EthIfController is empty!")
         return
 
-    # Insert PARAMETER block
+    # Insert PARAMETER & REFERENCE block
     params = ET.SubElement(ctnr, "PARAMETER-VALUES")
+    refs = ET.SubElement(ctnr, "REFERENCE-VALUES")
 
     # Insert parameters
     refname = dref+"/EthIfCtrlIdx"
@@ -148,18 +152,22 @@ def add_ethif_ctrlr_config_params_to_container(ctnr, dref, cfg):
     refname = dref+"/EthIfMaxTxBufsTotal"
     lib_conf.insert_conf_param(params, refname, "numerical", "int", str(cfg["EthIfMaxTxBufsTotal"]))
     # Insert references
-    refname = dref+"/EthIfPhysControllerRef"
-    refdest = str(cfg["EthIfPhysControllerRef"])
-    lib_conf.insert_conf_reference(params, refdest, refname)
-    refname = dref+"/EthIfEthTrcvRef"
-    refdest = str(cfg["EthIfEthTrcvRef"])
-    lib_conf.insert_conf_reference(params, refdest, refname)
-    refname = dref+"/EthIfSwitchRefOrPortGroupRef/EthIfSwitchRef"
-    refdest = str(cfg["EthIfSwitchRef"])
-    lib_conf.insert_conf_reference(params, refdest, refname)
-    refname = dref+"/EthIfSwitchRefOrPortGroupRef/EthIfSwitchPortGroupRef"
-    refdest = str(cfg["EthIfSwitchPortGroupRef"])
-    lib_conf.insert_conf_reference(params, refdest, refname)
+    if "EthIfPhysControllerRef" in cfg:
+        refname = dref+"/EthIfPhysControllerRef"
+        refdest = str(cfg["EthIfPhysControllerRef"])
+        lib_conf.insert_conf_reference(refs, refname, refdest)
+    if "EthIfEthTrcvRef" in cfg:
+        refname = dref+"/EthIfEthTrcvRef"
+        refdest = str(cfg["EthIfEthTrcvRef"])
+        lib_conf.insert_conf_reference(refs, refname, refdest)
+    if "EthIfSwitchRef" in cfg:
+        refname = dref+"/EthIfSwitchRefOrPortGroupRef/EthIfSwitchRef"
+        refdest = str(cfg["EthIfSwitchRef"])
+        lib_conf.insert_conf_reference(refs, refname, refdest)
+    if "EthIfSwitchPortGroupRef" in cfg:
+        refname = dref+"/EthIfSwitchRefOrPortGroupRef/EthIfSwitchPortGroupRef"
+        refdest = str(cfg["EthIfSwitchPortGroupRef"])
+        lib_conf.insert_conf_reference(refs, refname, refdest)
 
 
 
@@ -168,19 +176,22 @@ def add_ethif_trcv_config_params_to_container(ctnr, dref, cfg):
         print("Warning: ARXML write - EthIfTransceiver is empty!")
         return
 
-    # Insert PARAMETER block
+    # Insert PARAMETER & REFERENCE block
     params = ET.SubElement(ctnr, "PARAMETER-VALUES")
+    refs = ET.SubElement(ctnr, "REFERENCE-VALUES")
 
     # Insert parameters
     refname = dref+"/EthIfTransceiverIdx"
     lib_conf.insert_conf_param(params, refname, "numerical", "int", str(cfg["EthIfTransceiverIdx"]))
     # Insert references
-    refname = dref+"/EthIfEthTrcvRef"
-    refdest = str(cfg["EthIfEthTrcvRef"])
-    lib_conf.insert_conf_reference(params, refdest, refname)
-    refname = dref+"/EthIfWEthTrcvRef"
-    refdest = str(cfg["EthIfWEthTrcvRef"])
-    lib_conf.insert_conf_reference(params, refdest, refname)
+    if "EthIfEthTrcvRef" in cfg:
+        refname = dref+"/EthIfEthTrcvRef"
+        refdest = str(cfg["EthIfEthTrcvRef"])
+        lib_conf.insert_conf_reference(refs, refname, refdest)
+    if "EthIfWEthTrcvRef" in cfg:
+        refname = dref+"/EthIfWEthTrcvRef"
+        refdest = str(cfg["EthIfWEthTrcvRef"])
+        lib_conf.insert_conf_reference(refs, refname, refdest)
 
 
 
@@ -189,16 +200,18 @@ def add_ethif_swt_config_params_to_container(ctnr, dref, cfg):
         print("Warning: ARXML write - EthIfSwitch is empty!")
         return
 
-    # Insert PARAMETER block
+    # Insert PARAMETER & REFERENCE block
     params = ET.SubElement(ctnr, "PARAMETER-VALUES")
+    refs = ET.SubElement(ctnr, "REFERENCE-VALUES")
 
     # Insert parameters
     refname = dref+"/EthIfSwitchIdx"
     lib_conf.insert_conf_param(params, refname, "numerical", "int", str(cfg["EthIfSwitchIdx"]))
     # Insert references
-    refname = dref+"/EthIfSwitchRef"
-    refdest = str(cfg["EthIfSwitchRef"])
-    lib_conf.insert_conf_reference(params, refdest, refname)
+    if "EthIfSwitchRef" in cfg:
+        refname = dref+"/EthIfSwitchRef"
+        refdest = str(cfg["EthIfSwitchRef"])
+        lib_conf.insert_conf_reference(refs, refname, refdest)
 
 
 
@@ -207,18 +220,21 @@ def add_ethif_spg_config_params_to_container(ctnr, dref, cfg):
         print("Warning: ARXML write - EthIfSwitchPortGroup is empty!")
         return
 
-    # Insert PARAMETER block
+    # Insert PARAMETER & REFERENCE block
     params = ET.SubElement(ctnr, "PARAMETER-VALUES")
+    refs = ET.SubElement(ctnr, "REFERENCE-VALUES")
 
     # Insert parameters
     refname = dref+"/EthIfSwitchPortGroupIdx"
     lib_conf.insert_conf_param(params, refname, "numerical", "int", str(cfg["EthIfSwitchPortGroupIdx"]))
     refname = dref+"/EthIfSwitchPortGroupRefSemantics"
     lib_conf.insert_conf_param(params, refname, "numerical", "enum", str(cfg["EthIfSwitchPortGroupRefSemantics"]))
+
     # Insert references
-    refname = dref+"/EthIfPortRef"
-    refdest = str(cfg["EthIfPortRef"])
-    lib_conf.insert_conf_reference(params, refdest, refname)
+    if "EthIfPortRef" in cfg:
+        refname = dref+"/EthIfPortRef"
+        refdest = str(cfg["EthIfPortRef"])
+        lib_conf.insert_conf_reference(refs, refname, refdest)
 
 
 
@@ -347,6 +363,7 @@ def update_ethif_general_to_container(ctnrname, root, ethif_cfg):
 
 
 def print_ethif_configs(ethif_configs):
+    print("\n\nWrite Operation:")
     print("\nEthIfGeneral:")
     for cfg in ethif_configs["EthIfGeneral"]:
         print(cfg.datavar)
@@ -363,8 +380,7 @@ def update_arxml(ar_file, ethif_configs):
     ET.register_namespace('', "http://autosar.org/schema/r4.0")
     ET.register_namespace('xsi', "http://www.w3.org/2001/XMLSchema-instance")
     
-    print("arxml_ethif_write.py: update_arxml called!")
-    print_ethif_configs(ethif_configs)
+    # print_ethif_configs(ethif_configs)
     
     # Read ARXML File
     tree = ET.parse(ar_file)

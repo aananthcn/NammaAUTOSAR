@@ -127,6 +127,15 @@ def get_dref_list(ctnr):
    return plist
 
 
+def get_refval_list(ctnr):
+   plist = []
+   for elem in list(ctnr):
+      if get_tag(elem) == "REFERENCE-VALUES":
+         plist = get_dref_list(elem)
+         break
+   return plist
+
+
 #####################################
 # Search Functions
 #####################################
