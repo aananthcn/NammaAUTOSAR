@@ -161,6 +161,10 @@ def create_source(gui):
     paths_mk.write("ETH_PATH := "+eth_path+"\n")
     swc_paths.append(eth_path)
 
+    ethif_path = search.find_dir("EthIf", cwd+"/submodules")
+    paths_mk.write("ETHIF_PATH := "+ethif_path+"\n")
+    swc_paths.append(ethif_path)
+
     os_path = search.find_dir("Os", cwd+"/submodules")
     paths_mk.write("OS_PATH := "+os_path+"\n")
     os_builder_path = search.find_dir("os_builder", cwd)

@@ -30,36 +30,48 @@ import gui.mcu.uc_cgen as uc_cgen
 
 
 EthIfGeneralCfgType_str = "\n\ntypedef struct {\n\
-    uint8   max_trcvs;\n\
-    boolean dev_error_detect;\n\
-    boolean en_rx_int;\n\
-    boolean en_tx_int;\n\
-    boolean version_info_api;\n\
-    boolean version_info_api_macro;\n\
-    uint8 lnk_st_ch_mn_reload;\n\
-    uint16  mn_fn_period_ms;\n\
-    uint16  rx_ind_itrtn;\n\
-    boolean get_rst_meas_data_api;\n\
-    boolean start_auto_neg;\n\
-    boolean get_baud_rate;\n\
-    boolean counter_state;\n\
-    boolean gl_time_supp;\n\
-    boolean wake_supp;\n\
-    boolean trcv_wakemode_api;\n\
-    uint16  swt_off_port_delay_ms;\n\
-    uint16  port_startup_activ_ms;\n\
-    uint16  mn_fn_state_period_ms;\n\
-    boolean set_fwd_mode_api;\n\
-    boolean verify_cfg_api;\n\
-    boolean swt_mgmt_supp;\n\
-    boolean get_ctrl_idx_lst;\n\
-    boolean get_vlan_id_supp;\n\
-    boolean en_weth_api;\n\
-    boolean en_sig_qual_api;\n\
-    uint16  sig_qual_chk_ms;\n\
-    boolean en_sec_evt_report;\n\
-    void *sec_evt_ref;\n\
+        uint8   max_trcvs;\n\
+        boolean dev_error_detect;\n\
+        boolean en_rx_int;\n\
+        boolean en_tx_int;\n\
+        boolean version_info_api;\n\
+        boolean version_info_api_macro;\n\
+        uint8 lnk_st_ch_mn_reload;\n\
+        uint16  mn_fn_period_ms;\n\
+        uint16  rx_ind_itrtn;\n\
+        boolean get_rst_meas_data_api;\n\
+        boolean start_auto_neg;\n\
+        boolean get_baud_rate;\n\
+        boolean counter_state;\n\
+        boolean gl_time_supp;\n\
+        boolean wake_supp;\n\
+        boolean trcv_wakemode_api;\n\
+        uint16  swt_off_port_delay_ms;\n\
+        uint16  port_startup_activ_ms;\n\
+        uint16  mn_fn_state_period_ms;\n\
+        boolean set_fwd_mode_api;\n\
+        boolean verify_cfg_api;\n\
+        boolean swt_mgmt_supp;\n\
+        boolean get_ctrl_idx_lst;\n\
+        boolean get_vlan_id_supp;\n\
+        boolean en_weth_api;\n\
+        boolean en_sig_qual_api;\n\
+        uint16  sig_qual_chk_ms;\n\
+        boolean en_sec_evt_report;\n\
+        void *sec_evt_ref;\n\
 } EthIfGeneralCfgType;\n\
+\n"
+
+
+EthIf_ConfigType_str = "\n\ntypedef struct {\n\
+        const EthIfGeneralCfgType general;\n\
+} EthIf_ConfigType;\n\
+\n"
+
+
+EthIf_ConfigType_str_def = "\n\nconst EthIf_ConfigType EthIfConfigs = {\n\
+        .general = EthIfGenConfigs,\n\
+};\n\
 \n"
 
 
@@ -108,6 +120,8 @@ def generate_sourcefile(ethif_src_path, ethif_configs):
 
     generate_ethif_general(cf, ethif_configs["EthIfGeneral"][0].datavar)
 
+    # print at last
+    cf.write(EthIf_ConfigType_str_def)
 
     cf.close()
 
@@ -121,6 +135,9 @@ def generate_headerfile(ethif_src_path, ethif_configs):
     hf.write("#include <Platform_Types.h>\n\n")
 
     hf.write(EthIfGeneralCfgType_str)
+
+    # print at last
+    hf.write(EthIf_ConfigType_str)
 
     # External Declarations
     hf.write("\n\nextern const EthIf_ConfigType EthIfConfigs;\n")
@@ -136,5 +153,5 @@ def generate_code(gui, ethif_configs):
 
     generate_headerfile(ethif_src_path, ethif_configs)
     generate_sourcefile(ethif_src_path, ethif_configs)
-    # uc_cgen.create_source(gui) # calling uc_cgen.create_source() is a work-around. This will be corrected later.
+    uc_cgen.create_source(gui) # calling uc_cgen.create_source() is a work-around. This will be corrected later.
     
