@@ -103,6 +103,43 @@ def define_ethif_lsc_config(cf, lsc_cfg):
     cf.write("};\n\n")
 
 
+EthIf_PhysController_str = "\n\ntypedef struct {\n\
+        void *fifo_ref;\n\
+        void *ecc_ref;\n\
+        void *wecc_ref;\n\
+        uint16 mn_fn_ms;\n\
+        uint16 rx_ind_iter;\n\
+        uint8 idx;\n\
+} EthIf_PhysControllerConfig;\n\
+\n"
+
+
+def define_ethif_phys_ctrlr_config(cf, pc_cfg):
+    cf.write("\n\nconst EthIf_PhysControllerConfig EthIfPhysControllerConfig[ETHIF_MAX_PHYS_CTRLR_CONFIGS] = {\n")
+    for i, cfg in enumerate(pc_cfg):
+        cf.write("\t{\n")
+        cf.write("\t\t.idx = "+cfg["EthIfPhysControllerIdx"]+",\n")
+        cf.write("\t\t.mn_fn_ms = "+str(int(1000*float(cfg["EthIfPhysCtrlRxMainFunctionPeriod"])))+",\n")
+        cf.write("\t\t.rx_ind_iter = "+cfg["EthIfPhysCtrlRxIndicationIterations"]+",\n")
+
+        if "..." in cfg["EthIfPhysCtrlRxIngressFifoRef"]:
+            cf.write("\t\t.fifo_ref = NULL,\n")
+        else:
+            cf.write("\t\t.fifo_ref = "+cfg["EthIfPhysCtrlRxIngressFifoRef"]+",\n")
+
+        if "..." in cfg["EthIfEthCtrlRef"]:
+            cf.write("\t\t.ecc_ref = NULL,\n")
+        else:
+	        cf.write("\t\t.ecc_ref = "+cfg["EthIfEthCtrlRef"]+",\n")
+
+        if "..." in cfg["EthIfWEthCtrlRef"]:
+            cf.write("\t\t.wecc_ref = NULL,\n")
+        else:
+	        cf.write("\t\t.wecc_ref = "+cfg["EthIfWEthCtrlRef"]+",\n")
+
+        cf.write("\t},\n")
+    cf.write("};\n\n")
+
 
 # Main configs for EthIf
 EthIf_ConfigType_str = "\n\ntypedef struct {\n\
@@ -173,6 +210,7 @@ def generate_sourcefile(ethif_src_path, ethif_configs):
     define_ethif_rxi_config(cf, ethif_configs["EthIfConfigSet"][0].datavar["EthIfRxIndicationConfig"])
     define_ethif_txc_config(cf, ethif_configs["EthIfConfigSet"][0].datavar["EthIfTxConfirmationConfig"])
     define_ethif_lsc_config(cf, ethif_configs["EthIfConfigSet"][0].datavar["EthIfTrcvLinkStateChgConfig"])
+    define_ethif_phys_ctrlr_config(cf, ethif_configs["EthIfConfigSet"][0].datavar["EthIfPhysController"])
 
     # print at last
     cf.write(EthIf_ConfigType_str_def)
@@ -190,12 +228,14 @@ def generate_headerfile(ethif_src_path, ethif_configs):
 
     hf.write(EthIfGeneralCfgType_str)
     hf.write(EthIf_FrameOwnerConfig_str)
+    hf.write(EthIf_PhysController_str)
 
     hf.write("\n\n")
     hf.write("#define ETHIF_MAX_FRAMEOWNER_CONFIGS   ("+str(len(ethif_configs["EthIfConfigSet"][0].datavar["EthIfFrameOwnerConfig"]))+")\n")
     hf.write("#define ETHIF_MAX_RX_INDCATN_CONFIGS   ("+str(len(ethif_configs["EthIfConfigSet"][0].datavar["EthIfRxIndicationConfig"]))+")\n")
     hf.write("#define ETHIF_MAX_TX_CONFIRM_CONFIGS   ("+str(len(ethif_configs["EthIfConfigSet"][0].datavar["EthIfTxConfirmationConfig"]))+")\n")
     hf.write("#define ETHIF_MAX_LNK_ST_CHG_CONFIGS   ("+str(len(ethif_configs["EthIfConfigSet"][0].datavar["EthIfTrcvLinkStateChgConfig"]))+")\n")
+    hf.write("#define ETHIF_MAX_PHYS_CTRLR_CONFIGS   ("+str(len(ethif_configs["EthIfConfigSet"][0].datavar["EthIfPhysController"]))+")\n")
     
     hf.write("\n\ntypedef void (*ethif_fp_type)(void);")
 
