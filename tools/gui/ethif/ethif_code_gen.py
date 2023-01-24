@@ -68,12 +68,12 @@ EthIfGeneralCfgType_str = "\n\ntypedef struct {\n\
 EthIf_FrameOwnerConfig_str = "\n\ntypedef struct {\n\
         uint16 frametype;\n\
         uint8 if_owner;\n\
-} EthIf_FrameOwnerConfig;\n\
+} EthIf_FrameOwnerConfigType;\n\
 \n"
 
 
 def define_ethif_frameowner_config(cf, fo_cfg):
-    cf.write("\n\nconst EthIf_FrameOwnerConfig EthIfFrameOwnerCfg[ETHIF_MAX_FRAMEOWNER_CONFIGS] = {\n")
+    cf.write("\n\nconst EthIf_FrameOwnerConfigType EthIfFrameOwnerCfg[ETHIF_MAX_FRAMEOWNER_CONFIGS] = {\n")
     for i, cfg in enumerate(fo_cfg):
         cf.write("\t{\n")
         cf.write("\t\t.frametype = "+cfg["EthIfFrameType"]+",\n")
@@ -110,12 +110,12 @@ EthIf_PhysController_str = "\n\ntypedef struct {\n\
         uint16 mn_fn_ms;\n\
         uint16 rx_ind_iter;\n\
         uint8 idx;\n\
-} EthIf_PhysControllerConfig;\n\
+} EthIf_PhysControllerConfigType;\n\
 \n"
 
 
 def define_ethif_phys_ctrlr_config(cf, pc_cfg):
-    cf.write("\n\nconst EthIf_PhysControllerConfig EthIfPhysControllerConfig[ETHIF_MAX_PHYS_CTRLR_CONFIGS] = {\n")
+    cf.write("\n\nconst EthIf_PhysControllerConfigType EthIfPhysControllerConfig[ETHIF_MAX_PHYS_CTRLR_CONFIGS] = {\n")
     for i, cfg in enumerate(pc_cfg):
         cf.write("\t{\n")
         cf.write("\t\t.idx = "+cfg["EthIfPhysControllerIdx"]+",\n")
@@ -141,13 +141,156 @@ def define_ethif_phys_ctrlr_config(cf, pc_cfg):
     cf.write("};\n\n")
 
 
+EthIf_Switch_str = "\n\ntypedef struct {\n\
+        void *swt_ref;\n\
+        uint8 idx;\n\
+} EthIf_SwitchConfigType;\n\
+\n"
+
+
+def decl_port_grp_ref_semantics(hf, pgrs_cfg):
+    # prepare semantics list (avoid duplicates)
+    semantics_list = []
+    for sem in pgrs_cfg:
+        if sem["EthIfSwitchPortGroupRefSemantics"] not in semantics_list:
+            semantics_list.append(sem["EthIfSwitchPortGroupRefSemantics"])
+
+    # print enum type
+    hf.write("\n\ntypedef enum {\n")
+    for sem in semantics_list:
+        hf.write("\t"+str(sem)+",\n")
+    hf.write("\tETHIF_SWITCH_PORT_GROUP_SEMANTICS_MAX\n")
+    hf.write("} EthIf_PortGrpRefSemantics_Type;\n\n")
+
+
+EthIf_SwitchPortGroup_str = "\n\ntypedef struct {\n\
+        void *port_ref;\n\
+        EthIf_PortGrpRefSemantics_Type port_grp_ref_sem;\n\
+        uint8 idx;\n\
+} EthIf_SwitchPortGroupConfigType;\n\
+\n"
+
+
+EthIf_Transceiver_str = "\n\ntypedef struct {\n\
+        void *eth_trcv_ref;\n\
+        void *weth_trcv_ref;\n\
+        uint8 idx;\n\
+} EthIf_TransceiverConfigType;\n\
+\n"
+
+
+EthIf_Controller_str = "\n\ntypedef struct {\n\
+        EthIf_PhysControllerConfigType *pctrlr_ref;\n\
+        EthIf_TransceiverConfigType *trcv_ref;\n\
+        EthIf_SwitchConfigType *swt_ref;\n\
+        EthIf_SwitchPortGroupConfigType *swt_pg_ref;\n\
+        uint32 max_tx_bufs;\n\
+        uint16 mtu;\n\
+        uint16 vlan_id;\n\
+        uint8 idx;\n\
+} EthIf_ControllerConfigType;\n\
+\n"
+
+
+
+def define_ethif_switch_config(cf, swt_cfg):
+    cf.write("\n\nconst EthIf_SwitchConfigType EthIfSwitchConfig[ETHIF_MAX_ETH_SWITCH_CONFIGS] = {\n")
+    for i, cfg in enumerate(swt_cfg):
+        cf.write("\t{\n")
+        cf.write("\t\t.idx = "+cfg["EthIfSwitchIdx"]+",\n")
+
+        if "..." in cfg["EthIfSwitchRef"]:
+            cf.write("\t\t.swt_ref = NULL,\n")
+        else:
+            cf.write("\t\t.swt_ref = "+cfg["EthIfSwitchRef"]+",\n")
+
+        cf.write("\t},\n")
+    cf.write("};\n\n")
+
+
+
+def define_ethif_swt_pg_config(cf, spg_cfg):
+    cf.write("\n\nconst EthIf_SwitchPortGroupConfigType EthIfSwitchPortGroupConfig[ETHIF_MAX_SWT_PORT_G_CONFIGS] = {\n")
+    for i, cfg in enumerate(spg_cfg):
+        cf.write("\t{\n")
+        cf.write("\t\t.idx = "+cfg["EthIfSwitchPortGroupIdx"]+",\n")
+        cf.write("\t\t.port_grp_ref_sem = "+cfg["EthIfSwitchPortGroupRefSemantics"]+",\n")
+
+        if "..." in cfg["EthIfPortRef"]:
+            cf.write("\t\t.port_ref = NULL,\n")
+        else:
+            cf.write("\t\t.port_ref = "+cfg["EthIfPortRef"]+",\n")
+
+        cf.write("\t},\n")
+    cf.write("};\n\n")
+
+
+def define_ethif_trcv_config(cf, pc_cfg):
+    cf.write("\n\nconst EthIf_TransceiverConfigType EthIfTransceiverConfig[ETHIF_MAX_TRANSCEIVR_CONFIGS] = {\n")
+    for i, cfg in enumerate(pc_cfg):
+        cf.write("\t{\n")
+        cf.write("\t\t.idx = "+cfg["EthIfTransceiverIdx"]+",\n")
+
+        if "..." in cfg["EthIfEthTrcvRef"]:
+            cf.write("\t\t.eth_trcv_ref = NULL,\n")
+        else:
+	        cf.write("\t\t.eth_trcv_ref = "+cfg["EthIfEthTrcvRef"]+",\n")
+
+        if "..." in cfg["EthIfWEthTrcvRef"]:
+            cf.write("\t\t.weth_trcv_ref = NULL,\n")
+        else:
+	        cf.write("\t\t.weth_trcv_ref = "+cfg["EthIfWEthTrcvRef"]+",\n")
+
+        cf.write("\t},\n")
+    cf.write("};\n\n")
+
+
+def define_ethif_ctrlr_config(cf, pc_cfg):
+    cf.write("\n\nconst EthIf_ControllerConfigType EthIfControllerConfig[ETHIF_MAX_CONTROLLER_CONFIGS] = {\n")
+    for i, cfg in enumerate(pc_cfg):
+        cf.write("\t{\n")
+        cf.write("\t\t.idx = "+cfg["EthIfCtrlIdx"]+",\n")
+        cf.write("\t\t.vlan_id = "+cfg["EthIfVlanId"]+",\n")
+        cf.write("\t\t.mtu = "+cfg["EthIfCtrlMtu"]+",\n")
+        cf.write("\t\t.max_tx_bufs = "+cfg["EthIfMaxTxBufsTotal"]+",\n")
+
+        if "..." in cfg["EthIfPhysControllerRef"]:
+            cf.write("\t\t.pctrlr_ref = NULL,\n")
+        else:
+            cf.write("\t\t.pctrlr_ref = "+cfg["EthIfPhysControllerRef"]+",\n")
+
+        if "..." in cfg["EthIfEthTrcvRef"]:
+            cf.write("\t\t.trcv_ref = NULL,\n")
+        else:
+            cf.write("\t\t.trcv_ref = "+cfg["EthIfEthTrcvRef"]+",\n")
+
+        if "..." in cfg["EthIfSwitchRef"]:
+            cf.write("\t\t.swt_ref = NULL,\n")
+        else:
+	        cf.write("\t\t.swt_ref = "+cfg["EthIfSwitchRef"]+",\n")
+
+        if "..." in cfg["EthIfSwitchPortGroupRef"]:
+            cf.write("\t\t.swt_pg_ref = NULL,\n")
+        else:
+	        cf.write("\t\t.swt_pg_ref = "+cfg["EthIfSwitchPortGroupRef"]+",\n")
+
+        cf.write("\t},\n")
+    cf.write("};\n\n")
+
+
+
 # Main configs for EthIf
 EthIf_ConfigType_str = "\n\ntypedef struct {\n\
         const EthIfGeneralCfgType general;\n\
-        const EthIf_FrameOwnerConfig *fo_cfg;\n\
+        const EthIf_FrameOwnerConfigType *fo_cfg;\n\
         const ethif_fp_type *rxi_cfg;\n\
         const ethif_fp_type *txc_cfg;\n\
         const ethif_fp_type *lsc_cfg;\n\
+        const EthIf_PhysControllerConfigType *pctrlr_cfg;\n\
+        const EthIf_SwitchConfigType *swt_cfg;\n\
+        const EthIf_SwitchPortGroupConfigType *spg_cfg;\n\
+        const EthIf_TransceiverConfigType *trcv_cfg;\n\
+        const EthIf_ControllerConfigType *ctrlr_cfg;\n\
 } EthIf_ConfigType;\n\
 \n"
 
@@ -158,6 +301,11 @@ EthIf_ConfigType_str_def = "\n\nconst EthIf_ConfigType EthIfConfigs = {\n\
         .rxi_cfg = EthIfRxIndicationConfig,\n\
         .txc_cfg = EthIfTxConfirmationConfig,\n\
         .lsc_cfg = EthIfTrcvLinkStateChgConfig,\n\
+        .pctrlr_cfg = EthIfPhysControllerConfig,\n\
+        .swt_cfg = EthIfSwitchConfig,\n\
+        .spg_cfg = EthIfSwitchPortGroupConfig,\n\
+        .trcv_cfg = EthIfTransceiverConfig,\n\
+        .ctrlr_cfg = EthIfControllerConfig,\n\
 };\n\
 \n"
 
@@ -211,6 +359,10 @@ def generate_sourcefile(ethif_src_path, ethif_configs):
     define_ethif_txc_config(cf, ethif_configs["EthIfConfigSet"][0].datavar["EthIfTxConfirmationConfig"])
     define_ethif_lsc_config(cf, ethif_configs["EthIfConfigSet"][0].datavar["EthIfTrcvLinkStateChgConfig"])
     define_ethif_phys_ctrlr_config(cf, ethif_configs["EthIfConfigSet"][0].datavar["EthIfPhysController"])
+    define_ethif_switch_config(cf, ethif_configs["EthIfConfigSet"][0].datavar["EthIfSwitch"])
+    define_ethif_swt_pg_config(cf, ethif_configs["EthIfConfigSet"][0].datavar["EthIfSwitchPortGroup"])
+    define_ethif_trcv_config(cf, ethif_configs["EthIfConfigSet"][0].datavar["EthIfTransceiver"])
+    define_ethif_ctrlr_config(cf, ethif_configs["EthIfConfigSet"][0].datavar["EthIfController"])
 
     # print at last
     cf.write(EthIf_ConfigType_str_def)
@@ -229,6 +381,11 @@ def generate_headerfile(ethif_src_path, ethif_configs):
     hf.write(EthIfGeneralCfgType_str)
     hf.write(EthIf_FrameOwnerConfig_str)
     hf.write(EthIf_PhysController_str)
+    hf.write(EthIf_Switch_str)
+    decl_port_grp_ref_semantics(hf, ethif_configs["EthIfConfigSet"][0].datavar["EthIfSwitchPortGroup"])
+    hf.write(EthIf_SwitchPortGroup_str)
+    hf.write(EthIf_Transceiver_str)
+    hf.write(EthIf_Controller_str)
 
     hf.write("\n\n")
     hf.write("#define ETHIF_MAX_FRAMEOWNER_CONFIGS   ("+str(len(ethif_configs["EthIfConfigSet"][0].datavar["EthIfFrameOwnerConfig"]))+")\n")
@@ -236,6 +393,10 @@ def generate_headerfile(ethif_src_path, ethif_configs):
     hf.write("#define ETHIF_MAX_TX_CONFIRM_CONFIGS   ("+str(len(ethif_configs["EthIfConfigSet"][0].datavar["EthIfTxConfirmationConfig"]))+")\n")
     hf.write("#define ETHIF_MAX_LNK_ST_CHG_CONFIGS   ("+str(len(ethif_configs["EthIfConfigSet"][0].datavar["EthIfTrcvLinkStateChgConfig"]))+")\n")
     hf.write("#define ETHIF_MAX_PHYS_CTRLR_CONFIGS   ("+str(len(ethif_configs["EthIfConfigSet"][0].datavar["EthIfPhysController"]))+")\n")
+    hf.write("#define ETHIF_MAX_ETH_SWITCH_CONFIGS   ("+str(len(ethif_configs["EthIfConfigSet"][0].datavar["EthIfSwitch"]))+")\n")
+    hf.write("#define ETHIF_MAX_SWT_PORT_G_CONFIGS   ("+str(len(ethif_configs["EthIfConfigSet"][0].datavar["EthIfSwitchPortGroup"]))+")\n")
+    hf.write("#define ETHIF_MAX_TRANSCEIVR_CONFIGS   ("+str(len(ethif_configs["EthIfConfigSet"][0].datavar["EthIfTransceiver"]))+")\n")
+    hf.write("#define ETHIF_MAX_CONTROLLER_CONFIGS   ("+str(len(ethif_configs["EthIfConfigSet"][0].datavar["EthIfController"]))+")\n")
     
     hf.write("\n\ntypedef void (*ethif_fp_type)(void);")
 
