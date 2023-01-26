@@ -42,8 +42,20 @@ import gui.lin.lin_view as lin_view
 
 # ###############################################################################
 # # AUTOSAR BLOCKS configuration
-l1_y = 5.1
-l2_y = 20.8
+# ------------------------------
+vbw  = 2.5                  # vertical block width
+hbh  = 5                    # horizontal block height
+hbw  = 6                    # horizontal block width
+ibg  = 0.1                  # inter-block gap
+l1_y = 5.1                  # layer 1 y-offset
+l1_h = 15                   # layer 1 height
+
+l2_y = l1_y+l1_h+ibg-vbw    # layer 2 y-offset
+l2_h = 15                   # layer 2 height
+
+l3_y = l2_y+l2_h+ibg-vbw    # layer 2 y-offset
+l3_h = 15                   # layer 2 height
+
 AsrBlocksConfigList = [
     {
         # Micro-controller Block
@@ -58,7 +70,7 @@ AsrBlocksConfigList = [
         # AUTOSAR Os
         "name": "Os", "text": "AUTOSAR OS", "txta": "center", "ori": "V",
         # Position (offset % of screen size), size (% of screen size) & colors
-        "x": 0.0, "y": l1_y, "w": 2.5, "h": 67.6, "bgc": '#9999FF', "fgc": 'black',
+        "x": 0.0, "y": l1_y, "w": vbw, "h": 67.6, "bgc": '#9999FF', "fgc": 'black',
         # click callback & constructor
         "cb": os_view.os_block_click_handler, "cons": None,
         "postdraw": None
@@ -67,7 +79,7 @@ AsrBlocksConfigList = [
         # EcuM
         "name": "EcuM", "text": "EcuM", "txta": "center", "ori": "V",
         # Position (offset % of screen size), size (% of screen size) & colors
-        "x": 2.5, "y": l1_y, "w": 2.5, "h": 40, "bgc": '#9999FF', "fgc": 'black',
+        "x": vbw, "y": l1_y, "w": vbw, "h": 40, "bgc": '#9999FF', "fgc": 'black',
         # click callback & constructor
         "cb": None, "cons": None,
         "postdraw": None
@@ -76,7 +88,7 @@ AsrBlocksConfigList = [
         # Mcu
         "name": "Mcu", "text": "Mcu", "txta": "center", "ori": "V",
         # Position (offset % of screen size), size (% of screen size) & colors
-        "x": 5.0, "y": l1_y, "w": 2.5, "h": 18, "bgc": '#FF7C80', "fgc": 'black',
+        "x": 5.0, "y": l1_y, "w": vbw, "h": l1_h, "bgc": '#FF7C80', "fgc": 'black',
         # click callback & constructor
         "cb": None, "cons": None,
         "postdraw": None
@@ -85,7 +97,7 @@ AsrBlocksConfigList = [
         # Port
         "name": "Port", "text": "Port", "txta": "center", "ori": "V",
         # Position (offset % of screen size), size (% of screen size) & colors
-        "x": 74.0, "y": l1_y, "w": 2.5, "h": 18, "bgc": '#FF7C80', "fgc": 'black',
+        "x": 74.0, "y": l1_y, "w": vbw, "h": l1_h, "bgc": '#FF7C80', "fgc": 'black',
         # click callback & constructor
         "cb": port_view.port_block_click_handler, "cons": None,
         "postdraw": None
@@ -94,7 +106,7 @@ AsrBlocksConfigList = [
         # Dio
         "name": "Dio", "text": "Dio", "txta": "center", "ori": "V",
         # Position (offset % of screen size), size (% of screen size) & colors
-        "x": 71.4, "y": l1_y, "w": 2.5, "h": 18, "bgc": '#FF7C80', "fgc": 'black',
+        "x": 71.4, "y": l1_y, "w": vbw, "h": l1_h, "bgc": '#FF7C80', "fgc": 'black',
         # click callback & constructor
         "cb": dio_view.dio_block_click_handler, "cons": None,
         "postdraw": None
@@ -103,7 +115,7 @@ AsrBlocksConfigList = [
         # Spi
         "name": "Spi", "text": "Spi", "txta": "center", "ori": "V",
         # Position (offset % of screen size), size (% of screen size) & colors
-        "x": 40, "y": l1_y, "w": 2.5, "h": 18, "bgc": '#FF7C80', "fgc": 'black',
+        "x": 40, "y": l1_y, "w": vbw, "h": l1_h, "bgc": '#FF7C80', "fgc": 'black',
         # click callback & constructor
         "cb": spi_view.spi_block_click_handler, "cons": None,
         "postdraw": None
@@ -112,16 +124,25 @@ AsrBlocksConfigList = [
         # Lin
         "name": "Lin", "text": "Lin", "txta": "center", "ori": "V",
         # Position (offset % of screen size), size (% of screen size) & colors
-        "x": 42.4, "y": l1_y, "w": 2.5, "h": 18, "bgc": '#FF7C80', "fgc": 'black',
+        "x": 42.4, "y": l1_y, "w": vbw, "h": l1_h, "bgc": '#FF7C80', "fgc": 'black',
         # click callback & constructor
         "cb": lin_view.lin_block_click_handler, "cons": None,
+        "postdraw": None
+    },
+    {
+        # LinIf
+        "name": "LinIf", "text": "LinIf", "txta": "center", "ori": "V",
+        # Position (offset % of screen size), size (% of screen size) & colors
+        "x": 42.4, "y": l2_y, "w": vbw, "h": l2_h, "bgc": '#00CC99', "fgc": 'black',
+        # click callback & constructor
+        "cb": None, "cons": None,
         "postdraw": None
     },
     {
         # Eth
         "name": "Eth", "text": "Eth", "txta": "center", "ori": "V",
         # Position (offset % of screen size), size (% of screen size) & colors
-        "x": 50, "y": l1_y, "w": 2.5, "h": 18, "bgc": '#FF7C80', "fgc": 'black',
+        "x": 50, "y": l1_y, "w": vbw, "h": l1_h, "bgc": '#FF7C80', "fgc": 'black',
         # click callback & constructor
         "cb": eth_view.eth_block_click_handler, "cons": None,
         "postdraw": None
@@ -130,9 +151,18 @@ AsrBlocksConfigList = [
         # EthIf
         "name": "EthIf", "text": "EthIf", "txta": "center", "ori": "V",
         # Position (offset % of screen size), size (% of screen size) & colors
-        "x": 50, "y": l2_y, "w": 2.5, "h": 18, "bgc": '#00CC99', "fgc": 'black',
+        "x": 50, "y": l2_y, "w": vbw, "h": l2_h, "bgc": '#00CC99', "fgc": 'black',
         # click callback & constructor
         "cb": ethif_view.ethif_block_click_handler, "cons": None,
+        "postdraw": None
+    },
+    {
+        # TcpIp
+        "name": "TcpIp", "text": "TcpIp", "txta": "center", "ori": "H",
+        # Position (offset % of screen size), size (% of screen size) & colors
+        "x": 50-(hbw/2)+(vbw/2)+ibg, "y": l3_y, "w": hbw, "h": hbh, "bgc": '#9999FF', "fgc": 'black',
+        # click callback & constructor
+        "cb": None, "cons": None,
         "postdraw": None
     },
     {
