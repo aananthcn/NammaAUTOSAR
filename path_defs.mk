@@ -12,6 +12,7 @@ SPI_PATH := D:/_E/projects/oss/NammaAUTOSAR/submodules/MCAL/Spi
 LIN_PATH := D:/_E/projects/oss/NammaAUTOSAR/submodules/MCAL/Lin
 ETH_PATH := D:/_E/projects/oss/NammaAUTOSAR/submodules/MCAL/Eth
 ETHIF_PATH := D:/_E/projects/oss/NammaAUTOSAR/submodules/ECU-AL/EthIf
+TCPIP_PATH := D:/_E/projects/oss/NammaAUTOSAR/submodules/SL/TcpIp
 OS_PATH := D:/_E/projects/oss/NammaAUTOSAR/submodules/SL/Os
 OS_BUILDER_PATH := D:/_E/projects/oss/NammaAUTOSAR/tools/os_builder
 
@@ -26,10 +27,11 @@ LIBSPI := D:/_E/projects/oss/NammaAUTOSAR/submodules/MCAL/Spi/libSpi.la
 LIBLIN := D:/_E/projects/oss/NammaAUTOSAR/submodules/MCAL/Lin/libLin.la
 LIBETH := D:/_E/projects/oss/NammaAUTOSAR/submodules/MCAL/Eth/libEth.la
 LIBETHIF := D:/_E/projects/oss/NammaAUTOSAR/submodules/ECU-AL/EthIf/libEthIf.la
+LIBTCPIP := D:/_E/projects/oss/NammaAUTOSAR/submodules/SL/TcpIp/libTcpIp.la
 LIBOS := D:/_E/projects/oss/NammaAUTOSAR/submodules/SL/Os/libOs.la
 LIBNAMMATESTAPP := D:/_E/projects/oss/NammaAUTOSAR/submodules/AL/NammaTestApp/libNammaTestApp.la
 
 
 # Link Archive Object List
 LA_OBJS :=  $(LIBMCU_STARTUP) $(LIBMCU) $(LIBECUM) $(LIBPORT) $(LIBDIO) $(LIBSPI) $(LIBLIN) \
-	    $(LIBETH) $(LIBETHIF) $(LIBOS) $(LIBNAMMATESTAPP)
+	    $(LIBETH) $(LIBETHIF) $(LIBTCPIP) $(LIBOS) $(LIBNAMMATESTAPP)

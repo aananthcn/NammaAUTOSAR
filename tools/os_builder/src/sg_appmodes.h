@@ -15,6 +15,7 @@ enum eAppModeType {
 extern const AppModeType Task_A_AppModes[];
 extern const AppModeType Task_C_AppModes[];
 extern const AppModeType EcuM_StartupTwo_AppModes[];
+extern const AppModeType Ethernet_Tasks_AppModes[];
 
 
 #endif

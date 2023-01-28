@@ -195,7 +195,6 @@ class TaskTab:
     def on_autostart_dialog_close(self, row):
         # remove old selections
         if "AUTOSTART_APPMODE" in self.configs[row].datavar:
-            # del self.sg_tasks[row].datavar["AUTOSTART_APPMODE"][:]
             if self.configs[row].datavar["AUTOSTART_APPMODE"]:
                 del self.configs[row].datavar["AUTOSTART_APPMODE"][:]
     

@@ -17,3 +17,7 @@ const AppModeType EcuM_StartupTwo_AppModes[] = {
 	OSDEFAULTAPPMODE
 };
 
+const AppModeType Ethernet_Tasks_AppModes[] = {
+	OSDEFAULTAPPMODE
+};
+

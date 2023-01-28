@@ -106,7 +106,8 @@ def generate_link_lib_list(swc_paths):
     ll_list = []
     for dpath in swc_paths:
         fpath = dpath+"/makefile"
-        with open(fpath, "r") as mfile:
+        print(fpath)
+        with open(fpath, "r", encoding="utf-8") as mfile:
             lines = mfile.readlines()
         for line in lines:
             if "TARGET" in line and ":=" in line:
@@ -164,6 +165,10 @@ def create_source(gui):
     ethif_path = search.find_dir("EthIf", cwd+"/submodules")
     paths_mk.write("ETHIF_PATH := "+ethif_path+"\n")
     swc_paths.append(ethif_path)
+
+    tcpip_path = search.find_dir("TcpIp", cwd+"/submodules")
+    paths_mk.write("TCPIP_PATH := "+tcpip_path+"\n")
+    swc_paths.append(tcpip_path)
 
     os_path = search.find_dir("Os", cwd+"/submodules")
     paths_mk.write("OS_PATH := "+os_path+"\n")

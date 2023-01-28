@@ -37,6 +37,7 @@ autosar_swc_s := $(OS_PATH) $(ECUM_PATH) \
 	$(MCU_STARTUP_PATH) $(MCU_PATH) \
 	$(DIO_PATH) $(PORT_PATH) $(SPI_PATH) \
 	$(LIN_PATH) $(ETH_PATH) $(ETHIF_PATH) \
+	$(TCPIP_PATH) \
 	$(APP_LIST)
 
 

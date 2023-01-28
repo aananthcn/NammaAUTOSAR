@@ -83,10 +83,25 @@ const OsTaskType _OsTaskList[] = {
 		.msglist = NULL,
 		.n_msglist = ECUM_STARTUPTWO_MESSAGE_MAX,
 		.stack_size = 512
+	},
+	{
+		.handler = OS_TASK(Ethernet_Tasks),
+		.id = 5,
+		.sch_type = NON_PREEMPTIVE,
+		.priority = 10,
+		.activations = 1,
+		.autostart = true,
+		.appmodes = (const AppModeType **) &Ethernet_Tasks_AppModes,
+		.n_appmodes = ETHERNET_TASKS_APPMODE_MAX,
+		.evtmsks = NULL,
+		.n_evtmsks = ETHERNET_TASKS_EVENT_MAX,
+		.msglist = NULL,
+		.n_msglist = ETHERNET_TASKS_MESSAGE_MAX,
+		.stack_size = 512
 	}
 };
 
 
 const u32 _OsTaskValidPriorities[] = {
-	1, 2, 3, 4, 100
+	1, 2, 3, 4, 100, 10
 };

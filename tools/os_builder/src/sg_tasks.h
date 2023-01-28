@@ -11,6 +11,7 @@ enum eTaskType {
 	TASK_TASK_C_ID,
 	TASK_TASK_D_ID,
 	TASK_ECUM_STARTUPTWO_ID,
+	TASK_ETHERNET_TASKS_ID,
 	TASK_ID_MAX
 };
 
@@ -39,6 +40,11 @@ enum eTaskType {
 #define ECUM_STARTUPTWO_RESOURCE_MAX	(0)
 #define ECUM_STARTUPTWO_EVENT_MAX	(0)
 #define ECUM_STARTUPTWO_MESSAGE_MAX	(0)
+
+#define ETHERNET_TASKS_APPMODE_MAX	(1)
+#define ETHERNET_TASKS_RESOURCE_MAX	(0)
+#define ETHERNET_TASKS_EVENT_MAX	(0)
+#define ETHERNET_TASKS_MESSAGE_MAX	(0)
 
 
 
@@ -70,12 +76,13 @@ DeclareTask(Task_B);
 DeclareTask(Task_C);
 DeclareTask(Task_D);
 DeclareTask(EcuM_StartupTwo);
+DeclareTask(Ethernet_Tasks);
 
 #define OS_MAX_TASK_PRIORITY  (100)
 
 
 extern const u32 _OsTaskValidPriorities[];
-#define OS_NO_OF_PRIORITIES  (5)
+#define OS_NO_OF_PRIORITIES  (6)
 
 
 #endif

@@ -10,6 +10,8 @@ OsTaskType* ReadyTasks_2[READY_TASKS_2_SIZE];
 OsTaskType* ReadyTasks_3[READY_TASKS_3_SIZE];
 #define READY_TASKS_4_SIZE (3)
 OsTaskType* ReadyTasks_4[READY_TASKS_4_SIZE];
+#define READY_TASKS_10_SIZE (1)
+OsTaskType* ReadyTasks_10[READY_TASKS_10_SIZE];
 #define READY_TASKS_100_SIZE (1)
 OsTaskType* ReadyTasks_100[READY_TASKS_100_SIZE];
 
@@ -65,6 +67,18 @@ OsFifoType ReadyFifo_4 = {
 };
 
 
+OsFifoType ReadyFifo_10 = {
+	.task = ReadyTasks_10,
+	.size = READY_TASKS_10_SIZE,
+	.head = 0,
+	.tail = 0,
+#ifdef DEBUG
+	.name = "ReadyFifo_10",
+#endif
+	.full = false
+};
+
+
 OsFifoType ReadyFifo_100 = {
 	.task = ReadyTasks_100,
 	.size = READY_TASKS_100_SIZE,
@@ -90,7 +104,7 @@ const OsFifoType* ReadyQueue[] = {
 	NULL,
 	NULL,
 	NULL,
-	NULL,
+	&ReadyFifo_10,
 	NULL,
 	NULL,
 	NULL,
