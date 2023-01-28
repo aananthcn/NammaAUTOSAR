@@ -144,20 +144,20 @@ def show_os_config(gui):
     OsTab.draw(os_tab, gui)
 
     AmTab = gui_am_tab.AmTab(sg.AppModes)
-    AmTab.draw(am_tab, width, height)
+    AmTab.draw(am_tab, gui, width, height)
     
     CtrTab = gui_cr_tab.CounterTab(sg.Counters)
-    CtrTab.draw(cr_tab, width, height)
+    CtrTab.draw(cr_tab, gui, width, height)
 
     ResTab = gui_rs_tab.ResourceTab(sg.Tasks)
-    ResTab.draw(rs_tab, width, height)
+    ResTab.draw(rs_tab, gui, width, height)
 
     # TskTab = gui_tk_tab.TaskTab(sg.Tasks, AmTab, ResTab, MsgTab)
     TskTab = gui_tk_tab.TaskTab(sg.Tasks, AmTab, ResTab)
-    TskTab.draw(tk_tab, width, height)
+    TskTab.draw(tk_tab, gui, width, height)
     
     AlmTab = gui_al_tab.AlarmTab(sg.Alarms, TskTab, AmTab, CtrTab)
-    AlmTab.draw(al_tab, width, height)
+    AlmTab.draw(al_tab, gui, width, height)
 
     # IsrTab = gui_ir_tab.IsrTab(sg.ISRs, ResTab, MsgTab)
     IsrTab = gui_ir_tab.IsrTab(sg.ISRs, ResTab)

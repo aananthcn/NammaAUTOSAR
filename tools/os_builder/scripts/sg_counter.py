@@ -32,8 +32,12 @@ C_Counter_Type = "\n\ntypedef struct {\n\
     char* name;\n\
 } OsCounterType;\n\n"
 
+
+
 def cntr_macro_name(txt):
     return str(txt).upper()+"_INDEX"
+
+
 
 def generate_code(path, Counters):
     print_info("Generating code for counters")

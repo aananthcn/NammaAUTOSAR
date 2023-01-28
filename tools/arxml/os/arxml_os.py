@@ -304,11 +304,24 @@ def parse_isr(ctnr):
 
 
 
-def parse_arxml(filepath):
-   tree = ET.parse(filepath)
+def parse_arxml(ar_file):
+   tree = ET.parse(ar_file)
    root = tree.getroot()
-   modconf, cntainr = get_ecuc_tree(root)
-   for cv in cntainr:
+
+   # locate ELEMENTS block
+   elems = lib_conf.find_ecuc_elements_block(root)
+   if elems == None:
+      return
+
+   # locate container
+   os_modconfs = lib_conf.find_module_configs("Os", elems)
+   containers = lib_conf.find_containers_in_modconf(os_modconfs)
+   if containers == None:
+      print("Error: parse_arxml() couldn't locate Os module in ", ar_file)
+      return
+
+   # parse the OS containers for config parameters
+   for cv in containers:
       dref = lib.get_dref_from_container(cv)
       if dref == "/AUTOSAR/EcucDefs/Os/OsOS":
          parse_oscfg(cv)
@@ -322,8 +335,6 @@ def parse_arxml(filepath):
          parse_alarm(cv)
       elif dref == "/AUTOSAR/EcucDefs/Os/OsIsr":
          parse_isr(cv)
-      # else:
-      #    print(dref)
 
 
 

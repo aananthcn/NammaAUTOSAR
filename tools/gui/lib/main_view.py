@@ -28,7 +28,7 @@ sys.path.insert(0, os.getcwd()+"/tools/arxml")
 
 import os_builder.scripts.System_Generator as sg
 import os_builder.scripts.oil as oil
-import arxml.core.main as arxml
+import arxml.core.main_os as arxml
 
 
 import tkinter as tk
@@ -209,7 +209,7 @@ def save_project():
 
 
     # Export and File name clean up
-    arxml.export_arxml(Gui.arxml_file, Gui)
+    arxml.export_os_cfgs_2_arxml(Gui.arxml_file, Gui)
     Gui.main_view.tk.title(Gui.title + " [" + Gui.arxml_file.split("/")[-1] +"]")
 
 
@@ -230,7 +230,7 @@ def generate_code():
 
     # Generate code for OS Module
     srcpath = ToolsPath+"\os_builder\src"
-    os_rc = sg.generate_code(srcpath)
+    os_rc = sg.generate_code_for_os(srcpath)
     pb["value"] = 33
     root.update_idletasks()
     
@@ -265,7 +265,7 @@ def save_as_arxml():
     Gui.set_arxml_filepath(saved_filename.name)
     Gui.main_view.tk.title(Gui.title + " [" + str(saved_filename.name).split("/")[-1] +"]")
     os_view.backup_os_gui_before_save()
-    arxml.export_arxml(saved_filename.name, Gui)
+    arxml.export_os_cfgs_2_arxml(saved_filename.name, Gui)
 
 
 

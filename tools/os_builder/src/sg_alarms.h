@@ -29,7 +29,6 @@ typedef struct {
 
 extern const AppModeType Alarm_WakeTaskA_AppModes[];
 extern const AppModeType Alarm_WakeTaskD_AppModes[];
-extern const AppModeType Alarm_Ethernet_Task_Alarm_AppModes[];
 
 
 typedef struct {

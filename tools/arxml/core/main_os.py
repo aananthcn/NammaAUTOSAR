@@ -39,8 +39,60 @@ import arxml.mcu.arxml_mcu as arxml_mcu
 ###############################################################################
 # Main entry to ARXML gen / parse routines
 
+def update_arxml(ar_file):
+   # Following line is added to avoid ns0 prefix added
+   ET.register_namespace('', "http://autosar.org/schema/r4.0")
+   ET.register_namespace('xsi', "http://www.w3.org/2001/XMLSchema-instance")
 
-def export_arxml(filepath, gui):
+   # print_ethif_configs(ethif_configs)
+
+   # Read ARXML File
+   tree = ET.parse(ar_file)
+   root = tree.getroot()
+
+   # locate ELEMENTS block, i.e., insert point
+   ar_isp = lib_conf.find_ecuc_elements_block(root)
+
+   # remove Os configs
+   ethif_modconfs = lib_conf.find_module_configs("Os", ar_isp)
+   if ethif_modconfs:
+      ar_isp.remove(ethif_modconfs)
+
+   # insert Os configs
+   modconf = lib_conf.insert_ecuc_module_conf(ar_isp, "Os")
+
+   # locate container
+   containers = lib_conf.find_containers_in_modconf(modconf)
+   if containers == None:
+      print("Error: Os configs not updated due to internal error!!")
+      return
+
+   # Add Os contents to CONTAINER
+   exp_os.export_appmodes_to_container(containers)
+   exp_os.export_osos_to_container(containers) # sg.OS_Cfgs go in here
+   exp_os.export_events_to_container(containers) # All events extracted from tasks go in here
+   exp_os.export_counters_to_container(containers)
+   exp_os.export_resources_to_container(containers)
+   exp_os.export_tasks_to_container(containers)
+   exp_os.export_alarms_to_container(containers)
+   exp_os.export_isrs_to_container(containers)
+
+
+   # Save ARXML contents to file
+   ET.indent(tree, space="\t", level=0)
+   tree.write(ar_file, encoding="utf-8", xml_declaration=True)
+   lib.finalize_arxml_doc(ar_file)
+   print("Info: Os Configs are updated to " + ar_file)
+
+
+
+def export_os_cfgs_2_arxml(filepath, gui):
+   # if file exists, then update the Os section only
+   if os.path.isfile(filepath):
+      update_arxml(filepath)
+      return
+
+   # file doesn't exist, check if path exists
    path = "/".join(filepath.split("/")[0:-1])
    if not os.path.exists(path):
       os.makedirs(path)

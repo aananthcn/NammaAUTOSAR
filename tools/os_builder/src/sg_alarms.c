@@ -21,11 +21,6 @@ const AppModeType Alarm_WakeTaskD_AppModes[] = {
 	OSDEFAULTAPPMODE
 };
 
-#define ALARM_ETHERNET_TASK_ALARM_APPMODES_MAX (1)
-const AppModeType Alarm_Ethernet_Task_Alarm_AppModes[] = {
-	OSDEFAULTAPPMODE
-};
-
 
 /*   A L A R M S   D E F I N I T I O N S   */
 TickType _AppAlarmCounters[MAX_APP_ALARM_COUNTERS];
@@ -78,7 +73,7 @@ const AppAlarmType AppAlarms_mSecCounter[] = {
 		.appmodes = (const AppModeType *) &Alarm_WakeTaskD_AppModes
 	},
 	{
-		.name = "Ethernet_Task_Alarm",
+		.name = "Ethernet_alarm",
 		.cntr_id = 0,
 		.pacntr = &_AppAlarmCounters[4],
 		.pcycle = &_AppAlarmCycles[4],
@@ -87,10 +82,10 @@ const AppAlarmType AppAlarms_mSecCounter[] = {
 		.aat_arg1 = (intptr_t) 5,
 		.aat_arg2 = (intptr_t)NULL,
 		.is_autostart = TRUE,
-		.alarmtime = 100,
-		.cycletime = 100,
-		.n_appmodes = ALARM_ETHERNET_TASK_ALARM_APPMODES_MAX,
-		.appmodes = (const AppModeType *) &Alarm_Ethernet_Task_Alarm_AppModes
+		.alarmtime = 300,
+		.cycletime = 200,
+		.n_appmodes = 0,
+		.appmodes = NULL
 	}
 };
 

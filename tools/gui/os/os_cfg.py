@@ -21,6 +21,7 @@
 import tkinter as tk
 from tkinter import ttk
 
+import arxml.core.main_os as arxml_os
 
 
 class OsTab:
@@ -46,6 +47,8 @@ class OsTab:
 
 
     def draw(self, tab, gui):
+        self.gui = gui
+
         # 1) CPU / SoC - Label + Edit-box
         row = 1
         label = tk.Label(tab, text="CPU / SoC name")
@@ -208,6 +211,12 @@ class OsTab:
         select = tk.Button(tab, width=6, text="Update", command=self.update)
         select.grid(row=row, column=3)
 
+        # Save Button
+        saveb = tk.Button(tab, width=10, text="Save Configs", command=self.save_data,
+                          padx=0, pady=0, bg="#206020", fg='white')
+        saveb.grid(row=row+1, column=2)
+
+
 
     def update(self):
         self.backup_data()
@@ -254,3 +263,9 @@ class OsTab:
         self.sg_oscfg["IRQ_STACK_SIZE"]        = "512"
         self.sg_oscfg["OS_CTX_SAVE_SZ"]        = "128"
         self.sg_oscfg["TASK_STACK_SIZE"]       = "0"
+
+
+
+    def save_data(self):
+        self.backup_data()
+        arxml_os.export_os_cfgs_2_arxml(self.gui.arxml_file, self.gui)

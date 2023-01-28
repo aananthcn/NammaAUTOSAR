@@ -26,6 +26,7 @@ from copy import copy
 import gui.lib.window as window
 import gui.lib.asr_widget as dappa # dappa in Tamil means box
 
+import arxml.core.main_os as arxml_os
 
 
 class EventWindow:
@@ -104,10 +105,11 @@ class EventWindow:
 
 
 
-    def draw(self, tab, xsize, ysize):
+    def draw(self, tab, gui, xsize, ysize):
         self.xsize = xsize
         self.ysize = ysize
         self.scrollw = window.ScrollableWindow(tab, self.xsize, self.ysize)
+        self.gui = gui
         
         #Number of Events - Label + Spinbox
         label = tk.Label(self.scrollw.mnf, text="No. of Events:")
@@ -117,6 +119,11 @@ class EventWindow:
         self.n_events_str.set(self.n_events)
         spinb.grid(row=0, column=1, sticky="w")
 
+        # Save Button
+        saveb = tk.Button(self.scrollw.mnf, width=10, text="Save Configs", command=self.save_data,
+                          padx=0, pady=0, bg="#206020", fg='white')
+        saveb.grid(row=0, column=2)
+
         # Update buttons frames idle tasks to let tkinter calculate buttons sizes
         self.scrollw.update()
 
@@ -125,4 +132,5 @@ class EventWindow:
 
 
     def backup_data(self):
-        print("backup_data called in evt_cfg")
+        self.backup_data()
+        arxml_os.export_os_cfgs_2_arxml(self.gui.arxml_file, self.gui)
