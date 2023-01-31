@@ -97,7 +97,7 @@ const OsTaskType _OsTaskList[] = {
 		.n_evtmsks = ETHERNET_TASKS_EVENT_MAX,
 		.msglist = NULL,
 		.n_msglist = ETHERNET_TASKS_MESSAGE_MAX,
-		.stack_size = 512
+		.stack_size = 2048
 	}
 };
 
