@@ -67,9 +67,14 @@ class EthIfConfigSetView:
     active_view = None
 
 
-    def __init__(self, gui, gen_cfg):
+    def __init__(self, gui, ethif_cfg):
         self.gui = gui
         self.configs = []
+
+        if ethif_cfg:
+            gen_cfg = ethif_cfg[0]["EthIfConfigSet"]
+        else:
+            return
 
         # Create config string for AUTOSAR configs on this tab
         if not gen_cfg:
@@ -103,15 +108,32 @@ class EthIfConfigSetView:
     def draw_dappas(self):
         bool_cmbsel = ("FALSE", "TRUE")
 
-        dappa.button(self, "EthIfFrameOwnerConfig",      0, 0, 1, 30, "EthIfFrameOwnerConfig", self.ethif_frameowner_select)
-        dappa.button(self, "EthIfRxIndicationConfig",    0, 1, 1, 30, "EthIfRxIndicationConfig", self.ethif_rx_indic_select)
-        dappa.button(self, "EthIfTxConfirmationConfig",  0, 2, 1, 30, "EthIfTxConfirmationConfig", self.ethif_tx_cnfrm_select)
-        dappa.button(self, "EthIfTrcvLinkStateChgConfig",0, 3, 1, 30, "EthIfTrcvLinkStateChgConfig", self.ethif_lnk_state_chg_select)
-        dappa.button(self, "EthIfPhysController",  0, 4, 1, 30, "EthIfPhysController", self.ethif_phys_ctrlr_select)
-        dappa.button(self, "EthIfController",      0, 5, 1, 30, "EthIfController", self.ethif_ctrlr_select)
-        dappa.button(self, "EthIfTransceiver",     0, 6, 1, 30, "EthIfTransceiver", self.ethif_trcv_select)
-        dappa.button(self, "EthIfSwitch",          0, 7, 1, 30, "EthIfSwitch", self.ethif_switch_select)
-        dappa.button(self, "EthIfSwitchPortGroup", 0, 8, 1, 30, "EthIfSwitchPortGroup", self.ethif_swt_prt_grp_select)
+        key = "EthIfFrameOwnerConfig [" + str(len(self.configs[0].datavar["EthIfFrameOwnerConfig"])) + "]"
+        dappa.button(self, "EthIfFrameOwnerConfig",      0, 0, 1, 30, key, self.ethif_frameowner_select)
+
+        key = "EthIfRxIndicationConfig [" + str(len(self.configs[0].datavar["EthIfRxIndicationConfig"])) + "]"
+        dappa.button(self, "EthIfRxIndicationConfig",    0, 1, 1, 30, key, self.ethif_rx_indic_select)
+
+        key = "EthIfTxConfirmationConfig [" + str(len(self.configs[0].datavar["EthIfTxConfirmationConfig"])) + "]"
+        dappa.button(self, "EthIfTxConfirmationConfig",  0, 2, 1, 30, key, self.ethif_tx_cnfrm_select)
+
+        key = "EthIfTrcvLinkStateChgConfig [" + str(len(self.configs[0].datavar["EthIfTrcvLinkStateChgConfig"])) + "]"
+        dappa.button(self, "EthIfTrcvLinkStateChgConfig",0, 3, 1, 30, key, self.ethif_lnk_state_chg_select)
+
+        key = "EthIfPhysController [" + str(len(self.configs[0].datavar["EthIfPhysController"])) + "]"
+        dappa.button(self, "EthIfPhysController",  0, 4, 1, 30, key, self.ethif_phys_ctrlr_select)
+
+        key = "EthIfController [" + str(len(self.configs[0].datavar["EthIfController"])) + "]"
+        dappa.button(self, "EthIfController",      0, 5, 1, 30, key, self.ethif_ctrlr_select)
+
+        key = "EthIfTransceiver [" + str(len(self.configs[0].datavar["EthIfTransceiver"])) + "]"
+        dappa.button(self, "EthIfTransceiver",     0, 6, 1, 30, key, self.ethif_trcv_select)
+
+        key = "EthIfSwitch [" + str(len(self.configs[0].datavar["EthIfSwitch"])) + "]"
+        dappa.button(self, "EthIfSwitch",          0, 7, 1, 30, key, self.ethif_switch_select)
+
+        key = "EthIfSwitchPortGroup [" + str(len(self.configs[0].datavar["EthIfSwitchPortGroup"])) + "]"
+        dappa.button(self, "EthIfSwitchPortGroup", 0, 8, 1, 30, key, self.ethif_swt_prt_grp_select)
 
         # empty space
         label = tk.Label(self.scrollw.mnf, text="")

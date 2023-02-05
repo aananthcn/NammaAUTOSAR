@@ -33,9 +33,11 @@ import gui.app.app_view as app_view
 import gui.port.port_view as port_view
 import gui.dio.dio_view as dio_view
 import gui.spi.spi_view as spi_view
+import gui.lin.lin_view as lin_view
+
 import gui.eth.eth_view as eth_view
 import gui.ethif.ethif_view as ethif_view
-import gui.lin.lin_view as lin_view
+import gui.soad.soad_view as soad_view
 
 
 
@@ -163,6 +165,15 @@ AsrBlocksConfigList = [
         "x": 50-(hbw/2)+(vbw/2)+ibg, "y": l3_y, "w": hbw, "h": hbh, "bgc": '#9999FF', "fgc": 'black',
         # click callback & constructor
         "cb": None, "cons": None,
+        "postdraw": None
+    },
+    {
+        # SoAd
+        "name": "SoAd", "text": "SoAd", "txta": "center", "ori": "H",
+        # Position (offset % of screen size), size (% of screen size) & colors
+        "x": 50-(hbw/2)+(vbw/2)+ibg, "y": l3_y+(3*vbw/2)+ibg, "w": hbw, "h": hbh, "bgc": '#9999FF', "fgc": 'black',
+        # click callback & constructor
+        "cb": soad_view.soad_block_click_handler, "cons": None,
         "postdraw": None
     },
     {

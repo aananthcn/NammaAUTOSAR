@@ -67,9 +67,14 @@ class EthIfGeneralView:
     active_view = None
 
 
-    def __init__(self, gui, gen_cfg):
+    def __init__(self, gui, ethif_cfg):
         self.gui = gui
         self.configs = []
+        
+        if ethif_cfg:
+            gen_cfg = ethif_cfg[0]["EthIfGeneral"]
+        else:
+            return
 
         # Create config string for AUTOSAR configs on this tab
         if not gen_cfg:

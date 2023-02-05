@@ -114,13 +114,13 @@ def show_ethif_tabs(gui):
     
     # create the EthIfGeneral GUI tab
     ethif_gen_view = EthIfTab(gen_frame, width, height)
-    ethif_gen_view.tab = ethif_gen.EthIfGeneralView(gui, ethif_configs[0]["EthIfGeneral"])
+    ethif_gen_view.tab = ethif_gen.EthIfGeneralView(gui, ethif_configs)
     ethif_gen_view.name = "EthIfGeneral"
     TabList.append(ethif_gen_view)
 
     # create the EthIfGeneral GUI tab
     ethif_configset_view = EthIfTab(cfg_frame, width, height)
-    ethif_configset_view.tab = ethif_cs.EthIfConfigSetView(gui, ethif_configs[0]["EthIfConfigSet"])
+    ethif_configset_view.tab = ethif_cs.EthIfConfigSetView(gui, ethif_configs)
     ethif_configset_view.name = "EthIfConfigSet"
     TabList.append(ethif_configset_view)
 
