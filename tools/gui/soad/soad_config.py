@@ -97,7 +97,7 @@ import gui.lib.asr_widget as dappa # dappa in Tamil means box
 #                 + SoAdRxPduId
 #                 + SoAdRxRoutingGroupRef --> SoAdRoutingGroup
 
-
+import gui.soad.soad_pdu_route as soad_pdur
 
 
 class SoAdChildView:
@@ -118,16 +118,14 @@ class SoAdChildView:
 
 class SoAdConfigView:
     n_soad_bswm = 0
-    max_soad_bswm = 255
     n_soad_bswm_str = None
 
     gui = None
     tab_struct = None # passed from *_view.py file
     scrollw = None
     configs = None # all UI configs (tkinter strings) are stored here.
-    cfgkeys = ["SoAdIf", "SoAdIfTriggerTransmit", "SoAdIfTxConfirmation",
-               "SoAdLocalIpAddrAssigmentChg", "SoAdSoConModeChg", "SoAdTp",
-               "SoAdUseCallerInfix", "SoAdUseTypeInfix", "SoAdBswModuleRef"]
+    cfgkeys = ["SoAdPduRoute", "SoAdRoutingGroup",
+               "SoAdSocketConnectionGroup", "SoAdSocketRoute"]
     
     n_header_objs = 0 #Objects / widgets that are part of the header and shouldn't be destroyed
     header_row = 3
@@ -144,114 +142,122 @@ class SoAdConfigView:
     def __init__(self, gui, soad_cfgs):
         self.gui = gui
         self.configs = []
-        self.n_soad_bswm = 0
-        self.n_soad_bswm_str = tk.StringVar()
-        # self.save_cb = save_cb
 
         if soad_cfgs:
-            soad_bswm = soad_cfgs["SoAdBswModules"]
+            soadcfg = soad_cfgs["SoAdConfig"]
         else:
-            return
+            soadcfg = None
 
-        # read configs from ARXML
-        self.n_soad_bswm = len(soad_bswm)
-        self.n_soad_bswm_str.set(len(soad_bswm))
-
-        # initialize configurations from ARXML file
-        for i, cfg in enumerate(soad_bswm):
-            self.configs.insert(len(self.configs), dappa.AsrCfgStr(self.cfgkeys, cfg))
+        # Create config string for AUTOSAR configs on this tab
+        if not soadcfg:
+            self.configs.append(dappa.AsrCfgStr(self.cfgkeys, self.create_empty_configs()))
+        else:
+            self.configs.append(dappa.AsrCfgStr(self.cfgkeys, soadcfg))
 
 
     def __del__(self):
-        del self.n_soad_bswm_str
-        del self.non_header_objs[:]
         del self.configs[:]
 
 
 
     def create_empty_configs(self):
-        soad_dict = {}
-
-        # child view configs
-        soad_dict["SoAdIf"]                  = "FALSE"
-        soad_dict["SoAdIfTriggerTransmit"]   = "FALSE"
-        soad_dict["SoAdIfTxConfirmation"]    = "FALSE"
-        soad_dict["SoAdLocalIpAddrAssigmentChg"] = "FALSE"
-        soad_dict["SoAdSoConModeChg"]        = "FALSE"
-        soad_dict["SoAdTp"]                  = "FALSE"
-        soad_dict["SoAdUseCallerInfix"]      = "FALSE"
-        soad_dict["SoAdUseTypeInfix"]        = "FALSE"
-        soad_dict["SoAdBswModuleRef"]        = "..."
-
-        return soad_dict
+        gen_dict = {}
+        
+        gen_dict["SoAdPduRoute"]     = []
+        gen_dict["SoAdRoutingGroup"] = []
+        gen_dict["SoAdSocketConnectionGroup"]  = []
+        gen_dict["SoAdSocketRoute"]  = []
+        
+        return gen_dict
 
 
 
-    def draw_dappa_row(self, i):
-        bool_cmbsel = ("FALSE", "TRUE")
-        ref_cmbsel = ("Ref1", "Ref2", "...")
+    def draw_dappas(self):
+        # insert column separator at 0
+        dappa.colsep(self, 0)
 
-        dappa.label(self, "Mod. #", self.header_row+i,                      0, "e")
-        dappa.combo(self, "SoAdIf", i, self.header_row+i,                   1, 6, bool_cmbsel)
-        dappa.combo(self, "SoAdIfTriggerTransmit", i, self.header_row+i,    2, 18, bool_cmbsel)
-        dappa.combo(self, "SoAdIfTxConfirmation", i, self.header_row+i,     3, 18, bool_cmbsel)
-        dappa.combo(self, "SoAdLocalIpAddrAssigmentChg", i, self.header_row+i, 4, 27, bool_cmbsel)
-        dappa.combo(self, "SoAdSoConModeChg", i, self.header_row+i,         5, 18, bool_cmbsel)
-        dappa.combo(self, "SoAdTp", i, self.header_row+i,                   6, 6, bool_cmbsel)
-        dappa.combo(self, "SoAdUseCallerInfix", i, self.header_row+i,       7, 15, bool_cmbsel)
-        dappa.combo(self, "SoAdUseTypeInfix", i, self.header_row+i,         8, 15, bool_cmbsel)
-        dappa.combo(self, "SoAdBswModuleRef", i, self.header_row+i,         9, 15, ref_cmbsel)
+        # column = 2; label at 1
+        key = "SoAdPduRoute [" + str(len(self.configs[0].datavar["SoAdPduRoute"])) + "]"
+        dappa.buttong(self, "SoAdPduRoute", 0, 0, 2, 40, key, self.soad_pduroute_select)
+
+        key = "SoAdRoutingGroup [" + str(len(self.configs[0].datavar["SoAdRoutingGroup"])) + "]"
+        dappa.buttong(self, "SoAdRoutingGroup", 0, 1, 2, 40, key, self.soad_pduroute_select)
+
+        key = "SoAdSocketConnectionGroup [" + str(len(self.configs[0].datavar["SoAdSocketConnectionGroup"])) + "]"
+        dappa.buttong(self, "SoAdSocketConnectionGroup", 0, 2, 2, 40, key, self.soad_pduroute_select)
+
+        key = "SoAdSocketRoute [" + str(len(self.configs[0].datavar["SoAdSocketRoute"])) + "]"
+        dappa.buttong(self, "SoAdSocketRoute", 0, 3, 2, 40, key, self.soad_pduroute_select)
+
+        # insert column separator at 3
+        dappa.colsep(self, 3)
+
+        # empty space
+        label = tk.Label(self.scrollw.mnf, text="")
+        label.grid(row=17, column=0, sticky="e")
+
+        # Save Button
+        saveb = tk.Button(self.scrollw.mnf, width=10, text="Save Configs", command=self.save_data, bg="#206020", fg='white')
+        saveb.grid(row=18, column=1)
 
 
-    def update(self):
-        # get dappas to be added or removed
-        self.n_soad_bswm = int(self.n_soad_bswm_str.get())
 
-        # Tune memory allocations based on number of rows or boxes
-        n_dappa_rows = len(self.configs)
-        if not self.init_view_done:
-            for i in range(n_dappa_rows):
-                self.draw_dappa_row(i)
-            self.init_view_done = True
-        elif self.n_soad_bswm > n_dappa_rows:
-            for i in range(self.n_soad_bswm - n_dappa_rows):
-                self.configs.insert(len(self.configs), dappa.AsrCfgStr(self.cfgkeys, self.create_empty_configs()))
-                self.draw_dappa_row(n_dappa_rows+i)
-        elif n_dappa_rows > self.n_soad_bswm:
-            for i in range(n_dappa_rows - self.n_soad_bswm):
-                dappa.delete_dappa_row(self, (n_dappa_rows-1)+i)
-                del self.configs[-1]
+    def draw(self, view):
+        self.tab_struct = view
+        self.scrollw = window.ScrollableWindow(view.frame, view.xsize, view.ysize)
 
-        # Set the self.cv scrolling region
+        # # Table heading @0th row, 0th column
+        # dappa.place_column_heading(self, row=0, col=0)
+        dappa.place_no_heading(self)
+        self.draw_dappas()
+
+        # Support scrollable view
         self.scrollw.scroll()
 
 
-
-    def draw(self, tab):
-        self.tab_struct = tab
-        self.scrollw = window.ScrollableWindow(tab.frame, tab.xsize, tab.ysize)
-        
-        #Number of modes - Label + Spinbox
-        label = tk.Label(self.scrollw.mnf, text="BSW Modules:")
-        label.grid(row=0, column=0, sticky="w")
-        spinb = tk.Spinbox(self.scrollw.mnf, width=6, textvariable=self.n_soad_bswm_str, command=lambda : self.update(),
-                    values=tuple(range(0,self.max_soad_bswm+1)))
-        self.n_soad_bswm_str.set(self.n_soad_bswm)
-        spinb.grid(row=0, column=1, sticky="w")
-
-        # Save Button
-        genm = tk.Button(self.scrollw.mnf, width=10, text="Save Configs", command=self.save_data, bg="#206020", fg='white')
-        genm.grid(row=0, column=2)
-
-        # Update buttons frames idle tasks to let tkinter calculate buttons sizes
-        self.scrollw.update()
-
-        # Table heading @2nd row, 1st column
-        dappa.place_heading(self, 2, 1)
-
-        self.update()
-
-
-
     def save_data(self):
-        self.tab_struct.save_cb(self.gui, self.configs)
+        self.tab_struct.save_cb(self.gui)
+
+
+    def on_soad_pduroute_close(self):
+        # backup data
+        if self.active_view.view.configs:
+            self.configs[0].datavar["SoAdPduRoute"] = []  # ignore old data
+            for cfg in self.active_view.view.configs:
+                self.configs[0].datavar["SoAdPduRoute"].append(cfg.get())
+
+        # destroy view
+        del self.active_view
+        self.active_dialog.destroy()
+        del self.active_dialog
+
+        # re-draw all boxes (dappas) of this row
+        dappa.delete_dappas(self)
+        self.draw_dappas()
+
+
+    def soad_pduroute_select(self, row):
+        if self.active_dialog != None:
+            return
+
+        # function to create dialog window
+        self.active_dialog = tk.Toplevel() # create an instance of toplevel
+        self.active_dialog.protocol("WM_DELETE_WINDOW", lambda : self.on_soad_pduroute_close())
+        self.active_dialog.attributes('-topmost',True)
+
+        # set the geometry
+        x = self.active_dialog.winfo_screenwidth()
+        y = self.active_dialog.winfo_screenheight()
+        width = 820
+        height = 540
+        self.active_dialog.geometry("%dx%d+%d+%d" % (width, height, x/4, y/5))
+        self.active_dialog.title("SoAdPduRoute")
+
+        # create views and draw
+        gen_view = SoAdChildView(self.active_dialog, width, height, self.save_data)
+        gen_view.view = soad_pdur.SoAdPduRouteView(self.gui,
+                                            self.configs[0].datavar["SoAdPduRoute"])
+        gen_view.name = "SoAdPduRoute"
+        self.active_view = gen_view
+        gen_view.view.draw(gen_view)
+

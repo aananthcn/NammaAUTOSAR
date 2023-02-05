@@ -74,7 +74,7 @@ class EthIfGeneralView:
         if ethif_cfg:
             gen_cfg = ethif_cfg[0]["EthIfGeneral"]
         else:
-            return
+            gen_cfg = None
 
         # Create config string for AUTOSAR configs on this tab
         if not gen_cfg:

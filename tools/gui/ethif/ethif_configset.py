@@ -72,15 +72,15 @@ class EthIfConfigSetView:
         self.configs = []
 
         if ethif_cfg:
-            gen_cfg = ethif_cfg[0]["EthIfConfigSet"]
+            ethifcfg = ethif_cfg[0]["EthIfConfigSet"]
         else:
-            return
+            ethifcfg = None
 
         # Create config string for AUTOSAR configs on this tab
-        if not gen_cfg:
+        if not ethifcfg:
             self.configs.append(dappa.AsrCfgStr(self.cfgkeys, self.create_empty_configs()))
         else:
-            self.configs.append(dappa.AsrCfgStr(self.cfgkeys, gen_cfg))
+            self.configs.append(dappa.AsrCfgStr(self.cfgkeys, ethifcfg))
 
 
     def __del__(self):

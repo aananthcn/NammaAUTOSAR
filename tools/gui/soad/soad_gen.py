@@ -60,9 +60,14 @@ class SoAdGeneralView:
     active_view = None
 
 
-    def __init__(self, gui, gen_cfg):
+    def __init__(self, gui, soad_cfgs):
         self.gui = gui
         self.configs = []
+
+        if soad_cfgs:
+            gen_cfg = soad_cfgs["SoAdGeneral"]
+        else:
+            gen_cfg = None
 
         # Create config string for AUTOSAR configs on this tab
         if not gen_cfg:
