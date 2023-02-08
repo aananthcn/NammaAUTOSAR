@@ -44,7 +44,7 @@ import gui.lib.asr_widget as dappa # dappa in Tamil means box
 #                 + SoAdTxUdpTriggerMode [TRIGGER_ALWAYS / TRIGGER_NEVER]
 #                 + SoAdTxUdpTriggerTimeout
 
-import gui.soad.soad_pdu_r_dest as soad_pdur_dest
+import gui.soad.soad_cfg_pdu_r_dest as soad_pdur_dest
 
 
 class SoAdChildView:

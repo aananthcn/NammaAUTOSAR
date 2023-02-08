@@ -37,3 +37,6 @@
 [submodule "submodules/SL/TcpIp"]
 	path = submodules/SL/TcpIp
 	url = https://github.com/aananthcn/NammaTcpIp.git
+[submodule "submodules/SL/SoAd"]
+	path = submodules/SL/SoAd
+	url = https://github.com/aananthcn/NammaSoAd.git
