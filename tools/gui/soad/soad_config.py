@@ -99,6 +99,7 @@ import gui.lib.asr_widget as dappa # dappa in Tamil means box
 
 import gui.soad.soad_cfg_pdu_route as soad_pdur
 import gui.soad.soad_cfg_rout_grp as soad_rout_grp
+import gui.soad.soad_skt_con_grp as soad_sktcn_grp
 
 
 class SoAdChildView:
@@ -185,7 +186,7 @@ class SoAdConfigView:
         dappa.buttong(self, "SoAdRoutingGroup", 0, 1, 2, 40, key, self.soad_routing_grp_select)
 
         key = "SoAdSocketConnectionGroup [" + str(len(self.configs[0].datavar["SoAdSocketConnectionGroup"])) + "]"
-        dappa.buttong(self, "SoAdSocketConnectionGroup", 0, 2, 2, 40, key, self.soad_pduroute_select)
+        dappa.buttong(self, "SoAdSocketConnectionGroup", 0, 2, 2, 40, key, self.soad_skt_con_grp_select)
 
         key = "SoAdSocketRoute [" + str(len(self.configs[0].datavar["SoAdSocketRoute"])) + "]"
         dappa.buttong(self, "SoAdSocketRoute", 0, 3, 2, 40, key, self.soad_pduroute_select)
@@ -255,12 +256,12 @@ class SoAdConfigView:
         self.active_dialog.title("SoAdPduRoute")
 
         # create views and draw
-        gen_view = SoAdChildView(self.active_dialog, width, height, self.save_data)
-        gen_view.view = soad_pdur.SoAdPduRouteView(self.gui,
+        soad_chview = SoAdChildView(self.active_dialog, width, height, self.save_data)
+        soad_chview.view = soad_pdur.SoAdPduRouteView(self.gui,
                                             self.configs[0].datavar["SoAdPduRoute"])
-        gen_view.name = "SoAdPduRoute"
-        self.active_view = gen_view
-        gen_view.view.draw(gen_view)
+        soad_chview.name = "SoAdPduRoute"
+        self.active_view = soad_chview
+        soad_chview.view.draw(soad_chview)
 
 
     def on_soad_routing_grp_close(self):
@@ -298,9 +299,53 @@ class SoAdConfigView:
         self.active_dialog.title("SoAdRoutingGroup")
 
         # create views and draw
-        gen_view = SoAdChildView(self.active_dialog, width, height, self.save_data)
-        gen_view.view = soad_rout_grp.SoAdRoutingGroupView(self.gui,
+        soad_chview = SoAdChildView(self.active_dialog, width, height, self.save_data)
+        soad_chview.view = soad_rout_grp.SoAdRoutingGroupView(self.gui,
                                             self.configs[0].datavar["SoAdRoutingGroup"])
-        gen_view.name = "SoAdRoutingGroup"
-        self.active_view = gen_view
-        gen_view.view.draw(gen_view)
+        soad_chview.name = "SoAdRoutingGroup"
+        self.active_view = soad_chview
+        soad_chview.view.draw(soad_chview)
+
+
+    def on_soad_skt_con_grp_close(self):
+        # backup data
+        if self.active_view.view.configs:
+            self.configs[0].datavar["SoAdSocketConnectionGroup"] = []  # ignore old data
+            for cfg in self.active_view.view.configs:
+                self.configs[0].datavar["SoAdSocketConnectionGroup"].append(cfg.get())
+
+        # destroy view
+        del self.active_view
+        self.active_dialog.destroy()
+        del self.active_dialog
+
+        # re-draw all boxes (dappas) of this row
+        dappa.delete_dappas(self)
+        self.draw_dappas()
+
+
+    def soad_skt_con_grp_select(self, row):
+        if self.active_dialog != None:
+            return
+
+        # function to create dialog window
+        self.active_dialog = tk.Toplevel() # create an instance of toplevel
+        self.active_dialog.protocol("WM_DELETE_WINDOW", lambda : self.on_soad_skt_con_grp_close())
+        self.active_dialog.attributes('-topmost',True)
+
+        # set the geometry
+        x = self.active_dialog.winfo_screenwidth()
+        y = self.active_dialog.winfo_screenheight()
+        # width = self.gui.main_view.xsize-20
+        width = 1100
+        height = 540
+        self.active_dialog.geometry("%dx%d+%d+%d" % (width, height, x/10, y/5))
+        self.active_dialog.title("SoAdSocketConnectionGroup")
+
+        # create views and draw
+        soad_chview = SoAdChildView(self.active_dialog, width, height, self.save_data)
+        soad_chview.view = soad_sktcn_grp.SoAdSocketConnectionGrpView(self.gui,
+                                            self.configs[0].datavar["SoAdSocketConnectionGroup"])
+        soad_chview.name = "SoAdSocketConnectionGroup"
+        self.active_view = soad_chview
+        soad_chview.view.draw(soad_chview)

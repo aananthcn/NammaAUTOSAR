@@ -160,23 +160,44 @@ def colsep(view, col):
 
 
 ###############################################################################
-# Scrollable Widgets on scrollable given frame, with label on side
+# Scrollable Widgets on scrollable frame, with label on side
 ###############################################################################
 def entryg(view, key, index, row, col, width, state):
-    label(view, key, row, col-1, "e")
-    return entry(view, key, index, row, col, width, state)
+    label(view, key, row, col, "e")
+    return entry(view, key, index, row, col+1, width, state)
 
 def combog(view, key, index, row, col, width, values):
-    label(view, key, row, col-1, "e")
-    return combo(view, key, index, row, col, width, values)
+    label(view, key, row, col, "e")
+    return combo(view, key, index, row, col+1, width, values)
 
 def spinbg(view, key, index, row, col, width, values):
-    label(view, key, row, col-1, "e")
-    return spinb(view, key, index, row, col, width, values)
+    label(view, key, row, col, "e")
+    return spinb(view, key, index, row, col+1, width, values)
 
 def buttong(view, key, index, row, col, width, text, cb):
-    label(view, key, row, col-1, "e")
-    return button(view, key, index, row, col, width, text, cb)
+    label(view, key, row, col, "e")
+    return button(view, key, index, row, col+1, width, text, cb)
+
+
+
+###############################################################################
+# Scrollable Widgets on given frame, with label on side
+###############################################################################
+def entrygf(frame, view, key, index, row, col, width, state):
+    labelf(frame, view, key, row, col, "e")
+    return entryf(frame, view, key, index, row, col+1, width, state)
+
+def combogf(frame, view, key, index, row, col, width, values):
+    labelf(frame, view, key, row, col, "e")
+    return combof(frame, view, key, index, row, col+1, width, values)
+
+def spinbgf(frame, view, key, index, row, col, width, values):
+    labelf(frame, view, key, row, col, "e")
+    return spinbf(frame, view, key, index, row, col+1, width, values)
+
+def buttongf(frame, view, key, index, row, col, width, text, cb):
+    labelf(frame, view, key, row, col, "e")
+    return buttonf(frame, view, key, index, row, col+1, width, text, cb)
 
 
 
