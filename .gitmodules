@@ -40,3 +40,6 @@
 [submodule "submodules/SL/SoAd"]
 	path = submodules/SL/SoAd
 	url = https://github.com/aananthcn/NammaSoAd.git
+[submodule "submodules/SL/Dcm"]
+	path = submodules/SL/Dcm
+	url = https://github.com/aananthcn/NammaDcm.git
