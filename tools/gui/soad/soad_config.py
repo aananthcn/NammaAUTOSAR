@@ -175,9 +175,6 @@ class SoAdConfigView:
 
 
     def draw_dappas(self):
-        # insert column separator at 0
-        dappa.colsep(self, 0)
-
         # column = 2; label at 1
         key = "SoAdPduRoute [" + str(len(self.configs[0].datavar["SoAdPduRoute"])) + "]"
         dappa.buttong(self, "SoAdPduRoute", 0, 0, 2, 40, key, self.soad_pduroute_select)
@@ -190,9 +187,6 @@ class SoAdConfigView:
 
         key = "SoAdSocketRoute [" + str(len(self.configs[0].datavar["SoAdSocketRoute"])) + "]"
         dappa.buttong(self, "SoAdSocketRoute", 0, 3, 2, 40, key, self.soad_pduroute_select)
-
-        # insert column separator at 3
-        dappa.colsep(self, 3)
 
         # empty space
         label = tk.Label(self.scrollw.mnf, text="")

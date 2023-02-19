@@ -1,5 +1,5 @@
 #
-# Created on Sat Feb 04 2023 6:35:30 PM
+# Created on Sun Feb 19 2023 10:18:01 AM
 #
 # The MIT License (MIT)
 # Copyright (c) 2023 Aananth C N
@@ -27,7 +27,7 @@ import gui.lib.asr_widget as dappa # dappa in Tamil means box
 
 
 
-class SoAdChildView:
+class DcmChildView:
     view = None
     name = None
     xsize = None
@@ -43,16 +43,16 @@ class SoAdChildView:
 
 
 
-class SoAdGeneralView:
+class DcmConfigSetView:
     gui = None
     scrollw = None
     tab_struct = None # passed from *_view.py file
     configs = None # all UI configs (tkinter strings) are stored here.
-    cfgkeys = ["SoAdDevErrorDetect", "SoAdVersionInfoApi",
-               "SoAdIPv6AddressEnabled", "SoAdMainFunctionPeriod",
-               "SoAdSoConMax", "SoAdRoutingGroupMax",
-               "SoAdGetAndResetMeasurementDataApi",
-               "SoAdEnableSecurityEventReporting", "SoAdSecurityEventRefs"]
+    cfgkeys = ["DcmDevErrorDetect", "DcmVersionInfoApi",
+               "DcmIPv6AddressEnabled", "DcmMainFunctionPeriod",
+               "DcmSoConMax", "DcmRoutingGroupMax",
+               "DcmGetAndResetMeasurementDataApi",
+               "DcmEnableSecurityEventReporting", "DcmSecurityEventRefs"]
 
     non_header_objs = []
     dappas_per_col = len(cfgkeys)
@@ -60,12 +60,12 @@ class SoAdGeneralView:
     active_view = None
 
 
-    def __init__(self, gui, soad_cfgs):
+    def __init__(self, gui, dcm_cfgs):
         self.gui = gui
         self.configs = []
 
-        if soad_cfgs:
-            gen_cfg = soad_cfgs["SoAdGeneral"]
+        if dcm_cfgs:
+            gen_cfg = dcm_cfgs["DcmGeneral"]
         else:
             gen_cfg = None
 
@@ -84,15 +84,15 @@ class SoAdGeneralView:
     def create_empty_configs(self):
         gen_dict = {}
         
-        gen_dict["SoAdDevErrorDetect"]      = "FALSE"
-        gen_dict["SoAdVersionInfoApi"]      = "FALSE"
-        gen_dict["SoAdIPv6AddressEnabled"]  = "FALSE"
-        gen_dict["SoAdMainFunctionPeriod"]  = "0.01" # time in seconds
-        gen_dict["SoAdSoConMax"]            = "0"
-        gen_dict["SoAdRoutingGroupMax"]     = "0"
-        gen_dict["SoAdGetAndResetMeasurementDataApi"] = "FALSE"
-        gen_dict["SoAdEnableSecurityEventReporting"]  = "FALSE"
-        gen_dict["SoAdSecurityEventRefs"]    = "..."
+        gen_dict["DcmDevErrorDetect"]      = "FALSE"
+        gen_dict["DcmVersionInfoApi"]      = "FALSE"
+        gen_dict["DcmIPv6AddressEnabled"]  = "FALSE"
+        gen_dict["DcmMainFunctionPeriod"]  = "0.01" # time in seconds
+        gen_dict["DcmSoConMax"]            = "0"
+        gen_dict["DcmRoutingGroupMax"]     = "0"
+        gen_dict["DcmGetAndResetMeasurementDataApi"] = "FALSE"
+        gen_dict["DcmEnableSecurityEventReporting"]  = "FALSE"
+        gen_dict["DcmSecurityEventRefs"]    = "..."
         
         return gen_dict
 
@@ -103,15 +103,15 @@ class SoAdGeneralView:
         ref_cmbsel = ("Ref1", "Ref2", "...")
 
         # column = 2; label at 1
-        dappa.combog(self, "SoAdDevErrorDetect",     0, 0, 2, 20, bool_cmbsel)
-        dappa.combog(self, "SoAdVersionInfoApi",     0, 1, 2, 20, bool_cmbsel)
-        dappa.combog(self, "SoAdIPv6AddressEnabled", 0, 2, 2, 20, bool_cmbsel)
-        dappa.entryg(self, "SoAdMainFunctionPeriod", 0, 3, 2, 23, "normal")
-        dappa.spinbg(self, "SoAdSoConMax",           0, 4, 2, 21, tuple(range(0,65536)))
-        dappa.spinbg(self, "SoAdRoutingGroupMax",    0, 5, 2, 21, tuple(range(0,65536)))
-        dappa.combog(self, "SoAdGetAndResetMeasurementDataApi", 0, 6, 2, 20, bool_cmbsel)
-        dappa.combog(self, "SoAdEnableSecurityEventReporting",  0, 7, 2, 20, bool_cmbsel)
-        dappa.combog(self, "SoAdSecurityEventRefs",  0, 8, 2, 20, ref_cmbsel)
+        dappa.combog(self, "DcmDevErrorDetect",     0, 0, 2, 20, bool_cmbsel)
+        dappa.combog(self, "DcmVersionInfoApi",     0, 1, 2, 20, bool_cmbsel)
+        dappa.combog(self, "DcmIPv6AddressEnabled", 0, 2, 2, 20, bool_cmbsel)
+        dappa.entryg(self, "DcmMainFunctionPeriod", 0, 3, 2, 23, "normal")
+        dappa.spinbg(self, "DcmSoConMax",           0, 4, 2, 21, tuple(range(0,65536)))
+        dappa.spinbg(self, "DcmRoutingGroupMax",    0, 5, 2, 21, tuple(range(0,65536)))
+        dappa.combog(self, "DcmGetAndResetMeasurementDataApi", 0, 6, 2, 20, bool_cmbsel)
+        dappa.combog(self, "DcmEnableSecurityEventReporting",  0, 7, 2, 20, bool_cmbsel)
+        dappa.combog(self, "DcmSecurityEventRefs",  0, 8, 2, 20, ref_cmbsel)
 
         # empty space
         label = tk.Label(self.scrollw.mnf, text="")

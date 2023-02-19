@@ -39,6 +39,8 @@ import gui.eth.eth_view as eth_view
 import gui.ethif.ethif_view as ethif_view
 import gui.soad.soad_view as soad_view
 
+import gui.dcm.dcm_view as dcm_view
+
 
 
 
@@ -196,7 +198,7 @@ AsrBlocksConfigList = [
         # Position (offset % of screen size), size (% of screen size) & colors
         "x": 50-(hbw/2)+(vbw/2)+ibg, "y": dcm_y, "w": hbw, "h": hbh, "bgc": '#9999FF', "fgc": 'black',
         # click callback & constructor
-        "cb": None, "cons": None,
+        "cb": dcm_view.dcm_block_click_handler, "cons": None,
         "postdraw": None
     },
     {
