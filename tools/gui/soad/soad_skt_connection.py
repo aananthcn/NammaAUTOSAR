@@ -84,11 +84,10 @@ class SoAdSocketConnView:
         self.n_skt_str = tk.StringVar()
 
         # Create config string for AUTOSAR configs on this tab
-        if not sktc_cfgs:
-            self.configs.append(dappa.AsrCfgStr(self.cfgkeys, self.create_empty_configs(index)))
-        else:
+        if sktc_cfgs:
             for cfg in sktc_cfgs:
                 self.configs.append(dappa.AsrCfgStr(self.cfgkeys, cfg))
+                self.n_skt += 1
 
     def __del__(self):
         del self.configs[:]
@@ -108,9 +107,9 @@ class SoAdSocketConnView:
 
     def draw_dappa_row(self, i):
         dappa.label(self, "Sock #", self.header_row+i, 0, "e")
-        dappa.entry(self, "SoAdSocketId", i, self.header_row+i, 1, 10, "readonly")
+        dappa.entry(self, "SoAdSocketId", i, self.header_row+i, 1, 15, "readonly")
         dappa.entry(self, "SoAdSocketRemoteIpAddress", i, self.header_row+i, 2, 32, "normal")
-        dappa.spinb(self, "SoAdSocketRemotePort", i, self.header_row+i, 3, 15, tuple(range(0,65536)))
+        dappa.spinb(self, "SoAdSocketRemotePort", i, self.header_row+i, 3, 20, tuple(range(0,65536)))
 
 
 

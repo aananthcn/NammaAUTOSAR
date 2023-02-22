@@ -330,9 +330,9 @@ class SoAdSocketConnectionGrpView:
     def on_soad_skt_conn_close(self, row):
         # backup data
         if self.active_view.view.configs:
-            self.configs[0].datavar["SoAdSocketConnection"] = []  # ignore old data
+            self.configs[row].datavar["SoAdSocketConnection"] = []  # ignore old data
             for cfg in self.active_view.view.configs:
-                self.configs[0].datavar["SoAdSocketConnection"].append(cfg.get())
+                self.configs[row].datavar["SoAdSocketConnection"].append(cfg.get())
 
         # destroy view
         del self.active_view
@@ -358,7 +358,7 @@ class SoAdSocketConnectionGrpView:
         x = self.active_dialog.winfo_screenwidth()
         y = self.active_dialog.winfo_screenheight()
         # width = self.gui.main_view.xsize-20
-        width = 500
+        width = 550
         height = 640
         self.active_dialog.geometry("%dx%d+%d+%d" % (width, height, x/3, y/12))
 
@@ -366,7 +366,7 @@ class SoAdSocketConnectionGrpView:
         soad_chview = SoAdChildView(self.active_dialog, width, height, self.save_data)
         self.active_dialog.title("SoAdSocketConnection")
         soad_chview.view = skt_conn.SoAdSocketConnView(self.gui, row,
-                                        self.configs[0].datavar["SoAdSocketConnection"])
+                                        self.configs[row].datavar["SoAdSocketConnection"])
         soad_chview.name = "SoAdSocketConnection"
         self.active_view = soad_chview
         soad_chview.view.draw(soad_chview)
