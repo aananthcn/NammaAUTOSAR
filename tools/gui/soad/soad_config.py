@@ -332,8 +332,8 @@ class SoAdConfigView:
         y = self.active_dialog.winfo_screenheight()
         # width = self.gui.main_view.xsize-20
         width = 1100
-        height = 540
-        self.active_dialog.geometry("%dx%d+%d+%d" % (width, height, x/10, y/5))
+        height = 340
+        self.active_dialog.geometry("%dx%d+%d+%d" % (width, height, x/6, y/5))
         self.active_dialog.title("SoAdSocketConnectionGroup")
 
         # create views and draw

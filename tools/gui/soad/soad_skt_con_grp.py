@@ -51,6 +51,9 @@ import gui.lib.asr_widget as dappa # dappa in Tamil means box
 #             + SoAdSocketConnection
 
 import gui.soad.soad_cfg_pdu_r_dest as soad_pdur_dest
+import gui.soad.soad_skt_protcl_tcp as skt_tcp
+import gui.soad.soad_skt_protcl_udp as skt_udp
+import gui.soad.soad_skt_connection as skt_conn
 
 
 class SoAdChildView:
@@ -80,7 +83,7 @@ class SoAdSocketConnectionGrpView:
     cfgkeys = ["SoAdPduHeaderEnable", "SoAdSocketPathMTUEnable", "SoAdSocketAutomaticSoConSetup",
                "SoAdSocketIpAddrAssignmentChgNotification", "SoAdSocketLocalAddressRef",
                "SoAdSocketLocalPort", "SoAdSocketSoConModeChgBswMNotification",
-               "SoAdSocketSoConModeChgNotification", "SoAdSocketProtocol",
+               "SoAdSocketSoConModeChgNotification", "SoAdSocketProtocol", "SoAdSocketProtocolChoice",
                "SoAdSocketTpRxBufferMin", "SoAdSocketFramePriority",
                "SoAdSocketMsgAcceptanceFilterEnabled", "SoAdSocketSoConModeChgNotifUpperLayerRef",
                "SoAdSocketFlowLabel", "SoAdSocketDifferentiatedServicesField", "SoAdSocketConnection"]
@@ -127,14 +130,15 @@ class SoAdSocketConnectionGrpView:
         gen_dict["SoAdSocketLocalPort"]   = "0"                     # 0 - 65535 (16 bit)
         gen_dict["SoAdSocketSoConModeChgBswMNotification"]   = "FALSE"
         gen_dict["SoAdSocketSoConModeChgNotification"]   = "FALSE"
-        gen_dict["SoAdSocketProtocol"]   = "FALSE"
+        gen_dict["SoAdSocketProtocolChoice"]   = "TCP"
+        gen_dict["SoAdSocketProtocol"]         = []
         gen_dict["SoAdSocketTpRxBufferMin"]   = "0"                 # 0 - 65535
         gen_dict["SoAdSocketFramePriority"]   = "0"                 # 0 - 7 (3 bit)
         gen_dict["SoAdSocketMsgAcceptanceFilterEnabled"]   = "FALSE"
         gen_dict["SoAdSocketSoConModeChgNotifUpperLayerRef"]   = "..."
         gen_dict["SoAdSocketFlowLabel"]   = "0"                     # 0 - 1048575 (20 bit)
         gen_dict["SoAdSocketDifferentiatedServicesField"]   = "0"   # 0 - 63
-        gen_dict["SoAdSocketConnection"]   = "FALSE"
+        gen_dict["SoAdSocketConnection"]   = []
 
         return gen_dict
 
@@ -142,32 +146,51 @@ class SoAdSocketConnectionGrpView:
 
     def draw_dappa_row(self, i):
         # add a new tab
-        tab_frame = ttk.Frame(self.notebook)
-        self.notebook.insert("end", tab_frame, text ='SoAdGeneral')
-        self.notebook.pack(expand = 1, fill ="both")
-        self.tab_frames.append(tab_frame)
+        tab_frame = self.add_tab(i)
         self.header_orientation = None
 
+        skt_protcl_cmbsel = ("TCP", "UDP")
         bool_cmbsel = ("FALSE", "TRUE")
         ref_cmbsel = ("Ref1", "Ref2", "...")
 
-        # dappa.labelf(tab_frame, self, "R. Group #", 0,                          0, "e")
-        dappa.combogf(tab_frame, self, "SoAdPduHeaderEnable", i,                    0, 0, 32, bool_cmbsel)
-        dappa.combogf(tab_frame, self, "SoAdSocketPathMTUEnable", i,                1, 0, 32, bool_cmbsel)
-        dappa.combogf(tab_frame, self, "SoAdSocketAutomaticSoConSetup", i,          2, 0, 32, bool_cmbsel)
-        dappa.combogf(tab_frame, self, "SoAdSocketIpAddrAssignmentChgNotification", i, 3, 0, 32, bool_cmbsel)
-        dappa.combogf(tab_frame, self, "SoAdSocketLocalAddressRef", i,              4, 0, 32, ref_cmbsel)
-        dappa.entrygf(tab_frame, self, "SoAdSocketLocalPort", i,                    5, 0, 35, "normal")
-        dappa.combogf(tab_frame, self, "SoAdSocketSoConModeChgBswMNotification", i, 6, 0, 32, bool_cmbsel)
-        dappa.combogf(tab_frame, self, "SoAdSocketSoConModeChgNotification", i,     7, 0, 32, bool_cmbsel)
-        dappa.combogf(tab_frame, self, "SoAdSocketProtocol", i,                       0, 3, 32, bool_cmbsel)
-        dappa.entrygf(tab_frame, self, "SoAdSocketTpRxBufferMin", i,                  1, 3, 35, "normal")
-        dappa.entrygf(tab_frame, self, "SoAdSocketFramePriority", i,                  2, 3, 35, "normal")
-        dappa.combogf(tab_frame, self, "SoAdSocketMsgAcceptanceFilterEnabled", i,     3, 3, 32, bool_cmbsel)
-        dappa.combogf(tab_frame, self, "SoAdSocketSoConModeChgNotifUpperLayerRef", i, 4, 3, 32, ref_cmbsel)
-        dappa.entrygf(tab_frame, self, "SoAdSocketFlowLabel", i,                      5, 3, 35, "normal")
-        dappa.entrygf(tab_frame, self, "SoAdSocketDifferentiatedServicesField", i,    6, 3, 35, "normal")
-        dappa.combogf(tab_frame, self, "SoAdSocketConnection", i,                     7, 3, 32, bool_cmbsel)
+        # column 1
+        dappa.combogf(tab_frame, self, "SoAdPduHeaderEnable", i,                    0, 1, 32, bool_cmbsel)
+        dappa.combogf(tab_frame, self, "SoAdSocketPathMTUEnable", i,                1, 1, 32, bool_cmbsel)
+        dappa.combogf(tab_frame, self, "SoAdSocketAutomaticSoConSetup", i,          2, 1, 32, bool_cmbsel)
+        dappa.combogf(tab_frame, self, "SoAdSocketIpAddrAssignmentChgNotification", i, 3, 1, 32, bool_cmbsel)
+        dappa.combogf(tab_frame, self, "SoAdSocketLocalAddressRef", i,              4, 1, 32, ref_cmbsel)
+        dappa.entrygf(tab_frame, self, "SoAdSocketLocalPort", i,                    5, 1, 35, "normal")
+        dappa.combogf(tab_frame, self, "SoAdSocketSoConModeChgBswMNotification", i, 6, 1, 32, bool_cmbsel)
+        dappa.combogf(tab_frame, self, "SoAdSocketSoConModeChgNotification", i,     7, 1, 32, bool_cmbsel)
+
+        # column 2
+        dappa.entrygf(tab_frame, self, "SoAdSocketTpRxBufferMin", i,                  0, 3, 35, "normal")
+        dappa.entrygf(tab_frame, self, "SoAdSocketFramePriority", i,                  1, 3, 35, "normal")
+        dappa.combogf(tab_frame, self, "SoAdSocketMsgAcceptanceFilterEnabled", i,     2, 3, 32, bool_cmbsel)
+        dappa.combogf(tab_frame, self, "SoAdSocketSoConModeChgNotifUpperLayerRef", i, 3, 3, 32, ref_cmbsel)
+        dappa.entrygf(tab_frame, self, "SoAdSocketFlowLabel", i,                      4, 3, 35, "normal")
+        dappa.entrygf(tab_frame, self, "SoAdSocketDifferentiatedServicesField", i,    5, 3, 35, "normal")
+        skpc = dappa.combogf(tab_frame, self, "SoAdSocketProtocolChoice", i, 6, 3, 32, skt_protcl_cmbsel)
+        skpc.bind("<<ComboboxSelected>>", lambda evt, id = i : self.skt_protocol_changed(evt, id))
+        text = self.configs[i].datavar["SoAdSocketProtocolChoice"]
+        dappa.buttongf(tab_frame, self, "SoAdSocketProtocol", i,      7, 3, 29, text, self.soad_skt_protocol_select)
+        dappa.buttongf(tab_frame, self, "SoAdSocketConnection", i,    8, 3, 29, "SELECT", self.soad_skt_conn_select)
+
+
+
+    def add_tab(self, i):
+        tab_frame = ttk.Frame(self.notebook)
+        if i >= len(self.notebook.tabs()):
+            # append at end - for new tab case
+            self.notebook.insert("end", tab_frame, text ='Group'+str(i))
+        else:
+            # insert at i - for delete & redraw cases
+            self.notebook.insert(i, tab_frame, text ='Group'+str(i))
+        self.notebook.pack(expand = 1, fill ="both")
+        # save one click to the user - show the newly added tab
+        self.notebook.select(self.notebook.tabs()[i])
+        self.tab_frames.append(tab_frame)
+        return tab_frame
 
 
     def delete_tab(self, i):
@@ -239,3 +262,111 @@ class SoAdSocketConnectionGrpView:
 
     def save_data(self):
         self.tab_struct.save_cb(self.gui, self.configs)
+
+
+
+    def skt_protocol_changed(self, event, row):
+        self.configs[row].get() # read from UI (backup last selection)
+        # ignore all "SoAdSocketProtocol" settings from UI and in memory
+        self.configs[row].datavar["SoAdSocketProtocol"] = []
+        # re-draw all boxes (dappas) of this row
+        self.delete_tab(row)
+        # dappa.delete_dappa_row(self, row)
+        self.draw_dappa_row(row)
+
+
+
+    def on_soad_skt_protocol_close(self, row):
+        # backup data
+        if self.active_view.view.configs:
+            self.configs[0].datavar["SoAdSocketProtocol"] = []  # ignore old data
+            for cfg in self.active_view.view.configs:
+                self.configs[0].datavar["SoAdSocketProtocol"].append(cfg.get())
+
+        # destroy view
+        del self.active_view
+        self.active_dialog.destroy()
+        del self.active_dialog
+
+        # re-draw all boxes (dappas) of this row
+        self.delete_tab(row)
+        # dappa.delete_dappa_row(self, row)
+        self.draw_dappa_row(row)
+
+
+    def soad_skt_protocol_select(self, row):
+        if self.active_dialog != None:
+            return
+
+        # function to create dialog window
+        self.active_dialog = tk.Toplevel() # create an instance of toplevel
+        self.active_dialog.protocol("WM_DELETE_WINDOW", lambda : self.on_soad_skt_protocol_close(row))
+        self.active_dialog.attributes('-topmost',True)
+
+        # set the geometry
+        x = self.active_dialog.winfo_screenwidth()
+        y = self.active_dialog.winfo_screenheight()
+        # width = self.gui.main_view.xsize-20
+        width = 600
+        height = 340
+        self.active_dialog.geometry("%dx%d+%d+%d" % (width, height, x/5, y/5))
+
+        # create views and draw
+        soad_chview = SoAdChildView(self.active_dialog, width, height, self.save_data)
+        if self.configs[row].datavar["SoAdSocketProtocolChoice"] == "TCP":
+            self.active_dialog.title("SoAdSocketProtocol (TCP)")
+            soad_chview.view = skt_tcp.SoAdSocketTcpView(self.gui,
+                                            self.configs[0].datavar["SoAdSocketProtocol"])
+        else:
+            self.active_dialog.title("SoAdSocketProtocol (UDP)")
+            soad_chview.view = skt_udp.SoAdSocketUdpView(self.gui,
+                                            self.configs[0].datavar["SoAdSocketProtocol"])
+        soad_chview.name = "SoAdSocketProtocol"
+        self.active_view = soad_chview
+        soad_chview.view.draw(soad_chview)
+
+
+
+    def on_soad_skt_conn_close(self, row):
+        # backup data
+        if self.active_view.view.configs:
+            self.configs[0].datavar["SoAdSocketConnection"] = []  # ignore old data
+            for cfg in self.active_view.view.configs:
+                self.configs[0].datavar["SoAdSocketConnection"].append(cfg.get())
+
+        # destroy view
+        del self.active_view
+        self.active_dialog.destroy()
+        del self.active_dialog
+
+        # re-draw all boxes (dappas) of this row
+        self.delete_tab(row)
+        # dappa.delete_dappa_row(self, row)
+        self.draw_dappa_row(row)
+
+
+    def soad_skt_conn_select(self, row):
+        if self.active_dialog != None:
+            return
+
+        # function to create dialog window
+        self.active_dialog = tk.Toplevel() # create an instance of toplevel
+        self.active_dialog.protocol("WM_DELETE_WINDOW", lambda : self.on_soad_skt_conn_close(row))
+        self.active_dialog.attributes('-topmost',True)
+
+        # set the geometry
+        x = self.active_dialog.winfo_screenwidth()
+        y = self.active_dialog.winfo_screenheight()
+        # width = self.gui.main_view.xsize-20
+        width = 500
+        height = 640
+        self.active_dialog.geometry("%dx%d+%d+%d" % (width, height, x/3, y/12))
+
+        # create views and draw
+        soad_chview = SoAdChildView(self.active_dialog, width, height, self.save_data)
+        self.active_dialog.title("SoAdSocketConnection")
+        soad_chview.view = skt_conn.SoAdSocketConnView(self.gui, row,
+                                        self.configs[0].datavar["SoAdSocketConnection"])
+        soad_chview.name = "SoAdSocketConnection"
+        self.active_view = soad_chview
+        soad_chview.view.draw(soad_chview)
