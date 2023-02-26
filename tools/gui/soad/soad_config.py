@@ -100,6 +100,7 @@ import gui.lib.asr_widget as dappa # dappa in Tamil means box
 import gui.soad.soad_cfg_pdu_route as soad_pdur
 import gui.soad.soad_cfg_rout_grp as soad_rout_grp
 import gui.soad.soad_skt_con_grp as soad_sktcn_grp
+import gui.soad.soad_skt_route as soad_sktr
 
 
 class SoAdChildView:
@@ -186,7 +187,7 @@ class SoAdConfigView:
         dappa.buttong(self, "SoAdSocketConnectionGroup", 0, 2, 2, 40, key, self.soad_skt_con_grp_select)
 
         key = "SoAdSocketRoute [" + str(len(self.configs[0].datavar["SoAdSocketRoute"])) + "]"
-        dappa.buttong(self, "SoAdSocketRoute", 0, 3, 2, 40, key, self.soad_pduroute_select)
+        dappa.buttong(self, "SoAdSocketRoute", 0, 3, 2, 40, key, self.soad_skt_route_select)
 
         # empty space
         label = tk.Label(self.scrollw.mnf, text="")
@@ -341,5 +342,49 @@ class SoAdConfigView:
         soad_chview.view = soad_sktcn_grp.SoAdSocketConnectionGrpView(self.gui,
                                             self.configs[0].datavar["SoAdSocketConnectionGroup"])
         soad_chview.name = "SoAdSocketConnectionGroup"
+        self.active_view = soad_chview
+        soad_chview.view.draw(soad_chview)
+
+
+    def on_soad_skt_route_grp_close(self):
+        # backup data
+        if self.active_view.view.configs:
+            self.configs[0].datavar["SoAdSocketRoute"] = []  # ignore old data
+            for cfg in self.active_view.view.configs:
+                self.configs[0].datavar["SoAdSocketRoute"].append(cfg.get())
+
+        # destroy view
+        del self.active_view
+        self.active_dialog.destroy()
+        del self.active_dialog
+
+        # re-draw all boxes (dappas) of this row
+        dappa.delete_dappas(self)
+        self.draw_dappas()
+
+
+    def soad_skt_route_select(self, row):
+        if self.active_dialog != None:
+            return
+
+        # function to create dialog window
+        self.active_dialog = tk.Toplevel() # create an instance of toplevel
+        self.active_dialog.protocol("WM_DELETE_WINDOW", lambda : self.on_soad_skt_route_grp_close())
+        self.active_dialog.attributes('-topmost',True)
+
+        # set the geometry
+        x = self.active_dialog.winfo_screenwidth()
+        y = self.active_dialog.winfo_screenheight()
+        # width = self.gui.main_view.xsize-20
+        width = 1000
+        height = 340
+        self.active_dialog.geometry("%dx%d+%d+%d" % (width, height, x/6, y/5))
+        self.active_dialog.title("SoAdSocketRoute")
+
+        # create views and draw
+        soad_chview = SoAdChildView(self.active_dialog, width, height, self.save_data)
+        soad_chview.view = soad_sktr.SoAdSocketRouteView(self.gui,
+                                            self.configs[0].datavar["SoAdSocketRoute"])
+        soad_chview.name = "SoAdSocketRoute"
         self.active_view = soad_chview
         soad_chview.view.draw(soad_chview)
