@@ -25,8 +25,8 @@ import gui.soad.soad_gen as soad_gen
 import gui.soad.soad_config as soad_cfg
 import gui.soad.soad_bsw_mod as soad_bswm
 
-# import arxml.soad.arxml_soad_parse as arxml_soad_r
-# import arxml.soad.arxml_soad_write as arxml_soad_w
+import arxml.soad.arxml_soad_parse as arxml_soad_r
+import arxml.soad.arxml_soad_write as arxml_soad_w
 
 # import gui.soad.soad_code_gen as soad_cgen
 
@@ -74,6 +74,8 @@ def soad_save_callback(gui):
     # write to file
     arxml_soad_w.update_arxml(gui.arxml_file, soad_configs)
 
+    return
+
     # generate code
     soad_cgen.generate_code(gui, soad_configs)
 
@@ -113,8 +115,7 @@ def show_soad_tabs(gui):
     del TabList[:]
 
     # read SoAd content from ARXML file
-    # soad_configs = arxml_soad_r.parse_arxml(gui.arxml_file)
-    soad_configs = None
+    soad_configs = arxml_soad_r.parse_arxml(gui.arxml_file)
     
     # create the SoAdGeneral GUI tab
     soad_gen_view = SoAdTab(gen_frame, width, height)
