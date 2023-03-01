@@ -94,51 +94,28 @@ def get_configset_subcontainer(sub_ctnr_name, ctnr):
 
 
 
-def parse_soad_configset(cname, containers):
-    soad_cfgset_dict = {}
+def parse_soad_bswmodules(cname, containers):
+    soad_bswmods = []
 
     ctnrblks = lib_conf.findall_containers_with_name(cname, containers)
     for ctnrblk in ctnrblks:
         if not ctnrblk or lib_conf.get_tag(ctnrblk) != "ECUC-CONTAINER-VALUE":
             return None
-        params = lib_conf.get_param_list(ctnrblk)
         soad_params = {}
+
+        # parse parameters
+        params = lib_conf.get_param_list(ctnrblk)
         for par in params:
             soad_params[par["tag"]] = par["val"]
 
-        # Let us parse the sub-containers
-        cs_cfgs = get_configset_subcontainer("SoAdFrameOwnerConfig", ctnrblk)
-        soad_cfgset_dict["SoAdFrameOwnerConfig"] = cs_cfgs
+        # parse references
+        refs = lib_conf.get_refval_list(ctnrblk)
+        for ref in refs:
+            soad_params[ref["tag"]] = ref["val"]
 
-        cs_cfgs = get_configset_subcontainer("SoAdRxIndicationConfig", ctnrblk)
-        soad_cfgset_dict["SoAdRxIndicationConfig"] = cs_cfgs
+        soad_bswmods.append(soad_params)
 
-        cs_cfgs = get_configset_subcontainer("SoAdTxConfirmationConfig", ctnrblk)
-        soad_cfgset_dict["SoAdTxConfirmationConfig"] = cs_cfgs
-
-        cs_cfgs = get_configset_subcontainer("SoAdTrcvLinkStateChgConfig", ctnrblk)
-        soad_cfgset_dict["SoAdTrcvLinkStateChgConfig"] = cs_cfgs
-
-        cs_cfgs = get_configset_subcontainer("SoAdPhysController", ctnrblk)
-        soad_cfgset_dict["SoAdPhysController"] = cs_cfgs
-
-        cs_cfgs = get_configset_subcontainer("SoAdController", ctnrblk)
-        soad_cfgset_dict["SoAdController"] = cs_cfgs
-
-        cs_cfgs = get_configset_subcontainer("SoAdTransceiver", ctnrblk)
-        soad_cfgset_dict["SoAdTransceiver"] = cs_cfgs
-
-        cs_cfgs = get_configset_subcontainer("SoAdSwitch", ctnrblk)
-        soad_cfgset_dict["SoAdSwitch"] = cs_cfgs
-
-        cs_cfgs = get_configset_subcontainer("SoAdSwitchPortGroup", ctnrblk)
-        soad_cfgset_dict["SoAdSwitchPortGroup"] = cs_cfgs
-
-        #SoAdBswModules has exactly one container, so it is safe to break the loop
-        break
-
-    return soad_cfgset_dict
-
+    return soad_bswmods
 
 
 def print_soad_configs(soad_configs):
@@ -179,10 +156,11 @@ def parse_arxml(ar_file):
     soad_general = parse_soad_general("SoAdGeneral", containers)
     soad_cfg["SoAdGeneral"] = soad_general
 
-    # # copy SoAdBswModules to soad_configs
-    # soad_cfgset = parse_soad_configset("SoAdBswModules", containers)
-    # soad_cfg["SoAdBswModules"] = soad_cfgset
-    soad_cfg["SoAdBswModules"] = []
+    # copy SoAdBswModules to soad_configs
+    soad_bswmods = parse_soad_bswmodules("SoAdBswModules", containers)
+    soad_cfg["SoAdBswModules"] = soad_bswmods
+
+    # copy SoAdConfig to soad_configs
     soad_cfg["SoAdConfig"] = []
 
     print_soad_configs(soad_cfg)

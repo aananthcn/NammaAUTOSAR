@@ -189,4 +189,4 @@ class SaOdBswModulesView:
 
 
     def save_data(self):
-        self.tab_struct.save_cb(self.gui, self.configs)
+        self.tab_struct.save_cb(self.gui)

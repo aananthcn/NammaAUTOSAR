@@ -26,281 +26,39 @@ import arxml.core.lib_defs as lib_defs
 
 
 
-def add_soad_fo_config_params_to_container(ctnr, dref, cfg):
-    if not cfg:
-        print("Warning: ARXML write - SoAdFrameOwnerConfig is empty!")
-        return
+def update_soad_bswmodules_to_container(ctnrname, root, soad_cfg):
+    for obj in soad_cfg:
+        cfg = obj.datavar
+        # Create a new container - SoAdBswModules
+        dref = "/AUTOSAR/EcucDefs/SoAd/"+ctnrname
+        ctnrblk = lib_conf.insert_conf_container(root, ctnrname, "conf", dref)
 
-    # Insert PARAMETER block
-    params = ET.SubElement(ctnr, "PARAMETER-VALUES")
+        # Insert PARAMETER & REFERENCE block
+        params = ET.SubElement(ctnrblk, "PARAMETER-VALUES")
+        refs = ET.SubElement(ctnrblk, "REFERENCE-VALUES")
 
-    # Insert parameters
-    refname = dref+"/SoAdFrameType"
-    lib_conf.insert_conf_param(params, refname, "numerical", "int", str(cfg["SoAdFrameType"]))
-    refname = dref+"/SoAdOwner"
-    lib_conf.insert_conf_param(params, refname, "numerical", "int", str(cfg["SoAdOwner"]))
+        # Insert parameters
+        refname = dref+"/SoAdIf"
+        lib_conf.insert_conf_param(params, refname, "numerical", "bool", str(cfg["SoAdIf"]))
+        refname = dref+"/SoAdIfTriggerTransmit"
+        lib_conf.insert_conf_param(params, refname, "numerical", "bool", str(cfg["SoAdIfTriggerTransmit"]))
+        refname = dref+"/SoAdIfTxConfirmation"
+        lib_conf.insert_conf_param(params, refname, "numerical", "bool", str(cfg["SoAdIfTxConfirmation"]))
+        refname = dref+"/SoAdLocalIpAddrAssigmentChg"
+        lib_conf.insert_conf_param(params, refname, "numerical", "bool", str(cfg["SoAdLocalIpAddrAssigmentChg"]))
+        refname = dref+"/SoAdSoConModeChg"
+        lib_conf.insert_conf_param(params, refname, "numerical", "bool", str(cfg["SoAdSoConModeChg"]))
+        refname = dref+"/SoAdTp"
+        lib_conf.insert_conf_param(params, refname, "numerical", "bool", str(cfg["SoAdTp"]))
+        refname = dref+"/SoAdUseCallerInfix"
+        lib_conf.insert_conf_param(params, refname, "numerical", "bool", str(cfg["SoAdUseCallerInfix"]))
+        refname = dref+"/SoAdUseTypeInfix"
+        lib_conf.insert_conf_param(params, refname, "numerical", "bool", str(cfg["SoAdUseTypeInfix"]))
 
-
-
-def add_soad_rxi_config_params_to_container(ctnr, dref, cfg):
-    if not cfg:
-        print("Warning: ARXML write - SoAdRxIndicationConfig is empty!")
-        return
-
-    # Insert PARAMETER block
-    params = ET.SubElement(ctnr, "PARAMETER-VALUES")
-
-    # Insert parameters
-    refname = dref+"/SoAdRxIndicationFunction"
-    lib_conf.insert_conf_param(params, refname, "text", "string", str(cfg["SoAdRxIndicationFunction"]))
-
-
-
-def add_soad_txc_config_params_to_container(ctnr, dref, cfg):
-    if not cfg:
-        print("Warning: ARXML write - SoAdTxConfirmationConfig is empty!")
-        return
-
-    # Insert PARAMETER block
-    params = ET.SubElement(ctnr, "PARAMETER-VALUES")
-
-    # Insert parameters
-    refname = dref+"/SoAdTxConfirmationFunction"
-    lib_conf.insert_conf_param(params, refname, "text", "string", str(cfg["SoAdTxConfirmationFunction"]))
-
-
-
-def add_soad_tlsc_config_params_to_container(ctnr, dref, cfg):
-    if not cfg:
-        print("Warning: ARXML write - SoAdTrcvLinkStateChgConfig is empty!")
-        return
-
-    # Insert PARAMETER block
-    params = ET.SubElement(ctnr, "PARAMETER-VALUES")
-
-    # Insert parameters
-    refname = dref+"/SoAdTrcvLinkStateChgFunction"
-    lib_conf.insert_conf_param(params, refname, "text", "string", str(cfg["SoAdTrcvLinkStateChgFunction"]))
-
-
-
-def insert_soad_pctrl_sub_container(ctnr, dref, cfg):
-    # Insert subContainer(s) - SoAdPhysCtrlRxMainFunctionPriorityProcessing
-    subctnr2 = ET.SubElement(ctnr, "SUB-CONTAINERS")
-    sctnr_name = "SoAdPhysCtrlRxMainFunctionPriorityProcessing"
-    cf_ctnr = lib_conf.insert_conf_container(subctnr2, sctnr_name, "conf", dref)
-
-    # Insert PARAMETER & REFERENCE block
-    params = ET.SubElement(cf_ctnr, "PARAMETER-VALUES")
-    refs = ET.SubElement(cf_ctnr, "REFERENCE-VALUES")
-
-    # Insert parameters
-    refname = dref+"/SoAdPhysCtrlRxMainFunctionPeriod"
-    lib_conf.insert_conf_param(params, refname, "numerical", "float", str(cfg["SoAdPhysCtrlRxMainFunctionPeriod"]))
-    refname = dref+"/SoAdPhysCtrlRxIndicationIterations"
-    lib_conf.insert_conf_param(params, refname, "numerical", "int", str(cfg["SoAdPhysCtrlRxIndicationIterations"]))
-    # Insert references
-    if "SoAdPhysCtrlRxIngressFifoRef" in cfg:
-        refname = dref+"/SoAdPhysCtrlRxIngressFifoRef"
-        refdest = str(cfg["SoAdPhysCtrlRxIngressFifoRef"])
-        lib_conf.insert_conf_reference(refs, refname, refdest)
-
-
-
-def add_soad_pctrlr_config_params_to_container(ctnr, dref, cfg):
-    if not cfg:
-        print("Warning: ARXML write - SoAdPhysController is empty!")
-        return
-
-    # Insert PARAMETER & REFERENCE block
-    params = ET.SubElement(ctnr, "PARAMETER-VALUES")
-    refs = ET.SubElement(ctnr, "REFERENCE-VALUES")
-
-    # Insert parameters
-    refname = dref+"/SoAdPhysControllerIdx"
-    lib_conf.insert_conf_param(params, refname, "numerical", "int", str(cfg["SoAdPhysControllerIdx"]))
-    # Insert references
-    refname = dref+"/SoAdEthCtrlRef"
-    refdest = str(cfg["SoAdEthCtrlRef"])
-    lib_conf.insert_conf_reference(refs, refname, refdest)
-    refname = dref+"/SoAdWEthCtrlRef"
-    refdest = str(cfg["SoAdWEthCtrlRef"])
-    lib_conf.insert_conf_reference(refs, refname, refdest)
-
-    # Insert subContainer(s) - SoAdPhysCtrlRxMainFunctionPriorityProcessing
-    dref2 = dref+"/SoAdPhysCtrlRxMainFunctionPriorityProcessing"
-    insert_soad_pctrl_sub_container(ctnr, dref2, cfg)
-
-
-
-def add_soad_ctrlr_config_params_to_container(ctnr, dref, cfg):
-    if not cfg:
-        print("Warning: ARXML write - SoAdController is empty!")
-        return
-
-    # Insert PARAMETER & REFERENCE block
-    params = ET.SubElement(ctnr, "PARAMETER-VALUES")
-    refs = ET.SubElement(ctnr, "REFERENCE-VALUES")
-
-    # Insert parameters
-    refname = dref+"/SoAdCtrlIdx"
-    lib_conf.insert_conf_param(params, refname, "numerical", "int", str(cfg["SoAdCtrlIdx"]))
-    refname = dref+"/SoAdVlanId"
-    lib_conf.insert_conf_param(params, refname, "numerical", "int", str(cfg["SoAdVlanId"]))
-    refname = dref+"/SoAdCtrlMtu"
-    lib_conf.insert_conf_param(params, refname, "numerical", "int", str(cfg["SoAdCtrlMtu"]))
-    refname = dref+"/SoAdMaxTxBufsTotal"
-    lib_conf.insert_conf_param(params, refname, "numerical", "int", str(cfg["SoAdMaxTxBufsTotal"]))
-    # Insert references
-    if "SoAdPhysControllerRef" in cfg:
-        refname = dref+"/SoAdPhysControllerRef"
-        refdest = str(cfg["SoAdPhysControllerRef"])
-        lib_conf.insert_conf_reference(refs, refname, refdest)
-    if "SoAdEthTrcvRef" in cfg:
-        refname = dref+"/SoAdEthTrcvRef"
-        refdest = str(cfg["SoAdEthTrcvRef"])
-        lib_conf.insert_conf_reference(refs, refname, refdest)
-    if "SoAdSwitchRef" in cfg:
-        refname = dref+"/SoAdSwitchRefOrPortGroupRef/SoAdSwitchRef"
-        refdest = str(cfg["SoAdSwitchRef"])
-        lib_conf.insert_conf_reference(refs, refname, refdest)
-    if "SoAdSwitchPortGroupRef" in cfg:
-        refname = dref+"/SoAdSwitchRefOrPortGroupRef/SoAdSwitchPortGroupRef"
-        refdest = str(cfg["SoAdSwitchPortGroupRef"])
-        lib_conf.insert_conf_reference(refs, refname, refdest)
-
-
-
-def add_soad_trcv_config_params_to_container(ctnr, dref, cfg):
-    if not cfg:
-        print("Warning: ARXML write - SoAdTransceiver is empty!")
-        return
-
-    # Insert PARAMETER & REFERENCE block
-    params = ET.SubElement(ctnr, "PARAMETER-VALUES")
-    refs = ET.SubElement(ctnr, "REFERENCE-VALUES")
-
-    # Insert parameters
-    refname = dref+"/SoAdTransceiverIdx"
-    lib_conf.insert_conf_param(params, refname, "numerical", "int", str(cfg["SoAdTransceiverIdx"]))
-    # Insert references
-    if "SoAdEthTrcvRef" in cfg:
-        refname = dref+"/SoAdEthTrcvRef"
-        refdest = str(cfg["SoAdEthTrcvRef"])
-        lib_conf.insert_conf_reference(refs, refname, refdest)
-    if "SoAdWEthTrcvRef" in cfg:
-        refname = dref+"/SoAdWEthTrcvRef"
-        refdest = str(cfg["SoAdWEthTrcvRef"])
-        lib_conf.insert_conf_reference(refs, refname, refdest)
-
-
-
-def add_soad_swt_config_params_to_container(ctnr, dref, cfg):
-    if not cfg:
-        print("Warning: ARXML write - SoAdSwitch is empty!")
-        return
-
-    # Insert PARAMETER & REFERENCE block
-    params = ET.SubElement(ctnr, "PARAMETER-VALUES")
-    refs = ET.SubElement(ctnr, "REFERENCE-VALUES")
-
-    # Insert parameters
-    refname = dref+"/SoAdSwitchIdx"
-    lib_conf.insert_conf_param(params, refname, "numerical", "int", str(cfg["SoAdSwitchIdx"]))
-    # Insert references
-    if "SoAdSwitchRef" in cfg:
-        refname = dref+"/SoAdSwitchRef"
-        refdest = str(cfg["SoAdSwitchRef"])
-        lib_conf.insert_conf_reference(refs, refname, refdest)
-
-
-
-def add_soad_spg_config_params_to_container(ctnr, dref, cfg):
-    if not cfg:
-        print("Warning: ARXML write - SoAdSwitchPortGroup is empty!")
-        return
-
-    # Insert PARAMETER & REFERENCE block
-    params = ET.SubElement(ctnr, "PARAMETER-VALUES")
-    refs = ET.SubElement(ctnr, "REFERENCE-VALUES")
-
-    # Insert parameters
-    refname = dref+"/SoAdSwitchPortGroupIdx"
-    lib_conf.insert_conf_param(params, refname, "numerical", "int", str(cfg["SoAdSwitchPortGroupIdx"]))
-    refname = dref+"/SoAdSwitchPortGroupRefSemantics"
-    lib_conf.insert_conf_param(params, refname, "numerical", "enum", str(cfg["SoAdSwitchPortGroupRefSemantics"]))
-
-    # Insert references
-    if "SoAdPortRef" in cfg:
-        refname = dref+"/SoAdPortRef"
-        refdest = str(cfg["SoAdPortRef"])
-        lib_conf.insert_conf_reference(refs, refname, refdest)
-
-
-
-def update_soad_configset_to_container(ctnrname, root, soad_cfg):
-    # Create a new container - SoAd Driver
-    dref = "/AUTOSAR/EcucDefs/SoAd/"+ctnrname
-    ctnrblk = lib_conf.insert_conf_container(root, ctnrname, "conf", dref)
-
-    # Create a sub-container
-    subctnr1 = ET.SubElement(ctnrblk, "SUB-CONTAINERS")
-
-    # Create ECUC Module Configs under above Sub-container
-    sctnr_name = "SoAdFrameOwnerConfig"
-    eif_dref = dref+"/"+sctnr_name
-    for cfg in soad_cfg[0].datavar[sctnr_name]:
-        mdc_ctnr = lib_conf.insert_conf_container(subctnr1, sctnr_name, "conf", eif_dref)
-        add_soad_fo_config_params_to_container(mdc_ctnr, eif_dref, cfg)
-
-    sctnr_name = "SoAdRxIndicationConfig"
-    eif_dref = dref+"/"+sctnr_name
-    for cfg in soad_cfg[0].datavar[sctnr_name]:
-        mdc_ctnr = lib_conf.insert_conf_container(subctnr1, sctnr_name, "conf", eif_dref)
-        add_soad_rxi_config_params_to_container(mdc_ctnr, eif_dref, cfg)
-
-    sctnr_name = "SoAdTxConfirmationConfig"
-    eif_dref = dref+"/"+sctnr_name
-    for cfg in soad_cfg[0].datavar[sctnr_name]:
-        mdc_ctnr = lib_conf.insert_conf_container(subctnr1, sctnr_name, "conf", eif_dref)
-        add_soad_txc_config_params_to_container(mdc_ctnr, eif_dref, cfg)
-
-    sctnr_name = "SoAdTrcvLinkStateChgConfig"
-    eif_dref = dref+"/"+sctnr_name
-    for cfg in soad_cfg[0].datavar[sctnr_name]:
-        mdc_ctnr = lib_conf.insert_conf_container(subctnr1, sctnr_name, "conf", eif_dref)
-        add_soad_tlsc_config_params_to_container(mdc_ctnr, eif_dref, cfg)
-
-    sctnr_name = "SoAdPhysController"
-    eif_dref = dref+"/"+sctnr_name
-    for cfg in soad_cfg[0].datavar[sctnr_name]:
-        mdc_ctnr = lib_conf.insert_conf_container(subctnr1, sctnr_name, "conf", eif_dref)
-        add_soad_pctrlr_config_params_to_container(mdc_ctnr, eif_dref, cfg)
-
-    sctnr_name = "SoAdController"
-    eif_dref = dref+"/"+sctnr_name
-    for cfg in soad_cfg[0].datavar[sctnr_name]:
-        mdc_ctnr = lib_conf.insert_conf_container(subctnr1, sctnr_name, "conf", eif_dref)
-        add_soad_ctrlr_config_params_to_container(mdc_ctnr, eif_dref, cfg)
-
-    sctnr_name = "SoAdTransceiver"
-    eif_dref = dref+"/"+sctnr_name
-    for cfg in soad_cfg[0].datavar[sctnr_name]:
-        mdc_ctnr = lib_conf.insert_conf_container(subctnr1, sctnr_name, "conf", eif_dref)
-        add_soad_trcv_config_params_to_container(mdc_ctnr, eif_dref, cfg)
-
-    sctnr_name = "SoAdSwitch"
-    eif_dref = dref+"/"+sctnr_name
-    for cfg in soad_cfg[0].datavar[sctnr_name]:
-        mdc_ctnr = lib_conf.insert_conf_container(subctnr1, sctnr_name, "conf", eif_dref)
-        add_soad_swt_config_params_to_container(mdc_ctnr, eif_dref, cfg)
-
-    sctnr_name = "SoAdSwitchPortGroup"
-    eif_dref = dref+"/"+sctnr_name
-    for cfg in soad_cfg[0].datavar[sctnr_name]:
-        mdc_ctnr = lib_conf.insert_conf_container(subctnr1, sctnr_name, "conf", eif_dref)
-        add_soad_spg_config_params_to_container(mdc_ctnr, eif_dref, cfg)
-
+        if "SoAdBswModuleRef" in cfg:
+            refname = dref+"/SoAdBswModuleRef"
+            refdest = str(cfg["SoAdBswModuleRef"])
+            lib_conf.insert_conf_reference(refs, refname, refdest)
 
 
 
@@ -391,7 +149,7 @@ def update_arxml(ar_file, soad_configs):
 
     # Add SoAd contents to CONTAINER
     update_soad_general_to_container("SoAdGeneral", containers, soad_configs["SoAdGeneral"][0])
-    # update_soad_configset_to_container("SoAdBswModules", containers, soad_configs["SoAdBswModules"])
+    update_soad_bswmodules_to_container("SoAdBswModules", containers, soad_configs["SoAdBswModules"])
 
     # Save ARXML contents to file
     ET.indent(tree, space="\t", level=0)
