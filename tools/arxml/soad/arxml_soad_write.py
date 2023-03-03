@@ -26,6 +26,108 @@ import arxml.core.lib_defs as lib_defs
 
 
 
+def add_soad_pduroute_dest_params_to_container(ctnr, dref, cfg):
+    if not cfg:
+        print("Warning: ARXML write - SoAdPduRouteDest is empty!")
+        return
+
+    # Insert PARAMETER & REFERENCE block
+    params = ET.SubElement(ctnr, "PARAMETER-VALUES")
+    refs = ET.SubElement(ctnr, "REFERENCE-VALUES")
+
+    # Insert parameters
+    refname = dref+"/SoAdTxPduHeaderId"
+    lib_conf.insert_conf_param(params, refname, "numerical", "int", str(cfg["SoAdTxPduHeaderId"]))
+    refname = dref+"/SoAdTxUdpTriggerMode"
+    lib_conf.insert_conf_param(params, refname, "numerical", "enum", str(cfg["SoAdTxUdpTriggerMode"]))
+    refname = dref+"/SoAdTxUdpTriggerTimeout"
+    lib_conf.insert_conf_param(params, refname, "numerical", "int", str(cfg["SoAdTxUdpTriggerTimeout"]))
+
+    # Insert references
+    if "SoAdTxSocketConnOrSocketConnBundleRef" in cfg:
+        refname = dref+"/SoAdTxSocketConnOrSocketConnBundleRef"
+        refdest = str(cfg["SoAdTxSocketConnOrSocketConnBundleRef"])
+        lib_conf.insert_conf_reference(refs, refname, refdest)
+
+    if "SoAdTxRoutingGroupRef" in cfg:
+        refname = dref+"/SoAdTxRoutingGroupRef"
+        refdest = str(cfg["SoAdTxRoutingGroupRef"])
+        lib_conf.insert_conf_reference(refs, refname, refdest)
+
+
+
+def add_soad_pduroute_params_to_container(ctnr, dref, cfg):
+    if not cfg:
+        print("Warning: ARXML write - SoAdPduRoute is empty!")
+        return
+
+    # Insert PARAMETER & REFERENCE block
+    params = ET.SubElement(ctnr, "PARAMETER-VALUES")
+    refs = ET.SubElement(ctnr, "REFERENCE-VALUES")
+
+    # Insert parameters
+    refname = dref+"/SoAdTxPduId"
+    lib_conf.insert_conf_param(params, refname, "numerical", "int", str(cfg["SoAdTxPduId"]))
+    refname = dref+"/SoAdTxUpperLayerType"
+    lib_conf.insert_conf_param(params, refname, "numerical", "enum", str(cfg["SoAdTxUpperLayerType"]))
+    refname = dref+"/SoAdTxPduCollectionSemantics"
+    lib_conf.insert_conf_param(params, refname, "numerical", "enum", str(cfg["SoAdTxPduCollectionSemantics"]))
+
+    # Insert references
+    if "SoAdTxPduRef" in cfg:
+        refname = dref+"/SoAdTxPduRef"
+        refdest = str(cfg["SoAdTxPduRef"])
+        lib_conf.insert_conf_reference(refs, refname, refdest)
+
+    # Create a sub-container
+    subctnr2 = ET.SubElement(ctnr, "SUB-CONTAINERS")
+
+    # Create ECUC Module Configs under above Sub-container
+    sctnr_name = "SoAdPduRouteDest"
+    sctnr_dref = dref+"/"+sctnr_name
+    for ch_cfg in cfg[sctnr_name]:
+        mdc_ctnr = lib_conf.insert_conf_container(subctnr2, sctnr_name, "conf", sctnr_dref)
+        add_soad_pduroute_dest_params_to_container(mdc_ctnr, sctnr_dref, ch_cfg)
+
+
+
+def update_soad_configs_to_container(ctnrname, root, soad_cfg):
+    # Create a new container - SoAd Driver
+    dref = "/AUTOSAR/EcucDefs/SoAd/"+ctnrname
+    ctnrblk = lib_conf.insert_conf_container(root, ctnrname, "conf", dref)
+
+    # Create a sub-container
+    subctnr1 = ET.SubElement(ctnrblk, "SUB-CONTAINERS")
+
+    # Create ECUC Module Configs under above Sub-container
+    sctnr_name = "SoAdPduRoute"
+    sctnr_dref = dref+"/"+sctnr_name
+    for cfg in soad_cfg[0].datavar[sctnr_name]:
+        mdc_ctnr = lib_conf.insert_conf_container(subctnr1, sctnr_name, "conf", sctnr_dref)
+        add_soad_pduroute_params_to_container(mdc_ctnr, sctnr_dref, cfg)
+
+    return # TODO: remove this after development
+
+    sctnr_name = "SoAdRoutingGroup"
+    sctnr_dref = dref+"/"+sctnr_name
+    for cfg in soad_cfg[0].datavar[sctnr_name]:
+        mdc_ctnr = lib_conf.insert_conf_container(subctnr1, sctnr_name, "conf", sctnr_dref)
+        add_soad_rxi_config_params_to_container(mdc_ctnr, sctnr_dref, cfg)
+
+    sctnr_name = "SoAdSocketConnectionGroup"
+    sctnr_dref = dref+"/"+sctnr_name
+    for cfg in soad_cfg[0].datavar[sctnr_name]:
+        mdc_ctnr = lib_conf.insert_conf_container(subctnr1, sctnr_name, "conf", sctnr_dref)
+        add_soad_txc_config_params_to_container(mdc_ctnr, sctnr_dref, cfg)
+
+    sctnr_name = "SoAdSocketRoute"
+    sctnr_dref = dref+"/"+sctnr_name
+    for cfg in soad_cfg[0].datavar[sctnr_name]:
+        mdc_ctnr = lib_conf.insert_conf_container(subctnr1, sctnr_name, "conf", sctnr_dref)
+        add_soad_tlsc_config_params_to_container(mdc_ctnr, sctnr_dref, cfg)
+
+
+
 def update_soad_bswmodules_to_container(ctnrname, root, soad_cfg):
     for obj in soad_cfg:
         cfg = obj.datavar
@@ -150,6 +252,7 @@ def update_arxml(ar_file, soad_configs):
     # Add SoAd contents to CONTAINER
     update_soad_general_to_container("SoAdGeneral", containers, soad_configs["SoAdGeneral"][0])
     update_soad_bswmodules_to_container("SoAdBswModules", containers, soad_configs["SoAdBswModules"])
+    update_soad_configs_to_container("SoAdConfig", containers, soad_configs["SoAdConfig"])
 
     # Save ARXML contents to file
     ET.indent(tree, space="\t", level=0)

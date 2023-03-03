@@ -165,10 +165,6 @@ class SoAdPduRouteDestView:
         self.n_soad_pdu_r_dest_str.set(self.n_soad_pdu_r_dest)
         spinb.grid(row=0, column=1, sticky="w")
 
-        # Save Button
-        genm = tk.Button(self.scrollw.mnf, width=10, text="Save Configs", command=self.save_data, bg="#206020", fg='white')
-        genm.grid(row=0, column=2)
-
         # Update buttons frames idle tasks to let tkinter calculate buttons sizes
         self.scrollw.update()
 
@@ -176,11 +172,6 @@ class SoAdPduRouteDestView:
         dappa.place_heading(self, 2, 1)
 
         self.update()
-
-
-
-    def save_data(self):
-        self.tab_struct.save_cb(self.gui, self.configs)
 
 
 
@@ -215,7 +206,7 @@ class SoAdPduRouteDestView:
         self.active_dialog.title("SoAdPduRoute")
 
         # create views and draw
-        gen_view = SoAdChildView(self.active_dialog, width, height, self.save_data)
+        gen_view = SoAdChildView(self.active_dialog, width, height, None)
         gen_view.view = soad_fo.SoAdPduRouteView(self.gui,
                                             self.configs[0].datavar["SoAdPduRoute"])
         gen_view.name = "SoAdPduRoute"

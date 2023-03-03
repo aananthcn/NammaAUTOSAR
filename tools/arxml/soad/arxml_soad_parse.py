@@ -27,32 +27,17 @@ import arxml.core.lib_defs as lib_defs
 
 
 
-
-
-def parse_soad_general(cname, containers):
-    soad_params = {}
-
-    ctnrblks = lib_conf.findall_containers_with_name(cname, containers)
-    for ctnrblk in ctnrblks:
-        if not ctnrblk or lib_conf.get_tag(ctnrblk) != "ECUC-CONTAINER-VALUE":
-            return None
-        params = lib_conf.get_param_list(ctnrblk)
-        for par in params:
-            soad_params[par["tag"]] = par["val"]
-
-        # SoAdGeneral has exactly one container, so it is safe to break the loop
-        break
-
-    return soad_params
-
-
-
-def get_soad_2nd_subcontainer(sub_ctnr_name, root, par_dict):
+def get_soad_2nd_subcontainer(sub_ctnr_name, root):
+    par_list = []
+    
     sub2_list = lib_conf.findall_subcontainers_with_name(sub_ctnr_name, root)
     if not sub2_list:
-        return par_dict
+        return par_list
 
     for cntr2 in sub2_list:
+        # new parameter container
+        par_dict = {}
+
         # parse parameters
         item_params = lib_conf.get_param_list(cntr2)
         for par in item_params:
@@ -63,11 +48,13 @@ def get_soad_2nd_subcontainer(sub_ctnr_name, root, par_dict):
         for ref in refs:
             par_dict[ref["tag"]] = ref["val"]
 
-    return par_dict
+        par_list.append(par_dict)
+
+    return par_list
 
 
 
-def get_configset_subcontainer(sub_ctnr_name, ctnr):
+def get_soad_cfgs_subcontainer(sub_ctnr_name, ctnr):
     subc_p_list = []
 
     ctnr_list = lib_conf.findall_subcontainers_with_name(sub_ctnr_name, ctnr)
@@ -85,12 +72,49 @@ def get_configset_subcontainer(sub_ctnr_name, ctnr):
                 subc_param[ref["tag"]] = ref["val"]
 
             # container level 2 parsing
-            if sub_ctnr_name == "SoAdPhysController":
-                subc_param = get_soad_2nd_subcontainer("SoAdPhysCtrlRxMainFunctionPriorityProcessing", subc, subc_param)
+            if sub_ctnr_name == "SoAdPduRoute":
+                subc_param["SoAdPduRouteDest"] = get_soad_2nd_subcontainer("SoAdPduRouteDest", subc)
 
             subc_p_list.append(subc_param)
 
     return subc_p_list
+
+
+
+def parse_soad_configs(cname, containers):
+    soad_cfgs = {}
+
+    # if there are no configs, just return empty configs
+    ctnrblks = lib_conf.findall_containers_with_name(cname, containers)
+    if not ctnrblks:
+        return soad_cfgs
+
+    # else, parse all configs
+    for ctnrblk in ctnrblks:
+        if not ctnrblk or lib_conf.get_tag(ctnrblk) != "ECUC-CONTAINER-VALUE":
+            return None
+        params = lib_conf.get_param_list(ctnrblk)
+        soad_params = {}
+        for par in params:
+            soad_params[par["tag"]] = par["val"]
+
+        # Let us parse the sub-containers
+        cs_cfgs = get_soad_cfgs_subcontainer("SoAdPduRoute", ctnrblk)
+        soad_cfgs["SoAdPduRoute"] = cs_cfgs
+
+        cs_cfgs = get_soad_cfgs_subcontainer("SoAdRoutingGroup", ctnrblk)
+        soad_cfgs["SoAdRoutingGroup"] = cs_cfgs
+
+        cs_cfgs = get_soad_cfgs_subcontainer("SoAdSocketConnectionGroup", ctnrblk)
+        soad_cfgs["SoAdSocketConnectionGroup"] = cs_cfgs
+
+        cs_cfgs = get_soad_cfgs_subcontainer("SoAdSocketRoute", ctnrblk)
+        soad_cfgs["SoAdSocketRoute"] = cs_cfgs
+
+        #SoAdConfig has exactly one set of level1 containers, so it is safe to break the loop
+        break
+
+    return soad_cfgs
 
 
 
@@ -118,13 +142,33 @@ def parse_soad_bswmodules(cname, containers):
     return soad_bswmods
 
 
+
+def parse_soad_general(cname, containers):
+    soad_params = {}
+
+    ctnrblks = lib_conf.findall_containers_with_name(cname, containers)
+    for ctnrblk in ctnrblks:
+        if not ctnrblk or lib_conf.get_tag(ctnrblk) != "ECUC-CONTAINER-VALUE":
+            return None
+        params = lib_conf.get_param_list(ctnrblk)
+        for par in params:
+            soad_params[par["tag"]] = par["val"]
+
+        # SoAdGeneral has exactly one container, so it is safe to break the loop
+        break
+
+    return soad_params
+
+
+
 def print_soad_configs(soad_configs):
     print("\n\nRead Operation:")
     print("\nSoAdGeneral:")
     print(soad_configs["SoAdGeneral"])
-
     print("\nSoAdBswModules:")
     print(soad_configs["SoAdBswModules"])
+    print("\SoAdConfig:")
+    print(soad_configs["SoAdConfig"])
 
 
 
@@ -161,7 +205,8 @@ def parse_arxml(ar_file):
     soad_cfg["SoAdBswModules"] = soad_bswmods
 
     # copy SoAdConfig to soad_configs
-    soad_cfg["SoAdConfig"] = []
+    soad_configs = parse_soad_configs("SoAdConfig", containers)
+    soad_cfg["SoAdConfig"] = soad_configs
 
     print_soad_configs(soad_cfg)
 
