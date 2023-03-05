@@ -36,22 +36,22 @@ def update_port_gen_to_container(root, port_gen):
     
     # Create a new container - PortGeneral
     dref = "/AUTOSAR/EcucDefs/Port/"+ctnrname
-    ctnrblk = lib_conf.insert_conf_container(root, ctnrname, "conf", dref)
+    ctnrblk = lib_conf.insert_ecuc_container(root, ctnrname, "conf", dref)
 
     # Parameters
     params = ET.SubElement(ctnrblk, "PARAMETER-VALUES")
 
     refname = "/AUTOSAR/EcucDefs/Port/"+ctnrname+"/PortDevErrorDetect"
-    lib_conf.insert_conf_param(params, refname, "numerical", "bool", port_gen["PortDevErrorDetect"])
+    lib_conf.insert_ecuc_param(params, refname, "numerical", "bool", port_gen["PortDevErrorDetect"])
 
     refname = "/AUTOSAR/EcucDefs/Port/"+ctnrname+"/PortVersionInfoApi"
-    lib_conf.insert_conf_param(params, refname, "numerical", "bool", port_gen["PortVersionInfoApi"])
+    lib_conf.insert_ecuc_param(params, refname, "numerical", "bool", port_gen["PortVersionInfoApi"])
 
     refname = "/AUTOSAR/EcucDefs/Port/"+ctnrname+"/PortSetPinDirectionApi"
-    lib_conf.insert_conf_param(params, refname, "numerical", "bool", port_gen["PortSetPinDirectionApi"])
+    lib_conf.insert_ecuc_param(params, refname, "numerical", "bool", port_gen["PortSetPinDirectionApi"])
 
     refname = "/AUTOSAR/EcucDefs/Port/"+ctnrname+"/PortSetPinModeApi"
-    lib_conf.insert_conf_param(params, refname, "numerical", "bool", port_gen["PortSetPinModeApi"])
+    lib_conf.insert_ecuc_param(params, refname, "numerical", "bool", port_gen["PortSetPinModeApi"])
 
 
 
@@ -67,18 +67,18 @@ def update_port_info_to_container(root, port_cfg):
     
     # Create a new container - PortConfigSet
     dref = "/AUTOSAR/EcucDefs/Port/"+ctnrname
-    ctnrblk = lib_conf.insert_conf_container(root, ctnrname, "conf", dref)
+    ctnrblk = lib_conf.insert_ecuc_container(root, ctnrname, "conf", dref)
 
     # Create a sub-container    
     subctnr1 = ET.SubElement(ctnrblk, "SUB-CONTAINERS")
     subctnr1_name = "PortContainer"
     dref = "/AUTOSAR/EcucDefs/Port/"+ctnrname+"/"+subctnr1_name
-    cctnrblk1 = lib_conf.insert_conf_container(subctnr1, subctnr1_name, "conf", dref)
+    cctnrblk1 = lib_conf.insert_ecuc_container(subctnr1, subctnr1_name, "conf", dref)
 
     # Parameters
     params = ET.SubElement(cctnrblk1, "PARAMETER-VALUES")
     refname = "/AUTOSAR/EcucDefs/Port/"+ctnrname+"/"+subctnr1_name+"/PortNumberOfPortPins"
-    lib_conf.insert_conf_param(params, refname, "numerical", "int", str(len(port_cfg)))
+    lib_conf.insert_ecuc_param(params, refname, "numerical", "int", str(len(port_cfg)))
     
     # Create a sub-container    
     subctnr2 = ET.SubElement(cctnrblk1, "SUB-CONTAINERS")
@@ -87,36 +87,36 @@ def update_port_info_to_container(root, port_cfg):
     
     # Insert pin info as conf_container values
     for i in range(len(port_cfg)):
-        cctnrblk2 = lib_conf.insert_conf_container(subctnr2, subctnr2_name, "conf", dref)
+        cctnrblk2 = lib_conf.insert_ecuc_container(subctnr2, subctnr2_name, "conf", dref)
         params = ET.SubElement(cctnrblk2, "PARAMETER-VALUES")
 
         # Parameter - PortPinId
         refname = "/AUTOSAR/EcucDefs/Port/"+ctnrname+"/"+subctnr1_name+"/PortPin/PortPinId"
-        lib_conf.insert_conf_param(params, refname, "numerical", "int", port_cfg[i]["PortPinId"])
+        lib_conf.insert_ecuc_param(params, refname, "numerical", "int", port_cfg[i]["PortPinId"])
 
         # Parameter - PortPinDirection
         refname = "/AUTOSAR/EcucDefs/Port/"+ctnrname+"/"+subctnr1_name+"/PortPin/PortPinDirection"
-        lib_conf.insert_conf_param(params, refname, "numerical", "int", port_cfg[i]["PortPinDirection"])
+        lib_conf.insert_ecuc_param(params, refname, "numerical", "int", port_cfg[i]["PortPinDirection"])
 
         # Parameter - PortPinDirectionChangeable
         refname = "/AUTOSAR/EcucDefs/Port/"+ctnrname+"/"+subctnr1_name+"/PortPin/PortPinDirectionChangeable"
-        lib_conf.insert_conf_param(params, refname, "numerical", "int", port_cfg[i]["PortPinDirectionChangeable"])
+        lib_conf.insert_ecuc_param(params, refname, "numerical", "int", port_cfg[i]["PortPinDirectionChangeable"])
 
         # Parameter - PortPinLevelValue
         refname = "/AUTOSAR/EcucDefs/Port/"+ctnrname+"/"+subctnr1_name+"/PortPin/PortPinLevelValue"
-        lib_conf.insert_conf_param(params, refname, "numerical", "int", port_cfg[i]["PortPinLevelValue"])
+        lib_conf.insert_ecuc_param(params, refname, "numerical", "int", port_cfg[i]["PortPinLevelValue"])
 
         # Parameter - PortPinMode
         refname = "/AUTOSAR/EcucDefs/Port/"+ctnrname+"/"+subctnr1_name+"/PortPin/PortPinMode"
-        lib_conf.insert_conf_param(params, refname, "numerical", "int", port_cfg[i]["PortPinMode"])
+        lib_conf.insert_ecuc_param(params, refname, "numerical", "int", port_cfg[i]["PortPinMode"])
 
         # Parameter - PortPinModeChangeable
         refname = "/AUTOSAR/EcucDefs/Port/"+ctnrname+"/"+subctnr1_name+"/PortPin/PortPinModeChangeable"
-        lib_conf.insert_conf_param(params, refname, "numerical", "int", port_cfg[i]["PortPinModeChangeable"])
+        lib_conf.insert_ecuc_param(params, refname, "numerical", "int", port_cfg[i]["PortPinModeChangeable"])
 
         # Parameter - PortPinInitialMode 
         refname = "/AUTOSAR/EcucDefs/Port/"+ctnrname+"/"+subctnr1_name+"/PortPin/PortPinInitialMode"
-        lib_conf.insert_conf_param(params, refname, "numerical", "int", port_cfg[i]["PortPinInitialMode"])
+        lib_conf.insert_ecuc_param(params, refname, "numerical", "int", port_cfg[i]["PortPinInitialMode"])
     
     
     

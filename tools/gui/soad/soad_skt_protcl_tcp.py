@@ -135,14 +135,6 @@ class SoAdSocketTcpView:
         dappa.combog(self, "SoAdSocketTCPOptionFilterRef",  0, 10, 2, 20, ref_cmbsel)
         dappa.combog(self, "SoAdSocketTcpTlsConnectionRef",  0, 11, 2, 20, ref_cmbsel)
 
-        # empty space
-        label = tk.Label(self.scrollw.mnf, text="")
-        label.grid(row=17, column=0, sticky="e")
-
-        # Save Button
-        saveb = tk.Button(self.scrollw.mnf, width=10, text="Save Configs", command=self.save_data, bg="#206020", fg='white')
-        saveb.grid(row=18, column=1)
-
 
 
     def draw(self, view):
@@ -156,7 +148,3 @@ class SoAdSocketTcpView:
 
         # Support scrollable view
         self.scrollw.scroll()
-
-
-    def save_data(self):
-        self.tab_struct.save_cb(self.gui)

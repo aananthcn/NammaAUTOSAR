@@ -241,11 +241,6 @@ class SoAdSocketConnectionGrpView:
         self.n_soad_sktcn_str.set(self.n_soad_sktcn)
         spinb.grid(row=0, column=1, sticky="w")
 
-        # Save Button
-        genm = tk.Button(top_frame, width=10, text="Save Configs", command=self.save_data, bg="#206020", fg='white')
-        genm.grid(row=0, column=2)
-
-
         # draw tabbed view
         noteb_frame = ttk.Frame(self.scrollw.mnf)
         noteb_frame.grid(row=1, column=0, sticky="w")
@@ -257,11 +252,6 @@ class SoAdSocketConnectionGrpView:
 
 
         self.update()
-
-
-
-    def save_data(self):
-        self.tab_struct.save_cb(self.gui, self.configs)
 
 
 
@@ -312,7 +302,7 @@ class SoAdSocketConnectionGrpView:
         self.active_dialog.geometry("%dx%d+%d+%d" % (width, height, x/5, y/5))
 
         # create views and draw
-        soad_chview = SoAdChildView(self.active_dialog, width, height, self.save_data)
+        soad_chview = SoAdChildView(self.active_dialog, width, height, None)
         if self.configs[row].datavar["SoAdSocketProtocolChoice"] == "TCP":
             self.active_dialog.title("SoAdSocketProtocol (TCP)")
             soad_chview.view = skt_tcp.SoAdSocketTcpView(self.gui,
@@ -363,7 +353,7 @@ class SoAdSocketConnectionGrpView:
         self.active_dialog.geometry("%dx%d+%d+%d" % (width, height, x/3, y/12))
 
         # create views and draw
-        soad_chview = SoAdChildView(self.active_dialog, width, height, self.save_data)
+        soad_chview = SoAdChildView(self.active_dialog, width, height, None)
         self.active_dialog.title("SoAdSocketConnection")
         soad_chview.view = skt_conn.SoAdSocketConnView(self.gui, row,
                                         self.configs[row].datavar["SoAdSocketConnection"])

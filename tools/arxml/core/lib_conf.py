@@ -48,7 +48,7 @@ def insert_ecuc_module_conf(element_node, module_name):
 
 
 
-def insert_conf_container(root, name, ctnr_type, dref):
+def insert_ecuc_container(root, name, ctnr_type, dref):
    ctnr = ET.SubElement(root, "ECUC-CONTAINER-VALUE")
    shortname = ET.SubElement(ctnr, "SHORT-NAME")
    shortname.text = name
@@ -63,7 +63,7 @@ def insert_conf_container(root, name, ctnr_type, dref):
 
 
 
-def insert_conf_reference(root, dref, vref):
+def insert_ecuc_reference(root, dref, vref):
    rctnr = ET.SubElement(root, "ECUC-REFERENCE-VALUE")
    def_ref = ET.SubElement(rctnr, "DEFINITION-REF", DEST="ECUC-REFERENCE-DEF")
    def_ref.text = dref
@@ -73,7 +73,7 @@ def insert_conf_reference(root, dref, vref):
 
 
 
-def insert_conf_param(root, refname, paramtype, subtype, value):
+def insert_ecuc_param(root, refname, paramtype, subtype, value):
    if paramtype == "text":
       param_blk = ET.SubElement(root, "ECUC-TEXTUAL-PARAM-VALUE")
    elif paramtype == "numerical":

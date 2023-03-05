@@ -36,17 +36,17 @@ def update_uc_info_to_container(root, uc_info):
     
     # Create a new container    
     dref = "/AUTOSAR/EcucDefs/Mcu/VendorSpecific"
-    ctnrval = lib_conf.insert_conf_container(root, ctnrname, "conf", dref)
+    ctnrval = lib_conf.insert_ecuc_container(root, ctnrname, "conf", dref)
         
         
     # Parameters
     params = ET.SubElement(ctnrval, "PARAMETER-VALUES")
     refname = "/AUTOSAR/EcucDefs/Mcu/VendorSpecific/Micro"
-    lib_conf.insert_conf_param(params, refname, "numerical", "enum", uc_info.micro)
+    lib_conf.insert_ecuc_param(params, refname, "numerical", "enum", uc_info.micro)
     refname = "/AUTOSAR/EcucDefs/Mcu/VendorSpecific/MicroArch"
-    lib_conf.insert_conf_param(params, refname, "numerical", "enum", uc_info.micro_arch)
+    lib_conf.insert_ecuc_param(params, refname, "numerical", "enum", uc_info.micro_arch)
     refname = "/AUTOSAR/EcucDefs/Mcu/VendorSpecific/MicroMaker"
-    lib_conf.insert_conf_param(params, refname, "numerical", "enum", uc_info.micro_maker)
+    lib_conf.insert_ecuc_param(params, refname, "numerical", "enum", uc_info.micro_maker)
     
     
 

@@ -37,7 +37,7 @@ def update_dio_config_container(root, dio_cfg, dio_grp):
     
     # Create a new container - DioConfig
     dref = "/AUTOSAR/EcucDefs/Dio/"+ctnrname
-    ctnrblk = lib_conf.insert_conf_container(root, ctnrname, "conf", dref)
+    ctnrblk = lib_conf.insert_ecuc_container(root, ctnrname, "conf", dref)
     
     # Create a sub-container    
     subctnr1 = ET.SubElement(ctnrblk, "SUB-CONTAINERS")
@@ -46,22 +46,22 @@ def update_dio_config_container(root, dio_cfg, dio_grp):
     for pin in dio_cfg:
         subctnr1_name = "DioPort"
         dref = "/AUTOSAR/EcucDefs/Dio/"+ctnrname+"/"+subctnr1_name
-        cctnrblk1 = lib_conf.insert_conf_container(subctnr1, subctnr1_name, "conf", dref)
+        cctnrblk1 = lib_conf.insert_ecuc_container(subctnr1, subctnr1_name, "conf", dref)
 
         # Parameters
         params = ET.SubElement(cctnrblk1, "PARAMETER-VALUES")
         refname = "/AUTOSAR/EcucDefs/Dio/"+ctnrname+"/"+subctnr1_name+"/DioPortId"
-        lib_conf.insert_conf_param(params, refname, "numerical", "int", pin["DioPortId"])
+        lib_conf.insert_ecuc_param(params, refname, "numerical", "int", pin["DioPortId"])
 
         # DioChannel -- Create a sub-container    
         subctnr2 = ET.SubElement(cctnrblk1, "SUB-CONTAINERS")
         subctnr2_name = "DioChannel"
         dref = "/AUTOSAR/EcucDefs/Dio/"+ctnrname+"/"+subctnr1_name+"/"+subctnr2_name
-        cctnrblk2 = lib_conf.insert_conf_container(subctnr2, subctnr2_name, "conf", dref)
+        cctnrblk2 = lib_conf.insert_ecuc_container(subctnr2, subctnr2_name, "conf", dref)
         # Parameter
         params = ET.SubElement(cctnrblk2, "PARAMETER-VALUES")
         refname = dref+"/DioChannelId"
-        lib_conf.insert_conf_param(params, refname, "numerical", "int", pin["DioChannelId"])
+        lib_conf.insert_ecuc_param(params, refname, "numerical", "int", pin["DioChannelId"])
 
         # Check if Channel Group information corresponding to this DioPortId exists
         this_chgrp = []
@@ -78,20 +78,20 @@ def update_dio_config_container(root, dio_cfg, dio_grp):
             dref = "/AUTOSAR/EcucDefs/Dio/"+ctnrname+"/"+subctnr1_name+"/"+subctnr2_name
 
         for grp in this_chgrp:
-            cctnrblk2 = lib_conf.insert_conf_container(subctnr2, subctnr2_name, "conf", dref)
+            cctnrblk2 = lib_conf.insert_ecuc_container(subctnr2, subctnr2_name, "conf", dref)
 
             # Parameters - 1
             params = ET.SubElement(cctnrblk2, "PARAMETER-VALUES")
             refname = dref+"/DioChannelGroupIdentification"
-            lib_conf.insert_conf_param(params, refname, "text", "enum", grp["DioChannelGroupIdentification"])
+            lib_conf.insert_ecuc_param(params, refname, "text", "enum", grp["DioChannelGroupIdentification"])
             # Parameters - 2
             params = ET.SubElement(cctnrblk2, "PARAMETER-VALUES")
             refname = dref+"/DioPortOffset"
-            lib_conf.insert_conf_param(params, refname, "numerical", "int", grp["DioPortOffset"])
+            lib_conf.insert_ecuc_param(params, refname, "numerical", "int", grp["DioPortOffset"])
             # Parameters - 3
             params = ET.SubElement(cctnrblk2, "PARAMETER-VALUES")
             refname = dref+"/DioPortMask"
-            lib_conf.insert_conf_param(params, refname, "numerical", "int", grp["DioPortMask"])
+            lib_conf.insert_ecuc_param(params, refname, "numerical", "int", grp["DioPortMask"])
 
 
 
@@ -110,19 +110,19 @@ def update_dio_info_to_container(root, dio_cfg, dio_grp, dio_gen):
     
     # Create a new container - DioGeneral
     dref = "/AUTOSAR/EcucDefs/Dio/"+ctnrname
-    ctnrblk = lib_conf.insert_conf_container(root, ctnrname, "conf", dref)
+    ctnrblk = lib_conf.insert_ecuc_container(root, ctnrname, "conf", dref)
 
     # Parameters
     params = ET.SubElement(ctnrblk, "PARAMETER-VALUES")
     
     refname = dref+"/DioDevErrorDetect"
-    lib_conf.insert_conf_param(params, refname, "numerical", "bool", dio_gen["DioDevErrorDetect"])
+    lib_conf.insert_ecuc_param(params, refname, "numerical", "bool", dio_gen["DioDevErrorDetect"])
     refname = dref+"/DioVersionInfoApi"
-    lib_conf.insert_conf_param(params, refname, "numerical", "bool", dio_gen["DioVersionInfoApi"])
+    lib_conf.insert_ecuc_param(params, refname, "numerical", "bool", dio_gen["DioVersionInfoApi"])
     refname = dref+"/DioFlipChannelApi"
-    lib_conf.insert_conf_param(params, refname, "numerical", "bool", dio_gen["DioFlipChannelApi"])
+    lib_conf.insert_ecuc_param(params, refname, "numerical", "bool", dio_gen["DioFlipChannelApi"])
     refname = dref+"/DioMaskedWritePortApi"
-    lib_conf.insert_conf_param(params, refname, "numerical", "bool", dio_gen["DioMaskedWritePortApi"])
+    lib_conf.insert_ecuc_param(params, refname, "numerical", "bool", dio_gen["DioMaskedWritePortApi"])
 
 
 

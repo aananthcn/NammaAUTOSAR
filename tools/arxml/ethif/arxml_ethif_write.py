@@ -36,9 +36,9 @@ def add_ethif_fo_config_params_to_container(ctnr, dref, cfg):
 
     # Insert parameters
     refname = dref+"/EthIfFrameType"
-    lib_conf.insert_conf_param(params, refname, "numerical", "int", str(cfg["EthIfFrameType"]))
+    lib_conf.insert_ecuc_param(params, refname, "numerical", "int", str(cfg["EthIfFrameType"]))
     refname = dref+"/EthIfOwner"
-    lib_conf.insert_conf_param(params, refname, "numerical", "int", str(cfg["EthIfOwner"]))
+    lib_conf.insert_ecuc_param(params, refname, "numerical", "int", str(cfg["EthIfOwner"]))
 
 
 
@@ -52,7 +52,7 @@ def add_ethif_rxi_config_params_to_container(ctnr, dref, cfg):
 
     # Insert parameters
     refname = dref+"/EthIfRxIndicationFunction"
-    lib_conf.insert_conf_param(params, refname, "text", "string", str(cfg["EthIfRxIndicationFunction"]))
+    lib_conf.insert_ecuc_param(params, refname, "text", "string", str(cfg["EthIfRxIndicationFunction"]))
 
 
 
@@ -66,7 +66,7 @@ def add_ethif_txc_config_params_to_container(ctnr, dref, cfg):
 
     # Insert parameters
     refname = dref+"/EthIfTxConfirmationFunction"
-    lib_conf.insert_conf_param(params, refname, "text", "string", str(cfg["EthIfTxConfirmationFunction"]))
+    lib_conf.insert_ecuc_param(params, refname, "text", "string", str(cfg["EthIfTxConfirmationFunction"]))
 
 
 
@@ -80,7 +80,7 @@ def add_ethif_tlsc_config_params_to_container(ctnr, dref, cfg):
 
     # Insert parameters
     refname = dref+"/EthIfTrcvLinkStateChgFunction"
-    lib_conf.insert_conf_param(params, refname, "text", "string", str(cfg["EthIfTrcvLinkStateChgFunction"]))
+    lib_conf.insert_ecuc_param(params, refname, "text", "string", str(cfg["EthIfTrcvLinkStateChgFunction"]))
 
 
 
@@ -88,7 +88,7 @@ def insert_ethif_pctrl_sub_container(ctnr, dref, cfg):
     # Insert subContainer(s) - EthIfPhysCtrlRxMainFunctionPriorityProcessing
     subctnr2 = ET.SubElement(ctnr, "SUB-CONTAINERS")
     sctnr_name = "EthIfPhysCtrlRxMainFunctionPriorityProcessing"
-    cf_ctnr = lib_conf.insert_conf_container(subctnr2, sctnr_name, "conf", dref)
+    cf_ctnr = lib_conf.insert_ecuc_container(subctnr2, sctnr_name, "conf", dref)
 
     # Insert PARAMETER & REFERENCE block
     params = ET.SubElement(cf_ctnr, "PARAMETER-VALUES")
@@ -96,14 +96,14 @@ def insert_ethif_pctrl_sub_container(ctnr, dref, cfg):
 
     # Insert parameters
     refname = dref+"/EthIfPhysCtrlRxMainFunctionPeriod"
-    lib_conf.insert_conf_param(params, refname, "numerical", "float", str(cfg["EthIfPhysCtrlRxMainFunctionPeriod"]))
+    lib_conf.insert_ecuc_param(params, refname, "numerical", "float", str(cfg["EthIfPhysCtrlRxMainFunctionPeriod"]))
     refname = dref+"/EthIfPhysCtrlRxIndicationIterations"
-    lib_conf.insert_conf_param(params, refname, "numerical", "int", str(cfg["EthIfPhysCtrlRxIndicationIterations"]))
+    lib_conf.insert_ecuc_param(params, refname, "numerical", "int", str(cfg["EthIfPhysCtrlRxIndicationIterations"]))
     # Insert references
     if "EthIfPhysCtrlRxIngressFifoRef" in cfg:
         refname = dref+"/EthIfPhysCtrlRxIngressFifoRef"
         refdest = str(cfg["EthIfPhysCtrlRxIngressFifoRef"])
-        lib_conf.insert_conf_reference(refs, refname, refdest)
+        lib_conf.insert_ecuc_reference(refs, refname, refdest)
 
 
 
@@ -118,14 +118,14 @@ def add_ethif_pctrlr_config_params_to_container(ctnr, dref, cfg):
 
     # Insert parameters
     refname = dref+"/EthIfPhysControllerIdx"
-    lib_conf.insert_conf_param(params, refname, "numerical", "int", str(cfg["EthIfPhysControllerIdx"]))
+    lib_conf.insert_ecuc_param(params, refname, "numerical", "int", str(cfg["EthIfPhysControllerIdx"]))
     # Insert references
     refname = dref+"/EthIfEthCtrlRef"
     refdest = str(cfg["EthIfEthCtrlRef"])
-    lib_conf.insert_conf_reference(refs, refname, refdest)
+    lib_conf.insert_ecuc_reference(refs, refname, refdest)
     refname = dref+"/EthIfWEthCtrlRef"
     refdest = str(cfg["EthIfWEthCtrlRef"])
-    lib_conf.insert_conf_reference(refs, refname, refdest)
+    lib_conf.insert_ecuc_reference(refs, refname, refdest)
 
     # Insert subContainer(s) - EthIfPhysCtrlRxMainFunctionPriorityProcessing
     dref2 = dref+"/EthIfPhysCtrlRxMainFunctionPriorityProcessing"
@@ -144,30 +144,30 @@ def add_ethif_ctrlr_config_params_to_container(ctnr, dref, cfg):
 
     # Insert parameters
     refname = dref+"/EthIfCtrlIdx"
-    lib_conf.insert_conf_param(params, refname, "numerical", "int", str(cfg["EthIfCtrlIdx"]))
+    lib_conf.insert_ecuc_param(params, refname, "numerical", "int", str(cfg["EthIfCtrlIdx"]))
     refname = dref+"/EthIfVlanId"
-    lib_conf.insert_conf_param(params, refname, "numerical", "int", str(cfg["EthIfVlanId"]))
+    lib_conf.insert_ecuc_param(params, refname, "numerical", "int", str(cfg["EthIfVlanId"]))
     refname = dref+"/EthIfCtrlMtu"
-    lib_conf.insert_conf_param(params, refname, "numerical", "int", str(cfg["EthIfCtrlMtu"]))
+    lib_conf.insert_ecuc_param(params, refname, "numerical", "int", str(cfg["EthIfCtrlMtu"]))
     refname = dref+"/EthIfMaxTxBufsTotal"
-    lib_conf.insert_conf_param(params, refname, "numerical", "int", str(cfg["EthIfMaxTxBufsTotal"]))
+    lib_conf.insert_ecuc_param(params, refname, "numerical", "int", str(cfg["EthIfMaxTxBufsTotal"]))
     # Insert references
     if "EthIfPhysControllerRef" in cfg:
         refname = dref+"/EthIfPhysControllerRef"
         refdest = str(cfg["EthIfPhysControllerRef"])
-        lib_conf.insert_conf_reference(refs, refname, refdest)
+        lib_conf.insert_ecuc_reference(refs, refname, refdest)
     if "EthIfEthTrcvRef" in cfg:
         refname = dref+"/EthIfEthTrcvRef"
         refdest = str(cfg["EthIfEthTrcvRef"])
-        lib_conf.insert_conf_reference(refs, refname, refdest)
+        lib_conf.insert_ecuc_reference(refs, refname, refdest)
     if "EthIfSwitchRef" in cfg:
         refname = dref+"/EthIfSwitchRefOrPortGroupRef/EthIfSwitchRef"
         refdest = str(cfg["EthIfSwitchRef"])
-        lib_conf.insert_conf_reference(refs, refname, refdest)
+        lib_conf.insert_ecuc_reference(refs, refname, refdest)
     if "EthIfSwitchPortGroupRef" in cfg:
         refname = dref+"/EthIfSwitchRefOrPortGroupRef/EthIfSwitchPortGroupRef"
         refdest = str(cfg["EthIfSwitchPortGroupRef"])
-        lib_conf.insert_conf_reference(refs, refname, refdest)
+        lib_conf.insert_ecuc_reference(refs, refname, refdest)
 
 
 
@@ -182,16 +182,16 @@ def add_ethif_trcv_config_params_to_container(ctnr, dref, cfg):
 
     # Insert parameters
     refname = dref+"/EthIfTransceiverIdx"
-    lib_conf.insert_conf_param(params, refname, "numerical", "int", str(cfg["EthIfTransceiverIdx"]))
+    lib_conf.insert_ecuc_param(params, refname, "numerical", "int", str(cfg["EthIfTransceiverIdx"]))
     # Insert references
     if "EthIfEthTrcvRef" in cfg:
         refname = dref+"/EthIfEthTrcvRef"
         refdest = str(cfg["EthIfEthTrcvRef"])
-        lib_conf.insert_conf_reference(refs, refname, refdest)
+        lib_conf.insert_ecuc_reference(refs, refname, refdest)
     if "EthIfWEthTrcvRef" in cfg:
         refname = dref+"/EthIfWEthTrcvRef"
         refdest = str(cfg["EthIfWEthTrcvRef"])
-        lib_conf.insert_conf_reference(refs, refname, refdest)
+        lib_conf.insert_ecuc_reference(refs, refname, refdest)
 
 
 
@@ -206,12 +206,12 @@ def add_ethif_swt_config_params_to_container(ctnr, dref, cfg):
 
     # Insert parameters
     refname = dref+"/EthIfSwitchIdx"
-    lib_conf.insert_conf_param(params, refname, "numerical", "int", str(cfg["EthIfSwitchIdx"]))
+    lib_conf.insert_ecuc_param(params, refname, "numerical", "int", str(cfg["EthIfSwitchIdx"]))
     # Insert references
     if "EthIfSwitchRef" in cfg:
         refname = dref+"/EthIfSwitchRef"
         refdest = str(cfg["EthIfSwitchRef"])
-        lib_conf.insert_conf_reference(refs, refname, refdest)
+        lib_conf.insert_ecuc_reference(refs, refname, refdest)
 
 
 
@@ -226,22 +226,22 @@ def add_ethif_spg_config_params_to_container(ctnr, dref, cfg):
 
     # Insert parameters
     refname = dref+"/EthIfSwitchPortGroupIdx"
-    lib_conf.insert_conf_param(params, refname, "numerical", "int", str(cfg["EthIfSwitchPortGroupIdx"]))
+    lib_conf.insert_ecuc_param(params, refname, "numerical", "int", str(cfg["EthIfSwitchPortGroupIdx"]))
     refname = dref+"/EthIfSwitchPortGroupRefSemantics"
-    lib_conf.insert_conf_param(params, refname, "numerical", "enum", str(cfg["EthIfSwitchPortGroupRefSemantics"]))
+    lib_conf.insert_ecuc_param(params, refname, "numerical", "enum", str(cfg["EthIfSwitchPortGroupRefSemantics"]))
 
     # Insert references
     if "EthIfPortRef" in cfg:
         refname = dref+"/EthIfPortRef"
         refdest = str(cfg["EthIfPortRef"])
-        lib_conf.insert_conf_reference(refs, refname, refdest)
+        lib_conf.insert_ecuc_reference(refs, refname, refdest)
 
 
 
 def update_ethif_configset_to_container(ctnrname, root, ethif_cfg):
     # Create a new container - EthIf Driver
     dref = "/AUTOSAR/EcucDefs/EthIf/"+ctnrname
-    ctnrblk = lib_conf.insert_conf_container(root, ctnrname, "conf", dref)
+    ctnrblk = lib_conf.insert_ecuc_container(root, ctnrname, "conf", dref)
 
     # Create a sub-container
     subctnr1 = ET.SubElement(ctnrblk, "SUB-CONTAINERS")
@@ -250,55 +250,55 @@ def update_ethif_configset_to_container(ctnrname, root, ethif_cfg):
     sctnr_name = "EthIfFrameOwnerConfig"
     eif_dref = dref+"/"+sctnr_name
     for cfg in ethif_cfg[0].datavar[sctnr_name]:
-        mdc_ctnr = lib_conf.insert_conf_container(subctnr1, sctnr_name, "conf", eif_dref)
+        mdc_ctnr = lib_conf.insert_ecuc_container(subctnr1, sctnr_name, "conf", eif_dref)
         add_ethif_fo_config_params_to_container(mdc_ctnr, eif_dref, cfg)
 
     sctnr_name = "EthIfRxIndicationConfig"
     eif_dref = dref+"/"+sctnr_name
     for cfg in ethif_cfg[0].datavar[sctnr_name]:
-        mdc_ctnr = lib_conf.insert_conf_container(subctnr1, sctnr_name, "conf", eif_dref)
+        mdc_ctnr = lib_conf.insert_ecuc_container(subctnr1, sctnr_name, "conf", eif_dref)
         add_ethif_rxi_config_params_to_container(mdc_ctnr, eif_dref, cfg)
 
     sctnr_name = "EthIfTxConfirmationConfig"
     eif_dref = dref+"/"+sctnr_name
     for cfg in ethif_cfg[0].datavar[sctnr_name]:
-        mdc_ctnr = lib_conf.insert_conf_container(subctnr1, sctnr_name, "conf", eif_dref)
+        mdc_ctnr = lib_conf.insert_ecuc_container(subctnr1, sctnr_name, "conf", eif_dref)
         add_ethif_txc_config_params_to_container(mdc_ctnr, eif_dref, cfg)
 
     sctnr_name = "EthIfTrcvLinkStateChgConfig"
     eif_dref = dref+"/"+sctnr_name
     for cfg in ethif_cfg[0].datavar[sctnr_name]:
-        mdc_ctnr = lib_conf.insert_conf_container(subctnr1, sctnr_name, "conf", eif_dref)
+        mdc_ctnr = lib_conf.insert_ecuc_container(subctnr1, sctnr_name, "conf", eif_dref)
         add_ethif_tlsc_config_params_to_container(mdc_ctnr, eif_dref, cfg)
 
     sctnr_name = "EthIfPhysController"
     eif_dref = dref+"/"+sctnr_name
     for cfg in ethif_cfg[0].datavar[sctnr_name]:
-        mdc_ctnr = lib_conf.insert_conf_container(subctnr1, sctnr_name, "conf", eif_dref)
+        mdc_ctnr = lib_conf.insert_ecuc_container(subctnr1, sctnr_name, "conf", eif_dref)
         add_ethif_pctrlr_config_params_to_container(mdc_ctnr, eif_dref, cfg)
 
     sctnr_name = "EthIfController"
     eif_dref = dref+"/"+sctnr_name
     for cfg in ethif_cfg[0].datavar[sctnr_name]:
-        mdc_ctnr = lib_conf.insert_conf_container(subctnr1, sctnr_name, "conf", eif_dref)
+        mdc_ctnr = lib_conf.insert_ecuc_container(subctnr1, sctnr_name, "conf", eif_dref)
         add_ethif_ctrlr_config_params_to_container(mdc_ctnr, eif_dref, cfg)
 
     sctnr_name = "EthIfTransceiver"
     eif_dref = dref+"/"+sctnr_name
     for cfg in ethif_cfg[0].datavar[sctnr_name]:
-        mdc_ctnr = lib_conf.insert_conf_container(subctnr1, sctnr_name, "conf", eif_dref)
+        mdc_ctnr = lib_conf.insert_ecuc_container(subctnr1, sctnr_name, "conf", eif_dref)
         add_ethif_trcv_config_params_to_container(mdc_ctnr, eif_dref, cfg)
 
     sctnr_name = "EthIfSwitch"
     eif_dref = dref+"/"+sctnr_name
     for cfg in ethif_cfg[0].datavar[sctnr_name]:
-        mdc_ctnr = lib_conf.insert_conf_container(subctnr1, sctnr_name, "conf", eif_dref)
+        mdc_ctnr = lib_conf.insert_ecuc_container(subctnr1, sctnr_name, "conf", eif_dref)
         add_ethif_swt_config_params_to_container(mdc_ctnr, eif_dref, cfg)
 
     sctnr_name = "EthIfSwitchPortGroup"
     eif_dref = dref+"/"+sctnr_name
     for cfg in ethif_cfg[0].datavar[sctnr_name]:
-        mdc_ctnr = lib_conf.insert_conf_container(subctnr1, sctnr_name, "conf", eif_dref)
+        mdc_ctnr = lib_conf.insert_ecuc_container(subctnr1, sctnr_name, "conf", eif_dref)
         add_ethif_spg_config_params_to_container(mdc_ctnr, eif_dref, cfg)
 
 
@@ -314,74 +314,74 @@ def add_ethif_general_parameters_to_container(ctnr, dref, gen_cfg):
 
     # Insert parameters
     pref = dref+"/EthIfMaxTrcvsTotal"
-    lib_conf.insert_conf_param(params, pref, "numerical", "int", str(gen_cfg["EthIfMaxTrcvsTotal"]))
+    lib_conf.insert_ecuc_param(params, pref, "numerical", "int", str(gen_cfg["EthIfMaxTrcvsTotal"]))
     pref = dref+"/EthIfDevErrorDetect"
-    lib_conf.insert_conf_param(params, pref, "numerical", "bool", str(gen_cfg["EthIfDevErrorDetect"]))
+    lib_conf.insert_ecuc_param(params, pref, "numerical", "bool", str(gen_cfg["EthIfDevErrorDetect"]))
     pref = dref+"/EthIfEnableRxInterrupt"
-    lib_conf.insert_conf_param(params, pref, "numerical", "bool", str(gen_cfg["EthIfEnableRxInterrupt"]))
+    lib_conf.insert_ecuc_param(params, pref, "numerical", "bool", str(gen_cfg["EthIfEnableRxInterrupt"]))
     pref = dref+"/EthIfEnableTxInterrupt"
-    lib_conf.insert_conf_param(params, pref, "numerical", "bool", str(gen_cfg["EthIfEnableTxInterrupt"]))
+    lib_conf.insert_ecuc_param(params, pref, "numerical", "bool", str(gen_cfg["EthIfEnableTxInterrupt"]))
     pref = dref+"/EthIfVersionInfoApi"
-    lib_conf.insert_conf_param(params, pref, "numerical", "bool", str(gen_cfg["EthIfVersionInfoApi"]))
+    lib_conf.insert_ecuc_param(params, pref, "numerical", "bool", str(gen_cfg["EthIfVersionInfoApi"]))
     pref = dref+"/EthIfVersionInfoApiMacro"
-    lib_conf.insert_conf_param(params, pref, "numerical", "bool", str(gen_cfg["EthIfVersionInfoApiMacro"]))
+    lib_conf.insert_ecuc_param(params, pref, "numerical", "bool", str(gen_cfg["EthIfVersionInfoApiMacro"]))
     pref = dref+"/EthIfTrcvLinkStateChgMainReload"
-    lib_conf.insert_conf_param(params, pref, "numerical", "int", str(gen_cfg["EthIfTrcvLinkStateChgMainReload"]))
+    lib_conf.insert_ecuc_param(params, pref, "numerical", "int", str(gen_cfg["EthIfTrcvLinkStateChgMainReload"]))
     pref = dref+"/EthIfMainFunctionPeriod"
-    lib_conf.insert_conf_param(params, pref, "numerical", "float", str(gen_cfg["EthIfMainFunctionPeriod"]))
+    lib_conf.insert_ecuc_param(params, pref, "numerical", "float", str(gen_cfg["EthIfMainFunctionPeriod"]))
     pref = dref+"/EthIfPublicCddHeaderFile"
     for obj in gen_cfg["EthIfPublicCddHeaderFile"]:
-        lib_conf.insert_conf_param(params, pref, "text", "string", obj["Headerfile"])
+        lib_conf.insert_ecuc_param(params, pref, "text", "string", obj["Headerfile"])
     pref = dref+"/EthIfRxIndicationIterations"
-    lib_conf.insert_conf_param(params, pref, "numerical", "int", str(gen_cfg["EthIfRxIndicationIterations"]))
+    lib_conf.insert_ecuc_param(params, pref, "numerical", "int", str(gen_cfg["EthIfRxIndicationIterations"]))
     pref = dref+"/EthIfGetAndResetMeasurementDataApi"
-    lib_conf.insert_conf_param(params, pref, "numerical", "bool", str(gen_cfg["EthIfGetAndResetMeasurementDataApi"]))
+    lib_conf.insert_ecuc_param(params, pref, "numerical", "bool", str(gen_cfg["EthIfGetAndResetMeasurementDataApi"]))
     pref = dref+"/EthIfStartAutoNegotiation"
-    lib_conf.insert_conf_param(params, pref, "numerical", "bool", str(gen_cfg["EthIfStartAutoNegotiation"]))
+    lib_conf.insert_ecuc_param(params, pref, "numerical", "bool", str(gen_cfg["EthIfStartAutoNegotiation"]))
     pref = dref+"/EthIfGetBaudRate"
-    lib_conf.insert_conf_param(params, pref, "numerical", "bool", str(gen_cfg["EthIfGetBaudRate"]))
+    lib_conf.insert_ecuc_param(params, pref, "numerical", "bool", str(gen_cfg["EthIfGetBaudRate"]))
     pref = dref+"/EthIfGetCounterState"
-    lib_conf.insert_conf_param(params, pref, "numerical", "bool", str(gen_cfg["EthIfGetCounterState"]))
+    lib_conf.insert_ecuc_param(params, pref, "numerical", "bool", str(gen_cfg["EthIfGetCounterState"]))
     pref = dref+"/EthIfGlobalTimeSupport"
-    lib_conf.insert_conf_param(params, pref, "numerical", "bool", str(gen_cfg["EthIfGlobalTimeSupport"]))
+    lib_conf.insert_ecuc_param(params, pref, "numerical", "bool", str(gen_cfg["EthIfGlobalTimeSupport"]))
     pref = dref+"/EthIfWakeUpSupport"
-    lib_conf.insert_conf_param(params, pref, "numerical", "bool", str(gen_cfg["EthIfWakeUpSupport"]))
+    lib_conf.insert_ecuc_param(params, pref, "numerical", "bool", str(gen_cfg["EthIfWakeUpSupport"]))
     pref = dref+"/EthIfGetTransceiverWakeupModeApi"
-    lib_conf.insert_conf_param(params, pref, "numerical", "bool", str(gen_cfg["EthIfGetTransceiverWakeupModeApi"]))
+    lib_conf.insert_ecuc_param(params, pref, "numerical", "bool", str(gen_cfg["EthIfGetTransceiverWakeupModeApi"]))
 
     pref = dref+"/EthIfSwitchOffPortTimeDelay"
-    lib_conf.insert_conf_param(params, pref, "numerical", "bool", str(gen_cfg["EthIfSwitchOffPortTimeDelay"]))
+    lib_conf.insert_ecuc_param(params, pref, "numerical", "bool", str(gen_cfg["EthIfSwitchOffPortTimeDelay"]))
     pref = dref+"/EthIfPortStartupActiveTime"
-    lib_conf.insert_conf_param(params, pref, "numerical", "bool", str(gen_cfg["EthIfPortStartupActiveTime"]))
+    lib_conf.insert_ecuc_param(params, pref, "numerical", "bool", str(gen_cfg["EthIfPortStartupActiveTime"]))
     pref = dref+"/EthIfMainFunctionStatePeriod"
-    lib_conf.insert_conf_param(params, pref, "numerical", "bool", str(gen_cfg["EthIfMainFunctionStatePeriod"]))
+    lib_conf.insert_ecuc_param(params, pref, "numerical", "bool", str(gen_cfg["EthIfMainFunctionStatePeriod"]))
     pref = dref+"/EthIfSetForwardingModeApi"
-    lib_conf.insert_conf_param(params, pref, "numerical", "bool", str(gen_cfg["EthIfSetForwardingModeApi"]))
+    lib_conf.insert_ecuc_param(params, pref, "numerical", "bool", str(gen_cfg["EthIfSetForwardingModeApi"]))
     pref = dref+"/EthIfVerifyConfigApi"
-    lib_conf.insert_conf_param(params, pref, "numerical", "bool", str(gen_cfg["EthIfVerifyConfigApi"]))
+    lib_conf.insert_ecuc_param(params, pref, "numerical", "bool", str(gen_cfg["EthIfVerifyConfigApi"]))
     pref = dref+"/EthIfSwitchManagementSupport"
-    lib_conf.insert_conf_param(params, pref, "numerical", "bool", str(gen_cfg["EthIfSwitchManagementSupport"]))
+    lib_conf.insert_ecuc_param(params, pref, "numerical", "bool", str(gen_cfg["EthIfSwitchManagementSupport"]))
     pref = dref+"/EthIfGetCtrlIdxList"
-    lib_conf.insert_conf_param(params, pref, "numerical", "bool", str(gen_cfg["EthIfGetCtrlIdxList"]))
+    lib_conf.insert_ecuc_param(params, pref, "numerical", "bool", str(gen_cfg["EthIfGetCtrlIdxList"]))
     pref = dref+"/EthIfGetVlanIdSupport"
-    lib_conf.insert_conf_param(params, pref, "numerical", "bool", str(gen_cfg["EthIfGetVlanIdSupport"]))
+    lib_conf.insert_ecuc_param(params, pref, "numerical", "bool", str(gen_cfg["EthIfGetVlanIdSupport"]))
     pref = dref+"/EthIfEnableWEthApi"
-    lib_conf.insert_conf_param(params, pref, "numerical", "bool", str(gen_cfg["EthIfEnableWEthApi"]))
+    lib_conf.insert_ecuc_param(params, pref, "numerical", "bool", str(gen_cfg["EthIfEnableWEthApi"]))
     pref = dref+"/EthIfEnableSignalQualityApi"
-    lib_conf.insert_conf_param(params, pref, "numerical", "bool", str(gen_cfg["EthIfEnableSignalQualityApi"]))
+    lib_conf.insert_ecuc_param(params, pref, "numerical", "bool", str(gen_cfg["EthIfEnableSignalQualityApi"]))
     pref = dref+"/EthIfSignalQualityCheckPeriod"
-    lib_conf.insert_conf_param(params, pref, "numerical", "bool", str(gen_cfg["EthIfSignalQualityCheckPeriod"]))
+    lib_conf.insert_ecuc_param(params, pref, "numerical", "bool", str(gen_cfg["EthIfSignalQualityCheckPeriod"]))
     pref = dref+"/EthIfEnableSecurityEventReporting"
-    lib_conf.insert_conf_param(params, pref, "numerical", "bool", str(gen_cfg["EthIfEnableSecurityEventReporting"]))
+    lib_conf.insert_ecuc_param(params, pref, "numerical", "bool", str(gen_cfg["EthIfEnableSecurityEventReporting"]))
     pref = dref+"/EthIfSecurityEventRefs"
-    lib_conf.insert_conf_param(params, pref, "numerical", "bool", str(gen_cfg["EthIfSecurityEventRefs"]))
+    lib_conf.insert_ecuc_param(params, pref, "numerical", "bool", str(gen_cfg["EthIfSecurityEventRefs"]))
 
 
 
 def update_ethif_general_to_container(ctnrname, root, ethif_cfg):
     # Create a new container - EthIfGeneral
     dref = "/AUTOSAR/EcucDefs/EthIf/"+ctnrname
-    mdc_ctnr = lib_conf.insert_conf_container(root, ctnrname, "conf", dref)
+    mdc_ctnr = lib_conf.insert_ecuc_container(root, ctnrname, "conf", dref)
     add_ethif_general_parameters_to_container(mdc_ctnr, dref, ethif_cfg.datavar)
 
     # Create a sub-container

@@ -35,24 +35,24 @@ def add_lin_chan_config_parameters_to_container(ctnr, dref, lin_chn_cfg):
 
     # Insert parameters
     refname = dref+"/LinChannelId"
-    lib_conf.insert_conf_param(params, refname, "numerical", "int", str(lin_chn_cfg["LinChannelId"]))
+    lib_conf.insert_ecuc_param(params, refname, "numerical", "int", str(lin_chn_cfg["LinChannelId"]))
     refname = dref+"/LinNodeType"
-    lib_conf.insert_conf_param(params, refname, "numerical", "enum", str(lin_chn_cfg["LinNodeType"]))
+    lib_conf.insert_ecuc_param(params, refname, "numerical", "enum", str(lin_chn_cfg["LinNodeType"]))
     refname = dref+"/LinChannelBaudRate"
-    lib_conf.insert_conf_param(params, refname, "numerical", "int", str(lin_chn_cfg["LinChannelBaudRate"]))
+    lib_conf.insert_ecuc_param(params, refname, "numerical", "int", str(lin_chn_cfg["LinChannelBaudRate"]))
     refname = dref+"/LinChannelWakeupSupport"
-    lib_conf.insert_conf_param(params, refname, "numerical", "bool", str(lin_chn_cfg["LinChannelWakeupSupport"]))
+    lib_conf.insert_ecuc_param(params, refname, "numerical", "bool", str(lin_chn_cfg["LinChannelWakeupSupport"]))
     refname = dref+"/LinChannelEcuMWakeupSource"
-    lib_conf.insert_conf_param(params, refname, "text", "string", str(lin_chn_cfg["LinChannelEcuMWakeupSource"]))
+    lib_conf.insert_ecuc_param(params, refname, "text", "string", str(lin_chn_cfg["LinChannelEcuMWakeupSource"]))
     refname = dref+"/LinClockRef"
-    lib_conf.insert_conf_param(params, refname, "text", "string", str(lin_chn_cfg["LinClockRef"]))
+    lib_conf.insert_ecuc_param(params, refname, "text", "string", str(lin_chn_cfg["LinClockRef"]))
 
 
 
 def update_lin_globalconfig_to_container(ctnrname, root, lin_cfg):
     # Create a new container - Lin Driver
     dref = "/AUTOSAR/EcucDefs/Lin/"+ctnrname
-    ctnrblk = lib_conf.insert_conf_container(root, ctnrname, "conf", dref)
+    ctnrblk = lib_conf.insert_ecuc_container(root, ctnrname, "conf", dref)
 
     # Create a sub-container
     subctnr1 = ET.SubElement(ctnrblk, "SUB-CONTAINERS")
@@ -60,7 +60,7 @@ def update_lin_globalconfig_to_container(ctnrname, root, lin_cfg):
     # Create ECUC Module Configs under above Sub-container
     sctnr_name = "LinChannel"
     ecc_dref = dref+"/"+sctnr_name
-    mdc_ctnr = lib_conf.insert_conf_container(subctnr1, sctnr_name, "conf", ecc_dref)
+    mdc_ctnr = lib_conf.insert_ecuc_container(subctnr1, sctnr_name, "conf", ecc_dref)
     add_lin_chan_config_parameters_to_container(mdc_ctnr, ecc_dref, lin_cfg.datavar["LinGlobalConfig"])
 
 
@@ -75,20 +75,20 @@ def add_lin_general_parameters_to_container(ctnr, dref, gen_cfg):
 
     # Insert parameters
     pref = dref+"/LinIndex"
-    lib_conf.insert_conf_param(params, pref, "numerical", "int", str(gen_cfg["LinIndex"]))
+    lib_conf.insert_ecuc_param(params, pref, "numerical", "int", str(gen_cfg["LinIndex"]))
     pref = dref+"/LinDevErrorDetect"
-    lib_conf.insert_conf_param(params, pref, "numerical", "bool", str(gen_cfg["LinDevErrorDetect"]))
+    lib_conf.insert_ecuc_param(params, pref, "numerical", "bool", str(gen_cfg["LinDevErrorDetect"]))
     pref = dref+"/LinVersionInfoApi"
-    lib_conf.insert_conf_param(params, pref, "numerical", "bool", str(gen_cfg["LinVersionInfoApi"]))
+    lib_conf.insert_ecuc_param(params, pref, "numerical", "bool", str(gen_cfg["LinVersionInfoApi"]))
     pref = dref+"/LinTimeoutDuration"
-    lib_conf.insert_conf_param(params, pref, "numerical", "int", str(gen_cfg["LinTimeoutDuration"]))
+    lib_conf.insert_ecuc_param(params, pref, "numerical", "int", str(gen_cfg["LinTimeoutDuration"]))
 
 
 
 def update_lin_general_to_container(ctnrname, root, lin_cfg):
     # Create a new container - LinGeneral
     dref = "/AUTOSAR/EcucDefs/Lin/"+ctnrname
-    mdc_ctnr = lib_conf.insert_conf_container(root, ctnrname, "conf", dref)
+    mdc_ctnr = lib_conf.insert_ecuc_container(root, ctnrname, "conf", dref)
     add_lin_general_parameters_to_container(mdc_ctnr, dref, lin_cfg.datavar["LinGeneral"])
 
 
