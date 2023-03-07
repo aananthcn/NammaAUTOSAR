@@ -131,7 +131,7 @@ class SoAdSocketConnectionGrpView:
         gen_dict["SoAdSocketSoConModeChgBswMNotification"]   = "FALSE"
         gen_dict["SoAdSocketSoConModeChgNotification"]   = "FALSE"
         gen_dict["SoAdSocketProtocolChoice"]   = "TCP"
-        gen_dict["SoAdSocketProtocol"]         = []
+        gen_dict["SoAdSocketProtocol"]         = {}
         gen_dict["SoAdSocketTpRxBufferMin"]   = "0"                 # 0 - 65535
         gen_dict["SoAdSocketFramePriority"]   = "0"                 # 0 - 7 (3 bit)
         gen_dict["SoAdSocketMsgAcceptanceFilterEnabled"]   = "FALSE"
@@ -257,8 +257,14 @@ class SoAdSocketConnectionGrpView:
 
     def skt_protocol_changed(self, event, row):
         self.configs[row].get() # read from UI (backup last selection)
+
         # ignore all "SoAdSocketProtocol" settings from UI and in memory
-        self.configs[row].datavar["SoAdSocketProtocol"] = []
+        if self.configs[row].datavar["SoAdSocketProtocolChoice"] == "TCP":
+            spc_cfg = skt_tcp.SoAdSocketTcpView(self.gui, None).create_empty_configs()
+        else:
+            spc_cfg = skt_udp.SoAdSocketUdpView(self.gui, None).create_empty_configs()
+        self.configs[row].datavar["SoAdSocketProtocol"] = spc_cfg
+
         # re-draw all boxes (dappas) of this row
         self.delete_tab(row)
         # dappa.delete_dappa_row(self, row)
@@ -269,9 +275,7 @@ class SoAdSocketConnectionGrpView:
     def on_soad_skt_protocol_close(self, row):
         # backup data
         if self.active_view.view.configs:
-            self.configs[0].datavar["SoAdSocketProtocol"] = []  # ignore old data
-            for cfg in self.active_view.view.configs:
-                self.configs[0].datavar["SoAdSocketProtocol"].append(cfg.get())
+            self.configs[0].datavar["SoAdSocketProtocol"] = self.active_view.view.configs[0].datavar
 
         # destroy view
         del self.active_view

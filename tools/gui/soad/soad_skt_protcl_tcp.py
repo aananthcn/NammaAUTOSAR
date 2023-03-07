@@ -80,16 +80,15 @@ class SoAdSocketTcpView:
     active_view = None
 
 
-    def __init__(self, gui, tcp_cfgs):
+    def __init__(self, gui, tcp_cfg):
         self.gui = gui
         self.configs = []
 
         # Create config string for AUTOSAR configs on this tab
-        if not tcp_cfgs:
+        if not tcp_cfg:
             self.configs.append(dappa.AsrCfgStr(self.cfgkeys, self.create_empty_configs()))
         else:
-            for cfg in tcp_cfgs:
-                self.configs.append(dappa.AsrCfgStr(self.cfgkeys, cfg))
+            self.configs.append(dappa.AsrCfgStr(self.cfgkeys, tcp_cfg))
 
 
     def __del__(self):
@@ -125,7 +124,7 @@ class SoAdSocketTcpView:
         dappa.entryg(self, "SoAdSocketTcpRetransmissionTimeout", 0, 0, 2, 23, "normal")
         dappa.entryg(self, "SoAdSocketTcpAutoConnectTimeout", 0, 1, 2, 23, "normal")
         dappa.combog(self, "SoAdSocketTcpInitiate",     0, 2, 2, 20, bool_cmbsel)
-        dappa.combog(self, "SoAdSocketTcpNoDelay",     0, 3, 2, 20, bool_cmbsel)
+        dappa.combog(self, "SoAdSocketTcpNoDelay",      0, 3, 2, 20, bool_cmbsel)
         dappa.combog(self, "SoAdSocketTcpImmediateTpTxConfirmation", 0, 4, 2, 20, bool_cmbsel)
         dappa.entryg(self, "SoAdSocketTcpTxQuota", 0, 5, 2, 23, "normal")
         dappa.combog(self, "SoAdSocketTcpKeepAlive", 0, 6, 2, 20, bool_cmbsel)
@@ -141,8 +140,6 @@ class SoAdSocketTcpView:
         self.tab_struct = view
         self.scrollw = window.ScrollableWindow(view.frame, view.xsize, view.ysize)
 
-        # # Table heading @0th row, 0th column
-        # dappa.place_column_heading(self, row=0, col=0)
         dappa.place_no_heading(self)
         self.draw_dappas()
 

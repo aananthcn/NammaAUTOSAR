@@ -71,16 +71,15 @@ class SoAdSocketUdpView:
     active_view = None
 
 
-    def __init__(self, gui, udp_cfgs):
+    def __init__(self, gui, udp_cfg):
         self.gui = gui
         self.configs = []
 
         # Create config string for AUTOSAR configs on this tab
-        if not udp_cfgs:
+        if not udp_cfg:
             self.configs.append(dappa.AsrCfgStr(self.cfgkeys, self.create_empty_configs()))
         else:
-            for cfg in udp_cfgs:
-                self.configs.append(dappa.AsrCfgStr(self.cfgkeys, cfg))
+            self.configs.append(dappa.AsrCfgStr(self.cfgkeys, udp_cfg))
 
     def __del__(self):
         del self.configs[:]
@@ -118,8 +117,6 @@ class SoAdSocketUdpView:
         self.tab_struct = view
         self.scrollw = window.ScrollableWindow(view.frame, view.xsize, view.ysize)
 
-        # # Table heading @0th row, 0th column
-        # dappa.place_column_heading(self, row=0, col=0)
         dappa.place_no_heading(self)
         self.draw_dappas()
 
