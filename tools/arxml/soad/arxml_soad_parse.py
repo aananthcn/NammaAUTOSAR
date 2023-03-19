@@ -27,6 +27,48 @@ import arxml.core.lib_defs as lib_defs
 
 
 
+def get_soad_3rd_subcontainer(sub_ctnr_name, root):
+    par_list = [] # parameter list
+
+    sub2_list = lib_conf.findall_subcontainers_with_name(sub_ctnr_name, root)
+    if not sub2_list:
+        return par_list
+
+    for cntr2 in sub2_list:
+	    # new parameter container
+        par2_dict = {}
+
+        # parse container2 parameters
+        item_params = lib_conf.get_param_list(cntr2)
+        for par in item_params:
+            par2_dict[par["tag"]] = par["val"]
+
+        sub3_list, sub3_nams = lib_conf.findall_subcontainers(cntr2)
+        if not sub3_list:
+            return par_list
+
+        # new container3 parameter container
+        par3_dict = {}
+
+        for cntr3 in sub3_list:
+            # parse container3 parameters
+            item_params = lib_conf.get_param_list(cntr3)
+            for par in item_params:
+                par3_dict[par["tag"]] = par["val"]
+
+            # parse references
+            refs = lib_conf.get_refval_list(cntr3)
+            for ref in refs:
+                par3_dict[ref["tag"]] = ref["val"]
+
+        # merge container 2 & 3 dictionaries
+        par_dict = par2_dict | par3_dict
+        par_list.append(par_dict)
+
+    return par_list, sub3_nams
+
+
+
 def get_soad_2nd_subcontainer(sub_ctnr_name, root):
     par_list = []
     
@@ -54,6 +96,29 @@ def get_soad_2nd_subcontainer(sub_ctnr_name, root):
 
 
 
+def get_soad_congrp_subc_skprotcl(subc):
+    choice = None
+    c3cfg, names = get_soad_3rd_subcontainer("SoAdSocketProtocol", subc)
+
+    if len(names) > 1:
+        print("Error: SoAdSocketProtocol can have only one container trees, but more containers found!")
+    if names[0] == "SoAdSocketTcp":
+        choice = "TCP"
+    elif names[0] == "SoAdSocketUdp":
+        choice = "UDP"
+    else:
+        print("Error: SoAdSocketProtocol shall be either TCP or UDP, but we got "+ names[0] +"!")
+
+    return c3cfg[0], choice
+
+
+
+def get_soad_congrp_subc_skconn(subc):
+    c3cfg, names = get_soad_3rd_subcontainer("SoAdSocketConnection", subc)  # ignore 'names'
+    return c3cfg
+
+
+
 def get_soad_cfgs_subcontainer(sub_ctnr_name, ctnr):
     subc_p_list = []
 
@@ -74,6 +139,9 @@ def get_soad_cfgs_subcontainer(sub_ctnr_name, ctnr):
             # container level 2 parsing
             if sub_ctnr_name == "SoAdPduRoute":
                 subc_param["SoAdPduRouteDest"] = get_soad_2nd_subcontainer("SoAdPduRouteDest", subc)
+            if sub_ctnr_name == "SoAdSocketConnectionGroup":
+                subc_param["SoAdSocketProtocol"], subc_param["SoAdSocketProtocolChoice"] = get_soad_congrp_subc_skprotcl(subc)
+                subc_param["SoAdSocketConnection"] = get_soad_congrp_subc_skconn(subc)
 
             subc_p_list.append(subc_param)
 

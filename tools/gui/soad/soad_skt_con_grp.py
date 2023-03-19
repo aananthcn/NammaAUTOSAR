@@ -275,7 +275,8 @@ class SoAdSocketConnectionGrpView:
     def on_soad_skt_protocol_close(self, row):
         # backup data
         if self.active_view.view.configs:
-            self.configs[0].datavar["SoAdSocketProtocol"] = self.active_view.view.configs[0].datavar
+            cfg_0 = self.active_view.view.configs[0].get() # get from UI --> datavar
+            self.configs[0].datavar["SoAdSocketProtocol"] = cfg_0
 
         # destroy view
         del self.active_view

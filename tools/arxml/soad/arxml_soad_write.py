@@ -26,6 +26,45 @@ import arxml.core.lib_defs as lib_defs
 
 
 
+def add_soad_sk_remote_addr_config_params_to_container(ctnr, dref, cfg):
+    if not cfg:
+        print("Warning: ARXML write - SoAdSocketRemoteAddress is empty!")
+        return
+
+    # Insert PARAMETER & REFERENCE block
+    params = ET.SubElement(ctnr, "PARAMETER-VALUES")
+
+    # Insert parameters
+    refname = dref+"/SoAdSocketRemotePort"
+    lib_conf.insert_ecuc_param(params, refname, "numerical", "int", str(cfg["SoAdSocketRemotePort"]))
+    refname = dref+"/SoAdSocketRemoteIpAddress"
+    lib_conf.insert_ecuc_param(params, refname, "numerical", "bool", str(cfg["SoAdSocketRemoteIpAddress"]))
+
+
+
+def add_soad_skconnection_config_params_to_container(ctnr, dref, cfg):
+    if not cfg:
+        print("Warning: ARXML write - SoAdSocketConnection is empty!")
+        return
+
+    # Insert PARAMETER & REFERENCE block
+    params = ET.SubElement(ctnr, "PARAMETER-VALUES")
+
+    # Insert parameters
+    refname = dref+"/SoAdSocketId"
+    lib_conf.insert_ecuc_param(params, refname, "numerical", "int", str(cfg["SoAdSocketId"]))
+
+    # Create a sub-container
+    subctnr3 = ET.SubElement(ctnr, "SUB-CONTAINERS")
+
+    # Create ECUC Module Configs under above Sub-container
+    sctnr_name = "SoAdSocketRemoteAddress"
+    sctnr_dref = dref+"/"+sctnr_name
+    mdc_ctnr = lib_conf.insert_ecuc_container(subctnr3, sctnr_name, "conf", sctnr_dref)
+    add_soad_sk_remote_addr_config_params_to_container(mdc_ctnr, sctnr_dref, cfg)
+
+
+
 def add_soad_skt_tcp_params_to_container(ctnr, dref, cfg):
     if not cfg:
         print("Warning: ARXML write - SoAdSocketTcp is empty!")
@@ -76,11 +115,10 @@ def add_soad_skt_udp_params_to_container(ctnr, dref, cfg):
 
     # Insert PARAMETER & REFERENCE block
     params = ET.SubElement(ctnr, "PARAMETER-VALUES")
-    refs = ET.SubElement(ctnr, "REFERENCE-VALUES")
 
     # Insert parameters
     refname = dref+"/SoAdSocketUdpListenOnly"
-    lib_conf.insert_ecuc_param(params, refname, "numerical", "int", str(cfg["SoAdSocketUdpListenOnly"]))
+    lib_conf.insert_ecuc_param(params, refname, "numerical", "bool", str(cfg["SoAdSocketUdpListenOnly"]))
     refname = dref+"/SoAdSocketUdpAliveSupervisionTimeout"
     lib_conf.insert_ecuc_param(params, refname, "numerical", "int", str(cfg["SoAdSocketUdpAliveSupervisionTimeout"]))
     refname = dref+"/SoAdSocketnPduUdpTxBufferMin"
@@ -88,7 +126,9 @@ def add_soad_skt_udp_params_to_container(ctnr, dref, cfg):
     refname = dref+"/SoAdSocketUdpTriggerTimeout"
     lib_conf.insert_ecuc_param(params, refname, "numerical", "int", str(cfg["SoAdSocketUdpTriggerTimeout"]))
     refname = dref+"/SoAdSocketUdpStrictHeaderLenCheckEnabled"
-    lib_conf.insert_ecuc_param(params, refname, "numerical", "int", str(cfg["SoAdSocketUdpStrictHeaderLenCheckEnabled"]))
+    lib_conf.insert_ecuc_param(params, refname, "numerical", "bool", str(cfg["SoAdSocketUdpStrictHeaderLenCheckEnabled"]))
+    refname = dref+"/SoAdSocketUdpChecksumEnabled"
+    lib_conf.insert_ecuc_param(params, refname, "numerical", "bool", str(cfg["SoAdSocketUdpChecksumEnabled"]))
 
 
 
@@ -154,9 +194,9 @@ def add_soad_skconngrp_config_params_to_container(ctnr, dref, cfg):
         refname = dref+"/SoAdSocketLocalAddressRef"
         refdest = str(cfg["SoAdSocketLocalAddressRef"])
         lib_conf.insert_ecuc_reference(refs, refname, refdest)
-    if "SoAdSocketMsgAcceptanceFilterEnabled" in cfg:
-        refname = dref+"/SoAdSocketMsgAcceptanceFilterEnabled"
-        refdest = str(cfg["SoAdSocketMsgAcceptanceFilterEnabled"])
+    if "SoAdSocketSoConModeChgNotifUpperLayerRef" in cfg:
+        refname = dref+"/SoAdSocketSoConModeChgNotifUpperLayerRef"
+        refdest = str(cfg["SoAdSocketSoConModeChgNotifUpperLayerRef"])
         lib_conf.insert_ecuc_reference(refs, refname, refdest)
 
     # Create a sub-container
@@ -169,14 +209,11 @@ def add_soad_skconngrp_config_params_to_container(ctnr, dref, cfg):
     choice = cfg["SoAdSocketProtocolChoice"]
     add_soad_skprotocol_config_params_to_container(mdc_ctnr, sctnr_dref, cfg[sctnr_name], choice)
 
-    # TODO: Remove this later
-    return
-
     sctnr_name = "SoAdSocketConnection"
     sctnr_dref = dref+"/"+sctnr_name
     for ch_cfg in cfg[sctnr_name]:
         mdc_ctnr = lib_conf.insert_ecuc_container(subctnr2, sctnr_name, "conf", sctnr_dref)
-        add_soad_xxxxx_params_to_container(mdc_ctnr, sctnr_dref, ch_cfg)
+        add_soad_skconnection_config_params_to_container(mdc_ctnr, sctnr_dref, ch_cfg)
 
 
 

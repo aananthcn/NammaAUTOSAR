@@ -187,7 +187,7 @@ def find_containers_in_modconf(root):
 
 
 def findall_containers_with_name(shortname, root):
-   ctnrnode = []
+   ctnrnodes = []
 
    if shortname == None:
       print("Error: Invalid argument to findall_containers_with_name()")
@@ -198,16 +198,16 @@ def findall_containers_with_name(shortname, root):
          for item in list(child):
             if get_tag(item) == "SHORT-NAME":
                if item.text == shortname:
-                  ctnrnode.append(child)
+                  ctnrnodes.append(child)
                   break # done, move to the next container
                else:
                   break # wrong container, so don't spend time here
 
    # if there is no ECUC-CONTAINER with name == "shortname", return None
-   if len(ctnrnode) == 0:
-      ctnrnode = None
+   if len(ctnrnodes) == 0:
+      ctnrnodes = None
 
-   return ctnrnode
+   return ctnrnodes
 
 
 # arg2: root is CONTAINERS block inside ECUC-MODULE-CONFIGURATION-VALUES
@@ -231,7 +231,7 @@ def find_ecuc_container_block(shortname, root):
 
 
 def findall_subcontainers_with_name(shortname, root):
-   ctnrnode = []
+   ctnrnodes = []
 
    if shortname == None:
       print("Error: Invalid argument to find_subcontainer_with_name()")
@@ -244,10 +244,31 @@ def findall_subcontainers_with_name(shortname, root):
                for item in list(ecu_ctnr):
                   if get_tag(item) == "SHORT-NAME":
                      if item.text == shortname:
-                        ctnrnode.append(ecu_ctnr)
+                        ctnrnodes.append(ecu_ctnr)
 
    # if there is no ECUC-CONTAINER with name == "shortname", return None
-   if len(ctnrnode) == 0:
-      ctnrnode = None
+   if len(ctnrnodes) == 0:
+      ctnrnodes = None
 
-   return ctnrnode
+   return ctnrnodes
+
+
+def findall_subcontainers(root):
+   ctnrnodes = []
+   ctnrnames = []
+
+   for child in list(root):
+      if get_tag(child) == "SUB-CONTAINERS":
+         for ecu_ctnr in list(child):
+            ctnrnodes.append(ecu_ctnr)
+            if get_tag(ecu_ctnr) == "ECUC-CONTAINER-VALUE":
+               for item in list(ecu_ctnr):
+                  if get_tag(item) == "SHORT-NAME":
+                     ctnrnames.append(item.text)
+
+   # if there is no ECUC-CONTAINER with name == "shortname", return None
+   if len(ctnrnodes) == 0:
+      ctnrnodes = None
+      ctnrnames = None
+
+   return ctnrnodes, ctnrnames
