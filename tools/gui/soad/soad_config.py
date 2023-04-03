@@ -213,6 +213,8 @@ class SoAdConfigView:
 
 
     def save_data(self):
+        for cfg in self.configs:
+            cfg.get() # update from UI
         self.tab_struct.save_cb(self.gui)
 
 

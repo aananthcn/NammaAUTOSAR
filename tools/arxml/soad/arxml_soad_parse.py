@@ -32,7 +32,7 @@ def get_soad_3rd_subcontainer(sub_ctnr_name, root):
 
     sub2_list = lib_conf.findall_subcontainers_with_name(sub_ctnr_name, root)
     if not sub2_list:
-        return par_list
+        return par_list, None
 
     for cntr2 in sub2_list:
 	    # new parameter container
@@ -45,7 +45,7 @@ def get_soad_3rd_subcontainer(sub_ctnr_name, root):
 
         sub3_list, sub3_nams = lib_conf.findall_subcontainers(cntr2)
         if not sub3_list:
-            return par_list
+            return par_list, None
 
         # new container3 parameter container
         par3_dict = {}

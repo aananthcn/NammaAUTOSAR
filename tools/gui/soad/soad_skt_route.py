@@ -91,7 +91,7 @@ class SoAdSocketRouteView:
         if skr_cfgs:
             for cfg in skr_cfgs:
                 self.configs.append(dappa.AsrCfgStr(self.cfgkeys, cfg))
-                n_skr += 1
+                self.n_skr += 1
 
     def __del__(self):
         del self.configs[:]
@@ -162,9 +162,9 @@ class SoAdSocketRouteView:
         self.n_skr_str.set(self.n_skr)
         spinb.grid(row=0, column=1, sticky="w")
 
-        # Save Button
-        genm = tk.Button(self.scrollw.mnf, width=10, text="Save Configs", command=self.save_data, bg="#206020", fg='white')
-        genm.grid(row=0, column=2)
+        # # Save Button
+        # genm = tk.Button(self.scrollw.mnf, width=10, text="Save Configs", command=self.save_data, bg="#206020", fg='white')
+        # genm.grid(row=0, column=2)
 
         # Update buttons frames idle tasks to let tkinter calculate buttons sizes
         self.scrollw.update()
@@ -176,6 +176,6 @@ class SoAdSocketRouteView:
 
 
 
-    def save_data(self):
-        self.tab_struct.save_cb(self.gui)
+    # def save_data(self):
+    #     self.tab_struct.save_cb(self.gui)
 

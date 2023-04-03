@@ -256,6 +256,7 @@ class SoAdSocketConnectionGrpView:
 
 
     def skt_protocol_changed(self, event, row):
+        spc_cfg = None
         self.configs[row].get() # read from UI (backup last selection)
 
         # ignore all "SoAdSocketProtocol" settings from UI and in memory
@@ -275,6 +276,7 @@ class SoAdSocketConnectionGrpView:
     def on_soad_skt_protocol_close(self, row):
         # backup data
         if self.active_view.view.configs:
+            # the socket protocol view has only one row / tabs
             cfg_0 = self.active_view.view.configs[0].get() # get from UI --> datavar
             self.configs[0].datavar["SoAdSocketProtocol"] = cfg_0
 
@@ -311,11 +313,11 @@ class SoAdSocketConnectionGrpView:
         if self.configs[row].datavar["SoAdSocketProtocolChoice"] == "TCP":
             self.active_dialog.title("SoAdSocketProtocol (TCP)")
             soad_chview.view = skt_tcp.SoAdSocketTcpView(self.gui,
-                                            self.configs[0].datavar["SoAdSocketProtocol"])
+                                            self.configs[row].datavar["SoAdSocketProtocol"])
         else:
             self.active_dialog.title("SoAdSocketProtocol (UDP)")
             soad_chview.view = skt_udp.SoAdSocketUdpView(self.gui,
-                                            self.configs[0].datavar["SoAdSocketProtocol"])
+                                            self.configs[row].datavar["SoAdSocketProtocol"])
         soad_chview.name = "SoAdSocketProtocol"
         self.active_view = soad_chview
         soad_chview.view.draw(soad_chview)

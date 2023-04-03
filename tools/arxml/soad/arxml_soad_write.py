@@ -324,17 +324,15 @@ def update_soad_configs_to_container(ctnrname, root, soad_cfg):
 
     sctnr_name = "SoAdSocketConnectionGroup"
     sctnr_dref = dref+"/"+sctnr_name
-    for i, cfg in enumerate(soad_cfg[0].datavar[sctnr_name]):
+    for cfg in soad_cfg[0].datavar[sctnr_name]:
         mdc_ctnr = lib_conf.insert_ecuc_container(subctnr1, sctnr_name, "conf", sctnr_dref)
         add_soad_skconngrp_config_params_to_container(mdc_ctnr, sctnr_dref, cfg)
-
-    return # TODO: remove this after development
 
     sctnr_name = "SoAdSocketRoute"
     sctnr_dref = dref+"/"+sctnr_name
     for cfg in soad_cfg[0].datavar[sctnr_name]:
         mdc_ctnr = lib_conf.insert_ecuc_container(subctnr1, sctnr_name, "conf", sctnr_dref)
-        add_soad_tlsc_config_params_to_container(mdc_ctnr, sctnr_dref, cfg)
+        add_soad_skroute_config_params_to_container(mdc_ctnr, sctnr_dref, cfg)
 
 
 
