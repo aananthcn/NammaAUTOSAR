@@ -142,6 +142,8 @@ def get_soad_cfgs_subcontainer(sub_ctnr_name, ctnr):
             if sub_ctnr_name == "SoAdSocketConnectionGroup":
                 subc_param["SoAdSocketProtocol"], subc_param["SoAdSocketProtocolChoice"] = get_soad_congrp_subc_skprotcl(subc)
                 subc_param["SoAdSocketConnection"] = get_soad_congrp_subc_skconn(subc)
+            if sub_ctnr_name == "SoAdSocketRoute":
+                subc_param["SoAdSocketRouteDest"] = get_soad_2nd_subcontainer("SoAdSocketRouteDest", subc)
 
             subc_p_list.append(subc_param)
 
@@ -276,7 +278,8 @@ def parse_arxml(ar_file):
     soad_configs = parse_soad_configs("SoAdConfig", containers)
     soad_cfg["SoAdConfig"] = soad_configs
 
-    print_soad_configs(soad_cfg)
+    # uncomment following line to debug ARXML read
+    # print_soad_configs(soad_cfg)
 
     return soad_cfg
 

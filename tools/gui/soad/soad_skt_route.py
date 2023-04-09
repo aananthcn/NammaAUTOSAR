@@ -90,7 +90,11 @@ class SoAdSocketRouteView:
         # Create config string for AUTOSAR configs on this tab
         if skr_cfgs:
             for cfg in skr_cfgs:
-                self.configs.append(dappa.AsrCfgStr(self.cfgkeys, cfg))
+                if "SoAdSocketRouteDest" in cfg:
+                    merged_cfg = cfg | cfg["SoAdSocketRouteDest"][0]
+                else:
+                    merged_cfg = cfg
+                self.configs.append(dappa.AsrCfgStr(self.cfgkeys, merged_cfg))
                 self.n_skr += 1
 
     def __del__(self):

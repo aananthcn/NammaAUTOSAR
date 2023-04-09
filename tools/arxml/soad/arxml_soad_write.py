@@ -26,6 +26,63 @@ import arxml.core.lib_defs as lib_defs
 
 
 
+def add_soad_skroute_dest_config_params_to_container(ctnr, dref, cfg):
+    if not cfg:
+        print("Warning: ARXML write - SoAdSocketRouteDest is empty!")
+        return
+
+    # Insert PARAMETER & REFERENCE block
+    params = ET.SubElement(ctnr, "PARAMETER-VALUES")
+    refs = ET.SubElement(ctnr, "REFERENCE-VALUES")
+
+    # Insert parameters
+    refname = dref+"/SoAdRxPduId"
+    lib_conf.insert_ecuc_param(params, refname, "numerical", "int", str(cfg["SoAdRxPduId"]))
+    refname = dref+"/SoAdRxUpperLayerType"
+    lib_conf.insert_ecuc_param(params, refname, "numerical", "enum", str(cfg["SoAdRxUpperLayerType"]))
+
+    # Insert references
+    if "SoAdRxPduRef" in cfg:
+        refname = dref+"/SoAdRxPduRef"
+        refdest = str(cfg["SoAdRxPduRef"])
+        lib_conf.insert_ecuc_reference(refs, refname, refdest)
+    if "SoAdRxRoutingGroupRef" in cfg:
+        refname = dref+"/SoAdRxRoutingGroupRef"
+        refdest = str(cfg["SoAdRxRoutingGroupRef"])
+        lib_conf.insert_ecuc_reference(refs, refname, refdest)
+
+
+
+def add_soad_skroute_config_params_to_container(ctnr, dref, cfg):
+    if not cfg:
+        print("Warning: ARXML write - SoAdSocketRoute is empty!")
+        return
+
+    # Insert PARAMETER & REFERENCE block
+    params = ET.SubElement(ctnr, "PARAMETER-VALUES")
+    refs = ET.SubElement(ctnr, "REFERENCE-VALUES")
+
+    # Insert parameters
+    refname = dref+"/SoAdRxPduHeaderId"
+    lib_conf.insert_ecuc_param(params, refname, "numerical", "int", str(cfg["SoAdRxPduHeaderId"]))
+
+    # Insert references
+    if "SoAdRxSocketConnOrSocketConnBundleRef" in cfg:
+        refname = dref+"/SoAdRxSocketConnOrSocketConnBundleRef"
+        refdest = str(cfg["SoAdRxSocketConnOrSocketConnBundleRef"])
+        lib_conf.insert_ecuc_reference(refs, refname, refdest)
+
+    # Create a sub-container
+    subctnr4 = ET.SubElement(ctnr, "SUB-CONTAINERS")
+
+    # Create ECUC Module Configs under above Sub-container
+    sctnr_name = "SoAdSocketRouteDest"
+    sctnr_dref = dref+"/"+sctnr_name
+    mdc_ctnr = lib_conf.insert_ecuc_container(subctnr4, sctnr_name, "conf", sctnr_dref)
+    add_soad_skroute_dest_config_params_to_container(mdc_ctnr, sctnr_dref, cfg)
+
+
+
 def add_soad_sk_remote_addr_config_params_to_container(ctnr, dref, cfg):
     if not cfg:
         print("Warning: ARXML write - SoAdSocketRemoteAddress is empty!")
@@ -435,7 +492,8 @@ def update_arxml(ar_file, soad_configs):
     ET.register_namespace('', "http://autosar.org/schema/r4.0")
     ET.register_namespace('xsi', "http://www.w3.org/2001/XMLSchema-instance")
     
-    print_soad_configs(soad_configs)
+    # uncomment following line to debug ARXML write
+    # print_soad_configs(soad_configs)
     
     # Read ARXML File
     tree = ET.parse(ar_file)
