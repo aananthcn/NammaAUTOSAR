@@ -31,7 +31,9 @@ Prerequisites - SOFTWARE:
     * `pacman -S mingw-w64-x86_64-python mingw-w64-x86_64-tk mingw-w64-x86_64-python-pip`
     * `pip install colorama`
     * `pacman -S mingw-w64-x86_64-arm-none-eabi-gcc mingw-w64-x86_64-qemu`
-  * Create envirnomental variable with **VARIABLE NAME** as **MINGW_ROOT** and **VARIABLE VALUE** as **installation path**
+   * Install the following package for Gtk and Glade
+   *  `pacman -S mingw-w64-x86_64-python-gobject mingw-w64-x86_64-gtk3`
+  * Create envirnomental variable with **VARIABLE NAME** as **MINGW_ROOT** and **VARIABLE VALUE** as **installation path** (e.g., C:\msys64\mingw64)
 
 <br>
 
