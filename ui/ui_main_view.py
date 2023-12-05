@@ -74,7 +74,7 @@ def open_oil_file(fpath):
 
     window = Gui.builder.get_object("ASR_MAIN_WINDOW")
     window.set_title(AppNameStr+" ["+filename+"]")
-    
+
 
     # Make System Generator to parse, so that we can use the content in GUI.
     sg.sg_reset()
@@ -86,8 +86,6 @@ def open_oil_file(fpath):
 
 def open_arxml_file(fpath):
     global Gui
-    
-    print("open file ="+fpath)
 
     init_dir = os.getcwd()
     if os.path.exists(os.getcwd()+"/cfg/arxml"):
@@ -126,7 +124,7 @@ def open_arxml_file(fpath):
 ###############################################################################
 def save_as_arxml():
     global Gui
-    
+
     file_exts = [('ARXML Files', '*.arxml')]
     saved_filename = filedialog.asksaveasfile(initialdir=os.getcwd()+"/output/arxml", filetypes = file_exts, defaultextension = file_exts)
     if saved_filename == None:
@@ -205,7 +203,7 @@ def get_recent_files():
 class MainViewHandler:
         def on_MainWindow_destroy(self, *args):
                 Gtk.main_quit()
-            
+
         def on_ASR_MENU_NEW_activate(self, args):
                 new_file()
 
@@ -226,13 +224,13 @@ class MainViewHandler:
 class MainView:
         # Target System Attributes
         uc_info = uc_view.Uc_Info()
-        
+
         # General Attributes
         arxml_file = None
 
         # Glade stuffs
         builder = None
-        
+
         # Graphical Attributes
         main_view = None        # the GUI root frame
         micro_block = None      # the Microcontroller block widget
@@ -266,7 +264,7 @@ class MainView:
 
         def show_uc_view(self):
                 uc_view.show_microcontroller_block(self)
-                
+
         def set_arxml_filepath(self, filepath):
                 self.arxml_file = filepath
                 lib.setget_ecuc_arpkg_name(filepath)
@@ -275,7 +273,7 @@ class MainView:
 
 def main(fpath, ftype):
         global Gui
-        
+
         builder = Gtk.Builder()
         builder.add_from_file(os.getcwd()+"/ui/res/ui-main-view.glade")
         builder.connect_signals(MainViewHandler())
@@ -283,6 +281,18 @@ def main(fpath, ftype):
         Gui = MainView(builder)
 
         window = builder.get_object("ASR_MAIN_WINDOW")
+        screen = window.get_screen()
+        cssProvider = Gtk.CssProvider()
+        styleContext = Gtk.StyleContext()
+
+        # Load the css styles from
+        cssProvider.load_from_path('ui/res/asr-style.css')
+        styleContext.add_provider_for_screen(screen, cssProvider, Gtk.STYLE_PROVIDER_PRIORITY_USER)
+
+        # App layer will get buttons populated dynamically, hence the text must be top-aligned!
+        app_layer = builder.get_object("ASR_BLOCK_APP_LAYER")
+        app_layer.set_alignment(0.5, 0.0) # fixme: this api is depreciated, but I don't know the correct one!
+
         window.show_all()
 
         Gtk.main()
@@ -309,6 +319,6 @@ if __name__ == '__main__':
         sg.set_source_file_path(srcpath)
     if "-t" in sys.argv:
         filetype = sys.argv[sys.argv.index("-t") + 1]
-    
+
     # let us start the GUI
     main(fpath=filepath, ftype=filetype)

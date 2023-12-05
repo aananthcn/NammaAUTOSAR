@@ -120,6 +120,7 @@
                         <property name="can-focus">False</property>
                         <property name="label" translatable="yes">Import ARXML File</property>
                         <property name="use-underline">True</property>
+                        <signal name="activate" handler="on_ASR_MENU_IMP_ARXML_FILE_activate" swapped="no"/>
                       </object>
                     </child>
                     <child>
@@ -128,6 +129,7 @@
                         <property name="can-focus">False</property>
                         <property name="label" translatable="yes">Import OIL File</property>
                         <property name="use-underline">True</property>
+                        <signal name="activate" handler="on_ASR_MENU_IMP_OIL_FILE_activate" swapped="no"/>
                       </object>
                     </child>
                   </object>
@@ -182,6 +184,57 @@
               </object>
             </child>
           </object>
+        </child>
+        <child>
+          <object class="GtkButton" id="ASR_BLOCK_UC">
+            <property name="label" translatable="yes">MicroController Block</property>
+            <property name="width-request">1265</property>
+            <property name="height-request">50</property>
+            <property name="visible">True</property>
+            <property name="can-focus">True</property>
+            <property name="receives-default">True</property>
+            <style>
+              <class name="uc-layer"/>
+            </style>
+          </object>
+          <packing>
+            <property name="x">51</property>
+            <property name="y">689</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkButton" id="ASR_BLOCK_RTE">
+            <property name="label" translatable="yes">Runtime Environment (RTE)</property>
+            <property name="width-request">1265</property>
+            <property name="height-request">50</property>
+            <property name="visible">True</property>
+            <property name="can-focus">True</property>
+            <property name="receives-default">True</property>
+            <style>
+              <class name="rte-layer"/>
+            </style>
+          </object>
+          <packing>
+            <property name="x">51</property>
+            <property name="y">189</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkButton" id="ASR_BLOCK_APP_LAYER">
+            <property name="label" translatable="yes">Application</property>
+            <property name="width-request">1265</property>
+            <property name="height-request">120</property>
+            <property name="visible">True</property>
+            <property name="can-focus">True</property>
+            <property name="receives-default">True</property>
+            <style>
+              <class name="app-layer"/>
+            </style>
+          </object>
+          <packing>
+            <property name="x">51</property>
+            <property name="y">60</property>
+          </packing>
         </child>
       </object>
     </child>

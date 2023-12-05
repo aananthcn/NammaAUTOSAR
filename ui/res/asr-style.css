@@ -1,0 +1,53 @@
+.uc-layer {
+	background: black;
+	color: white;
+	border-color: darkgray;
+	font-size: large;
+}
+
+    
+.mcal {
+	background: #FF7C80;
+	color: black;
+	border-color: darkgray;
+	font-size: large;
+}
+
+
+.ecu-al {
+	background: #00CC99;
+	color: black;
+	border-color: darkgray;
+	font-size: large;
+}
+
+
+.services-layer {
+	background: #9999FF;
+	color: black;
+	border-color: darkgray;
+	font-size: large;
+}
+
+
+.rte-layer {
+	background: #FF5008;
+	color: white;
+	border-color: #FF7028;
+	font-size: large;
+}
+
+
+.app-layer {
+	background: #4D4D4D;
+	color: white;
+	border-color: darkgray;
+	font-size: large;
+}
+
+.application {
+	background: #9A9A9A;
+	color: black;
+	border-color: darkgray;
+	font-size: large;
+}
