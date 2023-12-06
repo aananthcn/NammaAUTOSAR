@@ -24,7 +24,7 @@ import arxml.port.arxml_port as arxml_port
 import utils.search as search
 
 # Temporary work-around
-import gui.mcu.uc_cgen as uc_cgen
+import gui.main.ui_uc_cgen as uc_cgen
 
 
 def generate_headerfile(port_src_path, pins, port_info):

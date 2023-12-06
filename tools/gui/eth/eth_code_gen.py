@@ -26,7 +26,7 @@ import utils.search as search
 import gui.eth.eth_ctrlcfg as eth_cc
 
 # Temporary work-around
-import gui.mcu.uc_cgen as uc_cgen
+import gui.main.ui_uc_cgen as uc_cgen
 
 
 EthGeneralCfgType_str = "\n\ntypedef struct {\n\

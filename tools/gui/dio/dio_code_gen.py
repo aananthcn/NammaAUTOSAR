@@ -24,7 +24,7 @@ import arxml.dio.arxml_dio_parse as arxml_dio
 import utils.search as search
 
 # Temporary work-around
-import gui.mcu.uc_cgen as uc_cgen
+import gui.main.ui_uc_cgen as uc_cgen
 
 
 def generate_headerfile(dio_src_path, dio_info):

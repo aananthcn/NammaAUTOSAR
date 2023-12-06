@@ -24,7 +24,7 @@ import os
 import utils.search as search
 
 # Temporary work-around
-import gui.mcu.uc_cgen as uc_cgen
+import gui.main.ui_uc_cgen as uc_cgen
 
 
 LinGeneralCfgType_str = "\n\ntypedef struct {\n\

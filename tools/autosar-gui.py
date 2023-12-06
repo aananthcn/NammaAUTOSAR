@@ -21,12 +21,12 @@
 import os
 import sys
 
-from gui.lib.main_view import FreeAutosarConfTool
+from gui.main.ui_main_view import NammaAUTOSAR_Builder
 
 
 def main(fpath, ftype):
     # Create the main window
-    Gui = FreeAutosarConfTool()
+    Gui = NammaAUTOSAR_Builder()
 
     # setup initial view (AUTOSAR view is the default, now)
     Gui.init_view_setup(fpath, ftype)

@@ -21,7 +21,7 @@
 import utils.search as search
 import os
 import gui.app.app_view as app_view
-import gui.mcu.uc_cgen as uc_cgen
+import gui.main.ui_uc_cgen as uc_cgen
 
 
 # returns non-zero in case of error
