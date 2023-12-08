@@ -79,11 +79,13 @@ class MainView:
     def window_resize(self, event):
         global Gui
         if event.widget == self.tk_root:
-            print(f"New size is: {event.width}x{event.height}")
             if (self.xsize != event.width) or (self.ysize != event.height):
+                print(f"MainView size: {event.width}x{event.height}")
                 self.xsize = event.width
                 self.ysize = event.height
-                a_view.show_autosar_modules_view(Gui)
+                if Gui.config_loaded:
+                    a_view.show_autosar_modules_view(Gui)
+
 
 
 
@@ -94,6 +96,7 @@ class NammaAUTOSAR_Builder:
     
     # General Attributes
     arxml_file = None
+    config_loaded = False
     
     # Graphical Attributes
     title = "NammaAUTOSAR Builder"
@@ -199,6 +202,7 @@ def open_oil_file(fpath):
     # Make System Generator to parse, so that we can use the content in GUI.
     sg.sg_reset()
     sg.parse(OIL_FileName)
+    Gui.config_loaded = True
     a_view.show_autosar_modules_view(Gui)
     FileMenu.entryconfig("Save", state="normal")
 
@@ -320,6 +324,7 @@ def open_arxml_file(fpath):
     else:
         update_recent_files(Gui.arxml_file)
         FileMenu.entryconfig("Save", state="normal")
+    Gui.config_loaded = True
     a_view.show_autosar_modules_view(Gui)
 
 

@@ -25,13 +25,6 @@ import tkinter.ttk as ttk
 
 
 
-class Margin:
-    left = 50
-    right = 50
-    top = 10
-    bottom = 100
-
-
 # ASR Block Constants
 Border = 2
 
@@ -53,7 +46,6 @@ class AsrBlock:
     callback = None
 
     def __init__(self, gui, txt, txta, ori, x, y, w, h, fg, bg, cb):
-        self.margin = Margin()
         self.gui = gui
         self.label = txt
         self.label_anchor = txta
@@ -71,13 +63,34 @@ class AsrBlock:
         self.txtfont = tkfont.Font(family='Helvetica', size=16)
 
 
+
+    # This function is responsible for drawing AUTOSAR blocks in the MainView. The concept use TkInter's Canvas class
+    # to draw box. Each box is a separate Canvas by itself so that we can draw texts and bitmaps inside it.
+    #
+    # Also the AUTOSAR view breaks the screen area into 100 equal parts in X and Y direction. And the x & y values  
+    # entered in AsrBlocksConfigList structure defined in asr_view.py will refer to the partitions.
     def draw(self, gui):
         view   = gui.main_view.tk_root
-        width  = (gui.main_view.xsize-self.margin.left-self.margin.right)*(self.width/100.0)
-        height = (gui.main_view.ysize-self.margin.bottom-self.margin.top)*(self.height/100.0)
-        xval = self.margin.left + gui.main_view.xsize*self.xpos/100  # x begins at left, hence add
-        yval = gui.main_view.ysize-self.margin.bottom-height - gui.main_view.ysize*self.ypos/100   # y begins at top, hence subtract
+
+        # width and height are multiples of centi-block (i.e., screen_size / 100.0)
+        width  = self.width * int(gui.main_view.xsize/100)
+        height = self.height * int(gui.main_view.ysize/100)
+
+        # x in TkInter begins at left top
+        xval = self.xpos * int(gui.main_view.xsize/100)
+        # y in TkInter begins on lef top too
+        yval = self.ypos * int(gui.main_view.ysize/100)
+
+        # Fixme: The last block (micro-controlle) placment is not as expected, please fix this and remove the work-around below
+        if "MicroController Block" in self.label:
+            balance_y = gui.main_view.ysize - (yval + height)  
+            if balance_y < 0:
+                height += (balance_y - Border)
+            else:
+                height += (balance_y - gui.main_view.ysize/100)
+
         
+        # clean up older content
         if self.block != None:
             self.block.destroy()
 
@@ -100,6 +113,7 @@ class AsrBlock:
         self.block.bind("<ButtonPress-1>", lambda ev: self.asr_block_cb_facade(ev, self.callback, gui))
         self.block.bind("<ButtonRelease-1>", lambda ev: ev.widget.configure(relief="raised"))
         self.block.place(x=xval-Border, y=yval, width=width, height=height)
+
         return self.block
 
 
@@ -111,7 +125,7 @@ class AsrBlock:
     def update_label(self, gui, label):
         self.label = label
         self.draw(gui)
-   
-        
+
+
     def asr_block_cb_null(self, gui):
         print("Info: click callback not registered for "+self.label+"!")
