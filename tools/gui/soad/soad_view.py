@@ -140,7 +140,7 @@ def show_soad_tabs(gui):
     soad_bswm_view.tab.draw(soad_bswm_view)
     soad_configset_view.tab.draw(soad_configset_view)
 
-    # gui.main_view.window.bind("<<NotebookTabChanged>>", show_os_tab_switch)
+    # gui.main_view.child_window.bind("<<NotebookTabChanged>>", show_os_tab_switch)
 
 
 

@@ -37,31 +37,6 @@ OsTab = AmTab = CtrTab = ResTab = TskTab = AlmTab = IsrTab = None
 OsConfigViewActive = False
 
 
-def show_os_tab_switch(event):
-    # global OsTab, AmTab, CtrTab, MsgTab, ResTab, TskTab, AlmTab, IsrTab 
-    global OsTab, AmTab, CtrTab, ResTab, TskTab, AlmTab, IsrTab 
-
-    current_tab = None #this variable can be used for debugging!
-    if gui.main_view.window.tab(gui.main_view.window.select(), "text").strip() == "OS Configs":
-        TskTab.backup_data()
-        OsTab.backup_data()  # take the lastest stack size updates from Task tab.
-        OsTab.update()
-        current_tab = OsTab
-    if gui.main_view.window.tab(gui.main_view.window.select(), "text").strip() == "AppModes":
-        current_tab = AmTab
-    if gui.main_view.window.tab(gui.main_view.window.select(), "text").strip() == "Counters":
-        current_tab = CtrTab
-    if gui.main_view.window.tab(gui.main_view.window.select(), "text").strip() == "Resources":
-        current_tab = ResTab
-    if gui.main_view.window.tab(gui.main_view.window.select(), "text").strip() == "Tasks":
-        current_tab = TskTab
-    if gui.main_view.window.tab(gui.main_view.window.select(), "text").strip() == "Alarms":
-        AlmTab.update()
-        current_tab = AlmTab
-    if gui.main_view.window.tab(gui.main_view.window.select(), "text").strip() == "ISRs":
-        current_tab = IsrTab
-
-
 
 def backup_os_gui_before_save():
     global OsTab, AmTab, CtrTab, ResTab, TskTab, AlmTab, IsrTab
@@ -163,7 +138,7 @@ def show_os_config(gui):
     IsrTab = gui_ir_tab.IsrTab(sg.ISRs, ResTab)
     IsrTab.draw(ir_tab, width, height)
 
-    gui.main_view.window.bind("<<NotebookTabChanged>>", show_os_tab_switch)
+    # gui.main_view.child_window.bind("<<NotebookTabChanged>>", lambda event : show_os_tab_switch(event, gui))
     
 
 

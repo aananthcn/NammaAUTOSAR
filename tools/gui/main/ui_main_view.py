@@ -38,7 +38,7 @@ from tkinter import filedialog
 
 import gui.os.os_view as os_view
 import gui.main.ui_uc_view as uc_view
-import gui.lib.asr_view as av
+import gui.lib.asr_view as a_view
 
 import arxml.core.lib as lib
 
@@ -47,26 +47,43 @@ import arxml.core.lib as lib
 import gui.main.ui_uc_cgen as uc_cgen
 import gui.app.app_gen as app_gen
 
-#
+
+###############################################################################
 #   CLASSES
 #
 class MainView:
-    tk = None
+    tk_root = None
+    tk_menu = None
     xsize = None
     ysize = None
     child_window = None
     
     def __init__(self):
-        self.tk = tk.Tk()
-        self.xsize = self.tk.winfo_screenwidth()
-        self.ysize = self.tk.winfo_screenheight()
+        self.tk_root = tk.Tk()
+        self.tk_root.bind("<Configure>", lambda event : self.window_resize(event))
+
 
     def destroy_childwindow(self):
-        if self.child_window == None:
-            return
-        for widget in self.child_window.winfo_children():
-	        widget.destroy()
-        self.child_window.destroy()
+        # incase there any TopLevel() windows floating, delete them
+        if self.child_window:
+            for widget in self.child_window.winfo_children():
+	            widget.destroy()
+            self.child_window.destroy()
+
+        # delete all widgets, except menus, that are drawn directly onto the tk_root
+        for widget in self.tk_root.winfo_children():
+            if widget != self.tk_menu:
+                widget.destroy()
+
+
+    def window_resize(self, event):
+        global Gui
+        if event.widget == self.tk_root:
+            print(f"New size is: {event.width}x{event.height}")
+            if (self.xsize != event.width) or (self.ysize != event.height):
+                self.xsize = event.width
+                self.ysize = event.height
+                a_view.show_autosar_modules_view(Gui)
 
 
 
@@ -90,13 +107,14 @@ class NammaAUTOSAR_Builder:
         global Gui
         Gui = self
         self.main_view = MainView()
-        self.main_view.tk.title(self.title + " [uninitialized]")
+        self.main_view.tk_root.title(self.title + " [uninitialized]")
         recentfiles = get_recent_files()
-        add_menus(self.main_view.tk, recentfiles)
+        add_menus(self.main_view.tk_root, recentfiles)
         if os.name == 'nt':
-            self.main_view.tk.state("zoomed")
+            self.main_view.tk_root.state("zoomed")
         else:
-            self.main_view.tk.wm_state("normal")
+            self.main_view.tk_root.wm_state("normal")
+
 
     def init_view_setup(self, fpath, ftype):
         if ftype == None or fpath == None:
@@ -108,23 +126,26 @@ class NammaAUTOSAR_Builder:
         else:
             print("Unsupported filetype argument provided!")
 
+
     def show_os_config(self):
         os_view.show_os_config(self)
 
+
     def show_uc_view(self):
         uc_view.show_microcontroller_block(self)
-        
+
+
     def set_arxml_filepath(self, filepath):
         self.arxml_file = filepath
         lib.setget_ecuc_arpkg_name(filepath)
     
 
 
+
 ###############################################################################
 # Globals
 ###############################################################################
 # GUI stuffs
-MenuBar = None
 FileMenu = None
 
 # I/O stuffs
@@ -150,7 +171,7 @@ def new_file():
     global Gui
 
     sg.sg_reset()
-    av.show_autosar_modules_view(Gui)
+    a_view.show_autosar_modules_view(Gui)
     FileMenu.entryconfig("Save", state="normal")
 
 
@@ -172,13 +193,13 @@ def open_oil_file(fpath):
     else:
         OIL_FileName = fpath
 
-    if Gui.main_view.tk != None:
-        Gui.main_view.tk.title(Gui.title + " [" + str(OIL_FileName).split("/")[-1] +"]")
+    if Gui.main_view.tk_root != None:
+        Gui.main_view.tk_root.title(Gui.title + " [" + str(OIL_FileName).split("/")[-1] +"]")
 
     # Make System Generator to parse, so that we can use the content in GUI.
     sg.sg_reset()
     sg.parse(OIL_FileName)
-    av.show_autosar_modules_view(Gui)
+    a_view.show_autosar_modules_view(Gui)
     FileMenu.entryconfig("Save", state="normal")
 
 
@@ -211,7 +232,7 @@ def save_project():
 
     # Export and File name clean up
     arxml.export_os_cfgs_2_arxml(Gui.arxml_file, Gui)
-    Gui.main_view.tk.title(Gui.title + " [" + Gui.arxml_file.split("/")[-1] +"]")
+    Gui.main_view.tk_root.title(Gui.title + " [" + Gui.arxml_file.split("/")[-1] +"]")
 
 
 
@@ -264,7 +285,7 @@ def save_as_arxml():
         return
 
     Gui.set_arxml_filepath(saved_filename.name)
-    Gui.main_view.tk.title(Gui.title + " [" + str(saved_filename.name).split("/")[-1] +"]")
+    Gui.main_view.tk_root.title(Gui.title + " [" + str(saved_filename.name).split("/")[-1] +"]")
     os_view.backup_os_gui_before_save()
     arxml.export_os_cfgs_2_arxml(saved_filename.name, Gui)
 
@@ -287,19 +308,19 @@ def open_arxml_file(fpath):
     else:
         Gui.set_arxml_filepath(fpath.strip())
 
-    if Gui.main_view.tk != None:
-        Gui.main_view.tk.title(Gui.title + " [" + str(Gui.arxml_file).split("/")[-1] +"]")
+    if Gui.main_view.tk_root != None:
+        Gui.main_view.tk_root.title(Gui.title + " [" + str(Gui.arxml_file).split("/")[-1] +"]")
 
     # Import/Parse ARXML file, so that we can use the content in GUI.
     sg.sg_reset()
     imp_status = arxml.import_arxml(Gui.arxml_file)
-    update_recent_files(Gui.arxml_file)
-    av.show_autosar_modules_view(Gui)
     if imp_status != 0:
         messagebox.showinfo(Gui.title, "Input file contains errors, hence opening as new file!")
         new_file()
     else:
+        update_recent_files(Gui.arxml_file)
         FileMenu.entryconfig("Save", state="normal")
+    a_view.show_autosar_modules_view(Gui)
 
 
 
@@ -308,9 +329,9 @@ def open_arxml_file(fpath):
 # args: rv - root view
 #    
 def add_menus(rv, flst):
-    global MenuBar, FileMenu
-    MenuBar = tk.Menu(rv, background='#ff8000', foreground='black', activebackground='white', activeforeground='black')
-    FileMenu = tk.Menu(MenuBar, tearoff=0)
+    global FileMenu
+    Gui.main_view.tk_menu = tk.Menu(rv, background='#ff8000', foreground='black', activebackground='white', activeforeground='black')
+    FileMenu = tk.Menu(Gui.main_view.tk_menu, tearoff=0)
     FileMenu.add_command(label="New", command=new_file)
     FileMenu.add_command(label="Import OIL File", command=lambda: open_oil_file(None))
     FileMenu.add_command(label="Import ARXML File", command=lambda: open_arxml_file(None))
@@ -323,22 +344,22 @@ def add_menus(rv, flst):
             FileMenu.add_command(label=file_path, command=lambda fp = file_path: open_arxml_file(fp))
         FileMenu.add_separator()
     FileMenu.add_command(label="Exit", command=rv.quit)
-    MenuBar.add_cascade(label="File", menu=FileMenu)
+    Gui.main_view.tk_menu.add_cascade(label="File", menu=FileMenu)
 
-    view = tk.Menu(MenuBar, tearoff=0)
+    view = tk.Menu(Gui.main_view.tk_menu, tearoff=0)
     view.add_command(label="OS Config", command=lambda: os_view.show_os_config(Gui))
-    view.add_command(label="AUTOSAR Module View", command=lambda: av.show_autosar_modules_view(Gui))
-    MenuBar.add_cascade(label="View", menu=view)
+    view.add_command(label="AUTOSAR Module View", command=lambda: a_view.show_autosar_modules_view(Gui))
+    Gui.main_view.tk_menu.add_cascade(label="View", menu=view)
 
-    gen = tk.Menu(MenuBar, tearoff=0)
+    gen = tk.Menu(Gui.main_view.tk_menu, tearoff=0)
     gen.add_command(label="Generate Source", command=generate_code)
-    MenuBar.add_cascade(label="Generate", menu=gen)
+    Gui.main_view.tk_menu.add_cascade(label="Generate", menu=gen)
 
-    help = tk.Menu(MenuBar, tearoff=0)
+    help = tk.Menu(Gui.main_view.tk_menu, tearoff=0)
     help.add_command(label="About", command=about)
-    MenuBar.add_cascade(label="Help", menu=help)
+    Gui.main_view.tk_menu.add_cascade(label="Help", menu=help)
     
-    rv.config(menu=MenuBar)
+    rv.config(menu=Gui.main_view.tk_menu)
 
 
 

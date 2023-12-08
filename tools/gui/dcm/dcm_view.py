@@ -109,7 +109,7 @@ def show_dcm_tabs(gui):
     dcm_gen_view.tab.draw(dcm_gen_view)
     dcm_configset_view.tab.draw(dcm_configset_view)
 
-    # gui.main_view.window.bind("<<NotebookTabChanged>>", show_os_tab_switch)
+    # gui.main_view.child_window.bind("<<NotebookTabChanged>>", show_os_tab_switch)
 
 
 

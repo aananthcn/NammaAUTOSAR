@@ -96,7 +96,7 @@ def show_eth_tabs(gui):
 
     # Draw all tabs
     ethcfg_view.tab.draw(ethcfg_view)
-    # gui.main_view.window.bind("<<NotebookTabChanged>>", show_os_tab_switch)
+    # gui.main_view.child_window.bind("<<NotebookTabChanged>>", show_os_tab_switch)
 
 
 

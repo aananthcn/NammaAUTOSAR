@@ -32,7 +32,7 @@ def main(fpath, ftype):
     Gui.init_view_setup(fpath, ftype)
 
     # Run forever!
-    Gui.main_view.tk.mainloop()
+    Gui.main_view.tk_root.mainloop()
 
 
 #

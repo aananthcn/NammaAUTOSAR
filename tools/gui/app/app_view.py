@@ -68,7 +68,7 @@ def child_app_press_handler(gui, app_id):
 # This function will draw blocks inside app block
 def app_draw_childrens(gui):
     # get the app block's widget (canvas) for drawing more blocks inside it
-    view = gui.asr_blocks["App"].widget
+    view = gui.asr_blocks["App"].block
 
     for ch_app in AppChild_list:
         ch_app.destroy()

@@ -128,7 +128,7 @@ def show_ethif_tabs(gui):
     ethif_gen_view.tab.draw(ethif_gen_view)
     ethif_configset_view.tab.draw(ethif_configset_view)
 
-    # gui.main_view.window.bind("<<NotebookTabChanged>>", show_os_tab_switch)
+    # gui.main_view.child_window.bind("<<NotebookTabChanged>>", show_os_tab_switch)
 
 
 

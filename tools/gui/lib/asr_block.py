@@ -32,10 +32,13 @@ class Margin:
     bottom = 100
 
 
+# ASR Block Constants
+Border = 2
+
 
 class AsrBlock:
     gui = None
-    widget = None
+    block = None
     label = None
     label_anchor = None
     txtfont = None
@@ -67,18 +70,19 @@ class AsrBlock:
             self.callback = self.asr_block_cb_null
         self.txtfont = tkfont.Font(family='Helvetica', size=16)
 
+
     def draw(self, gui):
-        view   = gui.main_view.tk
-        width  = (gui.main_view.xsize-self.margin.left-self.margin.right)*self.width/100 
-        height = (gui.main_view.ysize-self.margin.bottom-self.margin.top)*self.height/100
+        view   = gui.main_view.tk_root
+        width  = (gui.main_view.xsize-self.margin.left-self.margin.right)*(self.width/100.0)
+        height = (gui.main_view.ysize-self.margin.bottom-self.margin.top)*(self.height/100.0)
         xval = self.margin.left + gui.main_view.xsize*self.xpos/100  # x begins at left, hence add
         yval = gui.main_view.ysize-self.margin.bottom-height - gui.main_view.ysize*self.ypos/100   # y begins at top, hence subtract
         
-        if self.widget != None:
-            self.widget.destroy()
+        if self.block != None:
+            self.block.destroy()
 
-        border = 2
-        self.widget = tk.Canvas(view, height=height, width=width, background="gray40", borderwidth=border,
+        # Each autosor blocks / components are drawn as smaller Canvas inside the view
+        self.block = tk.Canvas(view, height=height, width=width, background="gray40", borderwidth=Border,
                         relief="raised", bg=self.bg_color)
 
         angle = "0"
@@ -91,20 +95,23 @@ class AsrBlock:
             text_y = 2
             self.txtfont = tkfont.Font(family='Helvetica', size=14)
 
-        self.widget.create_text((text_x, text_y), angle=angle, anchor=self.label_anchor,
+        self.block.create_text((text_x, text_y), angle=angle, anchor=self.label_anchor,
                                 text=self.label, fill=self.fg_color, font=self.txtfont)
-        self.widget.bind("<ButtonPress-1>", lambda ev: self.asr_block_cb_facade(ev, self.callback, gui))
-        self.widget.bind("<ButtonRelease-1>", lambda ev: ev.widget.configure(relief="raised"))
-        self.widget.place(x=xval-border, y=yval, width=width, height=height)
-        return self.widget
+        self.block.bind("<ButtonPress-1>", lambda ev: self.asr_block_cb_facade(ev, self.callback, gui))
+        self.block.bind("<ButtonRelease-1>", lambda ev: ev.widget.configure(relief="raised"))
+        self.block.place(x=xval-Border, y=yval, width=width, height=height)
+        return self.block
+
 
     def asr_block_cb_facade(self, ev, cb, gui):
         ev.widget.configure(relief="sunken")
         cb(gui)
-    
+
+
     def update_label(self, gui, label):
         self.label = label
         self.draw(gui)
+   
         
     def asr_block_cb_null(self, gui):
         print("Info: click callback not registered for "+self.label+"!")

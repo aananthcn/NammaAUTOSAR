@@ -156,7 +156,7 @@ def show_spi_tabs(gui):
     spijob_tab.tab.draw(spijob_tab)
     spiseq_tab.tab.draw(spiseq_tab)
     spidrv_tab.tab.draw(spidrv_tab)
-    # gui.main_view.window.bind("<<NotebookTabChanged>>", show_os_tab_switch)
+    # gui.main_view.child_window.bind("<<NotebookTabChanged>>", show_os_tab_switch)
 
 
 

@@ -65,6 +65,7 @@ soad_y = l3_y+(3*vbw/2)+ibg*2
 pdur_y = soad_y+(3*vbw/2)+ibg*3
 dcm_y  = pdur_y+(3*vbw/2)+ibg*4
 
+
 AsrBlocksConfigList = [
     {
         # Micro-controller Block
@@ -226,11 +227,11 @@ AsrBlocksConfigList = [
 ###############################################################################
 # Main Entry Point
 def show_autosar_modules_view(gui):
-    global UcBlk_yoffset, UcBlk_height
     print("Info: X = ", gui.main_view.xsize)
     print("Info: Y = ", gui.main_view.ysize)
+
+    # This function will start a new view, hence destroying old ones
     gui.main_view.destroy_childwindow()
-    gui.main_view.window = ttk.Frame(gui.main_view.tk) #dummy
     
     for blk in AsrBlocksConfigList:
         # create block view objects from AsrBlocksConfigList

@@ -96,7 +96,7 @@ def show_lin_tabs(gui):
 
     # Draw all tabs
     lincfg_view.tab.draw(lincfg_view)
-    # gui.main_view.window.bind("<<NotebookTabChanged>>", show_os_tab_switch)
+    # gui.main_view.child_window.bind("<<NotebookTabChanged>>", show_os_tab_switch)
 
 
 

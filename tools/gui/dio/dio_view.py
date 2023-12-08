@@ -134,7 +134,7 @@ def show_dio_tabs(gui):
     TabList.append(dtab)
     dtab.tab.draw(dtab)
 
-    # gui.main_view.window.bind("<<NotebookTabChanged>>", show_os_tab_switch)
+    # gui.main_view.child_window.bind("<<NotebookTabChanged>>", show_os_tab_switch)
     
 
 # Main Entry Point
