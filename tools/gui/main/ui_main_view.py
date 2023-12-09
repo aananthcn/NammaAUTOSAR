@@ -66,8 +66,8 @@ class MainView:
     def destroy_childwindow(self):
         # incase there any TopLevel() windows floating, delete them
         if self.child_window:
-            for widget in self.child_window.winfo_children():
-	            widget.destroy()
+            # for widget in self.child_window.winfo_children():
+	        #     widget.destroy()
             self.child_window.destroy()
 
         # delete all widgets, except menus, that are drawn directly onto the tk_root
