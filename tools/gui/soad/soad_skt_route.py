@@ -26,7 +26,7 @@ import gui.lib.asr_widget as dappa # dappa in Tamil means box
 
 
 # SoAdConfig container structure
-# 
+#
 # SoAd
 #     + SoAdConfig
 #         + SoAdSocketRoute (0..*)
@@ -46,7 +46,7 @@ class SoAdChildView:
     ysize = None
     frame = None
     save_cb = None
-    
+
     def __init__(self, f, w, h, cb):
         self.save_cb = cb
         self.frame = f
@@ -104,14 +104,14 @@ class SoAdSocketRouteView:
 
     def create_empty_configs(self, index):
         gen_dict = {}
-        
+
         gen_dict["SoAdRxPduHeaderId"]                     = str(index)
         gen_dict["SoAdRxSocketConnOrSocketConnBundleRef"] = "..."
         gen_dict["SoAdRxPduId"]                           = "0"
         gen_dict["SoAdRxUpperLayerType"]                  = "IF"
         gen_dict["SoAdRxPduRef"]                          = "..."
         gen_dict["SoAdRxRoutingGroupRef"]                 = "..."
-        
+
         return gen_dict
 
 
@@ -157,7 +157,7 @@ class SoAdSocketRouteView:
     def draw(self, tab):
         self.tab_struct = tab
         self.scrollw = window.ScrollableWindow(tab.frame, tab.xsize, tab.ysize)
-        
+
         #Number of modes - Label + Spinbox
         label = tk.Label(self.scrollw.mnf, text="No. Routes:")
         label.grid(row=0, column=0, sticky="w")
