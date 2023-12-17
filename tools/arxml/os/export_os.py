@@ -60,7 +60,7 @@ def insert_osos_to_subcontainer(root):
    refname = "/AUTOSAR/EcucDefs/Os/OsOS/OsHooks/OsStartupHook"
    lib_conf.insert_ecuc_param(params, refname, "numerical", "bool", sg.OS_Cfgs["STARTUPHOOK"])
    refname = "/AUTOSAR/EcucDefs/Os/OsOS/OsHooks/OsProtectionHook"
-   lib_conf.insert_ecuc_param(params, refname, "numerical", "bool", "NOT YET SUPPORTED") # Todo: Please fix this.
+   lib_conf.insert_ecuc_param(params, refname, "numerical", "bool", "NOT YET SUPPORTED") # TODO: Please fix this.
 
    # OsHookStack
    oshooksstack_ctnr = lib_conf.insert_ecuc_container(osos_subctnr, "OsHookStack", "conf", "/AUTOSAR/EcucDefs/Os/OsOS/OsHookStack")
@@ -159,7 +159,7 @@ def export_resources_to_container(root):
          params = ET.SubElement(ctnr, "PARAMETER-VALUES")
          # OsResource Parameters
          refname = "/AUTOSAR/EcucDefs/Os/OsResource/OsResourceProperty"
-         lib_conf.insert_ecuc_param(params, refname, "text", "enum", "STANDARD") #Todo: Fixme: INTERNAL & LINKED to be supported!!
+         lib_conf.insert_ecuc_param(params, refname, "text", "enum", "STANDARD") #TODO: INTERNAL & LINKED to be supported!!
 
 
 
@@ -256,7 +256,7 @@ def export_alarms_to_container(root):
          refname = "/AUTOSAR/EcucDefs/Os/OsAlarm/OsAlarmAutostart/OsAlarmCycleTime"
          lib_conf.insert_ecuc_param(params, refname, "numerical", "int", alm["CYCLETIME"])
          refname = "/AUTOSAR/EcucDefs/Os/OsAlarm/OsAlarmAutostart/OsAlarmAutostartType"
-         lib_conf.insert_ecuc_param(params, refname, "numerical", "int", "NOT YET SUPPORTED") # Todo: add support for this in UI
+         lib_conf.insert_ecuc_param(params, refname, "numerical", "int", "NOT YET SUPPORTED") # TODO: add support for this in UI
       if "APPMODE" in alm:
          # References
          references = ET.SubElement(l2_ctnr, "REFERENCE-VALUES")

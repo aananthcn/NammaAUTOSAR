@@ -81,7 +81,7 @@ class AsrBlock:
         # y in TkInter begins on lef top too
         yval = self.ypos * int(gui.main_view.ysize/100)
 
-        # Fixme: The last block (micro-controlle) placment is not as expected, please fix this and remove the work-around below
+        # TODO: The last block (micro-controlle) placment is not as expected, please fix this and remove the work-around below
         if "MicroController Block" in self.label:
             balance_y = gui.main_view.ysize - (yval + height)  
             if balance_y < 0:
