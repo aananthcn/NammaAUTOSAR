@@ -51,6 +51,16 @@ Development Setup - HARDWARE:
 * 2 x Grove 4-pin => [check this link](https://www.fabtolab.com/grove-universal-cable?search=grove%204%20pin)
 * ENC28J60 Ethernet LAN controller => [check this link](https://robocraze.com/products/enc28j60-ethernet-lan-module)
 
+<br>
+
+Cloning the Repo - Fresh Start
+===
+As NammaAUTOSAR uses git submodules, please use the following command to clone the main and submodules. 
+* `git clone --recurse-submodules --branch v2.0.0 -j4 https://github.com/aananthcn/NammaAUTOSAR.git`
+* To get latest:  `git clone --recurse-submodules -j4 https://github.com/aananthcn/NammaAUTOSAR.git`
+
+<span style="color:red"> **Note**: Only v2.0.0 version or lesser will work on NammaAUTOSAR. Beyond the version v2.0.0, all submodules will be compatible to Car-OS.Zephyr. So the build will break! </span>
+
 <br><br>
 
 Getting / Pulling the latest changes
@@ -66,12 +76,7 @@ If all steps above are successfull you are now ready to continue your contributi
 
 <br>
 
-Cloning the Repo - Fresh Start
-===
-As NammaAUTOSAR uses git submodules, please use the following command to clone the main and submodules
-* `git clone --recurse-submodules -j4 https://github.com/aananthcn/NammaAUTOSAR.git`
 
-<br>
 
 Starting the NammaAUTOSAR GUI
 ===
